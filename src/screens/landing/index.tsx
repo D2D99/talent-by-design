@@ -67,12 +67,7 @@ const Home = () => {
       {/* Annoucement Bar End */}
       <Header />
       {/* Hero Section Start */}
-      <div
-        className="pt-20  bg-contain bg-top bg-no-repeat"
-        style={{
-          backgroundImage: "url('/public/static/img/home/hero-bg-effect.png')",
-        }}
-      >
+      <div className="pt-20  bg-contain bg-top bg-no-repeat" id="hero-bg">
         <div className="max-w-5xl mx-auto text-center">
           <h4 className="text-base font-bold text-[var(--dark-primary-color)] uppercase">
             TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
@@ -225,22 +220,40 @@ const Home = () => {
             </div>
             <div className="flex gap-14">
               <div className="">
-                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
+                <img
+                  src="../../../public/static/img/home/ic-marquee-1.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
+                <img
+                  src="../../../public/static/img/home/ic-marquee-2.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
+                <img
+                  src="../../../public/static/img/home/ic-marquee-3.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
+                <img
+                  src="../../../public/static/img/home/ic-marquee-4.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
+                <img
+                  src="../../../public/static/img/home/ic-marquee-5.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
+                <img
+                  src="../../../public/static/img/home/ic-marquee-6.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
             </div>
           </div>
@@ -840,9 +853,7 @@ const Home = () => {
       <div className="my-24">
         <div
           className="text-center mx-auto max-w-screen-xl py-32  bg-cover bg-center bg-no-repeat rounded-3xl"
-          style={{
-            backgroundImage: "url('/public/static/img/home/ctn-bg.png')",
-          }}
+          id="cta-bg"
         >
           <p className="text-base font-bold text-[var(--white-color)] mb-5 ">
             See the Data in Action
