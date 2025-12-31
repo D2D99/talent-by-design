@@ -251,7 +251,7 @@ const Home = () => {
               </div>
               <div className="">
                 <img
-                  src="../../../public/static/img/home/ic-marquee-6.svg"
+                  src="/public/static/img/home/ic-marquee-6.svg"
                   alt="Ic-Marquee"
                 />
               </div>
