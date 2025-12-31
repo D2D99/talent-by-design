@@ -2,12 +2,12 @@ import { Icon } from "@iconify/react";
 import Header from "../../components/header";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 // import Marquee from "react-fast-marquee";
-import IcMarquee1 from "../../../public/static/img/home/Ic-Marquee-1.svg";
-import IcMarquee2 from "../../../public/static/img/home/Ic-Marquee-2.svg";
-import IcMarquee3 from "../../../public/static/img/home/Ic-Marquee-3.svg";
-import IcMarquee4 from "../../../public/static/img/home/Ic-Marquee-4.svg";
-import IcMarquee5 from "../../../public/static/img/home/Ic-Marquee-5.svg";
-import IcMarquee6 from "../../../public/static/img/home/Ic-Marquee-6.svg";
+// import IcMarquee1 from "../../../public/static/img/home/Ic-Marquee-1.svg";
+// import IcMarquee2 from "../../../public/static/img/home/Ic-Marquee-2.svg";
+// import IcMarquee3 from "../../../public/static/img/home/Ic-Marquee-3.svg";
+// import IcMarquee4 from "../../../public/static/img/home/Ic-Marquee-4.svg";
+// import IcMarquee5 from "../../../public/static/img/home/Ic-Marquee-5.svg";
+// import IcMarquee6 from "../../../public/static/img/home/Ic-Marquee-6.svg";
 import Number1 from "../../../public/static/img/home/number-img-01.png";
 import Number2 from "../../../public/static/img/home/number-img-02.png";
 import Number3 from "../../../public/static/img/home/number-img-03.png";
@@ -78,7 +78,7 @@ const Home = () => {
             TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
           </h4>
           <h1 className="mt-5 max-w-4xl mx-auto text-6xl font-bold text-[var(--dark-primary-color)] uppercase">
-            Clarity for Leaders. Stability for Teams. Readiness for the Future. 
+            Clarity for Leaders. Stability for Teams. Readiness for the Future.
           </h1>
           <p className="text-xl text-[var(--dark-primary-color)] font-medium mt-2.5 mb-10   ">
             Talent By Design Collective helps organizations build the
@@ -225,22 +225,22 @@ const Home = () => {
             </div>
             <div className="flex gap-14">
               <div className="">
-                <img src={IcMarquee1} alt="Ic-Marquee" />
+                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
               </div>
               <div className="">
-                <img src={IcMarquee2} alt="Ic-Marquee" />
+                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
               </div>
               <div className="">
-                <img src={IcMarquee3} alt="Ic-Marquee" />
+                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
               </div>
               <div className="">
-                <img src={IcMarquee4} alt="Ic-Marquee" />
+                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
               </div>
               <div className="">
-                <img src={IcMarquee5} alt="Ic-Marquee" />
+                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
               </div>
               <div className="">
-                <img src={IcMarquee6} alt="Ic-Marquee" />
+                <img src="/static/img/home/Ic-Marquee-1.svg" alt="Ic-Marquee" />
               </div>
             </div>
           </div>
@@ -841,19 +841,22 @@ const Home = () => {
         <div
           className="text-center mx-auto max-w-screen-xl py-32  bg-cover bg-center bg-no-repeat rounded-3xl"
           style={{
-            backgroundImage:
-              "url('/public/static/img/home/ctn-bg.png')",
+            backgroundImage: "url('/public/static/img/home/ctn-bg.png')",
           }}
         >
-          <p className="text-base font-bold text-[var(--white-color)] mb-5 ">See the Data in Action</p>
-          <h2 className="text-5xl max-w-lg mx-auto font-bold text-[var(--white-color)] uppercase">Build on a foundation of clarity, capability, with real data.</h2>
-           <div className="mt-9">
-             <button
+          <p className="text-base font-bold text-[var(--white-color)] mb-5 ">
+            See the Data in Action
+          </p>
+          <h2 className="text-5xl max-w-lg mx-auto font-bold text-[var(--white-color)] uppercase">
+            Build on a foundation of clarity, capability, with real data.
+          </h2>
+          <div className="mt-9">
+            <button
               type="button"
               className="mx-auto group text-[var(--primary-color)] rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold text-lg uppercase 
                bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] border"
             >
-            Book a Strategy Call  
+              Book a Strategy Call
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="24"
@@ -861,12 +864,11 @@ const Home = () => {
                 className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
               />
             </button>
-           </div>
-          
+          </div>
         </div>
       </div>
       {/* Cta Section End */}
-     <Footer />
+      <Footer />
     </>
   );
 };
