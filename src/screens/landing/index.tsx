@@ -221,37 +221,37 @@ const Home = () => {
             <div className="flex gap-14">
               <div className="">
                 <img
-                  src="../../../public/static/img/home/ic-marquee-1.svg"
+                  src="../static/img/home/ic-marquee-1.svg"
                   alt="Ic-Marquee"
                 />
               </div>
               <div className="">
                 <img
-                  src="../../../public/static/img/home/ic-marquee-2.svg"
+                  src="../static/img/home/ic-marquee-2.svg"
                   alt="Ic-Marquee"
                 />
               </div>
               <div className="">
                 <img
-                  src="../../../public/static/img/home/ic-marquee-3.svg"
+                  src="../static/img/home/ic-marquee-3.svg"
                   alt="Ic-Marquee"
                 />
               </div>
               <div className="">
                 <img
-                  src="../../../public/static/img/home/ic-marquee-4.svg"
+                  src="../static/img/home/ic-marquee-4.svg"
                   alt="Ic-Marquee"
                 />
               </div>
               <div className="">
                 <img
-                  src="../../../public/static/img/home/ic-marquee-5.svg"
+                  src="../static/img/home/ic-marquee-5.svg"
                   alt="Ic-Marquee"
                 />
               </div>
               <div className="">
                 <img
-                  src="/public/static/img/home/ic-marquee-6.svg"
+                  src="../static/img/home/ic-marquee-6.svg"
                   alt="Ic-Marquee"
                 />
               </div>
