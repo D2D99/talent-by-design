@@ -2,12 +2,12 @@ import { Icon } from "@iconify/react";
 import Header from "../../components/header";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 // import Marquee from "react-fast-marquee";
-import IcMarquee1 from "../../../public/static/img/home/Ic-Marquee-1.svg";
-import IcMarquee2 from "../../../public/static/img/home/Ic-Marquee-2.svg";
-import IcMarquee3 from "../../../public/static/img/home/Ic-Marquee-3.svg";
-import IcMarquee4 from "../../../public/static/img/home/Ic-Marquee-4.svg";
-import IcMarquee5 from "../../../public/static/img/home/Ic-Marquee-5.svg";
-import IcMarquee6 from "../../../public/static/img/home/Ic-Marquee-6.svg";
+// import IcMarquee1 from "../../../public/static/img/home/Ic-Marquee-1.svg";
+// import IcMarquee2 from "../../../public/static/img/home/Ic-Marquee-2.svg";
+// import IcMarquee3 from "../../../public/static/img/home/Ic-Marquee-3.svg";
+// import IcMarquee4 from "../../../public/static/img/home/Ic-Marquee-4.svg";
+// import IcMarquee5 from "../../../public/static/img/home/Ic-Marquee-5.svg";
+// import IcMarquee6 from "../../../public/static/img/home/Ic-Marquee-6.svg";
 import Number1 from "../../../public/static/img/home/number-img-01.png";
 import Number2 from "../../../public/static/img/home/number-img-02.png";
 import Number3 from "../../../public/static/img/home/number-img-03.png";
@@ -225,22 +225,40 @@ const Home = () => {
             </div>
             <div className="lg:mt-0 mt-5 flex sm:gap-14 gap-3">
               <div className="">
-                <img src={IcMarquee1} alt="Ic-Marquee" />
+                <img
+                  src="../static/img/home/ic-marquee-1.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src={IcMarquee2} alt="Ic-Marquee" />
+                <img
+                  src="../static/img/home/ic-marquee-2.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src={IcMarquee3} alt="Ic-Marquee" />
+                <img
+                  src="../static/img/home/ic-marquee-3.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src={IcMarquee4} alt="Ic-Marquee" />
+                <img
+                  src="../static/img/home/ic-marquee-4.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src={IcMarquee5} alt="Ic-Marquee" />
+                <img
+                  src="../static/img/home/ic-marquee-5.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
               <div className="">
-                <img src={IcMarquee6} alt="Ic-Marquee" />
+                <img
+                  src="../static/img/home/ic-marquee-6.svg"
+                  alt="Ic-Marquee"
+                />
               </div>
             </div>
           </div>
