@@ -1,26 +1,21 @@
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --primary-color: #448cd2;
-  --dark-primary-color: #2d5d8c;
-  --light-primary-color: #e4f0fc;
+  --primary-color: #448cd2; 
+  --dark-primary-color:#2D5D8C;
+  --light-primary-color: #E4F0FC;
   --secondary-color: #242424;
   --white-color: #fff;
-  --black-color: #000;
+  --black-color:#000 ;
 }
+
 
 * {
-  font-family: "Quicksand", sans-serif;
+   font-family: "Quicksand", sans-serif; 
 }
 
-#cta-bg {
-  background-image: url("/public/static/img/home/ctn-bg.png");
-}
-
-#hero-bg {
-  background-image: url("/public/static/img/home/hero-bg-effect.png");
-}
