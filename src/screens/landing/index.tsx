@@ -69,10 +69,11 @@ const Home = () => {
       <Header />
       {/* Hero Section Start */}
       <div
-        className="md:pt-20 pt-14 bg-contain bg-top bg-no-repeat"
-        style={{
-          backgroundImage: "url('/public/static/img/home/hero-bg-effect.png')",
-        }}
+        className="md:pt-20 pt-14 !bg-cover !bg-center !bg-no-repeat"
+        id="hero-bg"
+        // style={{
+        //   backgroundImage: "url('/public/static/img/home/hero-bg-effect.png')",
+        // }}
       >
         <div className="max-w-5xl mx-auto text-center px-4">
           <h4 className="text-base font-bold text-[var(--dark-primary-color)] uppercase">
@@ -116,7 +117,7 @@ const Home = () => {
             </button>
           </div>
 
-          <div className="flex justify-center items-center sm:mt-16 mt-10">
+          <div className="lg:flex hidden justify-center items-center sm:mt-16 mt-10">
             <div className="flex justify-center items-center outline-1 outline p-3.5 outline-[#448cd24a] rounded-md ">
               <div className="!w-full mx-auto h-full">
                 <iframe
@@ -1070,10 +1071,11 @@ const Home = () => {
       {/* Cta Section Start */}
       <div className="md:my-24 my-10 px-5">
         <div
-          className="text-center mx-auto max-w-screen-xl sm:py-32 py-20  bg-cover bg-center bg-no-repeat rounded-3xl"
-          style={{
-            backgroundImage: "url('/public/static/img/home/ctn-bg.png') ",
-          }}
+          className="text-center mx-auto max-w-screen-xl sm:py-32 py-20  !bg-cover !bg-center !bg-no-repeat rounded-3xl"
+          id="cta-bg"
+          // style={{
+          //   backgroundImage: "url('/public/static/img/home/ctn-bg.png') ",
+          // }}
         >
           <p className="text-base font-bold text-[var(--white-color)] mb-5 ">
             See the Data in Action
