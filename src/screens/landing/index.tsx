@@ -1,13 +1,6 @@
 import { Icon } from "@iconify/react";
 import Header from "../../components/header";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
-// import Marquee from "react-fast-marquee";
-// import IcMarquee1 from "../../../public/static/img/home/Ic-Marquee-1.svg";
-// import IcMarquee2 from "../../../public/static/img/home/Ic-Marquee-2.svg";
-// import IcMarquee3 from "../../../public/static/img/home/Ic-Marquee-3.svg";
-// import IcMarquee4 from "../../../public/static/img/home/Ic-Marquee-4.svg";
-// import IcMarquee5 from "../../../public/static/img/home/Ic-Marquee-5.svg";
-// import IcMarquee6 from "../../../public/static/img/home/Ic-Marquee-6.svg";
 import Number1 from "../../../public/static/img/home/number-img-01.png";
 import Number2 from "../../../public/static/img/home/number-img-02.png";
 import Number3 from "../../../public/static/img/home/number-img-03.png";
@@ -66,14 +59,13 @@ const Home = () => {
         </div>
       </div>
       {/* Annoucement Bar End */}
+
       <Header />
+
       {/* Hero Section Start */}
       <div
         className="md:pt-20 pt-14 !bg-cover !bg-center !bg-no-repeat"
         id="hero-bg"
-        // style={{
-        //   backgroundImage: "url('/public/static/img/home/hero-bg-effect.png')",
-        // }}
       >
         <div className="max-w-5xl mx-auto text-center px-4">
           <h4 className="text-base font-bold text-[var(--dark-primary-color)] uppercase">
@@ -221,7 +213,8 @@ const Home = () => {
           <div className="lg:flex items-center justify-between  ">
             <div className="max-w-md">
               <h4 className="text-white uppercase text-lg font-bold">
-                recent digital transformation initiatives.cloud-based solutions.
+                recent digital transformation initiatives. cloud-based
+                solutions.
               </h4>
             </div>
             <div className="lg:mt-0 mt-5 flex sm:gap-14 gap-3">
@@ -281,7 +274,7 @@ const Home = () => {
                   Modern Workplace
                 </span>{" "}
               </h2>
-              <p className="sm:text-xl text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]  ">
+              <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]  ">
                 The landscape has changed dramatically over the past seven
                 years. Hybrid and remote working, new digital tools, redesigned
                 processes and systems, and shifting employee expectations mean
@@ -290,7 +283,7 @@ const Home = () => {
                 are data-informed, people-centered, and built for modern
                 complexity.
               </p>
-              <p className="sm:mt-10 mt-4 text-base font-normal max-w-xl text-[var(--secondary-color)] ">
+              <p className="sm:mt-6 mt-4 text-base font-normal max-w-xl text-[var(--secondary-color)] ">
                 Our approach can be summarized in four simple steps:
               </p>
               <img
@@ -487,7 +480,7 @@ const Home = () => {
               </div>
 
               <div className="bg-[var(--primary-color)] p-5 rounded-xl mt-8 ">
-                <h2 className="text-2xl font-medium text-[var(--white-color)]">
+                <h2 className="md:text-2xl text-xl font-medium text-[var(--white-color)]">
                   The Result
                 </h2>
                 <p className="text-base font-normal text-[var(--white-color)]">
@@ -503,7 +496,7 @@ const Home = () => {
       </div>
       {/* Leadership And Digital Section End */}
 
-      {/*Properietary Assesment Section Start */}
+      {/* POD Assessment Section Start */}
       <div className="md:py-20 py-12 bg-[linear-gradient(53deg,rgba(237,245,253,0)_75%,#e4f0fc_100%)] ">
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4">
           <h4 className="text-lg font-bold text-[var(--dark-primary-color)] uppercase">
@@ -526,32 +519,35 @@ const Home = () => {
               The Truth{" "}
             </span>
           </h2>
-          <p className="text-base font-normal mt-2 text-[var(--secondary-color)] ">
-            The POD-360™ Assessment is intentionally designed to produce
-            accurate, not skewed, results so recommendations can be shared with
-            clarity and reasoning.
-          </p>
-          <p className="sm:mt-10 text-base font-normal mt-2 text-[var(--secondary-color)] ">
-            Instead of relying solely on self-ratings, which are often inflated,
-            under-reported, or “gamed,” POD-360™ uses multi-role triangulation
-            (Employee, Manager, Leader) to reveal blind spots and blockers. It
-            replaces subjective questions with behavioural and scenario-based
-            items that ask what actually happened in the last 30 days, reducing
-            guesswork and social desirability bias. Calibration items detect
-            inflated or defensive responses, while insight prompts generate
-            qualitative explanations that help validate patterns and uncover
-            root causes.
-          </p>
-          <p className="sm:mt-10 text-base font-normal mt-2 text-[var(--secondary-color)] ">
-            Layered on top are domain weighting, risk flags, and variance
-            mapping, enabling the system to not only score performance but
-            pinpoint exactly where barriers exist and what may be getting in the
-            way of achieving intended outcomes and OKRs.
-          </p>
-          <p className="sm:mt-10 text-base font-normal mt-2 text-[var(--secondary-color)] ">
-            The result is a high-validity, low-bias assessment that provides
-            actionable insights across three domains and 12 subdomains.
-          </p>
+          <div className="max-w-6xl">
+            <p className="text-base font-normal mt-2 text-[var(--secondary-color)] ">
+              The POD-360™ Assessment is intentionally designed to produce
+              accurate, not skewed, results so recommendations can be shared
+              with clarity and reasoning.
+            </p>
+            <p className="text-base font-normal mt-4 text-[var(--secondary-color)] ">
+              Instead of relying solely on self-ratings, which are often
+              inflated, under-reported, or “gamed,” POD-360™ uses multi-role
+              triangulation (Employee, Manager, Leader) to reveal blind spots
+              and blockers. It replaces subjective questions with behavioural
+              and scenario-based items that ask what actually happened in the
+              last 30 days, reducing guesswork and social desirability bias.
+              Calibration items detect inflated or defensive responses, while
+              insight prompts generate qualitative explanations that help
+              validate patterns and uncover root causes.
+            </p>
+            <p className="mt-4 text-base font-normal text-[var(--secondary-color)] ">
+              Layered on top are domain weighting, risk flags, and variance
+              mapping, enabling the system to not only score performance but
+              pinpoint exactly where barriers exist and what may be getting in
+              the way of achieving intended outcomes and OKRs.
+            </p>
+            <p className="text-base font-normal mt-4 text-[var(--secondary-color)] ">
+              The result is a high-validity, low-bias assessment that provides
+              actionable insights across three domains and 12 subdomains.
+            </p>
+          </div>
+
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-8 gap-4 sm:mt-12 mt-8">
             <div className="shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-5 p-4 bg-white  rounded-xl ">
               <div className="relative">
@@ -573,7 +569,7 @@ const Home = () => {
               </div>
               <div className="mt-5">
                 <h4 className="sm:text-2xl text-xl font-medium text-[var(--secondary-color)]">
-                  People Potential
+                  <span className="font-black">P</span>eople Potential
                 </h4>
                 <p className=" text-base font-normal  text-[var(--secondary-color)] ">
                   Strengthening engagement, capability, and emotional
@@ -607,7 +603,7 @@ const Home = () => {
               </div>
               <div className="mt-5">
                 <h4 className="sm:text-2xl text-xl font-medium text-[var(--secondary-color)]">
-                  Operational Steadiness
+                  <span className="font-black">O</span>perational Steadiness
                 </h4>
                 <p className=" text-base font-normal  text-[var(--secondary-color)] ">
                   Creating resilient, predictable workflows that reduce
@@ -641,7 +637,7 @@ const Home = () => {
               </div>
               <div className="mt-5">
                 <h4 className="sm:text-2xl text-xl font-medium text-[var(--secondary-color)]">
-                  Digital Fluency
+                  <span className="font-black">D</span>igital Fluency
                 </h4>
                 <p className=" text-base font-normal  text-[var(--secondary-color)] ">
                   Building confidence with tools, data, and AI so teams work
@@ -652,9 +648,9 @@ const Home = () => {
           </div>
         </div>
       </div>
-      {/*Properietary Assesment Section End */}
+      {/* POD Assessment Section End */}
 
-      {/* How it works Section Strat */}
+      {/* How it works Section Start */}
       <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] md:py-20 py-12">
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4">
           <h4 className="text-lg font-bold text-[var(--dark-primary-color)] uppercase">
@@ -731,7 +727,7 @@ const Home = () => {
       </div>
       {/* How it works Section End */}
 
-      {/* Modern Workplace Section Strat */}
+      {/* Modern Workplace Section Start */}
       <div className="bg-[var(--primary-color)] mx-auto xl:px-10 px-4 md:py-10 py-5">
         <div className="">
           <div className="flex items-center justify-center ">
@@ -775,7 +771,7 @@ const Home = () => {
             Together, they create a powerful blueprint for organizational
             optimization.
           </p>
-          <div className="md:sticky relative md:top-28  mt-8 justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+          <div className="md:sticky relative md:top-28 mt-8 justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
                 1. POD-360™ identifies what’s blocking execution
@@ -906,37 +902,48 @@ const Home = () => {
           <div className="mt-8 md:sticky relative md:top-52 z-[4] justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
-                2. Translate POD-360™ insights into measurable goals
+                4. Improve performance every quarter
               </h2>
               <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
-                For every low or medium subdomain score, we can help you create
-                OKRs to move forward with:
+                With POD 360 as your baseline:
               </p>
               <ul className="sm:mt-7 mt-4">
                 <li className="flex items-center gap-2.5  sm:text-lg text-base text-[var(--secondary-color)]">
                   <img src={IconStar} alt="icon" />
-                  <span>Clear direction</span>
+                  <span>OKRs are easier to define</span>
                 </li>
                 <li className="flex items-center gap-2.5  sm:text-lg text-base text-[var(--secondary-color)]">
                   <img src={IconStar} alt="icon" />
-                  <span>Aligned priorities</span>
+                  <span>Progress is easier to measure</span>
                 </li>
                 <li className="flex items-center gap-2.5  sm:text-lg text-base text-[var(--secondary-color)]">
                   <img src={IconStar} alt="icon" />
-                  <span>Measurable success criteria</span>
-                </li>
-                <li className="flex items-center gap-2.5  sm:text-lg text-base text-[var(--secondary-color)]">
-                  <img src={IconStar} alt="icon" />
-                  <span>Accountable owners</span>
-                </li>
-                <li className="flex items-center gap-2.5  sm:text-lg text-base text-[var(--secondary-color)]">
-                  <img src={IconStar} alt="icon" />
-                  <span>Quarterly momentum</span>
+                  <span>Improvements are easier to sustain</span>
                 </li>
               </ul>
+
+              <div>
+                <p className="text-base font-normal my-4 max-w-xl text-[var(--secondary-color)] ">
+                  Every quarter teams can:
+                </p>
+                <ul>
+                  <li className="flex items-center gap-2.5  sm:text-lg text-base text-[var(--secondary-color)]">
+                    <img src={IconStar} alt="icon" />
+                    <span>Run a mini-POD 360 pulse</span>
+                  </li>
+                  <li className="flex items-center gap-2.5  sm:text-lg text-base text-[var(--secondary-color)]">
+                    <img src={IconStar} alt="icon" />
+                    <span>Refresh OKRs based on friction levels</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 sm:text-lg text-base text-[var(--secondary-color)]">
+                    <img src={IconStar} alt="icon" />
+                    <span>Track improvements in flow and performance</span>
+                  </li>
+                </ul>
+              </div>
+
               <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
-                This bridges the gap between <strong>diagnosis</strong> and{" "}
-                <strong>execution</strong>.
+                This creates a <strong>continuous improvement system.</strong>
               </p>
             </div>
             <div className="md:block hidden">
@@ -983,7 +990,7 @@ const Home = () => {
       </div>
       {/* Measurable Performance Section End */}
 
-      {/* Leadership Section strat */}
+      {/* Leadership Section Start */}
       <div className="bg-[linear-gradient(117deg,rgba(237,245,253,0)_50%,#e4f0fc_100%)] md:py-20 pt-12">
         <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
           <div className="flex lg:justify-between justify-center items-center lg:flex-nowrap flex-wrap">
@@ -1073,11 +1080,8 @@ const Home = () => {
         <div
           className="text-center mx-auto max-w-screen-xl sm:py-32 py-20  !bg-cover !bg-center !bg-no-repeat rounded-3xl"
           id="cta-bg"
-          // style={{
-          //   backgroundImage: "url('/public/static/img/home/ctn-bg.png') ",
-          // }}
         >
-          <p className="text-base font-bold text-[var(--white-color)] mb-5 ">
+          <p className="text-base font-bold text-[var(--white-color)] mb-5 uppercase">
             See the Data in Action
           </p>
           <h2 className="lg:text-5xl md:text-4xl text-3xl leading-10 max-w-lg mx-auto font-bold text-[var(--white-color)] uppercase">
@@ -1086,7 +1090,7 @@ const Home = () => {
           <div className="sm:mt-9 mt-5">
             <button
               type="button"
-              className="mx-auto group text-[var(--primary-color)] rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase 
+              className="mx-auto group text-[var(--dark-primary-color)] rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase 
                bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] border"
             >
               Book a Strategy Call
@@ -1101,6 +1105,32 @@ const Home = () => {
         </div>
       </div>
       {/* Cta Section End */}
+
+      {/* Build Resilient Start*/}
+      <div className="invisible fixed top-8 md:left-1/2 md:-translate-x-1/2 md:right-0 max-w-[650px] flex items-center md:gap-10 gap-3 px-2 py-2 pl-4 md:rounded-full rounded-2xl shadow-[4px_4px_4px_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-transparent ">
+        <div className="">
+          <h2 className="text-base md:text-left text-center font-bold text-[var(--dark-primary-color)]">
+            Are You Ready to Build a Resilient Organization?{" "}
+          </h2>
+        </div>
+        <div>
+          <button
+            type="button"
+            className="mx-auto group text-[var(--white-color)] rounded-full py-2 pl-5 pr-3.5 flex items-center gap-1.5 font-semibold  text-sm uppercase 
+                bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] "
+          >
+            get started
+            <Icon
+              icon="mynaui:arrow-right-circle-solid"
+              width="24"
+              height="24"
+              className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+            />
+          </button>
+        </div>
+      </div>
+      {/* Build  Resilient End*/}
+
       <Footer />
     </>
   );

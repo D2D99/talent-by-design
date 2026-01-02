@@ -2,7 +2,7 @@ import FooterLogo from "../../../public/static/img/home/footer-logo.svg";
 import Facebook from "../../../public/static/img/icons/facebook-icon.svg";
 import Instagram from "../../../public/static/img/icons/instagram-icon.svg";
 import Twitter from "../../../public/static/img/icons/twitter.svg";
-import LinkdIn from "../../../public/static/img/icons/linkdin.png";
+import Linkedin from "../../../public/static/img/icons/linkdin.png";
 import CallIcon from "../../../public/static/img/icons/phone-icon.svg";
 import GmailIcon from "../../../public/static/img/icons/gmaIL-iocn.svg";
 import LocationIcon from "../../../public/static/img/icons/location-iocn.svg";
@@ -15,8 +15,8 @@ const Footer = () => {
         <div className="flex lg:flex-nowrap flex-wrap gap-10 justify-between ">
           <div className="">
             <img src={FooterLogo} alt="logo" />
-            <p className="text-xs font-normal text-[var(--white-color)] mt-3">
-              © 2025 <strong>TALENT BY DESIGN COLLECTIVE Inc.</strong>All rights
+            <p className="text-xs font-normal text-[var(--white-color)] mt-3 max-w-xs">
+              ©2025 <strong>TALENT BY DESIGN COLLECTIVE Inc.</strong> All rights
               reserved.
             </p>
             <h3 className="uppercase font-bold text-lg text-[var(--white-color)] mt-4">
@@ -25,22 +25,22 @@ const Footer = () => {
             <ul className="flex gap-3 mt-4">
               <li>
                 <a href="">
-                  <img src={Facebook} alt="facebookicon" />
+                  <img src={Facebook} alt="facebook icon" />
                 </a>
               </li>
               <li>
                 <a href="">
-                  <img src={Instagram} alt="instagramicon" />
+                  <img src={Instagram} alt="instagram icon" />
                 </a>
               </li>
               <li>
                 <a href="">
-                  <img src={Twitter} alt="twitter" />
+                  <img src={Twitter} alt="twitter icon" />
                 </a>
               </li>
               <li>
                 <a href="">
-                  <img src={LinkdIn} alt="linkdIn" />
+                  <img src={Linkedin} alt="linkedin icon" />
                 </a>
               </li>
             </ul>
@@ -117,7 +117,7 @@ const Footer = () => {
                 <li className="mb-1">
                   <a
                     href="#"
-                    className="text-base font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="text-base font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
                     Terms & Conditions
                   </a>
@@ -148,9 +148,9 @@ const Footer = () => {
                 <li className="mb-1">
                   <a
                     href=""
-                    className="flex gap-2 items-center text-base font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="flex gap-2 items-center text-base font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
-                    <img src={CallIcon} alt="callicon" />
+                    <img src={CallIcon} alt="call icon" />
                     <span>6047858966</span>
                   </a>
                 </li>
@@ -159,7 +159,7 @@ const Footer = () => {
                     href=""
                     className="flex gap-2 items-center text-base font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    <img src={GmailIcon} alt="callicon" />
+                    <img src={GmailIcon} alt="gmail icon" />
                     <span>info@tbdcollective.ca</span>
                   </a>
                 </li>
@@ -168,7 +168,7 @@ const Footer = () => {
                     href=""
                     className="flex gap-2 items-center text-base font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    <img src={LocationIcon} alt="callicon" />
+                    <img src={LocationIcon} alt="location icon" />
                     <span>Virtually Everywhere</span>
                   </a>
                 </li>
@@ -177,10 +177,10 @@ const Footer = () => {
                     href=""
                     className="flex gap-2 items-start text-base font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    <img src={HomeIcon} alt="callicon" />
+                    <img src={HomeIcon} alt="call icon" />
                     <span>
-                      Vancouver, <br />
-                      BC Kelowna, <br /> BC Edmonton, AB
+                      Vancouver, BC <br />
+                      Kelowna, BC <br /> Edmonton, AB
                     </span>
                   </a>
                 </li>
@@ -200,7 +200,6 @@ const Footer = () => {
                 <input
                   type="email"
                   className="py-2 pl-4 pr-7 w-full
-                    
                     border border-white
                     bg-gradient-to-r
   from-[rgba(68,140,210,0.12)]
@@ -212,8 +211,7 @@ const Footer = () => {
             <div>
               <button
                 type="button"
-                className="mx-auto group text-[var(--black-color)] rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold text-base uppercase 
-               bg-gradient-to-r bg-[var(--white-color)] "
+                className="mx-auto group text-[var(--black-color)] rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r bg-[var(--white-color)] "
               >
                 Subscribe
                 <Icon
