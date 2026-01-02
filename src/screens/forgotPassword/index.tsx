@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 
@@ -40,7 +40,7 @@ const ForgotPassword = () => {
             </div>
 
             <button
-              type="submit"
+              type="button"
               className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200"
               onClick={handleClick}
             >
@@ -54,24 +54,24 @@ const ForgotPassword = () => {
             </button>
 
             <div className="mt-4 text-center">
-              <a
-                href="/login"
+              <Link
+                to={"/login"}
                 className="text-sm font-bold text-[var(--primary-color)] hover:opacity-75 underline"
               >
                 Return to log in
-              </a>
+              </Link>
             </div>
           </form>
         </div>
         <div className="mt-4 text-center">
           <p className="max-w-80 mx-auto text-sm font-medium text-[var(--secondary-color)]">
             Forgot your email address or no longer have access to it?{" "}
-            <a
-              href="#"
+            <Link
+              to={""}
               className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
             >
               Contact Us
-            </a>
+            </Link>
           </p>
         </div>
       </div>

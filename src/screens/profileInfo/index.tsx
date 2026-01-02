@@ -13,10 +13,8 @@ const ProfileInfo = () => {
       <div className="flex min-h-screen bg-[var(--light-primary-color)]">
         {/* Success Toaster Start */}
         <div
-          className=" lg:block hidden w-1/2 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/public/static/img/home/login-img.png')",
-          }}
+          className=" lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
+          id="login-bg"
         >
           <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
         </div>
@@ -24,7 +22,11 @@ const ProfileInfo = () => {
 
         <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
           <div className="text-center mb-8 mx-auto">
-            <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="" />
+            <img
+              src={Logo}
+              className="max-w-[150px] w-full mx-auto"
+              alt="Logo"
+            />
           </div>
           <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A;] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
             {/* Form */}
@@ -120,7 +122,7 @@ const ProfileInfo = () => {
               </div>
 
               <button
-                type="submit"
+                type="button"
                 className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200"
                 onClick={handleClick}
               >

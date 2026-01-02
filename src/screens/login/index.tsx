@@ -2,16 +2,15 @@ import Logo from "../../../public/static/img/home/logo.svg";
 import LoginOr from "../../../public/static/img/home/login-or.svg";
 import M365Icon from "../../../public/static/img/icons/m365.svg";
 import { Icon } from "@iconify/react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
     <>
       <div className="flex min-h-screen bg-[var(--light-primary-color)]">
         <div
-          className=" lg:block hidden w-1/2 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/public/static/img/home/login-img.png')",
-          }}
+          className=" lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
+          id="login-bg"
         >
           <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
         </div>
@@ -72,15 +71,15 @@ const Login = () => {
                 </div>
               </div>
               <div className="sm:mb-6 mb-3 flex items-center justify-end">
-                <a
-                  href="/forgot-password"
+                <Link
+                  to={"/forgot-password"}
                   className="text-sm font-bold text-[var(--primary-color)] hover:opacity-75"
                 >
                   Forgot Password?
-                </a>
+                </Link>
               </div>
               <button
-                type="submit"
+                type="button"
                 className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200"
               >
                 Log in
@@ -107,12 +106,12 @@ const Login = () => {
               <div className="mt-4 text-center">
                 <p className="text-sm font-medium text-[var(--secondary-color)]">
                   Don't have an account?{" "}
-                  <a
-                    href="/register"
+                  <Link
+                    to={"/register"}
                     className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
                   >
                     Register
-                  </a>
+                  </Link>
                 </p>
               </div>
             </form>

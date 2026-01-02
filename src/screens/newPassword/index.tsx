@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 
@@ -123,8 +124,7 @@ const NewPassword = () => {
               </ul>
               <button
                 type="submit"
-                className="sm:mt-6 mt-3 w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase 
-                           bg-gradient-to-r from-[#1a365277] to-[#448bd28f]"
+                className="sm:mt-6 mt-3 w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase  bg-gradient-to-r from-[#1a365277] to-[#448bd28f]"
               >
                 Save password
                 <Icon
@@ -139,12 +139,12 @@ const NewPassword = () => {
           <div className="mt-4 text-center">
             <p className="max-w-80 mx-auto text-sm font-medium text-[var(--secondary-color)]">
               Forgot your email address or no longer have access to it?{" "}
-              <a
-                href="#"
+              <Link
+                to={""}
                 className="font-bold text-[var(--primary-color)] underline"
               >
                 Contact Us
-              </a>
+              </Link>
             </p>
           </div>
         </div>

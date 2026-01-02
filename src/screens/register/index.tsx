@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 
@@ -13,10 +13,8 @@ const Register = () => {
       <div className="flex min-h-screen bg-[var(--light-primary-color)]">
         {/* Success Toaster Start */}
         <div
-          className="lg:block hidden w-1/2 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/public/static/img/home/login-img.png')",
-          }}
+          className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
+          id="login-bg"
         >
           <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
         </div>
@@ -110,7 +108,7 @@ const Register = () => {
               </div>
 
               <button
-                type="submit"
+                type="button"
                 className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200 mt-6"
                 onClick={handleClick}
               >
@@ -126,13 +124,13 @@ const Register = () => {
               <div className="mt-4 text-center">
                 <p className="text-sm font-medium text-[var(--secondary-color)]">
                   Already have an account?{" "}
-                  <a
-                    href="/login"
+                  <Link
+                    to={"/login"}
                     className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
                   >
                     {" "}
                     Log in
-                  </a>
+                  </Link>
                 </p>
               </div>
             </form>
@@ -141,12 +139,12 @@ const Register = () => {
             <p className="max-w-sm md:px-1 mx-auto text-sm font-medium text-[var(--secondary-color)]">
               By clicking REGISTER, you’re confirming that you’ve read and agree
               to our {""}
-              <a
-                href="#"
+              <Link
+                to={""}
                 className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
               >
                 Privacy Policy {""}
-              </a>
+              </Link>
               and consent to receive all required notifications at your account
               email address.
             </p>

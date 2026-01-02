@@ -1,6 +1,7 @@
 import Logo from "../../../public/static/img/home/logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import BackIcon from "../../../public/static/img/icons/back-icon.svg";
+import { Link } from "react-router-dom";
 
 const AfterSendEmail = () => {
   return (
@@ -58,12 +59,12 @@ const AfterSendEmail = () => {
           <div className="w-full mx-auto max-w-96 rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
             {/* Form */}
             <div className="">
-              <a href="/forgot-password" className="flex items-center gap-1">
+              <Link to={"/forgot-password"} className="flex items-center gap-1">
                 <img src={BackIcon} alt="Back Icon" />
                 <p className="text-sm font-bold text-[var(--primary-color)]">
                   Back
                 </p>
-              </a>
+              </Link>
             </div>
 
             <img src={ResendMail} className="mx-auto" alt="email-icon" />
@@ -79,9 +80,9 @@ const AfterSendEmail = () => {
               <p className="text-sm font-normal text-center">
                 You can send email after: <strong>04:59</strong>
               </p>
-              <a href="#" className="text-sm font-bold text-[#448bd28a] ">
+              <Link to={""} className="text-sm font-bold text-[#448bd28a] ">
                 Resend Email
-              </a>
+              </Link>
             </div>
           </div>
         </div>
