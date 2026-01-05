@@ -1,152 +1,148 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
+import axios from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
-  const handleClick = () => {
-    navigate("/after-register");
+
+  // ===== LOGIC STATE ONLY =====
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ===== REGISTER HANDLER =====
+  const handleRegister = async () => {
+    if (!email || !password || !confirmPassword) {
+      alert("All fields are required");
+      return;
+    }
+
+    if (password.length < 8) {
+      alert("Password must be at least 8 characters");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
+        {
+          email,
+          password,
+          confirmPassword
+        }
+      );
+
+      // ✅ Store email for resend page
+      localStorage.setItem("registeredEmail", email);
+
+      navigate("/after-register");
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <div className="flex min-h-screen bg-[var(--light-primary-color)]">
-        {/* Success Toaster Start */}
         <div
           className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
           id="login-bg"
         >
           <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
         </div>
-        {/* Success Toaster End */}
 
         <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
           <div className="text-center mb-8 mx-auto">
             <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="" />
           </div>
-          <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A;] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
-            {/* Form */}
-            <form>
-              <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] sm:mb-6 mb-3">
+
+          <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md border bg-white sm:py-10 py-6 sm:px-10 px-4">
+            <form onSubmit={(e) => e.preventDefault()}>
+              <h2 className="sm:text-2xl text-xl font-bold sm:mb-6 mb-3">
                 Welcome!
               </h2>
+
               <div className="sm:mb-4 mb-2">
-                <label
-                  htmlFor="email"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
+                <label htmlFor="email" className="font-bold text-sm">
                   Email
                 </label>
                 <input
                   type="email"
                   id="email"
-                  className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="font-medium text-sm w-full p-3 mt-2 border rounded-lg"
                   placeholder="Enter your email"
                 />
               </div>
+
               <div className="sm:mb-4 mb-2">
-                <label
-                  htmlFor="password"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
+                <label htmlFor="password" className="font-bold text-sm">
                   Password
                 </label>
-                <div className="relative">
-                  <input
-                    type="password"
-                    id="password"
-                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-                    placeholder="Enter your password"
-                  />
-                  <svg
-                    width="18"
-                    height="14"
-                    viewBox="0 0 18 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="absolute top-[25px] right-[10px]"
-                  >
-                    <path
-                      d="M15.7896 13.25L3.28955 0.75M7.28955 5.70131C6.97837 6.04438 6.78955 6.49503 6.78955 6.98859C6.78955 8.0634 7.68498 8.9347 8.78955 8.9347C9.29885 8.9347 9.76365 8.7495 10.1168 8.4445M15.8219 8.9347C16.5105 7.904 16.7896 7.0634 16.7896 7.0634C16.7896 7.0634 14.9691 1.25 8.78955 1.25C8.44263 1.25 8.10944 1.26832 7.78955 1.30291M13.2896 11.4579C12.1417 12.1901 10.664 12.7079 8.78955 12.6773C2.68699 12.5775 0.789551 7.0634 0.789551 7.0634C0.789551 7.0634 1.6711 4.2484 4.28955 2.5361"
-                      stroke="#272727"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="font-medium text-sm w-full p-3 mt-2 border rounded-lg"
+                  placeholder="Enter your password"
+                />
               </div>
+
               <div className="sm:mb-5 mb-4">
-                <label
-                  htmlFor="confirmPassword"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
+                <label htmlFor="confirmPassword" className="font-bold text-sm">
                   Confirm Password
                 </label>
-                <div className="relative">
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-                    placeholder="Confirm your password"
-                  />
-                  <svg
-                    width="18"
-                    height="14"
-                    viewBox="0 0 18 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="absolute top-[25px] right-[10px]"
-                  >
-                    <path
-                      d="M15.7896 13.25L3.28955 0.75M7.28955 5.70131C6.97837 6.04438 6.78955 6.49503 6.78955 6.98859C6.78955 8.0634 7.68498 8.9347 8.78955 8.9347C9.29885 8.9347 9.76365 8.7495 10.1168 8.4445M15.8219 8.9347C16.5105 7.904 16.7896 7.0634 16.7896 7.0634C16.7896 7.0634 14.9691 1.25 8.78955 1.25C8.44263 1.25 8.10944 1.26832 7.78955 1.30291M13.2896 11.4579C12.1417 12.1901 10.664 12.7079 8.78955 12.6773C2.68699 12.5775 0.789551 7.0634 0.789551 7.0634C0.789551 7.0634 1.6711 4.2484 4.28955 2.5361"
-                      stroke="#272727"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="font-medium text-sm w-full p-3 mt-2 border rounded-lg"
+                  placeholder="Confirm your password"
+                />
               </div>
 
               <button
                 type="button"
-                className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200 mt-6"
-                onClick={handleClick}
+                disabled={loading}
+                onClick={handleRegister}
+                className="w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] mt-6"
               >
-                Register
-                <Icon
-                  icon="mynaui:arrow-right-circle-solid"
-                  width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                />
+                {loading ? "Registering..." : "Register"}
+                <Icon icon="mynaui:arrow-right-circle-solid" width="25" />
               </button>
 
               <div className="mt-4 text-center">
-                <p className="text-sm font-medium text-[var(--secondary-color)]">
+                <p className="text-sm font-medium">
                   Already have an account?{" "}
-                  <Link
-                    to={"/login"}
-                    className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
-                  >
-                    {" "}
+                  <Link to="/login" className="font-bold underline">
                     Log in
                   </Link>
                 </p>
               </div>
             </form>
           </div>
+
           <div className="mt-4 text-center">
-            <p className="max-w-sm md:px-1 mx-auto text-sm font-medium text-[var(--secondary-color)]">
-              By clicking REGISTER, you’re confirming that you’ve read and agree
-              to our {""}
-              <Link
-                to={""}
-                className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
-              >
-                Privacy Policy {""}
+            <p className="max-w-sm mx-auto text-sm font-medium">
+              By clicking REGISTER, you agree to our{" "}
+              <Link to="" className="font-bold underline">
+                Privacy Policy
               </Link>
-              and consent to receive all required notifications at your account
-              email address.
             </p>
           </div>
         </div>

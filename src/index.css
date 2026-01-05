@@ -29,9 +29,42 @@
   background: url("/public/static/img/home/login-img.png");
 }
 
+#leader-bg-effect {
+  background: url("/public/static/img/home/leader-bg-effect.svg");
+  background-position-x: 105% !important;
+  background-position-y: -70px !important;
+}
+
+@media screen and (max-width: 1280px) {
+  #leader-bg-effect {
+    background: unset;
+  }
+}
+
+/* Common Classes */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
+}
+
+.heading {
+  @apply mt-5 max-w-4xl mx-auto xl:text-6xl md:text-5xl sm:text-4xl text-3xl font-bold text-[var(--dark-primary-color)] uppercase;
+}
+
+.badge {
+  @apply sm:text-lg font-bold text-[var(--dark-primary-color)] uppercase;
+}
+
+.sub-heading {
+  @apply md:text-4xl sm:text-3xl text-[26px] text-[var(--secondary-color)] font-light max-w-md mt-4 capitalize;
+}
+
+.sub-heading-highlight {
+  @apply font-medium text-[var(--dark-primary-color)];
+}
+
+.feature-list {
+  @apply flex items-start gap-2.5 sm:text-lg text-[var(--secondary-color)];
 }

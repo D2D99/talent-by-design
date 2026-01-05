@@ -128,8 +128,8 @@ const Header = () => {
                   <div className="relative lg:hidden block">
                     <button
                       type="button"
-                      className="group text-white rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase 
-               bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
+                      className="group text-white rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
+                      onClick={handleClick}
                     >
                       Login
                       <Icon
