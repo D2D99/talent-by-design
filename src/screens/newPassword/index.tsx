@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
+import ImageClose from "../../../public/static/img/icons/eye-closed.png";
+import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
 import axios from "axios";
 
@@ -28,21 +30,20 @@ const NewPassword = () => {
         `${import.meta.env.VITE_API_BASE_URL}/auth/reset-password`,
         { password },
         {
-          withCredentials: true // 🔐 REQUIRED for cookie-based reset
+          withCredentials: true, // 🔐 REQUIRED for cookie-based reset
         }
       );
 
       alert("Password reset successful");
       navigate("/login");
     } catch (error: any) {
-      alert(
-        error.response?.data?.message ||
-          "Reset link expired or invalid"
-      );
+      alert(error.response?.data?.message || "Reset link expired or invalid");
     } finally {
       setLoading(false);
     }
   };
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <>
@@ -65,37 +66,64 @@ const NewPassword = () => {
               <div className="mb-2">
                 <label
                   htmlFor="password"
-                  className="font-bold text-[var(--secondary-color)] text-sm"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
                 >
                   Enter new password
                 </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="font-medium text-sm text-[#5D5D5D] focus:outline-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg"
-                  placeholder="Enter new password"
-                />
+
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
+                  />
+
+                  <div
+                    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? (
+                      <img src={ImageOpen} alt="Hide password" />
+                    ) : (
+                      <img src={ImageClose} alt="Show password" />
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="mb-2">
                 <label
                   htmlFor="confirmPassword"
-                  className="font-bold text-[var(--secondary-color)] text-sm"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
                 >
                   Confirm Password
                 </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="font-medium text-sm text-[#5D5D5D] focus:outline-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg"
-                  placeholder="Confirm password"
-                />
-              </div>
 
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm password"
+                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
+                  />
+
+                  <div
+                    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <img src={ImageOpen} alt="Hide password" />
+                    ) : (
+                      <img src={ImageClose} alt="Show password" />
+                    )}
+                  </div>
+                </div>
+              </div>
               <ul className="mt-3">
                 <li className="flex items-center gap-1 text-sm">
                   <Icon icon="material-symbols-light:check" width="18" />

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
+import ImageClose from "../../../public/static/img/icons/eye-closed.png";
+import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
 import axios from "axios";
 
@@ -33,14 +35,11 @@ const Register = () => {
     try {
       setLoading(true);
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
-        {
-          email,
-          password,
-          confirmPassword
-        }
-      );
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/register`, {
+        email,
+        password,
+        confirmPassword,
+      });
 
       // ✅ Store email for resend page
       localStorage.setItem("registeredEmail", email);
@@ -52,6 +51,8 @@ const Register = () => {
       setLoading(false);
     }
   };
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <>
@@ -75,45 +76,82 @@ const Register = () => {
               </h2>
 
               <div className="sm:mb-4 mb-2">
-                <label htmlFor="email" className="font-bold text-sm">
+                <label
+                  htmlFor="email"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                >
                   Email
                 </label>
+
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="font-medium text-sm w-full p-3 mt-2 border rounded-lg"
                   placeholder="Enter your email"
+                  className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
                 />
               </div>
-
               <div className="sm:mb-4 mb-2">
-                <label htmlFor="password" className="font-bold text-sm">
+                <label
+                  htmlFor="password"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                >
                   Password
                 </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="font-medium text-sm w-full p-3 mt-2 border rounded-lg"
-                  placeholder="Enter your password"
-                />
+
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
+                  />
+
+                  <div
+                    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <img src={ImageOpen} alt="Hide password" />
+                    ) : (
+                      <img src={ImageClose} alt="Show password" />
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="sm:mb-5 mb-4">
-                <label htmlFor="confirmPassword" className="font-bold text-sm">
+                <label
+                  htmlFor="confirmPassword"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                >
                   Confirm Password
                 </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="font-medium text-sm w-full p-3 mt-2 border rounded-lg"
-                  placeholder="Confirm your password"
-                />
+
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
+                  />
+
+                  <div
+                    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <img src={ImageOpen} alt="Hide password" />
+                    ) : (
+                      <img src={ImageClose} alt="Show password" />
+                    )}
+                  </div>
+                </div>
               </div>
 
               <button
@@ -129,7 +167,7 @@ const Register = () => {
               <div className="mt-4 text-center">
                 <p className="text-sm font-medium">
                   Already have an account?{" "}
-                  <Link to="/login" className="font-bold underline">
+                  <Link to="/login" className="font-bold text-[var(--primary-color)] underline hover:opacity-75">
                     Log in
                   </Link>
                 </p>
@@ -140,7 +178,7 @@ const Register = () => {
           <div className="mt-4 text-center">
             <p className="max-w-sm mx-auto text-sm font-medium">
               By clicking REGISTER, you agree to our{" "}
-              <Link to="" className="font-bold underline">
+              <Link to="" className="font-bold text-[var(--primary-color)] underline hover:opacity-75">
                 Privacy Policy
               </Link>
             </p>
