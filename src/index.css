@@ -58,7 +58,7 @@ input:-webkit-autofill:active {
 }
 
 .sub-heading {
-  @apply md:text-4xl sm:text-3xl text-[26px] text-[var(--secondary-color)] font-light max-w-md mt-4 capitalize;
+  @apply md:text-4xl sm:text-3xl text-[26px] text-[var(--secondary-color)] font-light max-w-md md:leading-tight mt-4 capitalize;
 }
 
 .sub-heading-highlight {
