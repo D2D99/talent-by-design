@@ -415,7 +415,7 @@ const Home = () => {
       </div>
       {/* Leadership And Digital Section End */}
 
-      {/* POD Assessment Section Start */}
+      {/* POD-360™ Assessment Section Start */}
       <div className="md:py-20 py-12 bg-[linear-gradient(53deg,rgba(237,245,253,0)_75%,#e4f0fc_100%)] ">
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4">
           <h4 className="badge">OUR PROPRIETARY ASSESSMENT</h4>
@@ -447,11 +447,12 @@ const Home = () => {
               Layered on top are domain weighting, risk flags, and variance
               mapping, enabling the system to not only score performance but
               pinpoint exactly where barriers exist and what may be getting in
-              the way of achieving intended outcomes and OKRs.
+              the way of achieving intended outcomes, objectives and key
+              results.
             </p>
-            <p className="text-base font-normal mt-4 text-[var(--secondary-color)] ">
+            <p className="text-base font-normal text-[var(--secondary-color)] ">
               The result is a high-validity, low-bias assessment that provides
-              actionable insights across three domains and 12 subdomains.
+              actionable insights across 3 domains and 12 subdomains.
             </p>
           </div>
 
@@ -555,7 +556,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-      {/* POD Assessment Section End */}
+      {/* POD-360™ Assessment Section End */}
 
       {/* How it works Section Start */}
       <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] md:py-20 py-12">
@@ -744,7 +745,7 @@ const Home = () => {
           <div className="md:sticky relative md:top-44 z-[3] mt-8 justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
-                3. POD 360™ makes OKRs realistic, targeted, and achievable
+                3. POD-360™ makes OKRs realistic, targeted, and achievable
               </h2>
 
               <ul className="sm:mt-7 mt-4 space-y-1">
@@ -758,7 +759,7 @@ const Home = () => {
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>POD 360™ tells you where to focus.</span>
+                  <span>POD-360™ tells you where to focus.</span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
@@ -776,7 +777,7 @@ const Home = () => {
                 4. Improve performance every quarter
               </h2>
               <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
-                With POD 360 as your baseline:
+                With POD-360™ as your baseline:
               </p>
               <ul className="sm:mt-7 mt-4 space-y-1">
                 <li className="feature-list">
@@ -800,7 +801,7 @@ const Home = () => {
                 <ul>
                   <li className="feature-list">
                     <img src={IconStar} alt="icon" className="mt-1" />
-                    <span>Run a mini-POD 360 pulse</span>
+                    <span>Run a mini POD-360™ pulse</span>
                   </li>
                   <li className="feature-list">
                     <img src={IconStar} alt="icon" className="mt-1" />
@@ -826,7 +827,7 @@ const Home = () => {
         <div className="relative z-10 bg-white max-w-screen-2xl mx-auto xl:px-10 px-4">
           <img
             src={POD360}
-            alt="Pod-360"
+            alt="Pod-360™"
             className="sm:mt-16 mt-8 w-fit mx-auto"
           />
           <h2 className="sm:mt-16 mt-8 md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
@@ -860,6 +861,178 @@ const Home = () => {
         </div>
       </div>
       {/* Measurable Performance Section End */}
+
+      {/* POD Insights™ AI-Powered Organizational Intelligence Start */}
+      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))]">
+        <div className="md:py-20 py-12">
+          <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
+            <h4 className="badge">
+              POD Insights™ AI-Powered Organizational Intelligence
+            </h4>
+            <h2 className="sub-heading !max-w-xl">
+              The Secure
+              <span className="sub-heading-highlight">
+                {" "}
+                AI Intelligence
+              </span>{" "}
+              Layer of the
+              <span className="sub-heading-highlight"> POD-360™</span> Platform
+            </h2>
+            <div className="max-w-6xl">
+              <p className="text-base font-normal mt-2 text-[var(--secondary-color)] ">
+                It enables leaders to upload strategic documents and use AI to
+                surface meaningful, context-aware insights grounded in their own
+                organizational data.
+              </p>
+
+              <p className="text-base font-normal mt-4 text-[var(--secondary-color)]">
+                Senior Executives can analyze transformation plans, operating
+                models, digital roadmaps, engagement results, and leadership
+                strategies, and receive clear summaries, priority signals, and
+                risk considerations that support better decision-making.
+              </p>
+
+              <p className="text-base font-normal mt-4 text-[var(--secondary-color)]">
+                Built on enterprise-grade infrastructure using platforms such as
+                Snowflake, with AI services leveraging Microsoft Azure and
+                OpenAI, POD Insights™ is designed for security, scale, and
+                trust.
+              </p>
+            </div>
+
+            <div className="rounded-xl mt-8">
+              <h2 className="md:text-2xl text-xl mb-2 font-medium">
+                How POD Insights™ Works
+              </h2>
+              <div className="mt-4 grid md:grid-cols-3 sm:grid-cols-2 lg:gap-x-20 gap-x-7 gap-y-7">
+                <div>
+                  <img
+                    src="../../../public/static/img/home/ic-pod1.svg"
+                    alt="POD icon"
+                    className="h-20 w-20 object-contain mb-3"
+                  />
+                  <p>
+                    Upload your content and enter prompt. Bring in strategic
+                    plans, transformation documents, operating models, reports,
+                    and key organizational artifacts. Access quality prompts
+                    from our vast library.
+                  </p>
+                </div>
+
+                <div>
+                  <img
+                    src="../../../public/static/img/home/ic-pod2.svg"
+                    alt="POD icon"
+                    className="h-20 w-20 object-contain mb-3"
+                  />
+                  <p>
+                    AI-assisted interpretation. POD Insights™ securely analyzes
+                    your documents alongside POD-360™ results to identify
+                    patterns, friction points, and emerging signals across
+                    People, Operations, and Digital.
+                  </p>
+                </div>
+
+                <div>
+                  <img
+                    src="../../../public/static/img/home/ic-pod3.svg"
+                    alt="POD icon"
+                    className="h-20 w-20 object-contain mb-3"
+                  />
+                  <p>
+                    Leadership ready intelligence. Receive prioritized insights,
+                    narrative summaries, and trend indicators that help leaders
+                    focus attention, sequence change, and invest with
+                    confidence.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl mt-8">
+              <h2 className="md:text-2xl text-xl mb-2 font-medium">
+                What POD Insights™ Delivers
+              </h2>
+              <ul className="mt-4 space-y-1">
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    Context aware analysis based on your organizational data
+                  </span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    Priority signals tied to areas of highest friction or risk
+                  </span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>Trend and momentum indicators over time</span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>Narrative summaries designed for executive review</span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    Decision support that complements not replaces leadership
+                    judgment
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-xl mt-8">
+              <h2 className="md:text-2xl text-xl mb-2 font-medium">
+                Built for Trust and Governance
+              </h2>
+              <ul className="mt-4 space-y-1">
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>Enterprise-grade security and data governance</span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    Your data remains private and is not used to train public
+                    models
+                  </span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    AI is applied responsibly to support interpretation and
+                    insight
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-[var(--primary-color)] p-5 rounded-xl mt-8 ">
+              <h2 className="md:text-2xl text-xl font-medium text-[var(--white-color)] mb-2">
+                Why It Matters
+              </h2>
+              <p className="text-base font-normal text-[var(--white-color)]">
+                POD Insights™ helps leaders work smarter turning complex
+                organizational data into clear intelligence that supports better
+                decisions during moments of change, transformation, and
+                investment.
+              </p>
+            </div>
+
+            <div className="rounded-xl mt-8">
+              <h5 className="text-xl font-semibold text-center">
+                From organizational data to decision clarity POD Insights™ helps
+                leaders understand what matters most, and why.
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* POD Insights™ AI-Powered Organizational Intelligence End */}
 
       {/* Leadership Section Start */}
       <div className="lg:bg-[linear-gradient(117deg,rgba(237,245,253,0)_50%,#e4f0fc_100%)] bg-[linear-gradient(0deg,rgba(237,245,253,0)_50%,#e4f0fc4f_100%)]">
@@ -1003,11 +1176,8 @@ const Home = () => {
       <div
         id="assessmentLink"
         className={`
-        /* Layout & Positioning */
         sm:flex-nowrap flex-wrap z-[100] fixed left-1/2 sm:w-[600px] w-11/12 sm:min-w-max mx-auto sm:justify-between justify-center flex items-center md:gap-x-10 gap-x-5 gap-y-2 px-2 py-2 pl-4 sm:rounded-full rounded-xl bg-white
-        /* Styling */
         shadow-[4px_4px_4px_rgba(68,140,210,0.1)] sm:text-left text-center border border-[rgba(68,140,210,0.2)]
-        /* Animation Logic */
         transition-all duration-700 ease-in-out -translate-x-1/2
         ${
           isVisible
