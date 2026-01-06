@@ -1196,6 +1196,10 @@ const Home = () => {
         </h2>
         <button
           type="button"
+          data-twe-toggle="modal"
+          data-twe-target="#exampleModalCenter"
+          data-twe-ripple-init
+          data-twe-ripple-color="light"
           className="group text-[var(--white-color)] rounded-full py-2 pl-5 pr-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] whitespace-nowrap sm:scale-100 scale-90"
         >
           get started
@@ -1213,7 +1217,7 @@ const Home = () => {
 
       {/* After clicking on the get started btn */}
 
-      <button
+      {/* <button
         type="button"
         className="inline-block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
         data-twe-toggle="modal"
@@ -1222,7 +1226,7 @@ const Home = () => {
         data-twe-ripple-color="light"
       >
         Vertically centered modal
-      </button>
+      </button> */}
 
       <div
         data-twe-modal-init

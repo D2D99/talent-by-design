@@ -58,7 +58,7 @@ input:-webkit-autofill:active {
 }
 
 .sub-heading {
-  @apply md:text-4xl sm:text-3xl text-[26px] text-[var(--secondary-color)] font-light max-w-md md:leading-tight mt-4 capitalize;
+  @apply md:text-4xl sm:text-3xl text-[26px] text-[var(--secondary-color)] font-light max-w-md mt-4 capitalize;
 }
 
 .sub-heading-highlight {
@@ -69,12 +69,8 @@ input:-webkit-autofill:active {
   @apply flex items-start gap-2.5 sm:text-lg text-[var(--secondary-color)];
 }
 
-.radio-btn:checked label{
-  accent-color: #448cd2 !important;
-}
 .label-active:has(input:checked) {
-  background: #E4F0FC;
-  border: 1px solid #448CD233;
-  box-shadow: 4px 4px 4px 0px #448CD21A;
+  background: #e4f0fc;
+  border: 1px solid #448cd233;
+  box-shadow: 4px 4px 4px 0px #448cd21a;
 }
-
