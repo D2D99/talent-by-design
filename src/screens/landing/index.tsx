@@ -912,7 +912,7 @@ const Home = () => {
               <div className="mt-4 grid md:grid-cols-3 sm:grid-cols-2 lg:gap-x-20 gap-x-7 gap-y-7">
                 <div>
                   <img
-                    src="../../../public/static/img/home/ic-pod1.svg"
+                    src="./static/img/home/ic-pod1.svg"
                     alt="POD icon"
                     className="h-20 w-20 object-contain mb-3"
                   />
@@ -926,7 +926,7 @@ const Home = () => {
 
                 <div>
                   <img
-                    src="../../../public/static/img/home/ic-pod2.svg"
+                    src="./static/img/home/ic-pod2.svg"
                     alt="POD icon"
                     className="h-20 w-20 object-contain mb-3"
                   />
@@ -940,7 +940,7 @@ const Home = () => {
 
                 <div>
                   <img
-                    src="../../../public/static/img/home/ic-pod3.svg"
+                    src="./static/img/home/ic-pod3.svg"
                     alt="POD icon"
                     className="h-20 w-20 object-contain mb-3"
                   />
@@ -1355,7 +1355,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-     
+
       {/* After clicking on the get started btn */}
     </>
   );
