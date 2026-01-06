@@ -2,6 +2,8 @@ import { useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
 import LoginOr from "../../../public/static/img/home/login-or.svg";
 import M365Icon from "../../../public/static/img/icons/m365.svg";
+import ImageClose from "../../../public/static/img/icons/eye-closed.png";
+import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -36,8 +38,12 @@ const Login = () => {
       alert(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
+      
     }
+    
   };
+  const [showPassword, setShowPassword] = useState(false);
+
 
   return (
     <>
@@ -85,16 +91,28 @@ const Login = () => {
                 >
                   Password *
                 </label>
-                <div className="relative">
-                  <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-                    placeholder="Enter your password"
-                  />
-                </div>
+               <div className="relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    id="password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
+    placeholder="Enter your password"
+  />
+
+  <div
+    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? (
+      <img src={ImageOpen} alt="Hide password" />
+    ) : (
+      <img src={ImageClose} alt="Show password" />
+    )}
+  </div>
+</div>
+
               </div>
 
               <div className="sm:mb-6 mb-3 flex items-center justify-end">
