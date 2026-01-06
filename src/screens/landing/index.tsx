@@ -12,6 +12,8 @@ import Identifies from "../../../public/static/img/home/identifies.png";
 import Identifies1 from "../../../public/static/img/home/identifies-1.png";
 import Identifies2 from "../../../public/static/img/home/identifies-2.png";
 import Identifies3 from "../../../public/static/img/home/identifies-3.png";
+import Dashboard from "../../../public/static/img/icons/dashbord-login.png";
+import SolarUuser from "../../../public/static/img/icons/solar_user-line-duotone.png";
 
 import DigitalLeader from "../../../public/static/img/home/digital-leader.png";
 import Access1 from "../../../public/static/img/icons/access1.svg";
@@ -24,8 +26,11 @@ import Footer from "../../components/footer";
 import SafeMarquee from "../../components/brandsMarquee";
 import CtaMarquee from "../../components/ctaMarquee";
 import { useEffect, useState } from "react";
-
+import { Modal, Ripple, initTWE } from "tw-elements";
 const Home = () => {
+  useEffect(() => {
+    initTWE({ Modal, Ripple });
+  }, []);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -1032,8 +1037,156 @@ const Home = () => {
           />
         </button>
       </div>
+
       {/* Build  Resilient End*/}
       <Footer />
+
+      {/* After clicking on the get started btn */}
+
+      <button
+        type="button"
+        className="inline-block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
+        data-twe-toggle="modal"
+        data-twe-target="#exampleModalCenter"
+        data-twe-ripple-init
+        data-twe-ripple-color="light"
+      >
+        Vertically centered modal
+      </button>
+
+      <div
+        data-twe-modal-init
+        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="exampleModalCenter"
+        tabIndex={-1}
+        aria-labelledby="exampleModalCenterTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
+        >
+          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none dark:bg-surface-dark">
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 p-4 dark:border-white/10">
+              <h5
+                className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold"
+                id="exampleModalCenterTitle"
+              >
+                Where do you want to go?
+              </h5>
+
+              <button
+                type="button"
+                className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
+                data-twe-modal-dismiss
+                aria-label="Close"
+              >
+                <span className="[&>svg]:h-6 [&>svg]:w-6">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
+
+            <div className="relative sm:py-8 py-4 px-4">
+              <div className="grid sm:grid-cols-2 grid-cols-1 sm:gap-6 gap-4">
+                <label
+                  htmlFor="dashboard1"
+                  className="cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border border-[#448CD233] pt-3 pr-3 pb-6 pl-3 rounded-lg label-active"
+                >
+                  <div className="text-right">
+                    <input
+                      className="w-4 h-4 cursor-pointer"
+                      type="radio"
+                      id="dashboard1"
+                      name="dashborder"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <img src={Dashboard} className="mx-auto" alt="Dashboard" />
+                    <h2 className="text-base font-semibold text-center mt-4">
+                      Leader/Manager Dashboard Login
+                    </h2>
+                  </div>
+                </label>
+
+                <label
+                  htmlFor="dashboard2"
+                  className="label-active cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border border-[#448CD233] pt-3 pr-3 pb-6 pl-3 rounded-lg"
+                >
+                  <div className="text-right">
+                    <input
+                      className="w-4 h-4 cursor-pointer"
+                      type="radio"
+                      id="dashboard2"
+                      name="dashborder"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <img
+                      src={SolarUuser}
+                      className="mx-auto"
+                      alt="Solar User"
+                    />
+                    <h2 className="text-base font-semibold text-center mt-4">
+                      Take the <br /> Assessment
+                    </h2>
+                  </div>
+                </label>
+              </div>
+              <p className="text-center font-semibold text-sm text-[var(--secondary-color)] mt-4">
+                No login required for the employees.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-[#E8E8E8] py-4  px-4">
+              <button
+                type="button"
+                className="group text-[var(--primary-color)] pl-4 py-2 pr-2 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase   hover:opacity-100 duration-200"
+                data-twe-modal-dismiss
+                data-twe-ripple-init
+                data-twe-ripple-color="light"
+              >
+                Exit
+                <Icon
+                  icon="mynaui:arrow-right-circle-solid"
+                  width="25"
+                  height="25"
+                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+                />
+              </button>
+              <button
+                type="button"
+                className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2]  hover:opacity-100 duration-200"
+              >
+                continue
+                <Icon
+                  icon="mynaui:arrow-right-circle-solid"
+                  width="25"
+                  height="25"
+                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+      {/* After clicking on the get started btn */}
     </>
   );
 };
