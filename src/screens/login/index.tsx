@@ -56,6 +56,8 @@ const Login = () => {
         { withCredentials: true }
       );
 
+      console.log(import.meta.env.VITE_API_BASE_URL);
+
       if (res.data?.accessToken) {
         localStorage.setItem("accessToken", res.data.accessToken);
       }
