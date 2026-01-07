@@ -51,8 +51,16 @@ const Register = () => {
       setLoading(false);
     }
   };
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Check if all fields are filled and passwords match
+  const isFormValid =
+    email.trim() !== "" &&
+    password.trim() !== "" &&
+    confirmPassword.trim() !== "" &&
+    password === confirmPassword;
 
   return (
     <>
@@ -92,6 +100,7 @@ const Register = () => {
                   className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
                 />
               </div>
+
               <div className="sm:mb-4 mb-2">
                 <label
                   htmlFor="password"
@@ -156,9 +165,9 @@ const Register = () => {
 
               <button
                 type="button"
-                disabled={loading}
+                disabled={loading || !isFormValid}
                 onClick={handleRegister}
-                className="w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] mt-6"
+                className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] mt-6 ${isFormValid ? 'opacity-100' : 'opacity-40'} hover:opacity-100 duration-200`}
               >
                 {loading ? "Registering..." : "Register"}
                 <Icon icon="mynaui:arrow-right-circle-solid" width="25" />

@@ -1,5 +1,6 @@
 import Logo from "../../../public/static/img/home/logo.svg";
 import ProgressImg from "../../../public/static/img/home/progress-icon.png";
+import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import { Icon } from "@iconify/react";
 
 const AssessmentQuestion = () => {
@@ -21,6 +22,7 @@ const AssessmentQuestion = () => {
           </div>
 
           <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A;] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
+           
             <div>
               <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize">
                 Question 1
@@ -38,7 +40,7 @@ const AssessmentQuestion = () => {
 
             <div className="grid grid-cols-5 max-w-96 mx-auto">
               <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white">
+                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
                   1
                 </div>
                 <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap  text-center">
@@ -46,12 +48,12 @@ const AssessmentQuestion = () => {
                 </div>
               </div>
               <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white">
+                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
                   2
                 </div>
               </div>
               <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white">
+                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
                   3
                 </div>
                 <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap text-center">
@@ -59,12 +61,12 @@ const AssessmentQuestion = () => {
                 </div>
               </div>
               <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white">
+                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
                   4
                 </div>
               </div>
               <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white">
+                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
                   5
                 </div>
                 <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap text-center">
@@ -75,7 +77,7 @@ const AssessmentQuestion = () => {
 
             {/* For forced choice */}
 
-            {/* <div className="flex flex-col gap-4 ">
+            <div className="flex flex-col gap-4 ">
               <label className="flex items-center  justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg gap-1 flex-row-reverse label-active">
                 <input
                   className="w-4 h-4"
@@ -98,12 +100,12 @@ const AssessmentQuestion = () => {
                   I usually feel safe speaking openly at work.
                 </h3>
               </label>
-            </div> */}
+            </div>
 
             {/* For forced choice */}
 
             {/* If they choose 3 and below */}
-            {/* <div className="sm:mt-12 mt-6  ">
+            <div className="sm:mt-12 mt-6  ">
               <h2 className="text-sm font-bold mb-2">
                 What situations make it harder for you to speak up, ask
                 questions, or express concerns at work? *
@@ -114,11 +116,11 @@ const AssessmentQuestion = () => {
                 placeholder="Enter your email"
                 rows={4}
               ></textarea>
-            </div> */}
+            </div>
             {/* If they choose 3 and below */}
 
             {/* form */}
-            {/* <form>
+            <form>
               <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
                 Finalizing Your Confidential Submission
               </h2>
@@ -189,21 +191,25 @@ const AssessmentQuestion = () => {
                   <option value="marketing">Marketing</option>
                 </select>
               </div>
-            </form> */}
+            </form>
             {/* form end*/}
             {/* form verify */}
-            {/* <div>
+            <div>
               <img src={ResendMail} className="mx-auto" alt="email-icon" />
               <h2 className="sm:text-2xl text-xl text-center font-bold text-[var(--secondary-color)] mb-1">
-                Thank You <span className="text-[var(--dark-primary-color)]">Lisa A.</span>
+                Thank You{" "}
+                <span className="text-[var(--dark-primary-color)]">
+                  Lisa A.
+                </span>
               </h2>
               <p className="text-sm font-normal sm:mb-6 mb-3 text-center">
-                Your inputs have been securely recorded and are now being consolidated and analyzed. 
-Once the results are finalized, you will receive an email invitation to schedule a 45-minute debrief with
-one of our coaches, along with access to your dashboard, sent to the email address you provided.
+                Your inputs have been securely recorded and are now being
+                consolidated and analyzed. Once the results are finalized, you
+                will receive an email invitation to schedule a 45-minute debrief
+                with one of our coaches, along with access to your dashboard,
+                sent to the email address you provided.
               </p>
-
-            </div> */}
+            </div>
             {/* form verify end */}
             <div className="sm:mt-12 mt-6 flex justify-between">
               <button

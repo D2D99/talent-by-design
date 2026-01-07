@@ -11,12 +11,10 @@ import axios from "axios";
 const Login = () => {
   const navigate = useNavigate();
 
-  // ===== STATE (LOGIC ONLY) =====
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ===== LOGIN HANDLER =====
   const handleLogin = async () => {
     try {
       setLoading(true);
@@ -27,23 +25,21 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      // Store token if returned
       if (res.data?.accessToken) {
         localStorage.setItem("accessToken", res.data.accessToken);
       }
 
-      // ✅ Redirect after login
       navigate("/assessment-question");
     } catch (error: any) {
       alert(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
-      
     }
-    
   };
+
   const [showPassword, setShowPassword] = useState(false);
 
+  const isFormValid = email.trim() !== "" && password.trim() !== "";
 
   return (
     <>
@@ -91,28 +87,27 @@ const Login = () => {
                 >
                   Password *
                 </label>
-               <div className="relative">
-  <input
-    type={showPassword ? "text" : "password"}
-    id="password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-    placeholder="Enter your password"
-  />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
+                    placeholder="Enter your password"
+                  />
 
-  <div
-    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
-    onClick={() => setShowPassword(!showPassword)}
-  >
-    {showPassword ? (
-      <img src={ImageOpen} alt="Hide password" />
-    ) : (
-      <img src={ImageClose} alt="Show password" />
-    )}
-  </div>
-</div>
-
+                  <div
+                    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <img src={ImageOpen} alt="Hide password" />
+                    ) : (
+                      <img src={ImageClose} alt="Show password" />
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="sm:mb-6 mb-3 flex items-center justify-end">
@@ -127,8 +122,10 @@ const Login = () => {
               <button
                 type="button"
                 onClick={handleLogin}
-                disabled={loading}
-                className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200"
+                disabled={loading || !isFormValid}
+                className={`w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
+                  isFormValid ? "opacity-100" : "opacity-40"
+                } hover:opacity-100 duration-200`}
               >
                 {loading ? "Logging in..." : "Log in"}
                 <Icon

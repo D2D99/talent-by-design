@@ -42,8 +42,12 @@ const NewPassword = () => {
       setLoading(false);
     }
   };
+
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Check if both password and confirmPassword are filled and match
+  const isFormValid = password.trim() !== "" && confirmPassword.trim() !== "" && password === confirmPassword;
 
   return (
     <>
@@ -68,7 +72,7 @@ const NewPassword = () => {
                   htmlFor="password"
                   className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
                 >
-                  Enter new password
+                  New Password
                 </label>
 
                 <div className="relative">
@@ -93,6 +97,28 @@ const NewPassword = () => {
                   </div>
                 </div>
               </div>
+              <ul className="my-3">
+                <li className="flex items-center gap-1 text-sm">
+                  <Icon icon="material-symbols-light:check" width="18" />
+                  <span>Minimum 8 characters</span>
+                </li>
+                <li className="flex items-center gap-1 text-sm">
+                  <Icon icon="material-symbols-light:check" width="18" />
+                  <span>At least 1 uppercase letter</span>
+                </li>
+                <li className="flex items-center gap-1 text-sm">
+                  <Icon icon="material-symbols-light:check" width="18" />
+                  <span>At least 1 lowercase letter</span>
+                </li>
+                <li className="flex items-center gap-1 text-sm">
+                  <Icon icon="material-symbols-light:check" width="18" />
+                  <span>At least 1 number</span>
+                </li>
+                <li className="flex items-center gap-1 text-sm">
+                  <Icon icon="material-symbols-light:check" width="18" />
+                  <span>At least 1 special character</span>
+                </li>
+              </ul>
 
               <div className="mb-2">
                 <label
@@ -124,33 +150,11 @@ const NewPassword = () => {
                   </div>
                 </div>
               </div>
-              <ul className="mt-3">
-                <li className="flex items-center gap-1 text-sm">
-                  <Icon icon="material-symbols-light:check" width="18" />
-                  <span>Minimum 8 characters</span>
-                </li>
-                <li className="flex items-center gap-1 text-sm">
-                  <Icon icon="material-symbols-light:check" width="18" />
-                  <span>At least 1 uppercase letter</span>
-                </li>
-                <li className="flex items-center gap-1 text-sm">
-                  <Icon icon="material-symbols-light:check" width="18" />
-                  <span>At least 1 lowercase letter</span>
-                </li>
-                <li className="flex items-center gap-1 text-sm">
-                  <Icon icon="material-symbols-light:check" width="18" />
-                  <span>At least 1 number</span>
-                </li>
-                <li className="flex items-center gap-1 text-sm">
-                  <Icon icon="material-symbols-light:check" width="18" />
-                  <span>At least 1 special character</span>
-                </li>
-              </ul>
 
               <button
                 type="submit"
-                disabled={loading}
-                className="sm:mt-6 mt-3 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a365277] to-[#448bd28f]"
+                disabled={loading || !isFormValid} // Disable button if form is invalid or loading
+                className={`sm:mt-6 mt-3 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isFormValid ? 'opacity-100' : 'opacity-40'} hover:opacity-100 duration-200`}
               >
                 {loading ? "Saving..." : "Save password"}
                 <Icon
@@ -181,3 +185,4 @@ const NewPassword = () => {
 };
 
 export default NewPassword;
+ 

@@ -48,6 +48,14 @@ const ProfileInfo = () => {
     }
   };
 
+  // Check if all fields are filled
+  const isFormValid =
+    firstName.trim() !== "" &&
+    lastName.trim() !== "" &&
+    role.trim() !== "" &&
+    department.trim() !== "" &&
+    initials.trim() !== "";
+
   return (
     <>
       <div className="flex min-h-screen bg-[var(--light-primary-color)]">
@@ -150,7 +158,7 @@ const ProfileInfo = () => {
                 </select>
               </div>
 
-              <div className="sm:mb-6 mb-5 max-w-20">
+              <div className="sm:mb-6 mb-5 max-w-28">
                 <label
                   htmlFor="initials"
                   className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
@@ -175,7 +183,7 @@ const ProfileInfo = () => {
                 type="button"
                 disabled={loading}
                 onClick={handleClick}
-                className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200"
+                className={`w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isFormValid ? 'opacity-100' : 'opacity-40'} hover:opacity-100 duration-200`}
               >
                 {loading ? "Saving..." : "Get Started"}
                 <Icon className="iconify iconify--mynaui -rotate-45 group-hover:rotate-0 transition-transform duration-300" icon="mynaui:arrow-right-circle-solid" width="25" />
