@@ -2,173 +2,254 @@ import { useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
 import LoginOr from "../../../public/static/img/home/login-or.svg";
 import M365Icon from "../../../public/static/img/icons/m365.svg";
-import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import ImageOpen from "../../../public/static/img/icons/eye-open.png";
+import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { useForm, type SubmitHandler } from "react-hook-form";
+
+interface ApiError {
+  message: string;
+}
+
+type FormFields = {
+  email: string;
+  password: string;
+  root?: string;
+};
 
 const Login = () => {
   const navigate = useNavigate();
-
-  // ===== STATE (LOGIC ONLY) =====
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // ===== LOGIN HANDLER =====
-  const handleLogin = async () => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm<FormFields>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  // Watch fields to dynamically enable/disable the button
+  const emailValue = watch("email");
+  const passwordValue = watch("password");
+
+  // Button is disabled if loading OR if BOTH fields are empty
+  const isButtonDisabled = loading || (!emailValue && !passwordValue);
+
+  const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
       setLoading(true);
+      clearErrors("root"); // Clear previous server errors
 
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        { email, password },
+        data,
         { withCredentials: true }
       );
 
-      // Store token if returned
       if (res.data?.accessToken) {
         localStorage.setItem("accessToken", res.data.accessToken);
       }
 
-      // ✅ Redirect after login
       navigate("/assessment-question");
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Login failed");
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiError>;
+      const message =
+        axiosError.response?.data?.message || "Login failed. Please try again.";
+
+      // Set error in React Hook Form state instead of using alert()
+      setError("root", {
+        type: "manual",
+        message: message,
+      });
     } finally {
       setLoading(false);
-      
     }
-    
   };
-  const [showPassword, setShowPassword] = useState(false);
-
 
   return (
-    <>
-      <div className="flex min-h-screen bg-[var(--light-primary-color)]">
-        <div
-          className=" lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
-          id="login-bg"
-        >
-          <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
+    <div className="flex min-h-screen bg-[var(--light-primary-color)]">
+      {/* Background Side */}
+      <div
+        className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
+        id="login-bg"
+      >
+        <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
+      </div>
+
+      {/* Form Side */}
+      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
+        <div className="text-center mb-8 mx-auto">
+          <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
         </div>
 
-        <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
-          <div className="text-center mb-8 mx-auto">
-            <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="" />
-          </div>
+        <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] sm:mb-6 mb-3">
+              Account Login
+            </h2>
 
-          <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A;] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
-            {/* Form */}
-            <form onSubmit={(e) => e.preventDefault()}>
-              <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] sm:mb-6 mb-3">
-                Account Login
-              </h2>
-
-              <div className="sm:mb-4 mb-2">
-                <label
-                  htmlFor="email"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55"
-                  placeholder="Enter your email"
-                />
+            {/* Server Error Message */}
+            {errors.root && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
+                <Icon icon="solar:danger-circle-bold" width="20" />
+                <span>{errors.root.message}</span>
               </div>
+            )}
 
-              <div className="mb-2">
-                <label
-                  htmlFor="password"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
-                  Password *
-                </label>
-               <div className="relative">
-  <input
-    type={showPassword ? "text" : "password"}
-    id="password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-    placeholder="Enter your password"
-  />
-
-  <div
-    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
-    onClick={() => setShowPassword(!showPassword)}
-  >
-    {showPassword ? (
-      <img src={ImageOpen} alt="Hide password" />
-    ) : (
-      <img src={ImageClose} alt="Show password" />
-    )}
-  </div>
-</div>
-
-              </div>
-
-              <div className="sm:mb-6 mb-3 flex items-center justify-end">
-                <Link
-                  to={"/forgot-password"}
-                  className="text-sm font-bold text-[var(--primary-color)] hover:opacity-75"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleLogin}
-                disabled={loading}
-                className="w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200"
+            {/* Email Field */}
+            <div className="sm:mb-4 mb-2">
+              <label
+                htmlFor="email"
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                {loading ? "Logging in..." : "Log in"}
+                Email *
+              </label>
+              <input
+                type="email"
+                id="email"
+                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
+                placeholder="Enter your email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Enter a valid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.email.message}
+                </span>
+              )}
+            </div>
+
+            {/* Password Field */}
+            <div className="mb-2">
+              <label
+                htmlFor="password"
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+              >
+                Password *
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
+                    errors.password
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
+                  placeholder="Enter your password"
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Minimum 8 characters required",
+                    },
+                  })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-4 flex items-center justify-center w-8 h-8 hover:opacity-75 transition-opacity"
+                >
+                  {showPassword ? (
+                    <img
+                      src={ImageOpen}
+                      alt="Hide password"
+                      title="Hide password"
+                      className="w-5 h-5"
+                    />
+                  ) : (
+                    <img
+                      src={ImageClose}
+                      alt="Show password"
+                      title="Show password"
+                      className="w-5 h-5"
+                    />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.password.message}
+                </span>
+              )}
+            </div>
+
+            <div className="sm:mb-6 mb-3 flex items-center justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm font-bold text-[var(--primary-color)] hover:opacity-75 transition-opacity"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
+            {/* Login Button */}
+            <button
+              type="submit"
+              disabled={isButtonDisabled}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all  bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
+                isButtonDisabled
+                  ? "disabled:pointer-events-none disabled:opacity-40"
+                  : "opacity-100"
+              }`}
+            >
+              {loading ? "Logging in..." : "Log In"}
+              {!loading && (
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
                   height="25"
                   className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
                 />
-              </button>
+              )}
+            </button>
 
-              <div className="text-center my-3">
-                <img src={LoginOr} className="mx-auto" alt="login" />
-              </div>
+            <div className="text-center my-3">
+              <img src={LoginOr} className="mx-auto" alt="or divider" />
+            </div>
 
-              <div className="flex items-center justify-between mt-3">
-                <button
-                  type="button"
-                  className="flex-row-reverse w-full mx-auto group text-[var(--secondary-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-[#E4F0FC]"
+            <button
+              type="button"
+              className="flex-row-reverse w-full mx-auto group text-[var(--secondary-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-[#E4F0FC] hover:bg-[#D4E5F5] transition-colors"
+            >
+              Continue with m365
+              <img src={M365Icon} alt="m365" />
+            </button>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm font-medium text-[var(--secondary-color)]">
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
                 >
-                  Continue with m365
-                  <img src={M365Icon} alt="icon" />
-                </button>
-              </div>
-
-              <div className="mt-4 text-center">
-                <p className="text-sm font-medium text-[var(--secondary-color)]">
-                  Don't have an account?{" "}
-                  <Link
-                    to={"/register"}
-                    className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
-                  >
-                    Register
-                  </Link>
-                </p>
-              </div>
-            </form>
-          </div>
+                  Register
+                </Link>
+              </p>
+            </div>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
