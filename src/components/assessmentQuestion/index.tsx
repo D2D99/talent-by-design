@@ -1,6 +1,6 @@
 import Logo from "../../../public/static/img/home/logo.svg";
 import ProgressImg from "../../../public/static/img/home/progress-icon.png";
-import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
+// import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import { Icon } from "@iconify/react";
 
 const AssessmentQuestion = () => {
@@ -22,7 +22,6 @@ const AssessmentQuestion = () => {
           </div>
 
           <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A;] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
-           
             <div>
               <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize">
                 Question 1
@@ -77,7 +76,7 @@ const AssessmentQuestion = () => {
 
             {/* For forced choice */}
 
-            <div className="flex flex-col gap-4 ">
+            {/* <div className="flex flex-col gap-4 ">
               <label className="flex items-center  justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg gap-1 flex-row-reverse label-active">
                 <input
                   className="w-4 h-4"
@@ -100,12 +99,12 @@ const AssessmentQuestion = () => {
                   I usually feel safe speaking openly at work.
                 </h3>
               </label>
-            </div>
+            </div> */}
 
             {/* For forced choice */}
 
             {/* If they choose 3 and below */}
-            <div className="sm:mt-12 mt-6  ">
+            {/* <div className="sm:mt-12 mt-6  ">
               <h2 className="text-sm font-bold mb-2">
                 What situations make it harder for you to speak up, ask
                 questions, or express concerns at work? *
@@ -116,11 +115,11 @@ const AssessmentQuestion = () => {
                 placeholder="Enter your email"
                 rows={4}
               ></textarea>
-            </div>
+            </div> */}
             {/* If they choose 3 and below */}
 
             {/* form */}
-            <form>
+            {/* <form>
               <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
                 Finalizing Your Confidential Submission
               </h2>
@@ -191,10 +190,10 @@ const AssessmentQuestion = () => {
                   <option value="marketing">Marketing</option>
                 </select>
               </div>
-            </form>
+            </form> */}
             {/* form end*/}
             {/* form verify */}
-            <div>
+            {/* <div>
               <img src={ResendMail} className="mx-auto" alt="email-icon" />
               <h2 className="sm:text-2xl text-xl text-center font-bold text-[var(--secondary-color)] mb-1">
                 Thank You{" "}
@@ -209,7 +208,7 @@ const AssessmentQuestion = () => {
                 with one of our coaches, along with access to your dashboard,
                 sent to the email address you provided.
               </p>
-            </div>
+            </div> */}
             {/* form verify end */}
             <div className="sm:mt-12 mt-6 flex justify-between">
               <button
