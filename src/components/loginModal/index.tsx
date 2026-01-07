@@ -174,7 +174,7 @@ const LoginModal = () => {
           </div>
         </div>
       </div>
-      {/* Login Modal End */}
+      {/* Login Modal End    */}
     </>
   );
 };
