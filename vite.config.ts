@@ -11,8 +11,13 @@ export default defineConfig({
     }),
   ],
   server: {
-    host: '0.0.0.0', // Bind to all network interfaces
-    port: 5173,       // Make sure this matches the port Render expects
-    allowedHosts: ['talent-by-design.onrender.com'], // Add this to allow the backend URL
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: ['talent-by-design.onrender.com'],
+  },
+  build: {
+    // Make sure to minify and clean up the production build properly
+    minify: 'esbuild',  // Default minifier
+    sourcemap: false,  // Avoid sourcemaps in production
   },
 })
