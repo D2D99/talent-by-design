@@ -8,6 +8,7 @@ import Register from "./screens/register";
 import AfterRegister from "./screens/afterRegister";
 import ProfileInfo from "./screens/profileInfo";
 import AssessmentQuestion from "./components/assessmentQuestion";
+import Dashboard from "./components/dashboard";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           path="/assessment-question"
           element={<AssessmentQuestion />}
         ></Route>
+        <Route path="/dashboard" element={<Dashboard />}></Route>
       </Routes>
     </>
   );
