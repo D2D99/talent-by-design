@@ -75,3 +75,6 @@ input:-webkit-autofill:active {
   border: 1px solid #448cd233;
   box-shadow: 4px 4px 4px 0px #448cd21a;
 }
+.dashboard-menu [aria-expanded="true"] .dashboard-icon {
+    rotate: 180deg !important;
+}
