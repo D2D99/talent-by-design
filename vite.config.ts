@@ -11,7 +11,8 @@ export default defineConfig({
     }),
   ],
   server: {
-    host: '0.0.0.0',  // Ensure Vite binds to all available network interfaces
-    port: 5173,        // Make sure this matches the port Render is expecting
+    host: '0.0.0.0', // Bind to all network interfaces
+    port: 5173,       // Make sure this matches the port Render expects
+    allowedHosts: ['talent-by-design.onrender.com'], // Add this to allow the backend URL
   },
 })
