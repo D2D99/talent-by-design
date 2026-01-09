@@ -109,7 +109,7 @@ const ForgotPassword = () => {
               to={""}
               className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
             >
-              Contact Us Yayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+              Contact Us
             </Link>
           </p>
         </div>
