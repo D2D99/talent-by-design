@@ -68,7 +68,7 @@ const ManagerOverview = () => {
               <img src={IconamoonArrow} alt="arrow" className="w-5 h-5" />
             </button>
           </div>
-          <h3 className="sm:text-2xl !text-xl font-bold text-[var(--secondary-color)] ">
+          <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
             Welcome back, Suzanna De S!
           </h3>
           <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1 ">
