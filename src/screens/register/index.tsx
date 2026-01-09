@@ -35,7 +35,7 @@ const Register = () => {
     try {
       setLoading(true);
 
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/register`, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}auth/register`, {
         email,
         password,
         confirmPassword,

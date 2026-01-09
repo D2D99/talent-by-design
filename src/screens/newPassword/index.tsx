@@ -27,7 +27,7 @@ const NewPassword = () => {
       setLoading(true);
 
       await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/reset-password`,
+        `${import.meta.env.VITE_API_BASE_URL}auth/reset-password`,
         { password },
         {
           withCredentials: true, // 🔐 REQUIRED for cookie-based reset
