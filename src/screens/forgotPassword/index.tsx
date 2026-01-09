@@ -29,9 +29,7 @@ const ForgotPassword = () => {
       // ✅ Navigate only after successful API call
       navigate("/after-send-email");
     } catch (error: any) {
-      alert(
-        error.response?.data?.message || "Failed to send reset email"
-      );
+      alert(error.response?.data?.message || "Failed to send reset email");
     } finally {
       setLoading(false);
     }
@@ -44,11 +42,7 @@ const ForgotPassword = () => {
     <div className="flex min-h-screen bg-[var(--light-primary-color)]">
       <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
         <div className="text-center mb-8 mx-auto">
-          <img
-            src={Logo}
-            className="max-w-[150px] w-full mx-auto"
-            alt="Logo"
-          />
+          <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
         </div>
 
         <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A;] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
@@ -84,7 +78,9 @@ const ForgotPassword = () => {
               type="button"
               onClick={handleClick}
               disabled={loading || !isFormValid} // Disable button if form is invalid or loading
-              className={`w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isFormValid ? 'opacity-100' : 'opacity-40'} hover:opacity-100 duration-200`}
+              className={`w-full mx-auto group text-[var(--white-color)] p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
+                isFormValid ? "opacity-100" : "opacity-40"
+              } hover:opacity-100 duration-200`}
             >
               {loading ? "Sending..." : "Send email"}
               <Icon
@@ -113,7 +109,7 @@ const ForgotPassword = () => {
               to={""}
               className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
             >
-              Contact Us
+              Contact Us Yayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
             </Link>
           </p>
         </div>
