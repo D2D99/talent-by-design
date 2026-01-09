@@ -51,7 +51,7 @@ const Login = () => {
       clearErrors("root"); // Clear previous server errors
 
       const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        `${import.meta.env.VITE_API_BASE_URL}auth/login`,
         data,
         { withCredentials: true }
       );
