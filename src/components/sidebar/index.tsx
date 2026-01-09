@@ -1,6 +1,6 @@
 import DashboardLogo from "../../../public/static/img/home/logo.svg";
 import Manager from "../../../public/static/img/home/lisa-manager.png";
-import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
+
 import { Icon } from "@iconify/react";
 import { Collapse, Ripple, initTWE, Dropdown } from "tw-elements";
 import { useEffect } from "react";
@@ -113,7 +113,7 @@ const Sidebar = () => {
             </ul>
           </div>
         </div>
-        <div className="flex items-center justify-between bg-[#4B9BE91A] p-4 rounded-[12px]">
+        <div className=" md:mx-0 mx-3 manager-popup flex items-center justify-between bg-[#4B9BE91A] p-4 rounded-[12px]">
           <div className="flex items-center gap-2 ">
             <img src={Manager} alt="Manager" />
             <div>
@@ -156,9 +156,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-      <div className="restore-sidebar absolute top-[80px] right-[-12px] cursor-pointer">
-        <img src={IconamoonArrow} alt="arrow" />
-      </div>
+    
     </>
   );
 };
