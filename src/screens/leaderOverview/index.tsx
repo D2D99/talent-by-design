@@ -7,11 +7,17 @@ import Healthicons from "../../../public/static/img/home/healthicons_i-certifica
 import LastGraph from "../../../public/static/img/home/last-graph.svg";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import kri from "../../../public/static/img/home/kdi1111.svg";
+import Employee from "../../../public/static/img/home/employee.svg";
+import OuiSecurity from "../../../public/static/img/home/oui_security-signal-detected.svg";
+import DownArrow from "../../../public/static/img/home/down-arrow.svg";
+import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
+import UpArrow from "../../../public/static/img/home/up-arrow.svg";
+import Loader from "../../../public/static/img/home/loader.png";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
 import Sidebar from "../../components/sidebar";
 
-const ManagerOverview = () => {
+const LeaderOverview = () => {
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
   }, []);
@@ -69,27 +75,32 @@ const ManagerOverview = () => {
             </button>
           </div>
           <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
-            Welcome back, Suzanna De S!
+            Welcome back, Travis S!
           </h3>
           <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1 ">
-            Complete platform oversight with real-time performance insights,
-            user activity, and priority actions requiring your attention.
+            Here’s a snapshot of your workspace performance and the priority
+            items that need your attention today.
           </p>
         </div>
 
         <div className="relative">
           <button type="button">
-            <Icon icon="tabler:bell" width="28" height="28" className="sm:w-7 sm:h-7 w-5 h-5" />
+            <Icon
+              icon="tabler:bell"
+              width="28"
+              height="28"
+              className="sm:w-7 sm:h-7 w-5 h-5"
+            />
           </button>
           <p className="w-[6px] h-[6px] bg-[#FF0000] rounded-full absolute top-0 right-[8px] border border-white"></p>
         </div>
       </div>
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center flex-wrap gap-2 md:justify-between justify-center">
           <div>
             <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
-              Overview
+              Overall Organization Health
             </h3>
           </div>
           <div>
@@ -105,6 +116,339 @@ const ManagerOverview = () => {
                 className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
               />
             </button>
+          </div>
+        </div>
+
+        <div className="mt-6 grid xl:grid-cols-2 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full">
+            <div className="flex justify-end gap-2 flex-wrap ">
+              <div className="relative" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownMenuButton1"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  Organization
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                  aria-labelledby="dropdownMenuButton1"
+                  data-twe-dropdown-menu-ref
+                >
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Another action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Something else here
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="relative" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownMenuButton1"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  Business Unit | Department
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                  aria-labelledby="dropdownMenuButton1"
+                  data-twe-dropdown-menu-ref
+                >
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Another action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Something else here
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="relative " data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownMenuButton1"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  Role
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                  aria-labelledby="dropdownMenuButton1"
+                  data-twe-dropdown-menu-ref
+                >
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Another action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Something else here
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
+              <div>
+                <img src={Loader} alt="" />
+              </div>
+              <div>
+                {" "}
+                <div className="flex justify-center flex-col gap-1 ">
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="w-6 h-2 bg-[#FF5656]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Needs Attention
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="w-6 h-2 bg-[#FEE114]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        At Risk
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="w-6 h-2 bg-[#30AD43]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        On Track
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full">
+            <div className="flex items-center justify-between ">
+              <div>
+                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  POD-360™ Model
+                </h3>
+              </div>
+            </div>
+            <div>
+              <div>graph</div>
+            </div>
+          </div>
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+              Trends Analysis
+            </h2>
+            <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
+              <li className="flex gap-2 items-center ">
+                <span className="text-base font-medium text-[var(--secondary-color)]">
+                  Wellbeing
+                </span>
+                <img src={DownArrow} alt="arrow" />
+              </li>
+              <li className="flex gap-2 items-center ">
+                <span className="text-base font-medium text-[var(--secondary-color)]">
+                  Improving fast enough
+                </span>
+                <img src={UpArrow} alt="arrow" />
+              </li>
+              <li className="flex gap-2 items-center ">
+                <span className="text-base font-medium text-[var(--secondary-color)]">
+                  Improving fast enough
+                </span>
+                <img src={UpArrow} alt="arrow" />
+              </li>
+              <li className="flex gap-2 items-center ">
+                <span className="text-base font-medium text-[var(--secondary-color)]">
+                  Lorem Ipsum
+                </span>
+                <img src={UpArrow} alt="arrow" />
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
+            <div>
+              <div className="flex items-center justify-between mb-4 ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Alignment Status
+                  </h3>
+                  <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
+                    <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
+                    Blind Spot Detected
+                  </p>
+                </div>
+
+                <div>
+                  <img src={OuiSecurity} alt="images" />
+                </div>
+              </div>
+              <div className="graph">
+                <img src={Employee} alt="" />
+              </div>
+              <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
+                <b className="">Largest Gap:</b> Senior Leader VS Employee (+28){" "}
+              </p>
+              <div className="sm:mt-16 mt-6 ">
+                <button
+                  type="button"
+                  className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
+                >
+                  Leadership optimism risk
+                </button>
+              </div>
+              <div></div>
+            </div>
+          </div>
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+            <div className="flex items-center justify-between ">
+              <div>
+                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Priorities Attention
+                </h3>
+                <p className="text-sm font-normal text-[#000000] mt-1">
+                  Top 3 priorities based on current data
+                </p>
+              </div>
+              <div>
+                <img src={Iconamoon} alt="images" />
+              </div>
+            </div>
+            <div className="mt-4">
+              <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
+                <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
+                Psychological Safety 50
+              </p>
+              <p className="text-sm font-semibold text-[#FF8D28] mt-1 flex items-center gap-1 my-2">
+                <span className="w-2.5 h-2.5 flex bg-[#FF8D28]  rounded-full"></span>
+                Direction and Strategy 60
+              </p>
+              <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
+                <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
+                Direction and Strategy 59
+              </p>
+            </div>
           </div>
         </div>
         <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
@@ -316,6 +660,7 @@ const ManagerOverview = () => {
             </div>
           </div>
         </div>
+
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
             <div className="flex items-center justify-between ">
@@ -442,9 +787,7 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div>
-              <div>
-                dfgd
-              </div>
+              <div>dfgd</div>
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
@@ -602,4 +945,4 @@ const ManagerOverview = () => {
   );
 };
 
-export default ManagerOverview;
+export default LeaderOverview;

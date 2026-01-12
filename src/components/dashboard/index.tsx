@@ -1,7 +1,8 @@
 import { useState } from "react";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
-import ManagerOverview from "../../screens/managerOverview";
+// import ManagerOverview from "../../screens/managerOverview";
 import Sidebar from "../sidebar";
+import LeaderOverview from "../../screens/leaderOverview";
 
 const Dashboard = () => {
 
@@ -32,7 +33,9 @@ const Dashboard = () => {
 
         {/* Main Content Section */}
         <div className="xl:ml-[343px] md:ml-[278px] ml-[0px]  right-content w-full">
-          <ManagerOverview />
+          {/* <ManagerOverview /> */}
+          <LeaderOverview/>
+
         </div>
       </div>
       {/* Dashboard End */}
