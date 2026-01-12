@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import BackIcon from "../../../public/static/img/icons/back-icon.svg";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+
+const COOLDOWN_MS = 15 * 60 * 1000; // 15 Minutes
 
 const AfterSendEmail = () => {
   const navigate = useNavigate();
@@ -11,23 +13,58 @@ const AfterSendEmail = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
-  // Track resend attempts - Persisted via localStorage to prevent bypass on refresh
+  // Track remaining seconds for the UI countdown
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+
+  // Initialize resendCount from localStorage
   const [resendCount, setResendCount] = useState<number>(() => {
     const savedCount = localStorage.getItem("resendAttempts");
     return savedCount ? parseInt(savedCount, 10) : 0;
   });
 
   useEffect(() => {
+    // 1. Check for email
     const savedEmail = localStorage.getItem("emailForResend");
     if (!savedEmail) {
       navigate("/forgot-password");
       return;
     }
     setEmail(savedEmail);
+
+    // 2. Cooldown Logic
+    const checkCooldown = () => {
+      const lastAttempt = localStorage.getItem("lastResendTimestamp");
+      const currentCount = parseInt(
+        localStorage.getItem("resendAttempts") || "0",
+        10
+      );
+
+      if (currentCount >= 2 && lastAttempt) {
+        const startTime = parseInt(lastAttempt, 10);
+        const elapsed = Date.now() - startTime;
+        const remaining = COOLDOWN_MS - elapsed;
+
+        if (remaining > 0) {
+          setTimeLeft(Math.ceil(remaining / 1000));
+        } else {
+          // Time is up: Clear restrictions
+          setTimeLeft(0);
+          setResendCount(0);
+          localStorage.removeItem("resendAttempts");
+          localStorage.removeItem("lastResendTimestamp");
+        }
+      }
+    };
+
+    // Run immediately and then every second
+    checkCooldown();
+    const timer = setInterval(checkCooldown, 1000);
+
+    return () => clearInterval(timer);
   }, [navigate]);
 
   const handleResend = async () => {
-    if (!email || resendCount >= 2) return;
+    if (!email || timeLeft > 0 || resendCount >= 2) return;
 
     try {
       setLoading(true);
@@ -37,27 +74,33 @@ const AfterSendEmail = () => {
         { email }
       );
 
-      // Increment and persist count
       const nextCount = resendCount + 1;
       setResendCount(nextCount);
       localStorage.setItem("resendAttempts", nextCount.toString());
 
+      // If this was the final attempt, start the 15-minute timer
+      if (nextCount >= 2) {
+        localStorage.setItem("lastResendTimestamp", Date.now().toString());
+      }
+
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error: unknown) {
-      // Type-safe error handling replaces 'any'
       let errorMessage = "Failed to resend email";
-
       if (axios.isAxiosError(error)) {
         errorMessage = error.response?.data?.message || error.message;
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
       }
-
       alert(errorMessage);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper to format seconds into MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -77,7 +120,7 @@ const AfterSendEmail = () => {
                 fill="white"
               />
             </svg>
-            <span className="sm:text-xl text-sm font-bold">
+            <span className="sm:text-lg text-sm font-semibold">
               Email was resent
             </span>
           </div>
@@ -111,27 +154,36 @@ const AfterSendEmail = () => {
           <div className="mt-4">
             <button
               onClick={handleResend}
-              disabled={loading || resendCount >= 2}
+              disabled={loading || timeLeft > 0}
               className={`text-sm font-bold transition-all ${
-                loading || resendCount >= 2
+                loading || timeLeft > 0
                   ? "text-gray-400 cursor-not-allowed no-underline"
-                  : "text-[#448CD2] hover:underline"
+                  : "text-[#448CD2] hover:underline cursor-pointer"
               }`}
             >
               {loading ? "Sending..." : "Resend Email"}
             </button>
 
-            {resendCount >= 2 && (
-              <p className="text-[10px] text-red-500 mt-2 font-semibold uppercase tracking-wider">
-                Max attempts reached. Please wait.
-              </p>
-            )}
-
-            {resendCount < 2 && resendCount > 0 && (
-              <p className="text-[10px] text-gray-400 mt-1">
-                {2 - resendCount} attempt{2 - resendCount > 1 ? "s" : ""}{" "}
-                remaining
-              </p>
+            {timeLeft > 0 ? (
+              <div className="mt-2">
+                <p className="text-[10px] text-red-500 font-semibold uppercase tracking-wider">
+                  Max attempts reached. Please wait.
+                </p>
+                <p className="text-[11px] text-gray-500 mt-1 font-medium">
+                  Try again in{" "}
+                  <span className="text-red-500 font-bold">
+                    {formatTime(timeLeft)}
+                  </span>
+                </p>
+              </div>
+            ) : (
+              resendCount > 0 &&
+              resendCount < 2 && (
+                <p className="text-[10px] text-gray-400 mt-1">
+                  {2 - resendCount} attempt{2 - resendCount > 1 ? "s" : ""}{" "}
+                  remaining
+                </p>
+              )
             )}
           </div>
         </div>

@@ -31,7 +31,7 @@ const NewPassword = () => {
     clearErrors,
     formState: { errors },
   } = useForm<NewPasswordFields>({
-    mode: "onChange", // This ensures errors show up as the user types
+    mode: "onChange",
     defaultValues: {
       password: "",
       confirmPassword: "",
@@ -41,7 +41,6 @@ const NewPassword = () => {
   const passwordValue = watch("password") || "";
   const confirmPasswordValue = watch("confirmPassword") || "";
 
-  // Real-time validation for the checklist icons
   const validation = {
     minLength: passwordValue.length >= 8,
     hasUpper: /[A-Z]/.test(passwordValue),
@@ -50,21 +49,20 @@ const NewPassword = () => {
     hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue),
   };
 
-  // Logic: Button is enabled if the user has typed ANYTHING (isDirty)
-  // and we are not currently loading.
-  const isButtonActive =
-    (passwordValue.length > 0 || confirmPasswordValue.length > 0) && !loading;
+  const strengthCount = Object.values(validation).filter(Boolean).length;
+  const strengthColor =
+    strengthCount <= 2
+      ? "bg-red-500"
+      : strengthCount <= 4
+      ? "bg-yellow-500"
+      : "bg-green-500";
+
+  const allCriteriaMet = Object.values(validation).every(Boolean);
+  const passwordsMatch =
+    passwordValue === confirmPasswordValue && passwordValue !== "";
+  const isButtonActive = allCriteriaMet && passwordsMatch && !loading;
 
   const onSubmit: SubmitHandler<NewPasswordFields> = async (data) => {
-    // Final check before submission
-    if (data.password !== data.confirmPassword) {
-      setError("confirmPassword", {
-        type: "manual",
-        message: "Passwords do not match",
-      });
-      return;
-    }
-
     try {
       setLoading(true);
       clearErrors("root");
@@ -127,7 +125,6 @@ const NewPassword = () => {
                   }`}
                   {...register("password", {
                     required: "Password is required",
-                    minLength: { value: 8, message: "Minimum 8 characters" },
                   })}
                 />
                 <div
@@ -141,16 +138,37 @@ const NewPassword = () => {
                   />
                 </div>
               </div>
-              {errors.password && (
-                <span className="text-red-500 text-xs mt-1 block">
-                  {errors.password.message}
-                </span>
-              )}
             </div>
 
-            {/* Validation Checklist */}
             {passwordValue.length > 0 && (
-              <ul className="my-3 space-y-1">
+              <div className="mb-4">
+                <div className="flex gap-1 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-full flex-1 transition-all duration-500 ${
+                        i < strengthCount ? strengthColor : "bg-transparent"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p
+                  className={`text-[10px] mt-1 font-bold uppercase ${
+                    strengthCount === 5 ? "text-green-600" : "text-gray-400"
+                  }`}
+                >
+                  Strength:{" "}
+                  {strengthCount === 5
+                    ? "Strong"
+                    : strengthCount >= 3
+                    ? "Medium"
+                    : "Weak"}
+                </p>
+              </div>
+            )}
+
+            {passwordValue.length > 0 && (
+              <ul className="mb-4 space-y-1">
                 {[
                   { label: "Minimum 8 characters", met: validation.minLength },
                   {
@@ -176,11 +194,13 @@ const NewPassword = () => {
                       width="16"
                       className={`rounded-full p-px transition-all ${
                         item.met
-                          ? "bg-primary-200 text-black"
+                          ? "bg-[#D1E9FF] text-black"
                           : "bg-gray-100 text-transparent"
                       }`}
                     />
-                    <span>{item.label}</span>
+                    <span className={item.met ? "text-black" : "text-gray-400"}>
+                      {item.label}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -233,7 +253,7 @@ const NewPassword = () => {
               className={`sm:mt-6 mt-3 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${
                 isButtonActive
                   ? "opacity-100 cursor-pointer"
-                  : "opacity-40 cursor-not-allowed pointer-events-none"
+                  : "opacity-40 cursor-not-allowed pointer-events-none shadow-none"
               }`}
             >
               {loading ? "Saving..." : "Save password"}

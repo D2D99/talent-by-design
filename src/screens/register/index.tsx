@@ -32,6 +32,7 @@ const Register = () => {
     clearErrors,
     formState: { errors },
   } = useForm<RegisterFields>({
+    mode: "onChange",
     defaultValues: {
       email: "",
       password: "",
@@ -39,12 +40,32 @@ const Register = () => {
     },
   });
 
-  const emailValue = watch("email");
-  const passwordValue = watch("password");
-  const confirmPasswordValue = watch("confirmPassword");
+  const emailValue = watch("email") || "";
+  const passwordValue = watch("password") || "";
+  const confirmPasswordValue = watch("confirmPassword") || "";
 
-  const isButtonDisabled =
-    loading || (!emailValue && !passwordValue && !confirmPasswordValue);
+  const validation = {
+    minLength: passwordValue.length >= 8,
+    hasUpper: /[A-Z]/.test(passwordValue),
+    hasLower: /[a-z]/.test(passwordValue),
+    hasNumber: /[0-9]/.test(passwordValue),
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue),
+  };
+
+  const strengthCount = Object.values(validation).filter(Boolean).length;
+  const strengthColor =
+    strengthCount <= 2
+      ? "bg-red-500"
+      : strengthCount <= 4
+      ? "bg-yellow-500"
+      : "bg-green-500";
+
+  const allCriteriaMet = Object.values(validation).every(Boolean);
+  const passwordsMatch =
+    passwordValue === confirmPasswordValue && passwordValue !== "";
+
+  const isButtonActive =
+    emailValue && allCriteriaMet && passwordsMatch && !loading;
 
   const onSubmit: SubmitHandler<RegisterFields> = async (data) => {
     try {
@@ -83,7 +104,7 @@ const Register = () => {
         <div className="flex justify-center items-center h-full bg-black bg-opacity-50" />
       </div>
 
-      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
+      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pb-5 pt-10 px-3">
         <div className="text-center mb-8 mx-auto">
           <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
         </div>
@@ -151,16 +172,12 @@ const Register = () => {
                   }`}
                   {...register("password", {
                     required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Minimum 8 characters required",
-                    },
                   })}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-4 flex items-center justify-center w-8 h-8 hover:opacity-75"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 mt-1 flex items-center justify-center w-8 h-8 hover:opacity-75"
                 >
                   <img
                     src={showPassword ? ImageOpen : ImageClose}
@@ -169,14 +186,73 @@ const Register = () => {
                   />
                 </button>
               </div>
-              {errors.password && (
-                <span className="text-red-500 text-xs mt-1 block">
-                  {errors.password.message}
-                </span>
-              )}
             </div>
 
-            <div className="sm:mb-5 mb-4">
+            {passwordValue.length > 0 && (
+              <div className="mb-4">
+                <div className="flex gap-1 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-full flex-1 transition-all duration-500 ${
+                        i < strengthCount ? strengthColor : "bg-transparent"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p
+                  className={`text-[10px] mt-1 font-bold uppercase ${
+                    strengthCount === 5 ? "text-green-600" : "text-gray-400"
+                  }`}
+                >
+                  Strength:{" "}
+                  {strengthCount === 5
+                    ? "Strong"
+                    : strengthCount >= 3
+                    ? "Medium"
+                    : "Weak"}
+                </p>
+              </div>
+            )}
+
+            {passwordValue.length > 0 && (
+              <ul className="mb-4 space-y-1">
+                {[
+                  { label: "Minimum 8 characters", met: validation.minLength },
+                  {
+                    label: "At least 1 uppercase letter",
+                    met: validation.hasUpper,
+                  },
+                  {
+                    label: "At least 1 lowercase letter",
+                    met: validation.hasLower,
+                  },
+                  { label: "At least 1 number", met: validation.hasNumber },
+                  {
+                    label: "At least 1 special character",
+                    met: validation.hasSpecial,
+                  },
+                ].map((item, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center gap-2 text-sm transition-colors text-neutral-800"
+                  >
+                    <Icon
+                      icon="material-symbols-light:check"
+                      width="16"
+                      className={`rounded-full p-px transition-all ${
+                        item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
+                      }`}
+                    />
+                    <span className={item.met ? "text-black" : "text-gray-400"}>
+                      {item.label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="sm:mb-6 mb-4">
               <label
                 htmlFor="confirmPassword"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
@@ -195,17 +271,14 @@ const Register = () => {
                   }`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
-                    validate: (val: string) => {
-                      if (watch("password") !== val) {
-                        return "Your passwords do not match";
-                      }
-                    },
+                    validate: (val: string) =>
+                      val === passwordValue || "Your passwords do not match",
                   })}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-2 top-3.5 flex items-center justify-center w-8 h-8 hover:opacity-75 bg-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 mt-1 flex items-center justify-center w-8 h-8 hover:opacity-75"
                 >
                   <img
                     src={showConfirmPassword ? ImageOpen : ImageClose}
@@ -223,11 +296,11 @@ const Register = () => {
 
             <button
               type="submit"
-              disabled={isButtonDisabled}
+              disabled={!isButtonActive}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
-                isButtonDisabled
-                  ? "disabled:pointer-events-none disabled:opacity-40"
-                  : "opacity-100"
+                isButtonActive
+                  ? "opacity-100 cursor-pointer"
+                  : "opacity-40 cursor-not-allowed pointer-events-none"
               }`}
             >
               {loading ? "Registering..." : "Register"}
@@ -235,7 +308,7 @@ const Register = () => {
                 icon="mynaui:arrow-right-circle-solid"
                 width="25"
                 className={`transition-transform duration-300 ${
-                  isButtonDisabled ? "-rotate-45" : "rotate-0"
+                  isButtonActive ? "rotate-0" : "-rotate-45"
                 }`}
               />
             </button>
@@ -253,17 +326,16 @@ const Register = () => {
             </div>
           </form>
         </div>
-
         <div className="mt-4 text-center">
-          <p className="max-w-sm mx-auto text-sm font-medium text-[var(--secondary-color)]">
+          <p className="max-w-96 md:px-1 mx-auto text-sm font-medium text-[var(--secondary-color)]">
             By clicking REGISTER, you’re confirming that you’ve read and agree
-            to our {""}
+            to our{" "}
             <Link
-              to="/privacy"
+              to="/"
               className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
             >
-              Privacy Policy
-            </Link>{" "}
+              Privacy Policy {""}
+            </Link>
             and consent to receive all required notifications at your account
             email address.
           </p>

@@ -107,7 +107,7 @@ const Login = () => {
                 htmlFor="email"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                Email *
+                Email
               </label>
               <input
                 type="email"
@@ -138,7 +138,7 @@ const Login = () => {
                 htmlFor="password"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                Password *
+                Password
               </label>
               <div className="relative">
                 <input
