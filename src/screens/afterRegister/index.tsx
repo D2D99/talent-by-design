@@ -19,7 +19,7 @@ const AfterRegister = () => {
       setLoading(true);
 
       await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/resend-verification-email`,
+        `${import.meta.env.VITE_API_BASE_URL}auth/resend-verification-email`,
         { email }
       );
 
