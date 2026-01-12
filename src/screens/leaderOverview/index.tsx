@@ -4,7 +4,7 @@ import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
 import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
-import LastGraph from "../../../public/static/img/home/last-graph.svg";
+// import LastGraph from "../../../public/static/img/home/last-graph.svg";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import kri from "../../../public/static/img/home/kdi1111.svg";
 import Employee from "../../../public/static/img/home/employee.svg";
@@ -16,12 +16,16 @@ import Loader from "../../../public/static/img/home/loader.png";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
 import Sidebar from "../../components/sidebar";
+import { useDynamicTriangleData } from "../../components/pod360/useDynamicTriangleData";
+import Triangle from "../../components/pod360";
+import Speedometer from "../../components/speedometer";
 
 const LeaderOverview = () => {
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
   }, []);
-  
+
+  const data = useDynamicTriangleData();
 
   return (
     <div>
@@ -351,7 +355,15 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div>
-              <div>graph</div>
+
+
+              <div
+                style={{ width: 400, margin: "40px auto", textAlign: "center" }}
+              >
+                <Triangle data={data} />
+              </div>
+
+
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
@@ -559,7 +571,7 @@ const LeaderOverview = () => {
         <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Score by domain
+              Score by domains
             </h2>
             <div className="relative mt-2" data-twe-dropdown-ref>
               <button
@@ -646,6 +658,12 @@ const LeaderOverview = () => {
                 </div>
               </div>
             </div>
+
+            <div style={{ width: 500, margin: "auto" }}>
+              <Speedometer />
+            </div>
+            
+
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
