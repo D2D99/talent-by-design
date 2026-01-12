@@ -11,8 +11,11 @@ const AfterSendEmail = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
-  // 1. Track resend attempts (limit is 2)
-  const [resendCount, setResendCount] = useState(0);
+  // Track resend attempts - Persisted via localStorage to prevent bypass on refresh
+  const [resendCount, setResendCount] = useState<number>(() => {
+    const savedCount = localStorage.getItem("resendAttempts");
+    return savedCount ? parseInt(savedCount, 10) : 0;
+  });
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("emailForResend");
@@ -24,7 +27,6 @@ const AfterSendEmail = () => {
   }, [navigate]);
 
   const handleResend = async () => {
-    // 2. Block if limit reached or email is missing
     if (!email || resendCount >= 2) return;
 
     try {
@@ -35,13 +37,24 @@ const AfterSendEmail = () => {
         { email }
       );
 
-      // 3. Increment count on success
-      setResendCount((prev) => prev + 1);
+      // Increment and persist count
+      const nextCount = resendCount + 1;
+      setResendCount(nextCount);
+      localStorage.setItem("resendAttempts", nextCount.toString());
 
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Failed to resend email");
+    } catch (error: unknown) {
+      // Type-safe error handling replaces 'any'
+      let errorMessage = "Failed to resend email";
+
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -116,7 +129,8 @@ const AfterSendEmail = () => {
 
             {resendCount < 2 && resendCount > 0 && (
               <p className="text-[10px] text-gray-400 mt-1">
-                {2 - resendCount} attempt remaining
+                {2 - resendCount} attempt{2 - resendCount > 1 ? "s" : ""}{" "}
+                remaining
               </p>
             )}
           </div>
