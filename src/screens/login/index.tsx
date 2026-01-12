@@ -38,17 +38,15 @@ const Login = () => {
     },
   });
 
-  // Watch fields to dynamically enable/disable the button
   const emailValue = watch("email");
   const passwordValue = watch("password");
 
-  // Button is disabled if loading OR if BOTH fields are empty
   const isButtonDisabled = loading || (!emailValue && !passwordValue);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
       setLoading(true);
-      clearErrors("root"); // Clear previous server errors
+      clearErrors("root");
 
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/login`,
@@ -56,7 +54,7 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      console.log(import.meta.env.VITE_API_BASE_URL);
+      // console.log(import.meta.env.VITE_API_BASE_URL);
 
       if (res.data?.accessToken) {
         localStorage.setItem("accessToken", res.data.accessToken);
@@ -68,7 +66,6 @@ const Login = () => {
       const message =
         axiosError.response?.data?.message || "Login failed. Please try again.";
 
-      // Set error in React Hook Form state instead of using alert()
       setError("root", {
         type: "manual",
         message: message,
@@ -80,7 +77,6 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen bg-[var(--light-primary-color)]">
-      {/* Background Side */}
       <div
         className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
         id="login-bg"
@@ -88,7 +84,6 @@ const Login = () => {
         <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
       </div>
 
-      {/* Form Side */}
       <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
         <div className="text-center mb-8 mx-auto">
           <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
@@ -100,7 +95,6 @@ const Login = () => {
               Account Login
             </h2>
 
-            {/* Server Error Message */}
             {errors.root && (
               <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
                 <Icon icon="solar:danger-circle-bold" width="20" />
@@ -108,7 +102,6 @@ const Login = () => {
               </div>
             )}
 
-            {/* Email Field */}
             <div className="sm:mb-4 mb-2">
               <label
                 htmlFor="email"
@@ -140,7 +133,6 @@ const Login = () => {
               )}
             </div>
 
-            {/* Password Field */}
             <div className="mb-2">
               <label
                 htmlFor="password"
@@ -204,7 +196,6 @@ const Login = () => {
               </Link>
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={isButtonDisabled}
@@ -219,8 +210,9 @@ const Login = () => {
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+                  className={`transition-transform duration-300 ${
+                    isButtonDisabled ? "-rotate-45" : "rotate-0"
+                  }`}
                 />
               )}
             </button>
@@ -237,7 +229,7 @@ const Login = () => {
               <img src={M365Icon} alt="m365" />
             </button>
 
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center ">
               <p className="text-sm font-medium text-[var(--secondary-color)]">
                 Don't have an account?{" "}
                 <Link

@@ -4,197 +4,272 @@ import Logo from "../../../public/static/img/home/logo.svg";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { useForm, type SubmitHandler } from "react-hook-form";
+
+interface ApiError {
+  message: string;
+}
+
+type RegisterFields = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  root?: string;
+};
 
 const Register = () => {
   const navigate = useNavigate();
-
-  // ===== LOGIC STATE ONLY =====
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // ===== REGISTER HANDLER =====
-  const handleRegister = async () => {
-    if (!email || !password || !confirmPassword) {
-      alert("All fields are required");
-      return;
-    }
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm<RegisterFields>({
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-    if (password.length < 8) {
-      alert("Password must be at least 8 characters");
-      return;
-    }
+  const emailValue = watch("email");
+  const passwordValue = watch("password");
+  const confirmPasswordValue = watch("confirmPassword");
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+  const isButtonDisabled =
+    loading || (!emailValue && !passwordValue && !confirmPasswordValue);
 
+  const onSubmit: SubmitHandler<RegisterFields> = async (data) => {
     try {
       setLoading(true);
+      clearErrors("root");
 
       await axios.post(`${import.meta.env.VITE_API_BASE_URL}auth/register`, {
-        email,
-        password,
-        confirmPassword,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
       });
 
-      // ✅ Store email for resend page
-      localStorage.setItem("registeredEmail", email);
-
+      localStorage.setItem("registeredEmail", data.email);
       navigate("/after-register");
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Registration failed");
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiError>;
+      const message =
+        axiosError.response?.data?.message ||
+        "Registration failed. Please try again.";
+
+      setError("root", {
+        type: "manual",
+        message: message,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Check if all fields are filled and passwords match
-  const isFormValid =
-    email.trim() !== "" &&
-    password.trim() !== "" &&
-    confirmPassword.trim() !== "" &&
-    password === confirmPassword;
-
   return (
-    <>
-      <div className="flex min-h-screen bg-[var(--light-primary-color)]">
-        <div
-          className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
-          id="login-bg"
-        >
-          <div className="flex justify-center items-center h-full bg-black bg-opacity-50"></div>
+    <div className="flex min-h-screen bg-[var(--light-primary-color)]">
+      <div
+        className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
+        id="login-bg"
+      >
+        <div className="flex justify-center items-center h-full bg-black bg-opacity-50" />
+      </div>
+
+      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
+        <div className="text-center mb-8 mx-auto">
+          <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
         </div>
 
-        <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
-          <div className="text-center mb-8 mx-auto">
-            <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="" />
-          </div>
+        <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md border bg-white sm:py-10 py-6 sm:px-10 px-4">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] sm:mb-6 mb-3">
+              Welcome!
+            </h2>
 
-          <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md border bg-white sm:py-10 py-6 sm:px-10 px-4">
-            <form onSubmit={(e) => e.preventDefault()}>
-              <h2 className="sm:text-2xl text-xl font-bold sm:mb-6 mb-3">
-                Welcome!
-              </h2>
-
-              <div className="sm:mb-4 mb-2">
-                <label
-                  htmlFor="email"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
-                  Email
-                </label>
-
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-                />
+            {errors.root && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
+                <Icon icon="solar:danger-circle-bold" width="20" />
+                <span>{errors.root.message}</span>
               </div>
+            )}
 
-              <div className="sm:mb-4 mb-2">
-                <label
-                  htmlFor="password"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
-                  Password
-                </label>
-
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-                  />
-
-                  <div
-                    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <img src={ImageOpen} alt="Hide password" />
-                    ) : (
-                      <img src={ImageClose} alt="Show password" />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="sm:mb-5 mb-4">
-                <label
-                  htmlFor="confirmPassword"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
-                  Confirm Password
-                </label>
-
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm your password"
-                    className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 mt-2 border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 pr-10"
-                  />
-
-                  <div
-                    className="flex items-center absolute top-[57%] right-[10px] -translate-y-1/2 cursor-pointer"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <img src={ImageOpen} alt="Hide password" />
-                    ) : (
-                      <img src={ImageClose} alt="Show password" />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                disabled={loading || !isFormValid}
-                onClick={handleRegister}
-                className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] mt-6 ${isFormValid ? 'opacity-100' : 'opacity-40'} hover:opacity-100 duration-200`}
+            <div className="sm:mb-4 mb-2">
+              <label
+                htmlFor="email"
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                {loading ? "Registering..." : "Register"}
-                <Icon icon="mynaui:arrow-right-circle-solid" width="25" />
-              </button>
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Enter a valid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.email.message}
+                </span>
+              )}
+            </div>
 
-              <div className="mt-4 text-center">
-                <p className="text-sm font-medium">
-                  Already have an account?{" "}
-                  <Link to="/login" className="font-bold text-[var(--primary-color)] underline hover:opacity-75">
-                    Log in
-                  </Link>
-                </p>
+            <div className="sm:mb-4 mb-2">
+              <label
+                htmlFor="password"
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  placeholder="Enter your password"
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
+                    errors.password
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Minimum 8 characters required",
+                    },
+                  })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-4 flex items-center justify-center w-8 h-8 hover:opacity-75"
+                >
+                  <img
+                    src={showPassword ? ImageOpen : ImageClose}
+                    className="w-5 h-5"
+                    alt="toggle"
+                  />
+                </button>
               </div>
-            </form>
-          </div>
+              {errors.password && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.password.message}
+                </span>
+              )}
+            </div>
 
-          <div className="mt-4 text-center">
-            <p className="max-w-sm mx-auto text-sm font-medium">
-              By clicking REGISTER, you agree to our{" "}
-              <Link to="" className="font-bold text-[var(--primary-color)] underline hover:opacity-75">
-                Privacy Policy
-              </Link>
-            </p>
-          </div>
+            <div className="sm:mb-5 mb-4">
+              <label
+                htmlFor="confirmPassword"
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+              >
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  placeholder="Confirm your password"
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
+                    errors.confirmPassword
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
+                  {...register("confirmPassword", {
+                    required: "Please confirm your password",
+                    validate: (val: string) => {
+                      if (watch("password") !== val) {
+                        return "Your passwords do not match";
+                      }
+                    },
+                  })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-2 top-3.5 flex items-center justify-center w-8 h-8 hover:opacity-75 bg-white"
+                >
+                  <img
+                    src={showConfirmPassword ? ImageOpen : ImageClose}
+                    className="w-5 h-5"
+                    alt="toggle"
+                  />
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.confirmPassword.message}
+                </span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isButtonDisabled}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
+                isButtonDisabled
+                  ? "disabled:pointer-events-none disabled:opacity-40"
+                  : "opacity-100"
+              }`}
+            >
+              {loading ? "Registering..." : "Register"}
+              <Icon
+                icon="mynaui:arrow-right-circle-solid"
+                width="25"
+                className={`transition-transform duration-300 ${
+                  isButtonDisabled ? "-rotate-45" : "rotate-0"
+                }`}
+              />
+            </button>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm font-medium text-[var(--secondary-color)]">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
+                >
+                  Log in
+                </Link>
+              </p>
+            </div>
+          </form>
+        </div>
+
+        <div className="mt-4 text-center">
+          <p className="max-w-sm mx-auto text-sm font-medium text-[var(--secondary-color)]">
+            By clicking REGISTER, you’re confirming that you’ve read and agree
+            to our {""}
+            <Link
+              to="/privacy"
+              className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
+            >
+              Privacy Policy
+            </Link>{" "}
+            and consent to receive all required notifications at your account
+            email address.
+          </p>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
