@@ -104,3 +104,22 @@ input:-webkit-autofill:active {
     padding: 6px;
     border-radius: 6px;
 }
+
+.main-wrapper:before{
+     content: "";
+     position: fixed;
+     top: -1px;
+     background: rgba(237, 245, 253, 0.6);
+     backdrop-filter: blur(12px);
+     -webkit-backdrop-filter: blur(12px);
+     z-index: 22;
+     height: 26px;
+     width: 100%;
+     left: 0;
+}
+
+.main-wrapper {
+    position: relative;
+}
+
+

@@ -10,6 +10,10 @@ import HomeIcon from "../../../public/static/img/icons/home-icon.svg";
 import { Icon } from "@iconify/react";
 const Footer = () => {
   return (
+    
+
+
+    
     <div className="bg-[var(--black-color)] pt-16 pb-6 rounded-tl-[40px] rounded-tr-[40px] rounded-bl-none rounded-br-none">
       <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
         <div className="flex lg:flex-nowrap flex-wrap gap-10 justify-between">
@@ -225,7 +229,10 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      
     </div>
+
+
   );
 };
 
