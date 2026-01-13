@@ -4,12 +4,13 @@ import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
 import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
-import LastGraph from "../../../public/static/img/home/last-graph.svg";
+// import LastGraph from "../../../public/static/img/home/last-graph.svg";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import kri from "../../../public/static/img/home/kdi1111.svg";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
 import Sidebar from "../../components/sidebar";
+import ScoreBar from "../../components/scoreBar";
 
 const ManagerOverview = () => {
   useEffect(() => {
@@ -38,12 +39,12 @@ const ManagerOverview = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
@@ -130,9 +131,9 @@ const ManagerOverview = () => {
                     fill="currentColor"
                   >
                     <path
-                      fill-rule="evenodd"
+                      fillRule="evenodd"
                       d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </span>
@@ -220,9 +221,9 @@ const ManagerOverview = () => {
                     fill="currentColor"
                   >
                     <path
-                      fill-rule="evenodd"
+                      fillRule="evenodd"
                       d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </span>
@@ -443,7 +444,12 @@ const ManagerOverview = () => {
             </div>
             <div>
               <div>
+
+
+                
                 dfgd
+
+
               </div>
             </div>
           </div>
@@ -595,7 +601,7 @@ const ManagerOverview = () => {
         </div>
 
         <div className="last-graph mt-8">
-          <img src={LastGraph} className="w-full" alt="" />
+          <ScoreBar score={50} label ="hello world"/>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
 import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
-import LastGraph from "../../../public/static/img/home/last-graph.svg";
+// import LastGraph from "../../../public/static/img/home/last-graph.svg";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import kri from "../../../public/static/img/home/kdi1111.svg";
 import Employee from "../../../public/static/img/home/employee.svg";
@@ -12,12 +12,22 @@ import OuiSecurity from "../../../public/static/img/home/oui_security-signal-det
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
 import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
-import Loader from "../../../public/static/img/home/loader.png";
+// import Loader from "../../../public/static/img/home/loader.png";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
 import Sidebar from "../../components/sidebar";
+import Triangle from "../../components/triangle";
+import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData.ts";
+import CircularProgress from "../../components/percentageCircle/index.tsx";
+import SpeedMeter from "../../components/speedMeter/index.tsx";
+// import { color } from "framer-motion";
+// import ScoreBar from "../../components/scoreBar/index.tsx";  
 
 const LeaderOverview = () => {
+
+  const data = useDynamicTriangleData();
+
+
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
   }, []);
@@ -44,12 +54,12 @@ const LeaderOverview = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
@@ -140,9 +150,9 @@ const LeaderOverview = () => {
                       fill="currentColor"
                     >
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                     </svg>
                   </span>
@@ -199,9 +209,9 @@ const LeaderOverview = () => {
                       fill="currentColor"
                     >
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                     </svg>
                   </span>
@@ -258,9 +268,9 @@ const LeaderOverview = () => {
                       fill="currentColor"
                     >
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                     </svg>
                   </span>
@@ -301,8 +311,14 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
-              <div>
-                <img src={Loader} alt="" />
+              <div style={{
+        // minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "40px",
+      }}>
+                <CircularProgress value={55} width={180}/>
               </div>
               <div>
                 {" "}
@@ -350,7 +366,11 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div>
-              <div>graph</div>
+              <div className="flex justify-center">
+                <div style={{ width: 400 }} >
+                <Triangle data={data}/>
+              </div>
+              </div>
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
@@ -474,9 +494,9 @@ const LeaderOverview = () => {
                     fill="currentColor"
                   >
                     <path
-                      fill-rule="evenodd"
+                      fillRule="evenodd"
                       d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </span>
@@ -541,6 +561,9 @@ const LeaderOverview = () => {
                 </div>
               </div>
             </div>
+            <div className="pb-6">
+              <SpeedMeter />
+            </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -564,9 +587,9 @@ const LeaderOverview = () => {
                     fill="currentColor"
                   >
                     <path
-                      fill-rule="evenodd"
+                      fillRule="evenodd"
                       d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </span>
@@ -631,6 +654,9 @@ const LeaderOverview = () => {
                 </div>
               </div>
             </div>
+            <div className="pb-6">
+              <SpeedMeter />
+            </div>
           </div>
           <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -657,6 +683,9 @@ const LeaderOverview = () => {
                   </p>
                 </div>
               </div>
+            </div>
+            <div className="pb-6">
+              <SpeedMeter />
             </div>
           </div>
         </div>
@@ -735,8 +764,8 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-4">
-              <div>
-                <img src={kri} alt="image" />
+              <div  className="text-lg-progress">
+                <CircularProgress value={75} width={60} textColor="#36454F" pathColor="#1A3652" trailColor="#D9D9D9" />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -748,8 +777,8 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">
-              <div>
-                <img src={kri} alt="image" />
+              <div  className="text-lg-progress">
+                <CircularProgress value={60} width={60} textColor="#36454F" pathColor="#1A3652" trailColor="#D9D9D9"  />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -761,8 +790,8 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">
-              <div>
-                <img src={kri} alt="image" />
+              <div  className="text-lg-progress">
+                <CircularProgress value={45} width={60} textColor="#36454F" pathColor="#1A3652" trailColor="#D9D9D9"  />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -773,7 +802,6 @@ const LeaderOverview = () => {
                 </p>
               </div>
             </div>
-            <div></div>
           </div>
         </div>
         {/*  */}
@@ -787,7 +815,9 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div>
-              <div>dfgd</div>
+              <div style={{ width: 400 }}>
+                <Triangle data={data} />
+              </div>
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
@@ -937,10 +967,11 @@ const LeaderOverview = () => {
           </div>
         </div>
 
-        <div className="last-graph mt-8">
-          <img src={LastGraph} className="w-full" alt="" />
-        </div>
+        {/* <div className="last-graph mt-8">
+          <ScoreBar score={50} label ="hello world"/>
+        </div> */}
       </div>
+      
     </div>
   );
 };
