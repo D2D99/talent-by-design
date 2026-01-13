@@ -22,7 +22,7 @@ const LoginModal = () => {
     if (selectedDashboard === "dashboard1") {
       navigate("/login");
     } else if (selectedDashboard === "dashboard2") {
-      navigate("/assessment-question");
+      navigate("/start-assessment");
     }
   };
 

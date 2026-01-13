@@ -2,12 +2,29 @@ import { useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import AssessmentImage from "../../../public/static/img/start-assessment.svg";
 import { Icon } from "@iconify/react";
+import { useEffect, useState } from "react";
+import SpinnerLoader from "../spinnerLoader";
 
 const StartAssessment = () => {
   const navigate = useNavigate();
+  // ✅ PAGE LOADER (ADDED)
+  const [pageLoading, setPageLoading] = useState(true);
   const handleClick = () => {
     navigate("/assessment-question");
   };
+  // ✅ PAGE LOADER EFFECT (ADDED)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000); // adjust if needed
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ✅ LOADER RENDERS FIRST
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
   return (
     <>
       <div className="min-h-screen bg-[var(--light-primary-color)]">

@@ -1,13 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ProgressImg from "../../../public/static/img/home/progress-icon.png";
-import StartAssessment from "../../../public/static/img/start-assessment.svg";
 import { Icon } from "@iconify/react";
 import { Modal, Ripple, initTWE } from "tw-elements";
+import SpinnerLoader from "../spinnerLoader";
 const AssessmentQuestion = () => {
+  // ✅ PAGE LOADER (ADDED)
+  const [pageLoading, setPageLoading] = useState(true);
   useEffect(() => {
     initTWE({ Modal, Ripple });
   }, []);
+
+  // ✅ PAGE LOADER EFFECT (ADDED)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000); // adjust if needed
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ✅ LOADER RENDERS FIRST
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
 
   return (
     <>
