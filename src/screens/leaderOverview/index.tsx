@@ -684,9 +684,9 @@ const LeaderOverview = () => {
                 </div>
               </div>
             </div>
-            <div className="pb-6">
+            {/* <div className="pb-6">
               <SpeedMeter />
-            </div>
+            </div> */}
           </div>
         </div>
 

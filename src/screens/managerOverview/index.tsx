@@ -337,40 +337,40 @@ const ManagerOverview = () => {
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
+                    Lorem Ipsum is simply dummy text of the printing and
                     typesetting industry.
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />{" "}
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
+                    Lorem Ipsum is simply dummy text
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />{" "}
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
+                    Lorem Ipsum is simply dummy text of the printing and
                     typesetting industry.
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />{" "}
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
+                    Lorem Ipsum is simply dummy text
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />{" "}
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
+                    Lorem Ipsum is simply dummy text of the printing and
                     typesetting industry.
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />{" "}
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
+                    Lorem Ipsum is simply dummy text
                   </span>
                 </li>
               </ul>
@@ -468,40 +468,40 @@ const ManagerOverview = () => {
               <li className="feature-list">
                 <img src={IconStar} alt="icon" className="mt-1" />
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
+                  Lorem Ipsum is simply dummy text of the printing and
                   typesetting industry.
                 </span>
               </li>
               <li className="feature-list">
                 <img src={IconStar} alt="icon" className="mt-1" />{" "}
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
+                  Lorem Ipsum is simply dummy text
                 </span>
               </li>
               <li className="feature-list">
                 <img src={IconStar} alt="icon" className="mt-1" />{" "}
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
+                  Lorem Ipsum is simply dummy text of the printing and
                   typesetting industry.
                 </span>
               </li>
               <li className="feature-list">
                 <img src={IconStar} alt="icon" className="mt-1" />{" "}
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
+                  Lorem Ipsum is simply dummy text
                 </span>
               </li>
               <li className="feature-list">
                 <img src={IconStar} alt="icon" className="mt-1" />{" "}
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
+                  Lorem Ipsum is simply dummy text of the printing and
                   typesetting industry.
                 </span>
               </li>
               <li className="feature-list">
                 <img src={IconStar} alt="icon" className="mt-1" />{" "}
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
+                  Lorem Ipsum is simply dummy text
                 </span>
               </li>
             </ul>
@@ -525,40 +525,40 @@ const ManagerOverview = () => {
             <li className="feature-list">
               <img src={IconStar} alt="icon" className="mt-1" />
               <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
+                Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry.
               </span>
             </li>
             <li className="feature-list">
               <img src={IconStar} alt="icon" className="mt-1" />{" "}
               <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
+                Lorem Ipsum is simply dummy text
               </span>
             </li>
             <li className="feature-list">
               <img src={IconStar} alt="icon" className="mt-1" />{" "}
               <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
+                Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry.
               </span>
             </li>
             <li className="feature-list">
               <img src={IconStar} alt="icon" className="mt-1" />{" "}
               <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
+                Lorem Ipsum is simply dummy text
               </span>
             </li>
             <li className="feature-list">
               <img src={IconStar} alt="icon" className="mt-1" />{" "}
               <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
+                Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry.
               </span>
             </li>
             <li className="feature-list">
               <img src={IconStar} alt="icon" className="mt-1" />{" "}
               <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
+                Lorem Ipsum is simply dummy text
               </span>
             </li>
           </ul>
