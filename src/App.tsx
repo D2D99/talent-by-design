@@ -9,6 +9,7 @@ import AfterRegister from "./screens/afterRegister";
 import ProfileInfo from "./screens/profileInfo";
 import AssessmentQuestion from "./components/assessmentQuestion";
 import Dashboard from "./components/dashboard";
+import Loader from "./components/loader";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           element={<AssessmentQuestion />}
         ></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
+        <Route path="/loader" element={<Loader />}></Route>
       </Routes>
     </>
   );
