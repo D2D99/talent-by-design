@@ -10,7 +10,8 @@ const curvedArrowPlugin = {
   id: "curvedArrowPlugin",
   afterDraw(chart: any) {
     const { ctx, scales, chartArea } = chart;
-    const score = chart.options.plugins?.annotation?.annotations?.marker?.xMin ?? 0;
+    const score =
+      chart.options.plugins?.annotation?.annotations?.marker?.xMin ?? 0;
     const label = chart.options.plugins?.curvedArrowLabel ?? "";
 
     // Anchor on bar
@@ -74,13 +75,11 @@ const curvedArrowPlugin = {
     // ---- LABEL (RIGHT + ABOVE arrow) ----
     if (label) {
       const forwardOffset = 5; // distance from arrow tip
-      const sideOffset = -10;  // move to right
-      const upOffset = 10;     // move upward
+      const sideOffset = -10; // move to right
+      const upOffset = 10; // move upward
 
       const labelX =
-        endX +
-        forwardOffset * Math.cos(angle) +
-        sideOffset * Math.sin(angle);
+        endX + forwardOffset * Math.cos(angle) + sideOffset * Math.sin(angle);
 
       const labelY =
         endY +
@@ -95,7 +94,7 @@ const curvedArrowPlugin = {
     }
 
     ctx.restore();
-  }
+  },
 };
 
 export default function ScoreBar({ score, label }: ScoreBarProps) {
@@ -111,8 +110,8 @@ export default function ScoreBar({ score, label }: ScoreBarProps) {
       { data: [10], backgroundColor: "#a5d6a7", stack: "score" },
       { data: [10], backgroundColor: "#66bb6a", stack: "score" },
       { data: [10], backgroundColor: "#43a047", stack: "score" },
-      { data: [10], backgroundColor: "#1b8e3e", stack: "score" }
-    ]
+      { data: [10], backgroundColor: "#1b8e3e", stack: "score" },
+    ],
   };
 
   const options: any = {
@@ -123,8 +122,8 @@ export default function ScoreBar({ score, label }: ScoreBarProps) {
       padding: {
         top: 70,
         left: 10,
-        right: 10
-      }
+        right: 10,
+      },
     },
     plugins: {
       legend: { display: false },
@@ -136,10 +135,10 @@ export default function ScoreBar({ score, label }: ScoreBarProps) {
             type: "line",
             xMin: score,
             xMax: score,
-            borderWidth: 0
-          }
-        }
-      }
+            borderWidth: 0,
+          },
+        },
+      },
     },
     scales: {
       x: {
@@ -147,23 +146,25 @@ export default function ScoreBar({ score, label }: ScoreBarProps) {
         max: 100,
         stacked: true,
         grid: { display: false },
-        ticks: { stepSize: 10 }
+        ticks: { stepSize: 10 },
       },
       y: {
         stacked: true,
-        display: false
-      }
+        display: false,
+      },
     },
     datasets: {
       bar: {
         barThickness: 100,
-        borderWidth: 0
-      }
-    }
+        borderWidth: 0,
+      },
+    },
   };
 
   return (
-    <div style={{ height: 150, width: "100%" }}>  {/* Increased height */}
+    <div style={{ height: 150, width: "100%" }}>
+      {" "}
+      {/* Increased height */}
       <Bar data={data} options={options} plugins={[curvedArrowPlugin]} />
     </div>
   );

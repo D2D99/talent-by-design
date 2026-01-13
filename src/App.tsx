@@ -9,7 +9,7 @@ import AfterRegister from "./screens/afterRegister";
 import ProfileInfo from "./screens/profileInfo";
 import AssessmentQuestion from "./components/assessmentQuestion";
 import Dashboard from "./components/dashboard";
-import Loader from "./components/loader";
+import StartAssessment from "./components/startAssessment";
 
 function App() {
   return (
@@ -23,12 +23,12 @@ function App() {
         <Route path="/register" element={<Register />}></Route>
         <Route path="/after-register" element={<AfterRegister />}></Route>
         <Route path="/profile-info" element={<ProfileInfo />}></Route>
+        <Route path="/start-assessment" element={<StartAssessment />}></Route>
         <Route
           path="/assessment-question"
           element={<AssessmentQuestion />}
         ></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
-        <Route path="/loader" element={<Loader />}></Route>
       </Routes>
     </>
   );

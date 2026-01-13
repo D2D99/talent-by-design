@@ -108,43 +108,43 @@ const Loader = () => {
 
         /* Responsive font sizes */
         .text-loader {
-          font-size: 32px; /* Mobile */
+          font-size: 48px; /* Mobile */
         }
 
         @media (min-width: 480px) {
           .text-loader {
-            font-size: 40px; /* Larger mobile */
+            font-size: 48px; /* Larger mobile */
           }
         }
 
         @media (min-width: 640px) {
           .text-loader {
-            font-size: 50px; /* Tablet */
+            font-size: 80px; /* Tablet */
           }
         }
 
         @media (min-width: 768px) {
           .text-loader {
-            font-size: 60px; /* Larger tablet */
+            font-size: 90px; /* Larger tablet */
           }
         }
 
         @media (min-width: 1024px) {
           .text-loader {
-            font-size: 80px; /* Desktop */
+            font-size: 110px; /* Desktop */
           }
         }
 
         @media (min-width: 1280px) {
           .text-loader {
-            font-size: 90px; /* Large desktop */
+            font-size: 120px; /* Large desktop */
           }
         }
 
         /* Ensure text wraps on very small screens */
         @media (max-width: 380px) {
           .text-loader {
-            font-size: 28px;
+            font-size: 36px;
           }
         }
       `}</style>

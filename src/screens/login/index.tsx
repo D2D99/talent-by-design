@@ -73,7 +73,7 @@ const Login = () => {
         localStorage.setItem("accessToken", res.data.accessToken);
       }
 
-      navigate("/assessment-question");
+      navigate("/start-assessment");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
       const message =
