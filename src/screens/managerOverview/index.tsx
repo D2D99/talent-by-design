@@ -80,7 +80,12 @@ const ManagerOverview = () => {
 
         <div className="relative">
           <button type="button">
-            <Icon icon="tabler:bell" width="28" height="28" className="sm:w-7 sm:h-7 w-5 h-5" />
+            <Icon
+              icon="tabler:bell"
+              width="28"
+              height="28"
+              className="sm:w-7 sm:h-7 w-5 h-5"
+            />
           </button>
           <p className="w-[6px] h-[6px] bg-[#FF0000] rounded-full absolute top-0 right-[8px] border border-white"></p>
         </div>
@@ -443,14 +448,7 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div>
-              <div>
-
-
-                
-                dfgd
-
-
-              </div>
+              <div>dfgd</div>
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
@@ -601,7 +599,7 @@ const ManagerOverview = () => {
         </div>
 
         <div className="last-graph mt-8">
-          <ScoreBar score={50} label ="hello world"/>
+          <ScoreBar score={50} label="hello world" />
         </div>
       </div>
     </div>
