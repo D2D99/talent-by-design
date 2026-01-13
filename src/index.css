@@ -76,48 +76,37 @@ input:-webkit-autofill:active {
   box-shadow: 4px 4px 4px 0px #448cd21a;
 }
 .dashboard-menu [aria-expanded="true"] .dashboard-icon {
-    rotate: 180deg !important;
+  rotate: 180deg !important;
 }
 .main-wrapper.active .dashboard-menu ul span {
-    display: none;
+  display: none;
 }
 
 .main-wrapper.active .restore-sidebar {
-    rotate: 180deg;
+  rotate: 180deg;
 }
 
 .main-wrapper.active .manager-popup h4 {
-    display: none;
+  display: none;
 }
 .main-wrapper.active .manager-popup button {
-    display: none;
+  display: none;
 }
 
 .main-wrapper.active .left-content {
-    max-width: 119px;
+  max-width: 119px;
 }
 
 .main-wrapper.active .right-content {
-    margin-left: 145px;
+  margin-left: 145px;
 }
 .main-wrapper.active .manager-popup {
-    padding: 6px;
-    border-radius: 6px;
+  padding: 6px;
+  border-radius: 6px;
 }
-<<<<<<< Updated upstream
-
-
-
-
-
-
-
-
-=======
 .highcharts-credits {
   display: none !important;
 }
 .text-lg-progress .CircularProgressbar-text {
   font-size: 24px !important;
 }
->>>>>>> Stashed changes
