@@ -6,7 +6,7 @@ import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
-import kri from "../../../public/static/img/home/kdi1111.svg";
+// import kri from "../../../public/static/img/home/kdi1111.svg";
 import Employee from "../../../public/static/img/home/employee.svg";
 import OuiSecurity from "../../../public/static/img/home/oui_security-signal-detected.svg";
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
@@ -21,12 +21,10 @@ import { useDynamicTriangleData } from "../../components/triangle/useDynamicTria
 import CircularProgress from "../../components/percentageCircle/index.tsx";
 import SpeedMeter from "../../components/speedMeter/index.tsx";
 // import { color } from "framer-motion";
-// import ScoreBar from "../../components/scoreBar/index.tsx";  
+// import ScoreBar from "../../components/scoreBar/index.tsx";
 
 const LeaderOverview = () => {
-
   const data = useDynamicTriangleData();
-
 
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
@@ -311,14 +309,16 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
-              <div style={{
-        // minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "40px",
-      }}>
-                <CircularProgress value={55} width={180}/>
+              <div
+                style={{
+                  // minHeight: "100vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "40px",
+                }}
+              >
+                <CircularProgress value={55} width={180} />
               </div>
               <div>
                 {" "}
@@ -367,9 +367,9 @@ const LeaderOverview = () => {
             </div>
             <div>
               <div className="flex justify-center">
-                <div style={{ width: 400 }} >
-                <Triangle data={data}/>
-              </div>
+                <div style={{ width: 400 }}>
+                  <Triangle data={data} />
+                </div>
               </div>
             </div>
           </div>
@@ -764,8 +764,14 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-4">
-              <div  className="text-lg-progress">
-                <CircularProgress value={75} width={60} textColor="#36454F" pathColor="#1A3652" trailColor="#D9D9D9" />
+              <div className="text-lg-progress">
+                <CircularProgress
+                  value={75}
+                  width={60}
+                  textColor="#36454F"
+                  pathColor="#1A3652"
+                  trailColor="#D9D9D9"
+                />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -777,8 +783,14 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">
-              <div  className="text-lg-progress">
-                <CircularProgress value={60} width={60} textColor="#36454F" pathColor="#1A3652" trailColor="#D9D9D9"  />
+              <div className="text-lg-progress">
+                <CircularProgress
+                  value={60}
+                  width={60}
+                  textColor="#36454F"
+                  pathColor="#1A3652"
+                  trailColor="#D9D9D9"
+                />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -790,8 +802,14 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">
-              <div  className="text-lg-progress">
-                <CircularProgress value={45} width={60} textColor="#36454F" pathColor="#1A3652" trailColor="#D9D9D9"  />
+              <div className="text-lg-progress">
+                <CircularProgress
+                  value={45}
+                  width={60}
+                  textColor="#36454F"
+                  pathColor="#1A3652"
+                  trailColor="#D9D9D9"
+                />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -971,7 +989,6 @@ const LeaderOverview = () => {
           <ScoreBar score={50} label ="hello world"/>
         </div> */}
       </div>
-      
     </div>
   );
 };
