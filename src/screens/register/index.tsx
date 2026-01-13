@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
@@ -6,6 +6,7 @@ import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
 import axios, { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import SpinnerLoader from "../../components/spinnerLoader";
 
 interface ApiError {
   message: string;
@@ -20,9 +21,20 @@ type RegisterFields = {
 
 const Register = () => {
   const navigate = useNavigate();
+  // ✅ PAGE LOADER (ADDED)
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // ✅ PAGE LOADER EFFECT (ADDED)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000); // adjust if needed
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const {
     register,
@@ -94,6 +106,11 @@ const Register = () => {
       setLoading(false);
     }
   };
+
+  // ✅ LOADER RENDERS FIRST
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
 
   return (
     <div className="flex min-h-screen bg-[var(--light-primary-color)]">

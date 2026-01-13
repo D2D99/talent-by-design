@@ -28,26 +28,42 @@ import CtaMarquee from "../../components/ctaMarquee";
 import { useEffect, useState } from "react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import LoginModal from "../../components/loginModal";
+import Loader from "../../components/loader";
+
 const Home = () => {
-  useEffect(() => {
-    initTWE({ Modal, Ripple });
-  }, []);
+  const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const showTimer = setTimeout(() => {
-      setIsVisible(true);
-    }, 60000);
-
-    const hideTimer = setTimeout(() => {
-      setIsVisible(false);
-    }, 80000);
-
-    return () => {
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
-    };
+    initTWE({ Modal, Ripple });
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      const showTimer = setTimeout(() => setIsVisible(true), 60000);
+      const hideTimer = setTimeout(() => setIsVisible(false), 80000);
+
+      return () => {
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+      };
+    }
+  }, [loading]);
+
+  // 👇 SHOW LOADER FIRST
+  if (loading) {
+    return <Loader />;
+  }
+
+  // 👇 PAGE RENDERS AFTER LOADER
   return (
     <>
       {/* Announcement Bar Start */}

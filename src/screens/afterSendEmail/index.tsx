@@ -4,14 +4,27 @@ import axios from "axios";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import BackIcon from "../../../public/static/img/icons/back-icon.svg";
+import SpinnerLoader from "../../components/spinnerLoader";
 
 const COOLDOWN_MS = 15 * 60 * 1000; // 15 Minutes
 
 const AfterSendEmail = () => {
   const navigate = useNavigate();
+  // ✅ PAGE LOADER (ADDED)
+  const [pageLoading, setPageLoading] = useState(true);
+
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+
+  // ✅ PAGE LOADER EFFECT (ADDED)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000); // adjust if needed
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Track remaining seconds for the UI countdown
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -102,6 +115,11 @@ const AfterSendEmail = () => {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
+  // ✅ LOADER RENDERS FIRST
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-[var(--light-primary-color)] relative">

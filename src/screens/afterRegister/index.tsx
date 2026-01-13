@@ -2,10 +2,22 @@ import { useEffect, useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import axios from "axios";
+import SpinnerLoader from "../../components/spinnerLoader";
 
 const AfterRegister = () => {
   const [email, setEmail] = useState<string | null>(null);
+  // ✅ PAGE LOADER (ADDED)
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  // ✅ PAGE LOADER EFFECT (ADDED)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000); // adjust if needed
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Toast States
   const [showToast, setShowToast] = useState(false);
@@ -52,6 +64,11 @@ const AfterRegister = () => {
       setLoading(false);
     }
   };
+
+  // ✅ LOADER RENDERS FIRST
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
 
   return (
     <>

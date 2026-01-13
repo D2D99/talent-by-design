@@ -7,8 +7,7 @@ const Loader = () => {
   const [waveOffset, setWaveOffset] = useState(0);
 
   useEffect(() => {
-    // Animate progress from 0 to 100
-    const duration = 5000; // 5 seconds
+    const duration = 3000;
     const steps = 100;
     const stepDuration = duration / steps;
 
@@ -20,7 +19,6 @@ const Loader = () => {
       if (currentStep >= 100) {
         clearInterval(progressInterval);
         setIsComplete(true);
-        // Zoom animation then hide
         setTimeout(() => {
           setIsLoading(false);
         }, 800);
@@ -32,9 +30,9 @@ const Loader = () => {
 
   useEffect(() => {
     const waveAnimation = setInterval(() => {
-      setWaveOffset(prev => prev + 0.12);
+      setWaveOffset((prev) => prev + 0.12);
     }, 50);
-    
+
     return () => clearInterval(waveAnimation);
   }, []);
 
@@ -42,34 +40,33 @@ const Loader = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black overflow-hidden">
-      <div 
+      <div
         className={`relative flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 transition-all duration-700 ease-in ${
-          isComplete ? 'scale-150 opacity-0' : 'scale-100 opacity-100'
+          isComplete ? "scale-150 opacity-0" : "scale-100 opacity-100"
         }`}
       >
         <div className="relative mb-2 sm:mb-4 w-full max-w-full">
-          {/* Container for proper sizing with descenders */}
-          <div style={{ paddingTop: '10px', paddingBottom: '15px' }}>
-            {/* Background text (gray) */}
-            <div 
+          <div style={{ paddingTop: "10px", paddingBottom: "15px" }}>
+            <div
               className="font-black text-center select-none relative text-loader"
-              style={{ 
-                lineHeight: '1.3',
-                letterSpacing: '-0.05em'
+              style={{
+                lineHeight: "1.3",
+                letterSpacing: "-0.05em",
               }}
             >
-              <span className="text-gray-700 block sm:inline">Talent by Design</span>
+              <span className="text-gray-700 block sm:inline">
+                Talent By Design
+              </span>
             </div>
-            
-            {/* Foreground text (white) with wave reveal effect */}
-            <div 
+
+            <div
               className="absolute top-0 left-0 w-full font-black text-center select-none text-loader"
               style={{
-                lineHeight: '1.3',
-                letterSpacing: '-0.05em',
-                height: '100%',
-                paddingTop: '10px',
-                paddingBottom: '15px'
+                lineHeight: "1.3",
+                letterSpacing: "-0.05em",
+                height: "100%",
+                paddingTop: "10px",
+                paddingBottom: "15px",
               }}
             >
               <div
@@ -79,16 +76,17 @@ const Loader = () => {
                     ${generateWavePoints(progress, waveOffset)}
                     100% 100%,
                     0% 100%
-                  )`
+                  )`,
                 }}
               >
-                <span className="text-white block sm:inline">Talent by Design</span>
+                <span className="text-white block sm:inline">
+                  Talent By Design
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Loading text with percentage */}
         <div className="text-center mt-2">
           <p className="text-xs sm:text-sm text-gray-400 tracking-wider">
             loading... {progress} %
@@ -154,34 +152,38 @@ const Loader = () => {
   );
 };
 
-// Generate wave points for polygon clip-path
 function generateWavePoints(progress: number, offset: number): string {
   const points = [];
   const numPoints = 100;
   const amplitude = 4;
   const frequency = 2.5;
-  
-  // Scale progress to account for text height including descenders
-  // At 100% progress, the wave should be at the top of the text
-  const textHeightRatio = 0.7; // Adjust this to match when wave completes
+
+  const textHeightRatio = 0.7;
   const adjustedProgress = progress * textHeightRatio;
-  
+
   for (let i = 0; i <= numPoints; i++) {
     const x = (i / numPoints) * 100;
     const normalizedX = i / numPoints;
-    
-    const wave1 = Math.sin((normalizedX * Math.PI * frequency) + offset) * amplitude;
-    const wave2 = Math.sin((normalizedX * Math.PI * frequency * 1.8) - offset * 1.5) * (amplitude * 0.6);
-    const wave3 = Math.sin((normalizedX * Math.PI * frequency * 3.2) + offset * 0.8) * (amplitude * 0.35);
-    const wave4 = Math.sin((normalizedX * Math.PI * frequency * 5) - offset * 2) * (amplitude * 0.2);
-    
+
+    const wave1 =
+      Math.sin(normalizedX * Math.PI * frequency + offset) * amplitude;
+    const wave2 =
+      Math.sin(normalizedX * Math.PI * frequency * 1.8 - offset * 1.5) *
+      (amplitude * 0.6);
+    const wave3 =
+      Math.sin(normalizedX * Math.PI * frequency * 3.2 + offset * 0.8) *
+      (amplitude * 0.35);
+    const wave4 =
+      Math.sin(normalizedX * Math.PI * frequency * 5 - offset * 2) *
+      (amplitude * 0.2);
+
     const waveOffset = wave1 + wave2 + wave3 + wave4;
-    const y = (100 - adjustedProgress) + waveOffset;
-    
+    const y = 100 - adjustedProgress + waveOffset;
+
     points.push(`${x}% ${Math.max(-20, Math.min(120, y))}%`);
   }
-  
-  return points.join(', ') + ', 100% 120%,';
+
+  return points.join(", ") + ", 100% 120%,";
 }
 
 export default Loader;

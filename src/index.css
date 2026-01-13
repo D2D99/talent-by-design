@@ -75,9 +75,11 @@ input:-webkit-autofill:active {
   border: 1px solid #448cd233;
   box-shadow: 4px 4px 4px 0px #448cd21a;
 }
+
 .dashboard-menu [aria-expanded="true"] .dashboard-icon {
   rotate: 180deg !important;
 }
+
 .main-wrapper.active .dashboard-menu ul span {
   display: none;
 }
@@ -89,6 +91,7 @@ input:-webkit-autofill:active {
 .main-wrapper.active .manager-popup h4 {
   display: none;
 }
+
 .main-wrapper.active .manager-popup button {
   display: none;
 }
@@ -100,13 +103,16 @@ input:-webkit-autofill:active {
 .main-wrapper.active .right-content {
   margin-left: 145px;
 }
+
 .main-wrapper.active .manager-popup {
   padding: 6px;
   border-radius: 6px;
 }
+
 .highcharts-credits {
   display: none !important;
 }
+
 .text-lg-progress .CircularProgressbar-text {
   font-size: 24px !important;
 }

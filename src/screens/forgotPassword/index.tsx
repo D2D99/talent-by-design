@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 import axios, { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import SpinnerLoader from "../../components/spinnerLoader";
 
 interface ApiError {
   message: string;
@@ -16,7 +17,18 @@ type ForgotPasswordFields = {
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  // ✅ PAGE LOADER (ADDED)
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  // ✅ PAGE LOADER EFFECT (ADDED)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000); // adjust if needed
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const {
     register,
@@ -69,10 +81,7 @@ const ForgotPassword = () => {
         { email: data.email }
       );
 
-      // --- ADD THIS LINE BELOW ---
-      // This saves the email so the 'AfterSendEmail' page can find it for the Resend button
       localStorage.setItem("emailForResend", data.email);
-      // ---------------------------
 
       navigate("/after-send-email");
     } catch (error: unknown) {
@@ -88,6 +97,11 @@ const ForgotPassword = () => {
       setLoading(false);
     }
   };
+
+  // ✅ LOADER RENDERS FIRST
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
 
   return (
     <div className="flex min-h-screen bg-[var(--light-primary-color)]">
