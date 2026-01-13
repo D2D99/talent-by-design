@@ -85,7 +85,7 @@ const LeaderOverview = () => {
           <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
             Welcome back, Travis S!
           </h3>
-          <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1 ">
+          <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1">
             Here’s a snapshot of your workspace performance and the priority
             items that need your attention today.
           </p>
