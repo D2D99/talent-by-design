@@ -12,7 +12,7 @@ import ProfileInfo from "./screens/profileInfo";
 import AssessmentQuestion from "./components/assessmentQuestion";
 import Dashboard from "./components/dashboard";
 import StartAssessment from "./components/startAssessment";
-import LoaderTest from "./components/loaderTest";
+// import LoaderTest from "./components/loaderTest";
 
 import ProtectedRoute from "./routes/protectedRoute/index";
 import PageNotFound from "./screens/pageNotFound";
