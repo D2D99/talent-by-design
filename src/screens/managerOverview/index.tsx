@@ -6,13 +6,51 @@ import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
-import kri from "../../../public/static/img/home/kdi1111.svg";
+// import kri from "../../../public/static/img/home/kdi1111.svg";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
 import Sidebar from "../../components/sidebar";
 import ScoreBar from "../../components/scoreBar";
+import SpeedMeter from "../../components/speedMeter";
+import MultiLineChart from "../../charts/multiLineChart";
+import { TrendData } from "../../charts/data";
+import CircularProgress from "../../components/percentageCircle";
+import Triangle from "../../components/triangle";
+import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData";
+import RadarChart from "../../charts/radarChart";
+import GapBarChart from "../../charts/gapBarChart";
+import { useState } from "react";
+
 
 const ManagerOverview = () => {
+
+   const [chartData, setChartData] = useState<TrendData>({
+    labels: ["Manager", "Structure & Clarity", "Impact of work", "Team Average", "Dependability & Clarity", "Psycological Safety"],
+    manager: [4.5, 5, 5.8, 6.5, 7, 15],
+    team: [4.8, 5.2, 5.5, 6, 6.4, 8.4],
+  });
+
+  // Optional: Dynamic triangle data (example)
+  const data = useDynamicTriangleData();
+
+  // Function to dynamically update chart data (in the future this can be tied to user input or API data)
+  const updateChartData = () => {
+    setChartData({
+      labels: ["Manager", "Dependability & Clarity", "Team Average", "Impact of work", "Structure & Clarity", "Psychological Safety"],
+      manager: [-0.5, 6, -6.2, 7, 7.5, 10],  // New manager scores
+      team: [-0.5, 6.5, -6.8, 1, -7.5, 8],  // New team scores
+    });
+  };
+
+  // Example of dynamic update using random data
+  const generateRandomData = () => {
+    setChartData({
+      labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+      manager: Array.from({ length: 5 }, () => Math.floor(Math.random() * 10) + 1),
+      team: Array.from({ length: 5 }, () => Math.floor(Math.random() * 10) + 1),
+    });
+  };
+
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
   }, []);
@@ -203,6 +241,9 @@ const ManagerOverview = () => {
                 </div>
               </div>
             </div>
+            <div className="pb-6">
+              <SpeedMeter />
+            </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -293,6 +334,9 @@ const ManagerOverview = () => {
                 </div>
               </div>
             </div>
+            <div className="pb-6">
+              <SpeedMeter />
+            </div>
           </div>
           <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -319,6 +363,9 @@ const ManagerOverview = () => {
                   </p>
                 </div>
               </div>
+            </div>
+            <div className="mt-10">
+              <MultiLineChart data={TrendData}/>
             </div>
           </div>
         </div>
@@ -396,8 +443,14 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-4">
-              <div>
-                <img src={kri} alt="image" />
+              <div className="text-lg-progress">
+                <CircularProgress
+                  value={75}
+                  width={60}
+                  textColor="#36454F"
+                  pathColor="#1A3652"
+                  trailColor="#D9D9D9"
+                />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -409,8 +462,14 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">
-              <div>
-                <img src={kri} alt="image" />
+              <div className="text-lg-progress">
+                <CircularProgress
+                  value={75}
+                  width={60}
+                  textColor="#36454F"
+                  pathColor="#1A3652"
+                  trailColor="#D9D9D9"
+                />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -422,8 +481,14 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">
-              <div>
-                <img src={kri} alt="image" />
+              <div className="text-lg-progress">
+                <CircularProgress
+                  value={75}
+                  width={60}
+                  textColor="#36454F"
+                  pathColor="#1A3652"
+                  trailColor="#D9D9D9"
+                />
               </div>
               <div>
                 <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
@@ -448,7 +513,9 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div>
-              <div>dfgd</div>
+            </div>
+            <div style={{ width: 400 }}>
+              <Triangle data={data} />
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
@@ -581,9 +648,8 @@ const ManagerOverview = () => {
                 </p>
               </div>
             </div>
-
-            <div>
-              <div></div>
+            <div>         
+              <RadarChart data={chartData}/>
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
@@ -594,7 +660,9 @@ const ManagerOverview = () => {
                 </h3>
               </div>
             </div>
-            <div></div>
+            <div>
+              <GapBarChart data={chartData} />
+            </div>
           </div>
         </div>
 

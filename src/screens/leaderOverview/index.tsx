@@ -20,6 +20,8 @@ import Triangle from "../../components/triangle";
 import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData.ts";
 import CircularProgress from "../../components/percentageCircle/index.tsx";
 import SpeedMeter from "../../components/speedMeter/index.tsx";
+import MultiLineChart from "../../charts/multiLineChart/index.tsx";
+import { TrendData } from "../../charts/data.ts";
 // import { color } from "framer-motion";
 // import ScoreBar from "../../components/scoreBar/index.tsx";
 
@@ -684,9 +686,9 @@ const LeaderOverview = () => {
                 </div>
               </div>
             </div>
-            {/* <div className="pb-6">
-              <SpeedMeter />
-            </div> */}
+            <div className="mt-10">
+              <MultiLineChart data={TrendData}/>
+            </div>
           </div>
         </div>
 
