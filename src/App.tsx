@@ -10,7 +10,7 @@ import ProfileInfo from "./screens/profileInfo";
 import AssessmentQuestion from "./components/assessmentQuestion";
 import Dashboard from "./components/dashboard";
 import StartAssessment from "./components/startAssessment";
-import LoaderTest from "./components/loaderTest";
+// import LoaderTest from "./components/loaderTest";
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
           element={<AssessmentQuestion />}
         ></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
-        <Route path="/loader-test" element={<LoaderTest />}></Route>
+        {/* <Route path="/loader-test" element={<LoaderTest />}></Route> */}
       </Routes>
     </>
   );
