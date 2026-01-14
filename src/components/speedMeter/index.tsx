@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
 
+
 // Declare Highcharts if it's loaded from a <script> tag
 declare global {
   interface Window {
     Highcharts: typeof import("highcharts");
   }
 }
+
 
 const SpeedMeter = () => {
   const chartRef = useRef<HTMLDivElement>(null);
