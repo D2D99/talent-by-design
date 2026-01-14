@@ -22,6 +22,7 @@ import CircularProgress from "../../components/percentageCircle/index.tsx";
 import SpeedMeter from "../../components/speedMeter/index.tsx";
 import MultiLineChart from "../../charts/multiLineChart/index.tsx";
 import { TrendData } from "../../charts/data.ts";
+import MultiRadarChart from "../../charts/multiRadarChart/index.tsx";
 // import { color } from "framer-motion";
 // import ScoreBar from "../../components/scoreBar/index.tsx";
 
@@ -540,7 +541,9 @@ const LeaderOverview = () => {
                 </ul>
               </div>
             </div>
-            <div></div>
+            <div>
+              <MultiRadarChart />
+            </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
            

@@ -23,33 +23,16 @@ import { useState } from "react";
 
 
 const ManagerOverview = () => {
-
-   const [chartData, setChartData] = useState<TrendData>({
+   // setChartData
+   const [chartData] = useState<TrendData>({
     labels: ["Manager", "Structure & Clarity", "Impact of work", "Team Average", "Dependability & Clarity", "Psycological Safety"],
     manager: [4.5, 5, 5.8, 6.5, 7, 15],
     team: [4.8, 5.2, 5.5, 6, 6.4, 8.4],
   });
 
+
   // Optional: Dynamic triangle data (example)
   const data = useDynamicTriangleData();
-
-  // Function to dynamically update chart data (in the future this can be tied to user input or API data)
-  const updateChartData = () => {
-    setChartData({
-      labels: ["Manager", "Dependability & Clarity", "Team Average", "Impact of work", "Structure & Clarity", "Psychological Safety"],
-      manager: [-0.5, 6, -6.2, 7, 7.5, 10],  // New manager scores
-      team: [-0.5, 6.5, -6.8, 1, -7.5, 8],  // New team scores
-    });
-  };
-
-  // Example of dynamic update using random data
-  const generateRandomData = () => {
-    setChartData({
-      labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-      manager: Array.from({ length: 5 }, () => Math.floor(Math.random() * 10) + 1),
-      team: Array.from({ length: 5 }, () => Math.floor(Math.random() * 10) + 1),
-    });
-  };
 
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });

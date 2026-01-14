@@ -1,6 +1,20 @@
 import React from "react";
-import { Chart } from "chart.js";
-import { radarLabels, managerScores, teamScores, peerScores } from "../data";
+import { Chart, RadialLinearScale, CategoryScale, LineElement, PointElement, Tooltip, Legend, RadarController, Filler } from "chart.js"; // Import necessary chart components
+import { radarLabels, managerScores, teamScores, peerScores } from "../data"; // Import your data
+
+// Register required components in Chart.js
+Chart.register(
+  RadarController,  // Register the radar chart controller
+  RadialLinearScale,  // Register the radial linear scale for radar charts
+  CategoryScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+  Filler // Register the Filler plugin to enable the fill property
+);
+
+
 
 const MultiRadarChart: React.FC = () => {
   React.useEffect(() => {
@@ -15,7 +29,7 @@ const MultiRadarChart: React.FC = () => {
           {
             label: "Manager",
             data: managerScores,
-            backgroundColor: "rgba(74, 144, 226, 0.25)",
+            backgroundColor: "rgba(74, 144, 226, 0.25)", // Light blue
             borderColor: "#4A90E2",
             pointBackgroundColor: "#4A90E2",
             pointRadius: 3,
@@ -24,7 +38,7 @@ const MultiRadarChart: React.FC = () => {
           {
             label: "Team",
             data: teamScores,
-            backgroundColor: "rgba(46, 204, 113, 0.25)",
+            backgroundColor: "rgba(46, 204, 113, 0.25)", // Light green
             borderColor: "#2ECC71",
             pointBackgroundColor: "#2ECC71",
             pointRadius: 3,
@@ -33,7 +47,7 @@ const MultiRadarChart: React.FC = () => {
           {
             label: "Peer",
             data: peerScores,
-            backgroundColor: "rgba(231, 76, 60, 0.25)",
+            backgroundColor: "rgba(231, 76, 60, 0.3)", // Lighter red (slightly adjusted)
             borderColor: "#E74C3C",
             pointBackgroundColor: "#E74C3C",
             pointRadius: 3,
@@ -67,12 +81,12 @@ const MultiRadarChart: React.FC = () => {
         },
         plugins: {
           legend: {
-            position: "top",
+            display: false, // Hide the legend
           },
         },
       },
     });
-  }, []);
+  }, []); // Empty dependency array to only run once
 
   return <canvas id="multiRadarChart" />;
 };

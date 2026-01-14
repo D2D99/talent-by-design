@@ -54,6 +54,11 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
             type: "linear", // Make sure the scale is set to "linear"
           },
         },
+        plugins: {
+          legend: {
+            display: false, // This will hide the legend
+          },
+        },
       },
     });
   }, [data]);
