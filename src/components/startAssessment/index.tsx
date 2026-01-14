@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
-import AssessmentImage from "../../../public/static/img/start-assessment.svg";
+import AssessmentImage from "../../../public/static/img/start-assessment1.svg";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import SpinnerLoader from "../spinnerLoader";
@@ -28,7 +28,7 @@ const StartAssessment = () => {
   return (
     <>
       <div className="min-h-screen bg-[var(--light-primary-color)]">
-        <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
+        <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 pb-5 px-3">
           <div className="text-center mb-8 mx-auto">
             <button type="button" className="!max-w-[150px] cursor">
               <img src={Logo} className="w-[150px] mx-auto" alt="Logo" />
@@ -38,12 +38,25 @@ const StartAssessment = () => {
           <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md shadow-[4px 4px 4px 0px #448CD21A;] border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
             {/* Start Screen UI */}
             <div className="text-center">
-              <h2 className="sm:text-4xl text-2xl font-semibold mb-1">
-                The POD 360™ Diagnostic
+              <h2 className="sm:text-2xl text-xl font-medium mb-1">
+                POD-360™ | From Friction to Flow
               </h2>
-              <p className="sm:text-base text-sm">
-                Reveal the friction points impacting your performance and
-                discover the path to a more fluent, high-performing workflow.
+              <p className="text-sm">
+                Every organization experiences friction especially during
+                change. <span className="font-semibold">POD-360™</span> helps
+                identify where it exists and how it impacts performance and
+                overall change readiness, so more intentional ways of working
+                can emerge.
+              </p>
+              <p className="text-sm my-1">
+                This is a confidential, organization-level assessment not an
+                evaluation of individual performance.
+              </p>
+              <p className="text-sm">
+                The assessment takes approximately 40 minutes. Please respond
+                honestly and instinctively; your first response often reflects
+                your lived experience most accurately. Progress is saved
+                automatically.
               </p>
               <img
                 src={AssessmentImage}

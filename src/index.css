@@ -116,3 +116,7 @@ input:-webkit-autofill:active {
 .text-lg-progress .CircularProgressbar-text {
   font-size: 24px !important;
 }
+
+#not-found-bg {
+  background: url("../public/static/img/not-found-bg.svg");
+}

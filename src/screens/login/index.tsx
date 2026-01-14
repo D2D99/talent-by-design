@@ -22,6 +22,7 @@ type FormFields = {
 
 const Login = () => {
   const navigate = useNavigate();
+
   // ✅ PAGE LOADER (ADDED)
   const [pageLoading, setPageLoading] = useState(true);
 
@@ -67,21 +68,19 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      // console.log(import.meta.env.VITE_API_BASE_URL);
-
       if (res.data?.accessToken) {
         localStorage.setItem("accessToken", res.data.accessToken);
-      }
 
-      navigate("/start-assessment");
+        // ✅ navigate AFTER token is saved
+        navigate("/start-assessment", { replace: true });
+      }
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
-      const message =
-        axiosError.response?.data?.message || "Login failed. Please try again.";
-
       setError("root", {
         type: "manual",
-        message: message,
+        message:
+          axiosError.response?.data?.message ||
+          "Login failed. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -214,10 +213,19 @@ const Login = () => {
               </Link>
             </div>
 
-            <button
+            {/* <button
               type="submit"
               disabled={isButtonDisabled}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all  bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
+                isButtonDisabled
+                  ? "disabled:pointer-events-none disabled:opacity-40"
+                  : "opacity-100"
+              }`}
+            > */}
+            <button
+              type="submit"
+              disabled={isButtonDisabled}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
                 isButtonDisabled
                   ? "disabled:pointer-events-none disabled:opacity-40"
                   : "opacity-100"

@@ -89,7 +89,7 @@ const Loader = () => {
 
         <div className="text-center mt-2">
           <p className="text-xs sm:text-sm text-gray-400 tracking-wider">
-            loading... {progress} %
+            POD-360™ . . . {""} {progress} %
           </p>
         </div>
       </div>
