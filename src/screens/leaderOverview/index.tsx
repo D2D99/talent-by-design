@@ -471,7 +471,82 @@ const LeaderOverview = () => {
             </div>
           </div>
         </div>
-        <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+            <div className="flex flex-wrap justify-between items-center gap-2">
+              <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Overall Departmental POD Score
+              </h3>
+              <div className="relative" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[14px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownMenuButton1"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  Organization
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                  aria-labelledby="dropdownMenuButton1"
+                  data-twe-dropdown-menu-ref
+                >
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Another action
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      href="#"
+                      data-twe-dropdown-item-ref
+                    >
+                      Something else here
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+           
+          </div>
+        </div>
+
+
+        <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
               Score by domain
@@ -689,7 +764,7 @@ const LeaderOverview = () => {
             </div> */}
           </div>
         </div>
-
+      
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
             <div className="flex items-center justify-between ">
@@ -823,26 +898,12 @@ const LeaderOverview = () => {
           </div>
         </div>
         {/*  */}
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
             <div className="flex items-center justify-between ">
               <div>
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  POD-360™ Model
-                </h3>
-              </div>
-            </div>
-            <div>
-              <div style={{ width: 400 }}>
-                <Triangle data={data} />
-              </div>
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Manager Coaching Tips
+                  Leader Coaching Tips
                 </h3>
               </div>
               <div>
@@ -892,98 +953,64 @@ const LeaderOverview = () => {
             </ul>
             <div></div>
           </div>
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+               <div className="flex items-center justify-between ">
+              <div>
+                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Key Recommendations
+                </h3>
+              </div>
+              <div>
+                 <img src={Healthicons} alt="images" />
+              </div>
+            </div>
+            <ul className="mt-4 space-y-2">
+              <li className="feature-list">
+                <img src={IconStar} alt="icon" className="mt-1" />
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry.
+                </span>
+              </li>
+              <li className="feature-list">
+                <img src={IconStar} alt="icon" className="mt-1" />{" "}
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  Lorem Ipsum is simply dummy text
+                </span>
+              </li>
+              <li className="feature-list">
+                <img src={IconStar} alt="icon" className="mt-1" />{" "}
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry.
+                </span>
+              </li>
+              <li className="feature-list">
+                <img src={IconStar} alt="icon" className="mt-1" />{" "}
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  Lorem Ipsum is simply dummy text
+                </span>
+              </li>
+              <li className="feature-list">
+                <img src={IconStar} alt="icon" className="mt-1" />{" "}
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry.
+                </span>
+              </li>
+              <li className="feature-list">
+                <img src={IconStar} alt="icon" className="mt-1" />{" "}
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  Lorem Ipsum is simply dummy text
+                </span>
+              </li>
+            </ul>
+          </div>
+        
         </div>
         {/*  */}
-        <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-          <div className="flex items-center justify-between ">
-            <div>
-              <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                Talent By Design <br />
-                Recommended Offering
-              </h3>
-            </div>
-            <div>
-              <img src={Healthicons} alt="images" />
-            </div>
-          </div>
-          <ul className="mt-4 space-y-2">
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
-          </ul>
-          <div></div>
-        </div>
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-            <div className="flex items-center justify-between  ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Manager VS Team Gap
-                </h3>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-1 mt-6">
-              <div>
-                <p className="w-9 h-4 bg-[#448bd26c]"></p>
-              </div>
-              <div>
-                <p className="text-sm font-normal text-[#474747]">
-                  Manager Self Assessment
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <div></div>
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Delta Breakdown
-                </h3>
-              </div>
-            </div>
-            <div></div>
-          </div>
-        </div>
+        
+   
 
         {/* <div className="last-graph mt-8">
           <ScoreBar score={50} label ="hello world"/>
