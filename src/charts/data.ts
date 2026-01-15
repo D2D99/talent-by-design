@@ -1,6 +1,8 @@
-// data.ts
+/**
+ * SINGLE SOURCE OF TRUTH
+ * Radar + Gap charts are derived from this data
+ */
 
-// Interface for a single score item
 export interface ScoreItem {
   label: string;
   manager: number;
@@ -8,7 +10,6 @@ export interface ScoreItem {
   peer: number;
 }
 
-// Your raw data (scoreData)
 export const scoreData: ScoreItem[] = [
   {
     label: "Psychological Safety",
@@ -48,23 +49,11 @@ export const scoreData: ScoreItem[] = [
   }
 ];
 
-// Derived data arrays (to be used in charts)
-export const radarLabels = scoreData.map(item => item.label); // Extract labels for the radar charts
-export const managerScores = scoreData.map(item => item.manager); // Extract manager scores for the radar chart
-export const teamScores = scoreData.map(item => item.team); // Extract team scores for the radar chart
-export const peerScores = scoreData.map(item => item.peer); // Extract peer scores for the radar chart
+export const radarLabels = scoreData.map(item => item.label);
+export const managerScores = scoreData.map(item => item.manager);
+export const teamScores = scoreData.map(item => item.team);
+export const peerScores = scoreData.map(item => item.peer);
 
-// Delta (difference) between team and manager scores (for the gap bar chart)
-export const deltaScores = scoreData.map(item => +(item.team - item.manager).toFixed(2));
-
-export interface TrendData {
-  labels: string[];
-  manager: number[];
-  team: number[];
-}
-// Optional: Additional data for line charts or any other dynamic charts
-export const TrendData = {
-  labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-  manager: [4.5, 5, 5.8, 6.5, 7],
-  team: [4.8, 5.2, 5.5, 6, 6.4]
-};
+export const deltaScores = scoreData.map(item =>
+  +(item.team - item.manager).toFixed(2)
+);

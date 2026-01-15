@@ -21,7 +21,6 @@ import { useDynamicTriangleData } from "../../components/triangle/useDynamicTria
 import CircularProgress from "../../components/percentageCircle/index.tsx";
 import SpeedMeter from "../../components/speedMeter/index.tsx";
 import MultiLineChart from "../../charts/multiLineChart/index.tsx";
-import { TrendData } from "../../charts/data.ts";
 import MultiRadarChart from "../../charts/multiRadarChart/index.tsx";
 // import { color } from "framer-motion";
 // import ScoreBar from "../../components/scoreBar/index.tsx";
@@ -32,6 +31,12 @@ const LeaderOverview = () => {
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
   }, []);
+
+  const trendData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+    manager: [8.5, 0.1, 6.8, 0.1, 9.3],
+    team: [5.8, 0.2, 5.5, 0.0, 5.4],
+  };
 
   return (
     <div>
@@ -765,7 +770,7 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="mt-10">
-              <MultiLineChart data={TrendData}/>
+              <MultiLineChart data={trendData}/>
             </div>
           </div>
         </div>

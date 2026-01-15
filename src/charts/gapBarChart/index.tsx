@@ -1,16 +1,17 @@
 import React, { useEffect, useRef } from "react";
-import { Chart, BarController, BarElement, CategoryScale, LinearScale, Tooltip } from "chart.js";
+import { Chart} from "chart.js"; // Ensure Chart is imported properly
+import { radarLabels, deltaScores } from "../data"; // Assuming data is imported
+// import type { ChartOptions } from "chart.js";
 
-type TrendData = {
-  labels: string[];
-  manager: number[];
-  team: number[];
-};
+import {
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+} from "chart.js";
 
-interface GapBarChartProps {
-  data: TrendData;
-}
-
+// Register necessary components for Chart.js
 Chart.register(
   BarController,
   BarElement,
@@ -19,106 +20,121 @@ Chart.register(
   Tooltip
 );
 
-/**
- * Custom plugin to draw value labels on bars with arrows
- */
-const barValueLabelPlugin = {
-  id: "barValueLabel",
+interface GapBarChartProps {
+  selectedLabel: string | null;
+}
 
-  afterDatasetsDraw(chart: Chart) {
-    const ctx = chart.ctx as CanvasRenderingContext2D;
+const GapBarChart: React.FC<GapBarChartProps> = ({ selectedLabel }) => {
+  const chartRef = useRef<Chart | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    ctx.save();
-    ctx.font = "12px Arial";
-    ctx.textBaseline = "middle";
+  // Custom plugin to draw value labels on bars
+  const barValueLabelPlugin = {
+    id: "barValueLabel",
+    afterDatasetsDraw(chart: Chart) {
+      const ctx = chart.ctx as CanvasRenderingContext2D;
+      ctx.save();
+      ctx.font = "12px Arial";
+      ctx.textBaseline = "middle";
 
-    chart.data.datasets.forEach((dataset, datasetIndex) => {
-      const meta = chart.getDatasetMeta(datasetIndex);
+      chart.data.datasets.forEach((dataset, datasetIndex) => {
+        const meta = chart.getDatasetMeta(datasetIndex);
 
-      meta.data.forEach((element, index) => {
-        const bar = element as any;
-        const value = dataset.data[index] as number;
+        meta.data.forEach((element, index) => {
+          const bar = element as any;
+          const value = dataset.data[index] as number;
 
-        // Label with arrow indicating direction of change
-        const label = `${value > 0 ? "+" : ""}${value} pts ${value > 0 ? "↑" : "↓"}`;
+          const label = `${value > 0 ? "+" : ""}${value} pts ${value > 0 ? "↑" : "↓"}`;
 
-        ctx.fillStyle = value > 0 ? "#2E7D32" : "#C62828";  // Green for up, Red for down
+          ctx.fillStyle = value > 0 ? "#2E7D32" : "#C62828"; // Green for positive, red for negative
 
-        const xOffset = value > 0 ? 6 : -6;
-        ctx.textAlign = value > 0 ? "left" : "right";
+          const xOffset = value > 0 ? 6 : -6;
+          ctx.textAlign = value > 0 ? "left" : "right";
 
-        // Position the label near the bar, right or left depending on value
-        ctx.fillText(label, bar.x + xOffset, bar.y);
+          ctx.fillText(label, bar.x + xOffset, bar.y);
+        });
       });
-    });
 
-    ctx.restore();
-  }
-};
+      ctx.restore();
+    },
+  };
 
-/**
- * Gap Bar Chart Component
- */
-const GapBarChart: React.FC<GapBarChartProps> = ({ data }) => {
-  const chartRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    if (chartRef.current) {
+      chartRef.current.destroy(); // Destroy previous chart instance if any
+    }
 
- useEffect(() => {
-  if (chartRef.current) {
-    // Calculate deltas and round them to one decimal place
-    const deltaScores = data.manager.map((score, index) => {
-      const delta = score - data.team[index];
-      return Math.round(delta * 10) / 10;  // Rounds to 1 decimal place
-    });
-
-    new Chart(chartRef.current, {
-      type: "bar",
-      data: {
-        labels: data.labels,  // Labels from data
-        datasets: [
-          {
-            label: "Points Difference",
-            data: deltaScores,  // Delta scores calculated from manager - team
-
-            barThickness: 16,
-            backgroundColor: (ctx: any) => {
-              const value = ctx.raw as number;
-              return value >= 0 ? "#7FBF7F" : "#E57373";  // Green for positive, Red for negative
-            }
-          }
-        ]
-      },
-      options: {
-        indexAxis: "y",  // Horizontal bars
-        responsive: true,
-        scales: {
-          x: {
-            min: -10,  // Adjust based on the range of delta scores
-            max: 10,   // Adjust based on the range of delta scores
-            grid: {
-              color: "#ddd"
+    if (canvasRef.current) {
+      chartRef.current = new Chart(canvasRef.current, {
+        type: "bar", // Define the chart type
+        data: {
+          labels: radarLabels,
+          datasets: [
+            {
+              label: "Points Difference",
+              data: deltaScores,
+              backgroundColor: (ctx: any) => {
+                const value = ctx.raw as number;
+                return value >= 0 ? "#7FBF7F" : "#E57373"; // Green for positive, red for negative
+              },
+              barThickness: 16,
             },
-            title: {
-              display: true,
-              text: "Points Difference"
-            }
-          }
+          ],
         },
-        plugins: {
-          legend: {
-            display: false
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          scales: {
+            x: {
+              min: -10,
+              max: 10,
+              grid: {
+                color: "#ddd",
+              },
+              title: {
+                display: true,
+                text: "Points Difference",
+              },
+            },
           },
-          tooltip: {
-            enabled: false
-          }
-        }
-      },
-      plugins: [barValueLabelPlugin]  // Add the custom plugin for the arrows and value labels
-    });
-  }
-}, [data]);
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              enabled: false, // Disable tooltips as per original requirement
+            },
+          },
+        },
+        plugins: [barValueLabelPlugin], // Register the custom label plugin
+      });
+    }
 
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy(); // Clean up chart on component unmount
+      }
+    };
+  }, []); // Empty dependency array ensures the chart is created only once
 
-  return <canvas ref={chartRef}></canvas>;
+  // Highlight the selected label in the GapBarChart
+  useEffect(() => {
+    if (selectedLabel && chartRef.current) {
+      const chart = chartRef.current;
+      const labelIndex = radarLabels.indexOf(selectedLabel);
+      if (labelIndex >= 0) {
+        chart.data.datasets[0].backgroundColor = (ctx: any) => {
+          const value = ctx.raw as number;
+          return value >= 0
+            ? "#2E7D32" // Green for positive values
+            : "#C62828"; // Red for negative values
+        };
+        chart.update(); // Update chart with the new highlight
+      }
+    }
+  }, [selectedLabel]);
+
+  return <canvas ref={canvasRef} />;
 };
 
 export default GapBarChart;

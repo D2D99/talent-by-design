@@ -13,7 +13,6 @@ import Sidebar from "../../components/sidebar";
 import ScoreBar from "../../components/scoreBar";
 import SpeedMeter from "../../components/speedMeter";
 import MultiLineChart from "../../charts/multiLineChart";
-import { TrendData } from "../../charts/data";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
 import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData";
@@ -24,11 +23,19 @@ import { useState } from "react";
 
 const ManagerOverview = () => {
    // setChartData
-   const [chartData] = useState<TrendData>({
-    labels: ["Manager", "Structure & Clarity", "Impact of work", "Team Average", "Dependability & Clarity", "Psycological Safety"],
-    manager: [4.5, 5, 5.8, 6.5, 7, 15],
-    team: [4.8, 5.2, 5.5, 6, 6.4, 8.4],
-  });
+  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+
+  // Handle label selection from Radar Chart
+  const handleRadarChartSelection = (label: string) => {
+    setSelectedLabel(label);
+  };
+
+  const trendData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+    manager: [8.5, 0.1, 6.8, 0.1, 9.3],
+    team: [5.8, 0.2, 5.5, 0.0, 5.4],
+  };
+
 
 
   // Optional: Dynamic triangle data (example)
@@ -348,7 +355,7 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div className="mt-10">
-              <MultiLineChart data={TrendData}/>
+              <MultiLineChart data={trendData}/>
             </div>
           </div>
         </div>
@@ -632,7 +639,10 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div>         
-              <RadarChart data={chartData}/>
+              <RadarChart
+              selectedLabel={selectedLabel}
+              onLabelSelect={handleRadarChartSelection} 
+              />
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
@@ -644,7 +654,7 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div>
-              <GapBarChart data={chartData} />
+              <GapBarChart selectedLabel={selectedLabel} />
             </div>
           </div>
         </div>

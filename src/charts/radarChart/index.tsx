@@ -1,73 +1,148 @@
 import React, { useEffect, useRef } from "react";
-import { Chart, RadialLinearScale, CategoryScale, Tooltip, Legend, Filler } from "chart.js";
+import { Chart } from "chart.js";
+import { radarLabels, managerScores, teamScores, peerScores } from "../data";
 
+import {
+  RadarController,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
 
-// Register the necessary components for Chart.js v3+
-Chart.register(RadialLinearScale, CategoryScale, Tooltip, Legend, Filler); // Register the Filler plugin
+// Register required components for Chart.js
+Chart.register(
+  RadarController,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface RadarChartProps {
-  data: any;  // The data passed from ManagerOverview
+  selectedLabel: string | null;
+  onLabelSelect: (label: string) => void;
 }
 
-const RadarChart: React.FC<RadarChartProps> = ({ data }) => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);  // Use useRef to reference the canvas
+//selectedLabel,    can use this below if needed 
+
+const RadarChart: React.FC<RadarChartProps> = ({  onLabelSelect }) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
 
   useEffect(() => {
-    if (!canvasRef.current) return;  // If the canvas doesn't exist, do nothing
+    if (chartRef.current) {
+      chartRef.current.destroy(); // Clean up the previous chart instance
+    }
 
-    new Chart(canvasRef.current, {
-      type: "radar",
-      data: {
-        labels: data.labels,  // Use the labels from chartData
-        datasets: [
-          {
-            label: "Manager",
-            data: data.manager,  // Manager data from chartData
-            backgroundColor: "rgba(74, 144, 226, 0.8)", // Fully opaque color for fill
-            borderColor: "#4A90E2",
-            pointBackgroundColor: "#4A90E2",
-            borderWidth: 2,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            fill: true, // This ensures that the area is filled
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        scales: {
-          r: {
-            suggestedMin: 0,
-            suggestedMax: 16,  // Adjust this based on your data range
-            ticks: {
-              stepSize: 2,
-              backdropColor: "transparent",
+    if (canvasRef.current) {
+      chartRef.current = new Chart(canvasRef.current, {
+        type: "radar",
+        data: {
+          labels: radarLabels,
+          datasets: [
+            {
+              label: "Manager",
+              data: managerScores,
+              backgroundColor: "rgba(74, 144, 226, 0.3)",
+              borderColor: "#4A90E2",
+              pointBackgroundColor: "#4A90E2",
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              fill: "origin",
             },
-            pointLabels: {
-              padding: 20,
-              font: {
-                size: 12,
+            {
+              label: "Team",
+              data: teamScores,
+              backgroundColor: "rgba(46, 204, 113, 0.3)",
+              borderColor: "#2ECC71",
+              pointBackgroundColor: "#2ECC71",
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              fill: "origin",
+            },
+            {
+              label: "Peer",
+              data: peerScores,
+              backgroundColor: "rgba(231, 76, 60, 0.3)",
+              borderColor: "#E74C3C",
+              pointBackgroundColor: "#E74C3C",
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              fill: "origin",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            r: {
+              suggestedMin: 0,
+              suggestedMax: 10,
+              ticks: {
+                stepSize: 2,
+                backdropColor: "transparent",
+              },
+              pointLabels: {
+                padding: 20,
+                font: {
+                  size: 12,
+                },
+              },
+              grid: {
+                circular: false,
+              },
+              angleLines: {
+                color: "#CFCFCF",
               },
             },
-            grid: {
-              circular: false,
-            },
-            angleLines: {
-              color: "#CFCFCF",
+          },
+          plugins: {
+            legend: {
+              position: "top",
+              display: false
             },
           },
+          events: ["click"], // Allow clicks on points
         },
-        plugins: {
-          legend: {
-            position: "bottom",
-            display: false,
-          },
-        },
-      },
-    });
-  }, [data]); // Re-run the effect if `data` changes
+      });
 
-  return <canvas ref={canvasRef} style={{ width: "100%", height: "400px" }} />;
+      // Handle click events on the radar chart
+      canvasRef.current?.addEventListener("click", (event) => {
+        if (chartRef.current && chartRef.current.data) {
+          const points = chartRef.current.getElementsAtEventForMode(
+            event,
+            "nearest",
+            { intersect: true },
+            true
+          );
+
+          if (points.length > 0) {
+            // Safe access to labels array, now we can access chartRef.current?.data?.labels
+            const label = chartRef.current.data.labels?.[points[0].index];
+            if (label) {
+              onLabelSelect(label); // Update the parent state with selected label
+            }
+          }
+        }
+      });
+    }
+
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy(); // Clean up the chart instance
+      }
+    };
+  }, [onLabelSelect]); // Only re-run when `onLabelSelect` changes
+
+  return <canvas ref={canvasRef} />;
 };
 
 export default RadarChart;
