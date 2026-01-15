@@ -28,42 +28,42 @@ import CtaMarquee from "../../components/ctaMarquee";
 import { useEffect, useState } from "react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import LoginModal from "../../components/loginModal";
-import Loader from "../../components/loader";
+import SpinnerLoader from "../../components/spinnerLoader";
 
 const Home = () => {
-  const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
+  // ✅ PAGE LOADER (ADDED)
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     initTWE({ Modal, Ripple });
   }, []);
 
+  // ✅ PAGE LOADER EFFECT (ADDED)
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false);
-    }, 3500);
+      setPageLoading(false);
+    }, 1000); // adjust if needed
 
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!loading) {
-      const showTimer = setTimeout(() => setIsVisible(true), 60000);
-      const hideTimer = setTimeout(() => setIsVisible(false), 80000);
+    // The timer starts immediately when the component mounts
+    const showTimer = setTimeout(() => setIsVisible(true), 60000);
+    const hideTimer = setTimeout(() => setIsVisible(false), 80000);
 
-      return () => {
-        clearTimeout(showTimer);
-        clearTimeout(hideTimer);
-      };
-    }
-  }, [loading]);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
 
-  // 👇 SHOW LOADER FIRST
-  if (loading) {
-    return <Loader />;
+  // ✅ LOADER RENDERS FIRST
+  if (pageLoading) {
+    return <SpinnerLoader />;
   }
 
-  // 👇 PAGE RENDERS AFTER LOADER
   return (
     <>
       {/* Announcement Bar Start */}
@@ -117,11 +117,24 @@ const Home = () => {
           <h1 className="heading">
             Clarity for Leaders. Stability for Teams. Readiness for the Future.
           </h1>
-          <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium mt-2.5 sm:mb-10 mb-5">
+          {/* <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium mt-2.5 sm:mb-10 mb-5">
             Talent By Design Collective helps organizations build the
             capabilities and resilience needed to thrive in continuous change,
             make smart data-informed decisions and mitigate risk where it
             matters most.
+          </p> */}
+          <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-10 sm:mt-4 mt-2.5">
+            Most transformation efforts struggle not because of technology but
+            because organizations lack{" "}
+            <strong>clarity on readiness, people-centric </strong>
+            risk, and where to focus first.
+          </p>
+          <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-7 mt-4 sm:mb-10 mb-5">
+            <strong>POD-360™</strong> reveals where{" "}
+            <strong> People, Operations,</strong> and <strong>Digital</strong>{" "}
+            are misaligned and <strong>POD Insights™</strong> uses{" "}
+            <strong>secure AI</strong> to turn that data into{" "}
+            <strong>leadership-ready intelligence.</strong>
           </p>
           <div className="flex justify-center sm:flex-nowrap flex-wrap gap-5">
             <button

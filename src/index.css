@@ -51,11 +51,11 @@ input:-webkit-autofill:active {
 }
 
 .heading {
-  @apply mt-5 max-w-4xl mx-auto xl:text-6xl md:text-5xl sm:text-4xl text-3xl font-bold text-[var(--dark-primary-color)] uppercase;
+  @apply mt-3.5 max-w-4xl mx-auto xl:text-6xl md:text-5xl sm:text-4xl text-3xl font-bold text-[var(--dark-primary-color)] uppercase;
 }
 
 .badge {
-  @apply sm:text-lg font-bold text-[var(--dark-primary-color)] uppercase;
+  @apply text-base font-bold text-[var(--dark-primary-color)] uppercase;
 }
 
 .sub-heading {
@@ -98,6 +98,7 @@ input:-webkit-autofill:active {
 
 .main-wrapper.active .left-content {
   max-width: 119px;
+  max-width: 110;
 }
 
 .main-wrapper.active .right-content {
@@ -119,4 +120,11 @@ input:-webkit-autofill:active {
 
 #not-found-bg {
   background: url("../public/static/img/not-found-bg.svg");
+}
+
+.selected-answer:has(input:checked) {
+  background: linear-gradient(to top, #1a3652, #448cd2);
+  border: 0;
+  box-shadow: 4px 4px 4px 0px #448cd21a;
+  color: #fff;
 }

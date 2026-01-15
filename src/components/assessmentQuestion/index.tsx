@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
-import ProgressImg from "../../../public/static/img/home/progress-icon.png";
 import { Icon } from "@iconify/react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import SpinnerLoader from "../spinnerLoader";
+
 const AssessmentQuestion = () => {
-  // ✅ PAGE LOADER (ADDED)
+  // ✅ PAGE LOADER
   const [pageLoading, setPageLoading] = useState(true);
+
+  // ✅ STATE FOR SELECTION (Fixed TS Error)
+  const [selectedValue, setSelectedValue] = useState<number | null>(null);
+
   useEffect(() => {
     initTWE({ Modal, Ripple });
   }, []);
 
-  // ✅ PAGE LOADER EFFECT (ADDED)
+  // ✅ PAGE LOADER EFFECT
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 1000); // adjust if needed
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -25,19 +29,16 @@ const AssessmentQuestion = () => {
     return <SpinnerLoader />;
   }
 
+  const handleSelection = (val: number) => {
+    setSelectedValue(val);
+  };
+
   return (
     <>
       <div className="min-h-screen bg-[var(--light-primary-color)]">
         <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
           <div className="text-center mb-8 mx-auto">
-            <button
-              type="button"
-              className="!max-w-[150px]"
-              data-twe-toggle="modal"
-              data-twe-target="#exampleModalCenter"
-              data-twe-ripple-init
-              data-twe-ripple-color="light"
-            >
+            <button type="button">
               <img src={Logo} className="w-[150px] mx-auto" alt="Logo" />
             </button>
           </div>
@@ -52,60 +53,68 @@ const AssessmentQuestion = () => {
             <div className="sm:my-6 my-4">
               <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
                 I feel comfortable asking questions or sharing concerns in my
-                work environment *
+                work environment <span>*</span>
               </h2>
             </div>
 
             <div className="grid grid-cols-5 max-w-96 mx-auto">
-              <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
-                  1
+              {[1, 2, 3, 4, 5].map((num) => (
+                <div key={num} className="cursor-pointer">
+                  <label
+                    htmlFor={`option-${num}`}
+                    className={`sm:text-lg text-sm font-medium mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] hover:shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center selected-answer cursor-pointer transition-colors ${
+                      selectedValue === num
+                        ? "bg-[var(--dark-primary-color)] text-white"
+                        : "text-[var(--secondary-color)]"
+                    }`}
+                  >
+                    {num}
+                    <input
+                      type="radio"
+                      name="answer"
+                      id={`option-${num}`}
+                      className="hidden"
+                      onChange={() => handleSelection(num)}
+                    />
+                  </label>
+
+                  {/* Labels for specific numbers as per your UI */}
+                  {num === 1 && (
+                    <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap text-center">
+                      Strongly Disagree
+                    </div>
+                  )}
+                  {num === 3 && (
+                    <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap text-center">
+                      Neutral
+                    </div>
+                  )}
+                  {num === 5 && (
+                    <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap text-center">
+                      Strongly Agree
+                    </div>
+                  )}
                 </div>
-                <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap  text-center">
-                  Strongly Disagree
-                </div>
-              </div>
-              <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
-                  2
-                </div>
-              </div>
-              <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
-                  3
-                </div>
-                <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap text-center">
-                  Neutral
-                </div>
-              </div>
-              <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
-                  4
-                </div>
-              </div>
-              <div className="cursor-pointer">
-                <div className="sm:text-lg text-sm font-medium text-[var(--secondary-color)] mx-auto sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] shadow-[4px_4px_4px_0px_#448CD21A] rounded-full flex items-center justify-center hover:bg-gradient-to-b from-[#448CD2] to-[#1A3652] hover:shadow-[4px_4px_4px_0px_#448CD21A] hover:text-white hover:border-none">
-                  5
-                </div>
-                <div className="text-xs font-medium text[var(--black-color)] mt-3 sm:text-nowrap text-wrap text-center">
-                  Strongly Agree
-                </div>
-              </div>
+              ))}
             </div>
 
-            {/* If they choose 3 and below */}
-            {/* <div className="sm:mt-12 mt-6  ">
-                <h2 className="text-sm font-bold mb-2">
-                  What situations make it harder for you to speak up, ask
-                  questions, or express concerns at work? *
-                </h2>
-                <textarea
-                  id="textarea"
-                  className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3  border border-[#E8E8E8] rounded-lg hover:border-blue-300/55 resize-none"
-                  placeholder="Enter your email"
-                  rows={4}
-                ></textarea>
-              </div> */}
+            {/* ✅ SHOW IF 3 OR BELOW */}
+            <div
+              className={`sm:mt-12 mt-6 ${
+                selectedValue !== null && selectedValue <= 3 ? "" : "hidden"
+              }`}
+            >
+              <label className="text-sm font-bold" htmlFor="insightPrompt">
+                What situations make it harder for you to speak up, ask
+                questions, or express concerns at work? <span>*</span>
+              </label>
+              <textarea
+                id="insightPrompt"
+                className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none mt-2 focus:border-[#E8E8E8] focus-within:border-[#E8E8E8]"
+                placeholder=""
+                rows={4}
+              ></textarea>
+            </div>
 
             <div className="sm:mt-12 mt-6 flex justify-between">
               <button
@@ -120,9 +129,16 @@ const AssessmentQuestion = () => {
                   className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
                 />
               </button>
+
+              {/* ✅ CONTINUE BUTTON ENABLES ON SELECTION */}
               <button
                 type="button"
-                className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-40 hover:opacity-100 duration-200"
+                disabled={selectedValue === null}
+                className={`group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
+                  selectedValue === null
+                    ? "opacity-40 cursor-not-allowed"
+                    : "opacity-100"
+                }`}
               >
                 Continue
                 <Icon
@@ -130,122 +146,6 @@ const AssessmentQuestion = () => {
                   width="25"
                   height="25"
                   className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* <div className="mt-4 text-center">
-            <p className="max-w-md md:px-1 mx-auto text-sm font-medium text-[var(--secondary-color)]">
-              By clicking BEGIN DIAGNOSTIC, you’re confirming that you’ve read
-              and agree to our{" "}
-              <a
-                className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
-                href="/register"
-                data-discover="true"
-              >
-                Privacy Policy
-              </a>{" "}
-              and{" "}
-              <a
-                className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
-                href="/register"
-                data-discover="true"
-              >
-                {" "}
-                Terms of Service
-              </a>
-            </p>
-          </div> */}
-      </div>
-
-      <div
-        data-twe-modal-init
-        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-        id="exampleModalCenter"
-        tabIndex={-1}
-        aria-labelledby="exampleModalCenterTitle"
-        aria-modal="true"
-        role="dialog"
-      >
-        <div
-          data-twe-modal-dialog-ref
-          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
-        >
-          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none dark:bg-surface-dark">
-            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 dark:border-white/10">
-              <h5
-                className="text-xl font-medium leading-normal text-surface dark:text-white"
-                id="exampleModalCenterTitle"
-              ></h5>
-              <button
-                type="button"
-                className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
-                data-twe-modal-dismiss
-                aria-label="Close"
-              >
-                <span className="[&>svg]:h-6 [&>svg]:w-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </span>
-              </button>
-            </div>
-
-            <div className="relative px-4 pb-4">
-              <div className="mx-auto sm:w-full w-16 sm:h-full h-16">
-                <img src={ProgressImg} className="mx-auto" alt="porgressImg" />
-              </div>
-              <div className="">
-                <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] mt-4 text-center">
-                  Your Progress Will Be Lost
-                </h2>
-                <p className="text-sm text-[var(--secondary-color)] font-normal mt-1 text-center">
-                  If you exit now, your current progress will be lost and cannot
-                  be recovered.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 border-t border-[#E8E8E8] py-4 mt-4 px-4">
-              <button
-                type="button"
-                className="group text-[var(--primary-color)] pl-4 py-2 pr-2 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase   hover:opacity-100 duration-200"
-                data-twe-modal-dismiss
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-              >
-                Exit
-                <Icon
-                  icon="mynaui:arrow-right-circle-solid"
-                  width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                />
-              </button>
-              <button
-                type="button"
-                className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2]  hover:opacity-100 duration-200"
-              >
-                continue
-                <Icon
-                  icon="mynaui:arrow-right-circle-solid"
-                  width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
                 />
               </button>
             </div>
