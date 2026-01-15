@@ -439,7 +439,7 @@ const LeaderOverview = () => {
                   <img src={OuiSecurity} alt="images" />
                 </div>
               </div>
-              <div className="w-[400px] m-10">
+              <div className="sm:w-[400px] w-full my-10">
                 <RoleProgressChart data= {roleData} />
               </div>
               <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
