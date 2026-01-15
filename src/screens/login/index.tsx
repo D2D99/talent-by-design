@@ -5,10 +5,11 @@ import M365Icon from "../../../public/static/img/icons/m365.svg";
 import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import { Icon } from "@iconify/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { useAuth } from "../../context/useAuth"; // Ensure this path is correct
 
 interface ApiError {
   message: string;
@@ -22,18 +23,25 @@ type FormFields = {
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, token } = useAuth();
 
-  // ✅ PAGE LOADER (ADDED)
+  // 1. Logic Fix: Redirect if already logged in
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [token, navigate]);
+
   const [pageLoading, setPageLoading] = useState(true);
-
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // ✅ PAGE LOADER EFFECT (ADDED)
+  // Keep your branding loader but optimize the timing
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 1000); // adjust if needed
+    }, 800);
 
     return () => clearTimeout(timer);
   }, []);
@@ -55,7 +63,9 @@ const Login = () => {
   const emailValue = watch("email");
   const passwordValue = watch("password");
 
-  const isButtonDisabled = loading || (!emailValue && !passwordValue);
+  // Improved button disabled logic: only disable if loading or fields are truly empty/whitespace
+  const isButtonDisabled =
+    loading || !emailValue?.trim() || !passwordValue?.trim();
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
@@ -69,10 +79,12 @@ const Login = () => {
       );
 
       if (res.data?.accessToken) {
-        localStorage.setItem("accessToken", res.data.accessToken);
+        // Use the context login function instead of manual localStorage
+        login(res.data.accessToken);
 
-        // ✅ navigate AFTER token is saved
-        navigate("/start-assessment", { replace: true });
+        // Redirect to the page they tried to visit, or default to assessment
+        const origin = location.state?.from?.pathname || "/start-assessment";
+        navigate(origin, { replace: true });
       }
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
@@ -87,7 +99,6 @@ const Login = () => {
     }
   };
 
-  // ✅ LOADER RENDERS FIRST
   if (pageLoading) {
     return <SpinnerLoader />;
   }
@@ -107,7 +118,7 @@ const Login = () => {
         </div>
 
         <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] sm:mb-6 mb-3">
               Account Login
             </h2>
@@ -129,6 +140,7 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
+                autoComplete="email"
                 className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
                   errors.email
                     ? "border-red-500"
@@ -161,6 +173,7 @@ const Login = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  autoComplete="current-password"
                   className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
                     errors.password
                       ? "border-red-500"
@@ -180,21 +193,11 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-4 flex items-center justify-center w-8 h-8 hover:opacity-75 transition-opacity"
                 >
-                  {showPassword ? (
-                    <img
-                      src={ImageOpen}
-                      alt="Hide password"
-                      title="Hide password"
-                      className="w-5 h-5"
-                    />
-                  ) : (
-                    <img
-                      src={ImageClose}
-                      alt="Show password"
-                      title="Show password"
-                      className="w-5 h-5"
-                    />
-                  )}
+                  <img
+                    src={showPassword ? ImageOpen : ImageClose}
+                    alt={showPassword ? "Hide password" : "Show password"}
+                    className="w-5 h-5"
+                  />
                 </button>
               </div>
               {errors.password && (
@@ -213,22 +216,13 @@ const Login = () => {
               </Link>
             </div>
 
-            {/* <button
-              type="submit"
-              disabled={isButtonDisabled}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all  bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
-                isButtonDisabled
-                  ? "disabled:pointer-events-none disabled:opacity-40"
-                  : "opacity-100"
-              }`}
-            > */}
             <button
               type="submit"
               disabled={isButtonDisabled}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
                 isButtonDisabled
                   ? "disabled:pointer-events-none disabled:opacity-40"
-                  : "opacity-100"
+                  : "opacity-100 active:scale-95"
               }`}
             >
               {loading ? "Logging in..." : "Log In"}

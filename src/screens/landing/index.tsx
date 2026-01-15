@@ -1129,7 +1129,7 @@ const Home = () => {
                   Analysts, and skilled Learning and Development professionals &
                   facilitators.
                 </p>
-                <p className="text-base font-normal mt-5 lg:max-w-3xl text-[var(--secondary-color)] ">
+                <div className="text-base font-normal mt-5 lg:max-w-3xl text-[var(--secondary-color)] ">
                   <strong>
                     We offer three ways to deliver on the recommendations from
                     your POD-360™ report so you can choose the approach that
@@ -1180,7 +1180,7 @@ const Home = () => {
                       capability, sustainability, and continued success.
                     </strong>
                   </p>
-                </p>
+                </div>
               </div>
               <div className="lg:mt-0 mt-8">
                 <img src={DigitalLeader} className="rounded-3xl" alt="Image" />

@@ -14,29 +14,34 @@ import Dashboard from "./components/dashboard";
 import StartAssessment from "./components/startAssessment";
 // import LoaderTest from "./components/loaderTest";
 
-import ProtectedRoute from "./routes/protectedRoute/index";
 import PageNotFound from "./screens/pageNotFound";
+import ProtectedRoute from "./routes/protectedRoute";
+import { AuthProvider } from "./context/AuthProvider";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/register" element={<Register />} />
-
-      <Route element={<ProtectedRoute />}>
+    <AuthProvider>
+      <Routes>
+        {/* Public Guest Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/after-register" element={<AfterRegister />} />
         <Route path="/after-send-email" element={<AfterSendEmail />} />
         <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/after-register" element={<AfterRegister />} />
-        <Route path="/profile-info" element={<ProfileInfo />} />
-        <Route path="/start-assessment" element={<StartAssessment />} />
-        <Route path="/assessment-question" element={<AssessmentQuestion />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Route>
 
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+        {/* Private Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile-info" element={<ProfileInfo />} />
+          <Route path="/start-assessment" element={<StartAssessment />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/assessment-question" element={<AssessmentQuestion />} />
+        </Route>
+
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </AuthProvider>
   );
 }
 
