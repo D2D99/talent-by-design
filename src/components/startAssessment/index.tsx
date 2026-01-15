@@ -19,6 +19,8 @@ const StartAssessment = () => {
   const [loading, setLoading] = useState(false); // For button state
   const [data, setData] = useState<AssessmentStartData | null>(null);
 
+
+  // check this 
   useEffect(() => {
     const fetchStartData = async () => {
       try {
@@ -39,10 +41,40 @@ const StartAssessment = () => {
     fetchStartData();
   }, []);
 
-  const handleClick = () => {
-    setLoading(true);
+  const handleClick = async () => {
+  setLoading(true);
+  
+  // Get the access token (assuming it's stored in localStorage, adjust as needed)
+  const accessToken = localStorage.getItem("accessToken");
+  
+  if (!accessToken) {
+    console.error("Access token is missing");
+    setLoading(false);
+    return;
+  }
+
+  const stakeholder = "leader";
+
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}assessment/start`,
+      { stakeholder },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, 
+        },
+        withCredentials: true, 
+      }
+    );
+    
     navigate("/assessment-question");
-  };
+  } catch (error) {
+    console.error("Error starting assessment:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (pageLoading) {
     return <SpinnerLoader />;
