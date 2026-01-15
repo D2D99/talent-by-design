@@ -7,7 +7,7 @@ import Healthicons from "../../../public/static/img/home/healthicons_i-certifica
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
-import Employee from "../../../public/static/img/home/employee.svg";
+// import Employee from "../../../public/static/img/home/employee.svg";
 import OuiSecurity from "../../../public/static/img/home/oui_security-signal-detected.svg";
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
 import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
@@ -22,6 +22,7 @@ import CircularProgress from "../../components/percentageCircle/index.tsx";
 import SpeedMeter from "../../components/speedMeter/index.tsx";
 import MultiLineChart from "../../charts/multiLineChart/index.tsx";
 import MultiRadarChart from "../../charts/multiRadarChart/index.tsx";
+import RoleProgressChart from "../../components/alignmentStatus/index.tsx";
 // import { color } from "framer-motion";
 // import ScoreBar from "../../components/scoreBar/index.tsx";
 
@@ -37,6 +38,12 @@ const LeaderOverview = () => {
     manager: [8.5, 0.1, 6.8, 0.1, 9.3],
     team: [5.8, 0.2, 5.5, 0.0, 5.4],
   };
+
+  const roleData = [
+  { label: 'EMPLOYEE', value: 90, color: '#FF5656' },
+  { label: 'MANAGER', value: 72, color: '#FEE114' },
+  { label: 'SENIOR LEADER', value: 78, color: '#30AD43' },
+]
 
   return (
     <div>
@@ -432,8 +439,8 @@ const LeaderOverview = () => {
                   <img src={OuiSecurity} alt="images" />
                 </div>
               </div>
-              <div className="graph">
-                <img src={Employee} alt="" />
+              <div className="w-[400px] m-10">
+                <RoleProgressChart data= {roleData} />
               </div>
               <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
                 <b className="">Largest Gap:</b> Senior Leader VS Employee (+28){" "}
