@@ -107,11 +107,11 @@ const Home = () => {
 
       {/* Hero Section Start */}
       <div
-        className="relative md:pt-20 pt-14 "
+        className="relative pt-10 overflow-x-hidden "
         id="hero-bg"
       >
 
-<div className="bg-svg absolute -z-10 overflow-x-hidden md:pt-20 pt-12 ">
+<div className="bg-svg absolute -z-10  pt-4 ">
         <svg width="2025" height="591" viewBox="0 0 2025 591"
      xmlns="http://www.w3.org/2000/svg">
   <path id="smoothPath"
