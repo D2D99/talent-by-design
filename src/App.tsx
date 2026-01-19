@@ -35,7 +35,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile-info" element={<ProfileInfo />} />
           <Route path="/start-assessment" element={<StartAssessment />} />
-          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/assessment-question" element={<AssessmentQuestion />} />
         </Route>
 
