@@ -107,9 +107,55 @@ const Home = () => {
 
       {/* Hero Section Start */}
       <div
-        className="md:pt-20 pt-14 !bg-cover !bg-center !bg-no-repeat"
+        className="relative md:pt-20 pt-14 "
         id="hero-bg"
       >
+
+<div className="bg-svg absolute -z-10 overflow-x-hidden md:pt-20 pt-12 ">
+        <svg width="2025" height="591" viewBox="0 0 2025 591"
+     xmlns="http://www.w3.org/2000/svg">
+  <path id="smoothPath"
+    d="M45.0029 507.481C74.1029 504.764 125.503 505.412 190.503 493.894
+    C255.503 482.377 290.203 476.494 370.003 449.894
+    C449.803 423.294 515.403 393.577 589.503 360.894
+    C663.603 328.212 693.203 321.981 740.503 286.481
+    C787.803 250.981 818.103 225.912 826.003 183.394
+    C833.903 140.877 812.003 100.994 780.003 73.8944
+    C748.003 46.7944 706.203 40.3944 666.003 47.8944
+    C625.803 55.3944 599.603 72.8944 579.003 111.394
+    C558.403 149.894 560.903 190.494 563.003 240.394
+    C565.103 290.294 575.703 323.577 589.503 360.894
+    C603.303 398.212 593.903 395.481 632.003 426.981
+    C670.103 458.481 715.703 494.713 780.003 518.394
+    C844.303 542.076 881.903 545.388 953.503 545.388
+    C1025.1 545.388 1068.7 537.493 1138 518.394
+    C1207.3 499.296 1254.9 470.677 1300 449.894
+    C1345.1 429.112 1333.2 433.864 1363.5 414.481
+    C1393.8 395.098 1418.5 387.798 1451.5 352.981
+    C1484.5 318.164 1518.1 285.412 1528.5 240.394
+    C1538.9 195.377 1529.9 161.194 1503.5 127.894
+    C1477.1 94.5944 1440.8 73.8944 1396.5 73.8944
+    C1352.2 73.8944 1311.5 94.5944 1282 127.894
+    C1252.5 161.194 1243.6 193.794 1249 240.394
+    C1254.4 286.994 1286.1 326.077 1309 360.894
+    C1331.9 395.712 1335 395.181 1363.5 414.481
+    C1392 433.781 1397.7 444.494 1451.5 457.394
+    C1505.3 470.294 1559.9 487.564 1632.5 478.981
+    C1705.1 470.398 1745 454.381 1814.5 414.481
+    C1884 374.581 1946.9 306.481 1980 279.481"
+    stroke="url(#grad)" />
+
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="2025" y2="0"
+      gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E4F0FC"/>
+      <stop offset="1" stop-color="#C7E0F8"/>
+    </linearGradient>
+  </defs>
+
+</svg>
+
+</div>
         <div className="max-w-5xl mx-auto text-center px-4">
           <h4 className="badge">
             TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
@@ -545,6 +591,19 @@ const Home = () => {
             <div className="shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white  rounded-xl ">
               <div className="relative">
                 <img src={Post1} className="w-full rounded-xl" alt="post" />
+              
+
+                {/* <div className="pt-2 flex justify-center">
+                  <iframe 
+                src="https://lottie.host/embed/71238ea1-4b80-4467-8b6c-620381304c6b/WK42MHJrSe.lottie" 
+                className="w-full h-[250px] rounded-xl pt"
+                frameBorder="0"
+                loading="lazy"
+                allow="autoplay"
+                />
+                </div> */}
+
+
                 <div className="flex gap-1.5 center absolute top-2 right-2">
                   <button
                     type="button"
