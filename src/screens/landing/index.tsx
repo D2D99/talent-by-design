@@ -32,18 +32,18 @@ import SpinnerLoader from "../../components/spinnerLoader";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
-  // ✅ PAGE LOADER (ADDED)
+  // Page Loader
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     initTWE({ Modal, Ripple });
   }, []);
 
-  // ✅ PAGE LOADER EFFECT (ADDED)
+  // Page Loader
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 1000); // adjust if needed
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -59,7 +59,6 @@ const Home = () => {
     };
   }, []);
 
-  // ✅ LOADER RENDERS FIRST
   if (pageLoading) {
     return <SpinnerLoader />;
   }
@@ -106,16 +105,17 @@ const Home = () => {
       <Header />
 
       {/* Hero Section Start */}
-      <div
-        className="relative pt-10 overflow-x-hidden "
-        id="hero-bg"
-      >
-
-<div className="bg-svg absolute -z-10  pt-4 ">
-        <svg width="2025" height="591" viewBox="0 0 2025 591"
-     xmlns="http://www.w3.org/2000/svg">
-  <path id="smoothPath"
-    d="M45.0029 507.481C74.1029 504.764 125.503 505.412 190.503 493.894
+      <div className="relative pt-10 overflow-x-hidden " id="hero-bg">
+        <div className="bg-svg absolute -z-10 pt-4">
+          <svg
+            width="2025"
+            height="591"
+            viewBox="0 0 2025 591"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              id="smoothPath"
+              d="M45.0029 507.481C74.1029 504.764 125.503 505.412 190.503 493.894
     C255.503 482.377 290.203 476.494 370.003 449.894
     C449.803 423.294 515.403 393.577 589.503 360.894
     C663.603 328.212 693.203 321.981 740.503 286.481
@@ -143,19 +143,24 @@ const Home = () => {
     C1505.3 470.294 1559.9 487.564 1632.5 478.981
     C1705.1 470.398 1745 454.381 1814.5 414.481
     C1884 374.581 1946.9 306.481 1980 279.481"
-    stroke="url(#grad)" />
+              stroke="url(#grad)"
+            />
 
-  <defs>
-    <linearGradient id="grad" x1="0" y1="0" x2="2025" y2="0"
-      gradientUnits="userSpaceOnUse">
-      <stop stop-color="#E4F0FC"/>
-      <stop offset="1" stop-color="#C7E0F8"/>
-    </linearGradient>
-  </defs>
-
-</svg>
-
-</div>
+            <defs>
+              <linearGradient
+                id="grad"
+                x1="0"
+                y1="0"
+                x2="2025"
+                y2="0"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stopColor="#E4F0FC" />
+                <stop offset="1" stopColor="#C7E0F8" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <div className="max-w-5xl mx-auto text-center px-4">
           <h4 className="badge">
             TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
@@ -163,12 +168,6 @@ const Home = () => {
           <h1 className="heading">
             Clarity for Leaders. Stability for Teams. Readiness for the Future.
           </h1>
-          {/* <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium mt-2.5 sm:mb-10 mb-5">
-            Talent By Design Collective helps organizations build the
-            capabilities and resilience needed to thrive in continuous change,
-            make smart data-informed decisions and mitigate risk where it
-            matters most.
-          </p> */}
           <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-10 sm:mt-4 mt-2.5">
             Most transformation efforts struggle not because of technology but
             because organizations lack{" "}
@@ -210,19 +209,17 @@ const Home = () => {
             </button>
           </div>
 
-          <div className="lg:flex hidden justify-center items-center sm:mt-16 mt-10">
-            <div className="flex justify-center items-center outline-1 outline p-3.5 outline-[#448cd24a] rounded-md ">
-              <div className="!w-full mx-auto h-full">
+          <div className="flex justify-center items-center sm:mt-16 mt-10 mb-1">
+            <div className="flex justify-center items-center outline outline-1 p-3.5 outline-[#448cd24a] rounded-md w-full max-w-3xl">
+              <div className="w-full aspect-video">
                 <iframe
-                  className="!max-w-3xl rounded-md"
-                  width="840"
-                  height="472"
+                  className="w-full h-full rounded-md"
                   src="https://www.youtube.com/embed/u31qwQUeGuM?si=Mz7d_njVcf_gIphX"
                   title="YouTube video player"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                ></iframe>
+                />
               </div>
             </div>
           </div>
@@ -294,54 +291,6 @@ const Home = () => {
               </span>
             </li>
           </ul>
-          {/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-          <ul className="mt-7 space-y-2">
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />
-              <span>
-                According to Gallup, as of mid-2025 only{" "}
-                <strong>32% of employees</strong> report being engaged in their
-                work - a sign of widespread disengagement.{" "}
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                That same data points to underlying problems in leadership
-                effectiveness and organizational culture.{" "}
-                <strong>Low employee engagement</strong> often reflects lack of
-                alignment, poor communication, and inadequate support - all
-                issues tied to leadership and management.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                Meanwhile, only <strong>31% of leaders</strong>themselves report
-                being engaged in their roles and are feeling strain, pressure
-                and burn-out.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                In addition, a survey cited in 2025 found that only{" "}
-                <strong>30% of managers feel they have enough time</strong> to
-                complete their responsibilities properly including coaching and
-                supporting their team members through change.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                According to the Center for Creative Leadership (CCL), data
-                gathered from over 48,000 leaders globally, reveals that leaders
-                and employees are struggling more than ever with issues ranging
-                from remote team coordination to hybrid-work complexity,
-                cultural shifts, and evolving expectations.
-              </span>
-            </li>
-          </ul> */}
           <h5 className="md:text-lg leading-5 text-[var(--secondary-color)] sm:mt-10 mt-5 font-semibold">
             Before your next planning cycle, and prior to any major digital
             roll-out, it’s critical to understand your organization’s actual
@@ -419,7 +368,9 @@ const Home = () => {
               <h4 className="badge">HOW WE SUPPORT OUR CLIENTS</h4>
               <h2 className="sub-heading">
                 Leadership and Digital Capability Building for the{" "}
-                <span className="sub-heading-highlight">Modern Workplace</span>{" "}
+                <span className="sub-heading-highlight">
+                  Modern Workplace
+                </span>{" "}
               </h2>
               <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]  ">
                 The landscape has changed dramatically over the past seven
@@ -591,7 +542,6 @@ const Home = () => {
             <div className="shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white  rounded-xl ">
               <div className="relative">
                 <img src={Post1} className="w-full rounded-xl" alt="post" />
-              
 
                 {/* <div className="pt-2 flex justify-center">
                   <iframe 
@@ -602,7 +552,6 @@ const Home = () => {
                 allow="autoplay"
                 />
                 </div> */}
-
 
                 <div className="flex gap-1.5 center absolute top-2 right-2">
                   <button
