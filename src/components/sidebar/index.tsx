@@ -8,8 +8,6 @@ import { useEffect } from "react";
 const Sidebar = () => {
   useEffect(() => {
     initTWE({ Collapse, Ripple, Dropdown });
-    
-
   }, []);
 
   return (
@@ -101,6 +99,27 @@ const Sidebar = () => {
                   </ul>
                 </div>
               </li>
+
+              <li className=" mb-2">
+                <a
+                  href=""
+                  className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)] "
+                >
+                  <Icon icon="mingcute:question-line" width="22" height="22" />
+                  <span>Questions</span>
+                </a>
+              </li>
+
+              <li className=" mb-2">
+                <a
+                  href=""
+                  className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)] "
+                >
+                  <Icon icon="mingcute:invite-line" width="22" height="22" />
+                  <span>Invite</span>
+                </a>
+              </li>
+
               <li className=" mb-2">
                 <a
                   href=""
@@ -156,7 +175,6 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-    
     </>
   );
 };
