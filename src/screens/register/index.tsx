@@ -131,27 +131,27 @@ const Register = () => {
     clearErrors("root");
 
     // Retrieve both tokens from cookies
-    const accessToken = getCookie("authToken"); 
-    const invitationToken = getCookie("token1"); 
+    // const accessToken = getCookie("authToken"); 
+    // const invitationToken = getCookie("token1"); 
 
-    console.log(accessToken)
-    console.log(invitationToken)
+    // console.log(accessToken)
+    // console.log(invitationToken)
 
-    if (!accessToken || !invitationToken) {
-      setError("root", { type: "manual", message: "Both tokens are required." });
-      setLoading(false);
-      return;
-    }
+    // if (!accessToken || !invitationToken) {
+    //   setError("root", { type: "manual", message: "Both tokens are required." });
+    //   setLoading(false);
+    //   return;
+    // }
 
-    // Check if the tokens are expired
-    const isAccessTokenExpired = checkTokenExpiry(accessToken);
-    const isInvitationTokenExpired = checkTokenExpiry(invitationToken);
+    // // Check if the tokens are expired
+    // const isAccessTokenExpired = checkTokenExpiry(accessToken);
+    // const isInvitationTokenExpired = checkTokenExpiry(invitationToken);
 
-    if (isAccessTokenExpired || isInvitationTokenExpired) {
-      setError("root", { type: "manual", message: "Your token has expired. Please log in again." });
-      setLoading(false);
-      return;
-    }
+    // if (isAccessTokenExpired || isInvitationTokenExpired) {
+    //   setError("root", { type: "manual", message: "Your token has expired. Please log in again." });
+    //   setLoading(false);
+    //   return;
+    // }
 
     // Proceed with registration
     await axios.post(
@@ -160,13 +160,13 @@ const Register = () => {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
-        token: accessToken,
-        token1: invitationToken,
+        // token: accessToken,
+        // token1: invitationToken,
       },
       {
-        headers: {
-          Authorization: `Bearer ${accessToken}`, // Include authToken in headers
-        },
+        // headers: {
+        //   Authorization: `Bearer ${accessToken}`, // Include authToken in headers
+        // },
         withCredentials: true, // Ensure cookies are sent with the request
       }
     );

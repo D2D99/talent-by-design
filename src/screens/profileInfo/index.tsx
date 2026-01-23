@@ -205,6 +205,7 @@ const ProfileInfo = () => {
                   <option value="">Select your role</option>
                   <option value="manager">Manager</option>
                   <option value="leader">Leader</option>
+                  <option value="leader">Admin</option>
                 </select>
               </div>
             </div>
