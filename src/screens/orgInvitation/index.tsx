@@ -4,16 +4,26 @@ import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png
 import DeleteImg from "../../../public/static/img/icons/delete-img.svg";
 import Pagination from "../../components/Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
+import axios from "axios";
+// import jwt_decode from '@auth0/jwt-decode';
+
 
 const Orginvitation = () => {
+
   useEffect(() => {
     initTWE({ Ripple, Modal });
   }, []);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const totalItems = 100; // Replace with your actual total count
+  const totalItems = 100;
 
+  const [email, setEmail] = useState<string>("");
+  const [role, setRole] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     console.log("Changed to page:", page);
@@ -24,6 +34,87 @@ const Orginvitation = () => {
     setCurrentPage(1); // Reset page to 1 when items per page changes
     console.log("Items per page changed to:", items);
   };
+
+  // Function to decode the JWT token
+ const decodeJWT = (token: string) => {
+  try {
+    const parts = token.split('.');
+
+    if (parts.length !== 3) {
+      throw new Error('Invalid token format');
+    }
+
+    const base64Url = parts[1];  // This is the payload
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Base64Url to Base64 conversion
+
+    let decodedPayload = '';
+    decodedPayload = atob(base64);
+
+    const parsedPayload = JSON.parse(decodedPayload);
+    return parsedPayload;
+
+  } catch (error) {
+    console.error("Error decoding JWT:", error);
+    return null;
+  }
+};
+
+const handleSendInvite = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    setErrorMessage("No token found. User might not be authenticated.");
+    return;
+  }
+
+  const decodedToken = decodeJWT(token);
+
+  if (!decodedToken) {
+    setErrorMessage("Invalid token. Please log in again.");
+    return;
+  }
+
+  // Check if the token is expired
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  if (decodedToken.exp < currentTimestamp) {
+    setErrorMessage("Session expired. Please log in again.");
+    return;
+  }
+
+  if (!email || !role) {
+    setErrorMessage("Both email and role are required.");
+    return;
+  }
+
+  setIsLoading(true);
+  setErrorMessage(null); // Reset any previous error message
+
+  try {
+     await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
+      { email, role },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    alert("Invitation sent successfully");
+    setEmail(""); // Clear email field after success
+    setRole("");  // Clear role field after success
+  } catch (error) {
+    const axiosError = error as any;
+    if (axiosError.response?.status === 401) {
+      setErrorMessage("Unauthorized. Please log in again.");
+    } else {
+      setErrorMessage(axiosError.response?.data?.message || "Failed to send invitation.");
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
 
   return (
     <>
@@ -336,6 +427,8 @@ const Orginvitation = () => {
                 <input
                   type="email"
                   id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="font-medium text-sm border-[#E8E8E8] focus:border-[var(--primary-color)] text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all"
                 />
@@ -366,12 +459,14 @@ const Orginvitation = () => {
                   </div>
                   <select
                     id="role"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
                     className={
                       "font-medium text-sm text-[#5D5D5D] appearance-none outline-0 w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }
                   >
                     <option value="">Select your role</option>
-                    <option value="Admin">Admin</option>
+                    <option value="admin">Admin</option>
                   </select>
                 </div>
               </div>
@@ -395,9 +490,11 @@ const Orginvitation = () => {
               </button>
               <button
                 type="button"
+                onClick={handleSendInvite} // Added functionality to "Send invite"
                 className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2]  hover:opacity-100 duration-200"
               >
-                Send invite
+                {isLoading ? "Send invite..." : "Send invite"}
+               
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
@@ -506,6 +603,9 @@ const Orginvitation = () => {
         </div>
       </div>
       {/* Delete Admin when the status is expired */}
+      <div>
+        {errorMessage}
+      </div>
     </>
   );
 };

@@ -15,7 +15,7 @@ import StartAssessment from "./components/startAssessment";
 // import LoaderTest from "./components/loaderTest";
 
 import PageNotFound from "./screens/pageNotFound";
-import ProtectedRoute from "./routes/protectedRoute";
+// import ProtectedRoute from "./routes/protectedRoute";
 import { AuthProvider } from "./context/AuthProvider";
 
 function App() {
@@ -31,13 +31,13 @@ function App() {
         <Route path="/after-send-email" element={<AfterSendEmail />} />
         <Route path="/new-password" element={<NewPassword />} />
 
+        <Route path="/profile-info" element={<ProfileInfo />} />
+        <Route path="/start-assessment" element={<StartAssessment />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/assessment-question" element={<AssessmentQuestion />} />
         {/* Private Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/profile-info" element={<ProfileInfo />} />
-          <Route path="/start-assessment" element={<StartAssessment />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/assessment-question" element={<AssessmentQuestion />} />
-        </Route>
+        {/* <Route element={<ProtectedRoute />}>
+        </Route> */}
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>
