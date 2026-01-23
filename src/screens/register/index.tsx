@@ -80,48 +80,48 @@ const Register = () => {
     emailValue && allCriteriaMet && passwordsMatch && !loading;
 
 
-  const decodeToken = (token: string) => {
-  try {
-    const parts = token.split('.');
+//   const decodeToken = (token: string) => {
+//   try {
+//     const parts = token.split('.');
 
-    if (parts.length !== 3) {
-      throw new Error('Invalid token format');
-    }
+//     if (parts.length !== 3) {
+//       throw new Error('Invalid token format');
+//     }
 
-    const base64Url = parts[1]; 
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); 
-    const decoded = JSON.parse(atob(base64));
+//     const base64Url = parts[1]; 
+//     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); 
+//     const decoded = JSON.parse(atob(base64));
 
-    console.log("Decoded Token:", decoded); // Log decoded token (for debugging)
+//     console.log("Decoded Token:", decoded); // Log decoded token (for debugging)
 
-    return decoded;
-  } catch (error) {
-    console.error("Error decoding token:", error);
-    return null;
-  }
-};
+//     return decoded;
+//   } catch (error) {
+//     console.error("Error decoding token:", error);
+//     return null;
+//   }
+// };
 
 
-  const checkTokenExpiry = (token: string): boolean => {
-    try {
-      const decodedToken = decodeToken(token);
-      const currentTimestamp = Math.floor(Date.now() / 1000); // Get current time in seconds
+  // const checkTokenExpiry = (token: string): boolean => {
+  //   try {
+  //     const decodedToken = decodeToken(token);
+  //     const currentTimestamp = Math.floor(Date.now() / 1000); // Get current time in seconds
 
-      // Compare the expiration timestamp with the current time
-      if (decodedToken.exp < currentTimestamp) {
-        return true; // Token is expired
-      }
-      return false; // Token is still valid
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return true; // Return true if token decoding fails (indicating expired or invalid token)
-    }
-  };
+  //     // Compare the expiration timestamp with the current time
+  //     if (decodedToken.exp < currentTimestamp) {
+  //       return true; // Token is expired
+  //     }
+  //     return false; // Token is still valid
+  //   } catch (error) {
+  //     console.error('Error decoding token:', error);
+  //     return true; // Return true if token decoding fails (indicating expired or invalid token)
+  //   }
+  // };
 
-  function getCookie(name: string): string | null {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    return match ? match[2] : null; // Return null if not found
-  }
+  // function getCookie(name: string): string | null {
+  //   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  //   return match ? match[2] : null; // Return null if not found
+  // }
 
 
 
