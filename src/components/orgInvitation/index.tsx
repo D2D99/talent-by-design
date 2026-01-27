@@ -43,9 +43,12 @@ const OrgInvitation = () => {
 
     setIsLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}auth/invitations`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}auth/invitations`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       // Backend returns the formattedData array we built earlier
       setDataList(res.data);
       setTotalItems(res.data.length);
@@ -74,13 +77,13 @@ const OrgInvitation = () => {
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
         { email, role },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      
+
       alert("Invitation sent successfully!");
       setEmail("");
       setRole("");
-      
+
       // Close modal (standard way for TW-Elements)
       const modalElem = document.getElementById("inviteModal");
       const modalInstance = Modal.getInstance(modalElem);
@@ -97,28 +100,48 @@ const OrgInvitation = () => {
 
   // --- Helper Functions ---
   const renderStatusBadge = (status: string) => {
-    const base = "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border min-w-[100px] justify-center";
+    const base =
+      "inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium border justify-center";
     switch (status) {
       case "Accept":
-        return <span className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933]`}>• Accept</span>;
+        return (
+          <span
+            className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933]`}
+          >
+            Accept
+          </span>
+        );
       case "Expire":
-        return <span className={`${base} bg-[#FFEEEE] text-[#D71818] border-[#D71818]`}>• Expire</span>;
+        return (
+          <span
+            className={`${base} bg-[#FFEEEE] text-[#D71818] border-[#D71818]`}
+          >
+            Expire
+          </span>
+        );
       case "Pending":
       default:
-        return <span className={`${base} bg-[#FFF8EE] text-[#E39631] border-[#E39631]`}>• Pending</span>;
+        return (
+          <span
+            className={`${base} bg-[#FFF8EE] text-[#E39631] border-[#E39631]`}
+          >
+            Pending
+          </span>
+        );
     }
   };
 
   const isSuperAdmin = currentUserRole === "superadmin";
 
   return (
-    <div className="p-4">
+    <div>
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6">
-        
         {/* Header Section */}
         <div className="flex items-center md:justify-between justify-center gap-3 flex-wrap mb-8">
           <h2 className="text-2xl font-bold text-[#1A3652]">
-            {isSuperAdmin ? "Organization Management" : "Team Member Management"}
+            {isSuperAdmin
+              ? "Organization Management"
+              : "Team Member Management"}
           </h2>
           <button
             type="button"
@@ -133,52 +156,69 @@ const OrgInvitation = () => {
 
         {/* Table Section */}
         <div className="overflow-x-auto">
-          <table className="w-full whitespace-nowrap border-collapse">
-            <thead>
-              <tr className="border-b border-[#edf5fd] bg-[#F9FBFF]">
-                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">#</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">
-                  {isSuperAdmin ? "Org Name" : "Name / Email"}
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">Role</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">Start Date</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-black uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#edf5fd]">
-              {dataList.length > 0 ? (
-                dataList.map((item, index) => (
-                  <tr key={item._id} className="hover:bg-[#F4F8FC] transition-colors">
-                    <td className="px-6 py-4 text-sm font-semibold">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                    <td className="px-6 py-4 text-sm font-normal">
-                      {isSuperAdmin ? (item.orgName || "No Name") : item.email}
-                    </td>
-                    <td className="px-6 py-4 text-sm capitalize font-medium text-blue-800">
-                      {item.role}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      {new Date(item.createdAt).toLocaleDateString("en-GB")}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {renderStatusBadge(item.status)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <button className="text-red-500 hover:text-red-700 transition-colors">
-                        <Icon icon="la:trash-alt-solid" width="22" />
-                      </button>
+          <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
+            <table className="w-full whitespace-nowrap">
+              <thead>
+                <tr className="border-b border-[#edf5fd]">
+                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                    #
+                  </th>
+                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                    {isSuperAdmin ? "Org Name" : "Name / Email"}
+                  </th>
+                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                    Role
+                  </th>
+                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                    Start Date
+                  </th>
+                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                    Status
+                  </th>
+                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000] rounded-t-xl">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataList.length > 0 ? (
+                  dataList.map((item, index) => (
+                    <tr
+                      key={item._id}
+                      className="border-b border-[#edf5fd] hover:bg-[#edf5fd]"
+                    >
+                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </td>
+                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                        {isSuperAdmin ? item.orgName || "No Name" : item.email}
+                      </td>
+                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                        {item.role}
+                      </td>
+                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                        {new Date(item.createdAt).toLocaleDateString("en-GB")}
+                      </td>
+                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                        {renderStatusBadge(item.status)}
+                      </td>
+                      <td className="pe-6 ps-9 py-3">
+                        <button className="text-red-500 hover:text-red-700 transition-colors">
+                          <Icon icon="la:trash-alt-solid" width="22" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="text-center py-20 text-gray-400">
+                      {isLoading ? "Fetching data..." : "No invitations found."}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="text-center py-20 text-gray-400">
-                    {isLoading ? "Fetching data..." : "No invitations found."}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Pagination Section */}
@@ -197,21 +237,36 @@ const OrgInvitation = () => {
       </div>
 
       {/* --- Invite Modal --- */}
-      <div data-twe-modal-init className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto outline-none" id="inviteModal" tabIndex={-1}>
-        <div data-twe-modal-dialog-ref className="relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-xl mx-auto p-4 transition-all">
+      <div
+        data-twe-modal-init
+        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto outline-none"
+        id="inviteModal"
+        tabIndex={-1}
+      >
+        <div
+          data-twe-modal-dialog-ref
+          className="relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-xl mx-auto p-4 transition-all"
+        >
           <div className="bg-white w-full rounded-3xl shadow-2xl flex flex-col p-6">
             <div className="flex items-center justify-between mb-6">
               <h5 className="text-2xl font-bold text-[#1A3652]">
-                {isSuperAdmin ? "Create Admin Organization" : "Send Team Invitation"}
+                {isSuperAdmin
+                  ? "Create Admin Organization"
+                  : "Send Team Invitation"}
               </h5>
-              <button data-twe-modal-dismiss className="text-gray-500 hover:text-black">
+              <button
+                data-twe-modal-dismiss
+                className="text-gray-500 hover:text-black"
+              >
                 <Icon icon="material-symbols:close" width="28" />
               </button>
             </div>
 
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-[#1A3652] mb-2 uppercase tracking-wide">Recipient Email</label>
+                <label className="block text-sm font-bold text-[#1A3652] mb-2 uppercase tracking-wide">
+                  Recipient Email
+                </label>
                 <input
                   type="email"
                   value={email}
@@ -222,7 +277,9 @@ const OrgInvitation = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#1A3652] mb-2 uppercase tracking-wide">Assigned Role</label>
+                <label className="block text-sm font-bold text-[#1A3652] mb-2 uppercase tracking-wide">
+                  Assigned Role
+                </label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
@@ -266,7 +323,12 @@ const OrgInvitation = () => {
         <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-3 rounded-2xl shadow-2xl z-[9999] flex items-center gap-4">
           <Icon icon="material-symbols:error-outline" width="24" />
           <span className="font-semibold">{errorMessage}</span>
-          <button onClick={() => setErrorMessage(null)} className="ml-2 font-black text-xl hover:scale-125">×</button>
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="ml-2 font-black text-xl hover:scale-125"
+          >
+            ×
+          </button>
         </div>
       )}
     </div>
