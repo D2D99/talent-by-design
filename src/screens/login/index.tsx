@@ -67,6 +67,39 @@ const Login = () => {
   const isButtonDisabled =
     loading || !emailValue?.trim() || !passwordValue?.trim();
 
+  // const onSubmit: SubmitHandler<FormFields> = async (data) => {
+  //   try {
+  //     setLoading(true);
+  //     clearErrors("root");
+
+  //     const res = await axios.post(
+  //       `${import.meta.env.VITE_API_BASE_URL}auth/login`,
+  //       data,
+  //       { withCredentials: true }
+  //     );
+
+  //     if (res.data?.accessToken) {
+  //       // Use the context login function instead of manual localStorage
+  //       login(res.data.accessToken);
+
+  //       // Redirect to the page they tried to visit, or default to assessment
+  //       const origin = location.state?.from?.pathname || "/start-assessment";
+  //       navigate(origin, { replace: true });
+  //     }
+  //   } catch (error: unknown) {
+  //     const axiosError = error as AxiosError<ApiError>;
+  //     setError("root", {
+  //       type: "manual",
+  //       message:
+  //         axiosError.response?.data?.message ||
+  //         "Login failed. Please try again.",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
       setLoading(true);
@@ -79,25 +112,27 @@ const Login = () => {
       );
 
       if (res.data?.accessToken) {
-        // Use the context login function instead of manual localStorage
+        // 1. Save the token
         login(res.data.accessToken);
 
-        // Redirect to the page they tried to visit, or default to assessment
-        const origin = location.state?.from?.pathname || "/start-assessment";
-        navigate(origin, { replace: true });
+        // 2. Save the user object (containing the role) to localStorage
+        // We stringify it because localStorage only stores strings
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        // 3. Go to dashboard
+        navigate("/dashboard", { replace: true });
       }
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
       setError("root", {
         type: "manual",
-        message:
-          axiosError.response?.data?.message ||
-          "Login failed. Please try again.",
+        message: axiosError.response?.data?.message || "Login failed.",
       });
     } finally {
       setLoading(false);
     }
   };
+
 
   if (pageLoading) {
     return <SpinnerLoader />;
@@ -141,11 +176,10 @@ const Login = () => {
                 type="email"
                 id="email"
                 autoComplete="email"
-                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.email
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                 placeholder="Enter your email"
                 {...register("email", {
                   required: "Email is required",
@@ -174,11 +208,10 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   autoComplete="current-password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
-                    errors.password
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.password
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    }`}
                   placeholder="Enter your password"
                   {...register("password", {
                     required: "Password is required",
@@ -219,20 +252,18 @@ const Login = () => {
             <button
               type="submit"
               disabled={isButtonDisabled}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
-                isButtonDisabled
-                  ? "disabled:pointer-events-none disabled:opacity-40"
-                  : "opacity-100 active:scale-95"
-              }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isButtonDisabled
+                ? "disabled:pointer-events-none disabled:opacity-40"
+                : "opacity-100 active:scale-95"
+                }`}
             >
               {loading ? "Logging in..." : "Log In"}
               {!loading && (
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
-                  className={`transition-transform duration-300 ${
-                    isButtonDisabled ? "-rotate-45" : "rotate-0"
-                  }`}
+                  className={`transition-transform duration-300 ${isButtonDisabled ? "-rotate-45" : "rotate-0"
+                    }`}
                 />
               )}
             </button>
