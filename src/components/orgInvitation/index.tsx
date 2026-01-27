@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import IconArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import DeleteImg from "../../../public/static/img/icons/delete-img.svg";
-import Pagination from "../../components/Pagination";
+import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import axios from "axios";
 // import jwt_decode from '@auth0/jwt-decode';

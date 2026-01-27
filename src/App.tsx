@@ -17,7 +17,7 @@ import StartAssessment from "./components/startAssessment";
 import PageNotFound from "./screens/pageNotFound";
 // import ProtectedRoute from "./routes/protectedRoute";
 import { AuthProvider } from "./context/AuthProvider";
-import OrgInvitation from "./screens/orgInvitation";
+import OrgInvitation from "./components/orgInvitation";
 
 function App() {
   return (
