@@ -1,32 +1,34 @@
 import { Icon } from "@iconify/react";
-import { useEffect, useState } from "react";
-import IconArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
-import DeleteImg from "../../../public/static/img/icons/delete-img.svg";
+import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import axios from "axios";
 
 const OrgInvitation = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const totalItems = 100;
-
-  const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<string>("");
+  // --- States ---
+  const [dataList, setDataList] = useState<any[]>([]);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // ✅ Track who is logged in to decide dropdown options
-  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
+  // Form States (Modal)
+  const [email, setEmail] = useState<string>("");
+  const [role, setRole] = useState<string>("");
+
+  // --- Initial Setup ---
   useEffect(() => {
     initTWE({ Ripple, Modal });
 
-    // Read user role from localStorage
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
+        // We normalize to lowercase to make logic checks easier
         setCurrentUserRole(parsedUser.role?.toLowerCase());
       } catch (err) {
         console.error("Error parsing user data", err);
@@ -34,522 +36,240 @@ const OrgInvitation = () => {
     }
   }, []);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    console.log("Changed to page:", page);
-  };
+  // --- API Functions ---
+  const fetchData = useCallback(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
 
-  const handleItemsPerPageChange = (items: number) => {
-    setItemsPerPage(items);
-    setCurrentPage(1);
-    console.log("Items per page changed to:", items);
-  };
-
-  const decodeJWT = (token: string) => {
+    setIsLoading(true);
     try {
-      const parts = token.split(".");
-      if (parts.length !== 3) {
-        throw new Error("Invalid token format");
-      }
-      const base64Url = parts[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      let decodedPayload = atob(base64);
-      const parsedPayload = JSON.parse(decodedPayload);
-      return parsedPayload;
-    } catch (error) {
-      console.error("Error decoding JWT:", error);
-      return null;
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}auth/invitations`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Backend returns the formattedData array we built earlier
+      setDataList(res.data);
+      setTotalItems(res.data.length);
+    } catch (err: any) {
+      console.error("Fetch Error:", err);
+      setErrorMessage(err.response?.data?.message || "Failed to load data.");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Fetch data on load and whenever a new invite is sent
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleSendInvite = async () => {
     const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setErrorMessage("No token found. User might not be authenticated.");
-      return;
-    }
-
-    const decodedToken = decodeJWT(token);
-    if (!decodedToken) {
-      setErrorMessage("Invalid token. Please log in again.");
-      return;
-    }
-
-    const currentTimestamp = Math.floor(Date.now() / 1000);
-    if (decodedToken.exp < currentTimestamp) {
-      setErrorMessage("Session expired. Please log in again.");
-      return;
-    }
-
-    if (!email || !role) {
-      setErrorMessage("Both email and role are required.");
+    if (!token || !email || !role) {
+      setErrorMessage("Please fill all fields.");
       return;
     }
 
     setIsLoading(true);
-    setErrorMessage(null);
-
     try {
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
         { email, role },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Invitation sent successfully");
+      
+      alert("Invitation sent successfully!");
       setEmail("");
       setRole("");
-    } catch (error) {
-      const axiosError = error as any;
-      if (axiosError.response?.status === 401) {
-        setErrorMessage("Unauthorized. Please log in again.");
-      } else {
-        setErrorMessage(
-          axiosError.response?.data?.message || "Failed to send invitation."
-        );
-      }
+      
+      // Close modal (standard way for TW-Elements)
+      const modalElem = document.getElementById("inviteModal");
+      const modalInstance = Modal.getInstance(modalElem);
+      modalInstance?.hide();
+
+      // Refresh table data
+      fetchData();
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.message || "Failed to send.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ✅ LOGIC: Filter dropdown options based on current user's role
-  const renderRoleOptions = () => {
-    if (currentUserRole === "superadmin") {
-      return <option value="admin">Admin</option>;
-    } 
-    
-    if (currentUserRole === "admin") {
-      return (
-        <>
-          <option value="leader">Leader</option>
-          <option value="manager">Manager</option>
-          <option value="employee">Employee</option>
-        </>
-      );
+  // --- Helper Functions ---
+  const renderStatusBadge = (status: string) => {
+    const base = "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border min-w-[100px] justify-center";
+    switch (status) {
+      case "Accept":
+        return <span className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933]`}>• Accept</span>;
+      case "Expire":
+        return <span className={`${base} bg-[#FFEEEE] text-[#D71818] border-[#D71818]`}>• Expire</span>;
+      case "Pending":
+      default:
+        return <span className={`${base} bg-[#FFF8EE] text-[#E39631] border-[#E39631]`}>• Pending</span>;
     }
-
-    return <option disabled>No permissions to invite</option>;
   };
 
-  return (
-    <>
-      <div>
-        <div className="sticky top-6 z-10 flex items-center gap-2 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 rounded-[12px] py-3 px-3">
-          <div>
-            <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-1/2 transform -translate-y-1/2 left-[-12px] cursor-pointer">
-              <button
-                type="button"
-                data-twe-offcanvas-toggle
-                data-twe-target="#offcanvasExample"
-                aria-controls="offcanvasExample"
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-              >
-                <img src={IconArrow} alt="arrow" className="w-5 h-5" />
-              </button>
-            </div>
-            <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
-              Welcome back, Suzanna De S!
-            </h3>
-            <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1">
-              Complete platform oversight with real-time performance insights,
-              user activity, and priority actions requiring your attention.
-            </p>
-          </div>
+  const isSuperAdmin = currentUserRole === "superadmin";
 
-          <div className="relative">
-            <button type="button">
-              <Icon
-                icon="tabler:bell"
-                width="28"
-                height="28"
-                className="sm:w-7 sm:h-7 w-5 h-5"
-              />
-            </button>
-            <p className="w-[6px] h-[6px] bg-[#FF0000] rounded-full absolute top-0 right-[8px] border border-white"></p>
-          </div>
+  return (
+    <div className="p-4">
+      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6">
+        
+        {/* Header Section */}
+        <div className="flex items-center md:justify-between justify-center gap-3 flex-wrap mb-8">
+          <h2 className="text-2xl font-bold text-[#1A3652]">
+            {isSuperAdmin ? "Organization Management" : "Team Member Management"}
+          </h2>
+          <button
+            type="button"
+            data-twe-toggle="modal"
+            data-twe-target="#inviteModal"
+            className="text-white rounded-full py-2.5 px-6 flex items-center gap-2 font-semibold text-sm uppercase bg-gradient-to-r from-[#1A3652] to-[#448CD2] shadow-md hover:opacity-90 transition-all"
+          >
+            <Icon icon="material-symbols:add-rounded" width="22" />
+            {isSuperAdmin ? "Add New Organization" : "Invite New User"}
+          </button>
         </div>
 
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6">
-          <div className="flex items-center md:justify-between justify-center gap-3 flex-wrap">
-            <div>
-              <h2 className="text-2xl font-bold text-[var(--secondary-color)]">
-                Assessment Questions
-              </h2>
-            </div>
-            <div>
-              <button
-                type="button"
-                data-twe-toggle="modal"
-                data-twe-target="#exampleModalCenter"
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-                className="group text-white rounded-full py-2 sm:scale-100 scale-75 pr-4 pl-5 flex items-center gap-1.5 font-semibold text-lg  uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
-              >
-                <Icon
-                  icon="material-symbols:add-rounded"
-                  width="24"
-                  height="24"
-                />
-                Add New organization
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <form
-              action=""
-              className="bg-[#EDF5FD] rounded-full px-3 py-1.5 pl-6 gap-2 justify-end  ms-auto max-w-80 w-full border border-[#448CD2]"
-            >
-              <div className="flex items-center gap-2 justify-between">
-                <input
-                  type="search"
-                  className="font-medium text-sm text-[#5D5D5D] outline-0 w-full max-w-60  bg-transparent rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  id="gsearch"
-                  name="gsearch"
-                />
-                <div className="bg-[var(--primary-color)] h-8 w-8 rounded-full flex items-center justify-center cursor-pointer">
-                  <Icon
-                    icon="fluent:search-20-filled"
-                    className="text-white"
-                    width="20"
-                    height="20"
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-
-          <div className="mt-7 mb-4">
-            <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
-              <table className="w-full whitespace-nowrap">
-                <thead>
-                  <tr className="border-b border-[#edf5fd]">
-                    <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      #
-                    </th>
-                    <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      Org Name
-                    </th>
-                    <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      Email
-                    </th>
-                    <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      Start Date
-                    </th>
-                    <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      Total Users
-                    </th>
-                    <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      Status
-                    </th>
-                    <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-[#edf5fd] hover:bg-[#edf5fd]">
-                    <td className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      1
+        {/* Table Section */}
+        <div className="overflow-x-auto">
+          <table className="w-full whitespace-nowrap border-collapse">
+            <thead>
+              <tr className="border-b border-[#edf5fd] bg-[#F9FBFF]">
+                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">#</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">
+                  {isSuperAdmin ? "Org Name" : "Name / Email"}
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">Role</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">Start Date</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-black uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-black uppercase tracking-wider">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#edf5fd]">
+              {dataList.length > 0 ? (
+                dataList.map((item, index) => (
+                  <tr key={item._id} className="hover:bg-[#F4F8FC] transition-colors">
+                    <td className="px-6 py-4 text-sm font-semibold">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                    <td className="px-6 py-4 text-sm font-normal">
+                      {isSuperAdmin ? (item.orgName || "No Name") : item.email}
                     </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      Codemantra Solutions
+                    <td className="px-6 py-4 text-sm capitalize font-medium text-blue-800">
+                      {item.role}
                     </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      cmstester6@gmail.com
+                    <td className="px-6 py-4 text-sm">
+                      {new Date(item.createdAt).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      25 Jan, 2026
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      15
-                    </td>
-                    <td className="px-6 py-2">
-                      <div className="flex flex-col gap-2">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold border w-fit bg-[#EEF7ED] text-green-700 border-[#3F9933]">
-                          • Accept
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 text-center">
+                      {renderStatusBadge(item.status)}
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        type="button"
-                        data-twe-toggle="modal"
-                        data-twe-target="#exampleModalCenters"
-                        data-twe-ripple-init
-                        data-twe-ripple-color="light"
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                      >
-                        <Icon
-                          icon="la:trash-alt-solid"
-                          width="20"
-                          height="20"
-                        />
+                      <button className="text-red-500 hover:text-red-700 transition-colors">
+                        <Icon icon="la:trash-alt-solid" width="22" />
                       </button>
                     </td>
                   </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="text-center py-20 text-gray-400">
+                    {isLoading ? "Fetching data..." : "No invitations found."}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          <div>
-            <Pagination
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-              onItemsPerPageChange={handleItemsPerPageChange}
-            />
-          </div>
+        {/* Pagination Section */}
+        <div className="mt-6 border-t pt-4">
+          <Pagination
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(val) => {
+              setItemsPerPage(val);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </div>
 
-      {/* Add New Organization Modal */}
-      <div
-        data-twe-modal-init
-        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-        id="exampleModalCenter"
-        tabIndex={-1}
-        aria-labelledby="exampleModalCenterTitle"
-        aria-modal="true"
-        role="dialog"
-      >
-        <div
-          data-twe-modal-dialog-ref
-          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
-        >
-          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none dark:bg-surface-dark">
-            <div className="flex flex-shrink-0 items-center justify-between  rounded-t-md p-4 dark:border-white/10">
-              <h5
-                className="text-xl font-bold leading-normal"
-                id="exampleModalCenterTitle"
-              >
-                Add New Organization
+      {/* --- Invite Modal --- */}
+      <div data-twe-modal-init className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto outline-none" id="inviteModal" tabIndex={-1}>
+        <div data-twe-modal-dialog-ref className="relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-xl mx-auto p-4 transition-all">
+          <div className="bg-white w-full rounded-3xl shadow-2xl flex flex-col p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h5 className="text-2xl font-bold text-[#1A3652]">
+                {isSuperAdmin ? "Create Admin Organization" : "Send Team Invitation"}
               </h5>
-              <button
-                type="button"
-                className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
-                data-twe-modal-dismiss
-                aria-label="Close"
-              >
-                <span className="[&>svg]:h-6 [&>svg]:w-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </span>
+              <button data-twe-modal-dismiss className="text-gray-500 hover:text-black">
+                <Icon icon="material-symbols:close" width="28" />
               </button>
             </div>
 
-            <div className="relative px-4 pb-4">
-              <div className="sm:mb-4 mb-2">
-                <label
-                  htmlFor="email"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
-                  Email
-                </label>
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-bold text-[#1A3652] mb-2 uppercase tracking-wide">Recipient Email</label>
                 <input
                   type="email"
-                  id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="font-medium text-sm border-[#E8E8E8] focus:border-[var(--primary-color)] text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all"
+                  placeholder="name@company.com"
+                  className="w-full p-3.5 border-2 border-[#E8E8E8] rounded-xl outline-none focus:border-[#448CD2] transition-all"
                 />
               </div>
 
-              <div className="sm:mb-4 mb-2">
-                <label
-                  htmlFor="role"
-                  className="font-bold text-[var(--secondary-color)] text-sm"
+              <div>
+                <label className="block text-sm font-bold text-[#1A3652] mb-2 uppercase tracking-wide">Assigned Role</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full p-3.5 border-2 border-[#E8E8E8] rounded-xl outline-none focus:border-[#448CD2] bg-white transition-all capitalize"
                 >
-                  Role
-                </label>
-                <div className="relative w-full">
-                  <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      className="h-4 w-4 text-[#5D5D5D]"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                  <select
-                    id="role"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className={
-                      "font-medium text-sm text-[#5D5D5D] appearance-none outline-0 w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }
-                  >
-                    <option value="">Select your role</option>
-                    {/* ✅ Dynamic Options based on logic */}
-                    {renderRoleOptions()}
-                  </select>
-                </div>
+                  <option value="">Select a role...</option>
+                  {isSuperAdmin ? (
+                    <option value="admin">Admin</option>
+                  ) : (
+                    <>
+                      <option value="leader">Leader</option>
+                      <option value="manager">Manager</option>
+                      <option value="employee">Employee</option>
+                    </>
+                  )}
+                </select>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 border-t border-[#E8E8E8] py-4 mt-4 px-4">
+            <div className="flex justify-end gap-3 mt-8 pt-5 border-t border-gray-100">
               <button
-                type="button"
-                className="group text-[var(--primary-color)] pl-4 py-2 pr-2 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase   hover:opacity-100 duration-200"
                 data-twe-modal-dismiss
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
+                className="px-8 py-2.5 border-2 border-gray-200 rounded-full font-bold text-gray-500 hover:bg-gray-50 transition-all uppercase text-xs tracking-widest"
               >
                 Cancel
-                <Icon
-                  icon="mynaui:arrow-right-circle-solid"
-                  width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                />
               </button>
               <button
-                type="button"
                 onClick={handleSendInvite}
-                className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2]  hover:opacity-100 duration-200"
+                disabled={isLoading}
+                className="px-8 py-2.5 bg-gradient-to-r from-[#1A3652] to-[#448CD2] text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-all disabled:opacity-50 uppercase text-xs tracking-widest"
               >
-                {isLoading ? "Send invite..." : "Send invite"}
-
-                <Icon
-                  icon="mynaui:arrow-right-circle-solid"
-                  width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
-                />
+                {isLoading ? "Sending..." : "Confirm Invitation"}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Delete Modal */}
-      <div
-        data-twe-modal-init
-        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-        id="exampleModalCenters"
-        tabIndex={-1}
-        aria-labelledby="exampleModalCentersTitle"
-        aria-modal="true"
-        role="dialog"
-      >
-        <div
-          data-twe-modal-dialog-ref
-          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
-        >
-          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none dark:bg-surface-dark">
-            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 dark:border-white/10">
-              <h5
-                className="text-xl font-medium leading-normal text-surface dark:text-white"
-                id="exampleModalCentersTitle"
-              ></h5>
-              <button
-                type="button"
-                className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
-                data-twe-modal-dismiss
-                aria-label="Close"
-              >
-                <span className="[&>svg]:h-6 [&>svg]:w-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </span>
-              </button>
-            </div>
-
-            <div className="relative px-4 pb-4">
-              <div className="mx-auto sm:w-full w-16 sm:h-full h-16">
-                <img src={DeleteImg} className="mx-auto" alt="porgressImg" />
-              </div>
-              <div className="">
-                <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] mt-4 text-center">
-                  Are you sure to delete this organization
-                </h2>
-                <p className="text-sm text-[var(--secondary-color)] font-normal mt-1 text-center">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 border-t border-[#E8E8E8] py-4 mt-4 px-4">
-              <button
-                type="button"
-                className="group text-[var(--primary-color)] pl-4 py-2 pr-2 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase   hover:opacity-100 duration-200"
-                data-twe-modal-dismiss
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-              >
-                Exit
-                <Icon
-                  icon="mynaui:arrow-right-circle-solid"
-                  width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                />
-              </button>
-              <button
-                type="button"
-                className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-[#D71818]  hover:opacity-100 duration-200"
-              >
-                Delete
-                <Icon
-                  icon="mynaui:arrow-right-circle-solid"
-                  width="25"
-                  height="25"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
+      {/* Error Message Toast */}
       {errorMessage && (
-        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-[2000]">
-          {errorMessage}
-          <button onClick={() => setErrorMessage(null)} className="ml-2 font-bold">×</button>
+        <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-3 rounded-2xl shadow-2xl z-[9999] flex items-center gap-4">
+          <Icon icon="material-symbols:error-outline" width="24" />
+          <span className="font-semibold">{errorMessage}</span>
+          <button onClick={() => setErrorMessage(null)} className="ml-2 font-black text-xl hover:scale-125">×</button>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

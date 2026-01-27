@@ -3,6 +3,7 @@ import IconArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
 import Sidebar from "../../components/sidebar";
+import OrgInvitation from "../../components/orgInvitation";
 
 const SuperAdminOverview = () => {
   useEffect(() => {
@@ -84,7 +85,9 @@ const SuperAdminOverview = () => {
         </div>
 
         <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6 h-[calc(100vh-180px)] flex justify-center items-center">
-          <p className="text-center w-full">No Data Found Yet!!!</p>
+          {/* <p className="text-center w-full">No Data Found Yet!!!</p>
+           */}
+           <OrgInvitation />
         </div>
       </div>
       {/* Super Admin Overview End */}
