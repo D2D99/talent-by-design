@@ -5,7 +5,7 @@ import M365Icon from "../../../public/static/img/icons/m365.svg";
 import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import { Icon } from "@iconify/react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
@@ -23,7 +23,7 @@ type FormFields = {
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   const { login, token } = useAuth();
 
   // 1. Logic Fix: Redirect if already logged in

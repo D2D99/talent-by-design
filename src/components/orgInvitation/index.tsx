@@ -5,13 +5,8 @@ import DeleteImg from "../../../public/static/img/icons/delete-img.svg";
 import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import axios from "axios";
-// import jwt_decode from '@auth0/jwt-decode';
 
 const OrgInvitation = () => {
-  useEffect(() => {
-    initTWE({ Ripple, Modal });
-  }, []);
-
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const totalItems = 100;
@@ -21,6 +16,24 @@ const OrgInvitation = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // ✅ Track who is logged in to decide dropdown options
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    initTWE({ Ripple, Modal });
+
+    // Read user role from localStorage
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        setCurrentUserRole(parsedUser.role?.toLowerCase());
+      } catch (err) {
+        console.error("Error parsing user data", err);
+      }
+    }
+  }, []);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     console.log("Changed to page:", page);
@@ -28,25 +41,19 @@ const OrgInvitation = () => {
 
   const handleItemsPerPageChange = (items: number) => {
     setItemsPerPage(items);
-    setCurrentPage(1); // Reset page to 1 when items per page changes
+    setCurrentPage(1);
     console.log("Items per page changed to:", items);
   };
 
-  // Function to decode the JWT token
   const decodeJWT = (token: string) => {
     try {
       const parts = token.split(".");
-
       if (parts.length !== 3) {
         throw new Error("Invalid token format");
       }
-
-      const base64Url = parts[1]; // This is the payload
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/"); // Base64Url to Base64 conversion
-
-      let decodedPayload = "";
-      decodedPayload = atob(base64);
-
+      const base64Url = parts[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      let decodedPayload = atob(base64);
       const parsedPayload = JSON.parse(decodedPayload);
       return parsedPayload;
     } catch (error) {
@@ -63,13 +70,11 @@ const OrgInvitation = () => {
     }
 
     const decodedToken = decodeJWT(token);
-
     if (!decodedToken) {
       setErrorMessage("Invalid token. Please log in again.");
       return;
     }
 
-    // Check if the token is expired
     const currentTimestamp = Math.floor(Date.now() / 1000);
     if (decodedToken.exp < currentTimestamp) {
       setErrorMessage("Session expired. Please log in again.");
@@ -82,7 +87,7 @@ const OrgInvitation = () => {
     }
 
     setIsLoading(true);
-    setErrorMessage(null); // Reset any previous error message
+    setErrorMessage(null);
 
     try {
       await axios.post(
@@ -92,23 +97,42 @@ const OrgInvitation = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
       alert("Invitation sent successfully");
-      setEmail(""); // Clear email field after success
-      setRole(""); // Clear role field after success
+      setEmail("");
+      setRole("");
     } catch (error) {
       const axiosError = error as any;
       if (axiosError.response?.status === 401) {
         setErrorMessage("Unauthorized. Please log in again.");
       } else {
         setErrorMessage(
-          axiosError.response?.data?.message || "Failed to send invitation.",
+          axiosError.response?.data?.message || "Failed to send invitation."
         );
       }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // ✅ LOGIC: Filter dropdown options based on current user's role
+  const renderRoleOptions = () => {
+    if (currentUserRole === "superadmin") {
+      return <option value="admin">Admin</option>;
+    } 
+    
+    if (currentUserRole === "admin") {
+      return (
+        <>
+          <option value="leader">Leader</option>
+          <option value="manager">Manager</option>
+          <option value="employee">Employee</option>
+        </>
+      );
+    }
+
+    return <option disabled>No permissions to invite</option>;
   };
 
   return (
@@ -269,86 +293,6 @@ const OrgInvitation = () => {
                       </button>
                     </td>
                   </tr>
-                  <tr className="border-b border-[#edf5fd] hover:bg-[#edf5fd]">
-                    <td className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      2
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      Codemantra Solutions
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      cmstester6@gmail.com
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      25 Jan, 2026
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      15
-                    </td>
-                    <td className="px-6 py-2">
-                      <div className="flex flex-col gap-2">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold border w-fit bg-[#FFEBEB] text-[#D71818] border-[#D71818]">
-                          • Expire
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        type="button"
-                        data-twe-toggle="modal"
-                        data-twe-target="#exampleModalCenters"
-                        data-twe-ripple-init
-                        data-twe-ripple-color="light"
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                      >
-                        <Icon
-                          icon="la:trash-alt-solid"
-                          width="20"
-                          height="20"
-                        />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-[#edf5fd] hover:bg-[#edf5fd]">
-                    <td className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
-                      3
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      Codemantra Solutions
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      cmstester6@gmail.com
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      25 Jan, 2026
-                    </td>
-                    <td className="px-6 py-2 text-left text-base font-normal text-[#000000]">
-                      15
-                    </td>
-                    <td className="px-6 py-2">
-                      <div className="flex flex-col gap-2">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold border w-fit bg-[#FFF8EB] text-[#DB8C28] border-[#DB8C28]">
-                          • Pending
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        type="button"
-                        data-twe-toggle="modal"
-                        data-twe-target="#exampleModalCenters"
-                        data-twe-ripple-init
-                        data-twe-ripple-color="light"
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                      >
-                        <Icon
-                          icon="la:trash-alt-solid"
-                          width="20"
-                          height="20"
-                        />
-                      </button>
-                    </td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -365,7 +309,8 @@ const OrgInvitation = () => {
           </div>
         </div>
       </div>
-      {/* Add New Organization */}
+
+      {/* Add New Organization Modal */}
       <div
         data-twe-modal-init
         className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
@@ -461,7 +406,8 @@ const OrgInvitation = () => {
                     }
                   >
                     <option value="">Select your role</option>
-                    <option value="admin">Admin</option>
+                    {/* ✅ Dynamic Options based on logic */}
+                    {renderRoleOptions()}
                   </select>
                 </div>
               </div>
@@ -485,7 +431,7 @@ const OrgInvitation = () => {
               </button>
               <button
                 type="button"
-                onClick={handleSendInvite} // Added functionality to "Send invite"
+                onClick={handleSendInvite}
                 className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2]  hover:opacity-100 duration-200"
               >
                 {isLoading ? "Send invite..." : "Send invite"}
@@ -503,9 +449,8 @@ const OrgInvitation = () => {
           </div>
         </div>
       </div>
-      {/* Add New Organization */}
 
-      {/* Delete Admin when the status is expired */}
+      {/* Delete Modal */}
       <div
         data-twe-modal-init
         className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
@@ -597,8 +542,13 @@ const OrgInvitation = () => {
           </div>
         </div>
       </div>
-      {/* Delete Admin when the status is expired */}
-      <div>{errorMessage}</div>
+      
+      {errorMessage && (
+        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-[2000]">
+          {errorMessage}
+          <button onClick={() => setErrorMessage(null)} className="ml-2 font-bold">×</button>
+        </div>
+      )}
     </>
   );
 };
