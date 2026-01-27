@@ -18,6 +18,7 @@ import PageNotFound from "./screens/pageNotFound";
 // import ProtectedRoute from "./routes/protectedRoute";
 import { AuthProvider } from "./context/AuthProvider";
 import OrgInvitation from "./components/orgInvitation";
+import CrudQuestion from "./screens/crudQuestion";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/start-assessment" element={<StartAssessment />} />
         <Route path="dashboard" element={<Dashboard />}>
           <Route index element={<Home />} />
+          <Route path="questions" element={<CrudQuestion />} />
           <Route path="settings" element={<OrgInvitation />} />
         </Route>
         <Route path="/assessment-question" element={<AssessmentQuestion />} />

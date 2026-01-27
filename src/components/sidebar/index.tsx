@@ -30,7 +30,6 @@ const Sidebar = () => {
               <li className="mb-2">
                 <NavLink
                   to={"/dashboard"}
-                  // className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)]"
                   className={({ isActive }) =>
                     isActive
                       ? "active flex items-center text-base font-semibold  gap-2 py-2 px-3 rounded-[4px] bg-[var(--light-primary-color)] text-[var(--primary-color)]"
@@ -42,7 +41,7 @@ const Sidebar = () => {
                     width="22"
                     height="22"
                   />
-                  <span>Dashboard</span>
+                  <span>Overview</span>
                 </NavLink>
               </li>
 
@@ -138,8 +137,12 @@ const Sidebar = () => {
 
               <li className="mb-2">
                 <NavLink
-                  to={"#"}
-                  className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)] "
+                  to={"/dashboard/questions"}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "active flex items-center text-base font-semibold  gap-2 py-2 px-3 rounded-[4px] bg-[var(--light-primary-color)] text-[var(--primary-color)]"
+                      : "flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px]"
+                  }
                 >
                   <Icon icon="mingcute:question-line" width="22" height="22" />
                   <span>Questions</span>

@@ -20,9 +20,8 @@ import RadarChart from "../../charts/radarChart";
 import GapBarChart from "../../charts/gapBarChart";
 import { useState } from "react";
 
-
 const ManagerOverview = () => {
-   // setChartData
+  // setChartData
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
 
   // Handle label selection from Radar Chart
@@ -35,8 +34,6 @@ const ManagerOverview = () => {
     manager: [8.5, 0.1, 6.8, 0.1, 9.3],
     team: [5.8, 0.2, 5.5, 0.0, 5.4],
   };
-
-
 
   // Optional: Dynamic triangle data (example)
   const data = useDynamicTriangleData();
@@ -355,7 +352,7 @@ const ManagerOverview = () => {
               </div>
             </div>
             <div className="mt-10">
-              <MultiLineChart data={trendData}/>
+              <MultiLineChart data={trendData} />
             </div>
           </div>
         </div>
@@ -502,8 +499,7 @@ const ManagerOverview = () => {
                 </h3>
               </div>
             </div>
-            <div>
-            </div>
+            <div></div>
             <div style={{ width: 400 }}>
               <Triangle data={data} />
             </div>
@@ -638,10 +634,10 @@ const ManagerOverview = () => {
                 </p>
               </div>
             </div>
-            <div>         
+            <div>
               <RadarChart
-              selectedLabel={selectedLabel}
-              onLabelSelect={handleRadarChartSelection} 
+                selectedLabel={selectedLabel}
+                onLabelSelect={handleRadarChartSelection}
               />
             </div>
           </div>
