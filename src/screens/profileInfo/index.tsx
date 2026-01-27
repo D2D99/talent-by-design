@@ -21,23 +21,14 @@ type ProfileFields = {
 
 const ProfileInfo = () => {
   const navigate = useNavigate();
-  // ✅ PAGE LOADER (ADDED)
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-
-  // ✅ PAGE LOADER EFFECT (ADDED)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 1000); // adjust if needed
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     setError,
     clearErrors,
     formState: { errors },
@@ -46,24 +37,48 @@ const ProfileInfo = () => {
     defaultValues: {
       firstName: "",
       lastName: "",
-      role: "",
+      role: "", 
       department: "",
       titles: "",
     },
   });
 
-  // Watch all fields to determine if the button should be active
+  // ✅ Step 1: Fetch role from backend session based on verifyToken cookie
+  useEffect(() => {
+    const fetchAssignedRole = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}auth/current-user-session`,
+          { withCredentials: true }
+        );
+
+        if (response.data.role) {
+          setValue("role", response.data.role);
+        }
+      } catch (err) {
+        console.error("Could not fetch role", err);
+      } finally {
+        // Stop the page loader once we have the role (or the attempt fails)
+        setPageLoading(false);
+      }
+    };
+
+    fetchAssignedRole();
+  }, [setValue]);
+
   const formValues = watch();
 
+  // ✅ Step 2: Validation logic
   const isFormValid =
-    formValues.firstName.trim() !== "" &&
-    formValues.lastName.trim() !== "" &&
+    formValues.firstName?.trim() !== "" &&
+    formValues.lastName?.trim() !== "" &&
     formValues.role !== "" &&
     formValues.department !== "" &&
     formValues.titles !== "";
 
   const isButtonActive = isFormValid && !loading;
 
+  // ✅ Step 3: Handle Form Submission
   const onSubmit: SubmitHandler<ProfileFields> = async (data) => {
     try {
       setLoading(true);
@@ -73,7 +88,7 @@ const ProfileInfo = () => {
         `${import.meta.env.VITE_API_BASE_URL}auth/complete-profile`,
         data,
         {
-          withCredentials: true, // REQUIRED for cookies/sessions
+          withCredentials: true, // Crucial for backend to read verifyToken cookie
         }
       );
 
@@ -92,7 +107,6 @@ const ProfileInfo = () => {
     }
   };
 
-  // ✅ LOADER RENDERS FIRST
   if (pageLoading) {
     return <SpinnerLoader />;
   }
@@ -169,7 +183,7 @@ const ProfileInfo = () => {
               />
             </div>
 
-            {/* Role */}
+            {/* Role Field - Automatically Filled */}
             <div className="sm:mb-4 mb-2">
               <label
                 htmlFor="role"
@@ -178,36 +192,27 @@ const ProfileInfo = () => {
                 Role
               </label>
               <div className="relative w-full">
-                <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                  <svg
-                    className="h-4 w-4 text-[#5D5D5D]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-                <select
+                <input
+                  type="text"
                   id="role"
-                  className={`font-medium text-sm text-[#5D5D5D] appearance-none outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
-                    errors.role
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  readOnly // Prevents user manipulation
+                  placeholder="Loading role..."
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg bg-gray-50 cursor-not-allowed transition-all ${
+                    errors.role ? "border-red-500" : "border-[#E8E8E8]"
                   }`}
                   {...register("role", { required: "Role is required" })}
-                >
-                  <option value="">Select your role</option>
-                  <option value="manager">Manager</option>
-                  <option value="leader">Leader</option>
-                  <option value="leader">Admin</option>
-                </select>
+                />
+                <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                  <Icon
+                    icon="solar:lock-password-bold"
+                    className="text-gray-400"
+                    width="18"
+                  />
+                </div>
               </div>
+              <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">
+                Role assigned by administrator
+              </p>
             </div>
 
             {/* Department */}
