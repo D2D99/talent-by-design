@@ -1,9 +1,9 @@
 import { useState } from "react";
-import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
+import IconArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 // import ManagerOverview from "../../screens/managerOverview";
 import Sidebar from "../sidebar";
+// import OrgInvitation from "../../screens/orgInvitation";
 // import CrudQuestion from "../../screens/crudQuestion";
-import Orginvitation from "../../screens/orgInvitation";
 // import LeaderOverview from "../../screens/leaderOverview";
 
 const Dashboard = () => {
@@ -30,7 +30,7 @@ const Dashboard = () => {
             className="restore-sidebar absolute top-[80px] right-[-12px] cursor-pointer"
             onClick={toggleMainWrapper}
           >
-            <img src={IconamoonArrow} alt="arrow" />
+            <img src={IconArrow} alt="arrow" />
           </div>
         </div>
 
@@ -39,7 +39,7 @@ const Dashboard = () => {
           {/* <ManagerOverview /> */}
           {/* <LeaderOverview /> */}
           {/* <CrudQuestion /> */}
-          <Orginvitation />
+          {/* <OrgInvitation /> */}
         </div>
       </div>
       {/* Dashboard End */}

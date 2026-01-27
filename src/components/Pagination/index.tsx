@@ -1,9 +1,9 @@
 // ============================================
-// FILE: src/screens/orgInvitation/Pagination.tsx
+// FILE: src/screens/OrgInvitation/Pagination.tsx
 // Create this new file in the same folder as index.tsx
 // ============================================
 
-import React from 'react';
+import React from "react";
 import { Icon } from "@iconify/react";
 
 interface PaginationProps {
@@ -14,19 +14,19 @@ interface PaginationProps {
   onItemsPerPageChange: (items: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ 
-  totalItems, 
-  itemsPerPage = 10, 
-  currentPage = 1, 
+const Pagination: React.FC<PaginationProps> = ({
+  totalItems,
+  itemsPerPage = 10,
+  currentPage = 1,
   onPageChange,
-  onItemsPerPageChange 
+  onItemsPerPageChange,
 }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  
+
   const getPageNumbers = (): (number | string)[] => {
     const pages: (number | string)[] = [];
     const maxVisible = 5;
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -36,23 +36,23 @@ const Pagination: React.FC<PaginationProps> = ({
         for (let i = 1; i <= 3; i++) {
           pages.push(i);
         }
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         for (let i = totalPages - 2; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         pages.push(currentPage);
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       }
     }
-    
+
     return pages;
   };
 
@@ -69,7 +69,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   const handlePageClick = (page: number | string) => {
-    if (typeof page === 'number') {
+    if (typeof page === "number") {
       onPageChange(page);
     }
   };
@@ -105,13 +105,14 @@ const Pagination: React.FC<PaginationProps> = ({
           <button
             key={index}
             onClick={() => handlePageClick(page)}
-            disabled={page === '...'}
+            disabled={page === "..."}
             className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors
-              ${page === currentPage 
-                ? 'bg-[var(--primary-color)] text-white' 
-                : page === '...' 
-                ? 'text-gray-400 cursor-default' 
-                : 'text-[#000000] hover:bg-[#edf5fd]'
+              ${
+                page === currentPage
+                  ? "bg-[var(--primary-color)] text-white"
+                  : page === "..."
+                    ? "text-gray-400 cursor-default"
+                    : "text-[#000000] hover:bg-[#edf5fd]"
               }`}
           >
             {page}
