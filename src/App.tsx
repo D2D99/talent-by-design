@@ -17,6 +17,7 @@ import StartAssessment from "./components/startAssessment";
 import PageNotFound from "./screens/pageNotFound";
 // import ProtectedRoute from "./routes/protectedRoute";
 import { AuthProvider } from "./context/AuthProvider";
+import OrgInvitation from "./screens/orgInvitation";
 
 function App() {
   return (
@@ -33,7 +34,10 @@ function App() {
 
         <Route path="/profile-info" element={<ProfileInfo />} />
         <Route path="/start-assessment" element={<StartAssessment />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />}>
+          <Route index element={<Home />} />
+          <Route path="settings" element={<OrgInvitation />} />
+        </Route>
         <Route path="/assessment-question" element={<AssessmentQuestion />} />
         {/* Private Routes */}
         {/* <Route element={<ProtectedRoute />}>

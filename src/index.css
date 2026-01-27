@@ -130,45 +130,47 @@ input:-webkit-autofill:active {
 }
 
 .bg-svg svg {
-    width: 100%;
-    height: auto;
-    display: block;
-    transform: scale(1.1);
+  width: 100%;
+  height: auto;
+  display: block;
+  transform: scale(1.1);
 }
- .bg-svg #smoothPath {
-    fill: none;
-    stroke-width: 90;
-    stroke-linecap: round;
+.bg-svg #smoothPath {
+  fill: none;
+  stroke-width: 90;
+  stroke-linecap: round;
 
-    /* Path drawing */
-    stroke-dasharray: 6200;
-    stroke-dashoffset: 6200;
+  /* Path drawing */
+  stroke-dasharray: 6200;
+  stroke-dashoffset: 6200;
 
-    /* Smooth premium animation */
-    animation:
-      drawLine 6s cubic-bezier(0.4, 0, 0.2, 1) forwards,
-      fadeIn 1.2s ease-out forwards;
+  /* Smooth premium animation */
+  animation:
+    drawLine 6s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+    fadeIn 1.2s ease-out forwards;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
   }
+}
 
-  @keyframes drawLine {
-    to {
-      stroke-dashoffset: 0;
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+  to {
+    opacity: 1;
   }
+}
 
-
-  @media ( max-width:767px){
-    .bg-svg svg {
-    
+@media (max-width: 767px) {
+  .bg-svg svg {
     transform: scale(1.6);
-}
   }
+}
+
+/* a.active {
+  @apply bg-[--light-primary-color] text-[var(--primary-color)];
+} */

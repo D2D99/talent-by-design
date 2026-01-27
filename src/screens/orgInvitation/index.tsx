@@ -1,15 +1,13 @@
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
+import IconArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import DeleteImg from "../../../public/static/img/icons/delete-img.svg";
 import Pagination from "../../components/Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import axios from "axios";
 // import jwt_decode from '@auth0/jwt-decode';
 
-
-const Orginvitation = () => {
-
+const OrgInvitation = () => {
   useEffect(() => {
     initTWE({ Ripple, Modal });
   }, []);
@@ -23,7 +21,6 @@ const Orginvitation = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     console.log("Changed to page:", page);
@@ -36,85 +33,83 @@ const Orginvitation = () => {
   };
 
   // Function to decode the JWT token
- const decodeJWT = (token: string) => {
-  try {
-    const parts = token.split('.');
+  const decodeJWT = (token: string) => {
+    try {
+      const parts = token.split(".");
 
-    if (parts.length !== 3) {
-      throw new Error('Invalid token format');
-    }
-
-    const base64Url = parts[1];  // This is the payload
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Base64Url to Base64 conversion
-
-    let decodedPayload = '';
-    decodedPayload = atob(base64);
-
-    const parsedPayload = JSON.parse(decodedPayload);
-    return parsedPayload;
-
-  } catch (error) {
-    console.error("Error decoding JWT:", error);
-    return null;
-  }
-};
-
-const handleSendInvite = async () => {
-  const token = localStorage.getItem("accessToken");
-  if (!token) {
-    setErrorMessage("No token found. User might not be authenticated.");
-    return;
-  }
-
-  const decodedToken = decodeJWT(token);
-
-  if (!decodedToken) {
-    setErrorMessage("Invalid token. Please log in again.");
-    return;
-  }
-
-  // Check if the token is expired
-  const currentTimestamp = Math.floor(Date.now() / 1000);
-  if (decodedToken.exp < currentTimestamp) {
-    setErrorMessage("Session expired. Please log in again.");
-    return;
-  }
-
-  if (!email || !role) {
-    setErrorMessage("Both email and role are required.");
-    return;
-  }
-
-  setIsLoading(true);
-  setErrorMessage(null); // Reset any previous error message
-
-  try {
-     await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
-      { email, role },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (parts.length !== 3) {
+        throw new Error("Invalid token format");
       }
-    );
-    alert("Invitation sent successfully");
-    setEmail(""); // Clear email field after success
-    setRole("");  // Clear role field after success
-  } catch (error) {
-    const axiosError = error as any;
-    if (axiosError.response?.status === 401) {
-      setErrorMessage("Unauthorized. Please log in again.");
-    } else {
-      setErrorMessage(axiosError.response?.data?.message || "Failed to send invitation.");
+
+      const base64Url = parts[1]; // This is the payload
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/"); // Base64Url to Base64 conversion
+
+      let decodedPayload = "";
+      decodedPayload = atob(base64);
+
+      const parsedPayload = JSON.parse(decodedPayload);
+      return parsedPayload;
+    } catch (error) {
+      console.error("Error decoding JWT:", error);
+      return null;
     }
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
+  const handleSendInvite = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setErrorMessage("No token found. User might not be authenticated.");
+      return;
+    }
 
+    const decodedToken = decodeJWT(token);
 
+    if (!decodedToken) {
+      setErrorMessage("Invalid token. Please log in again.");
+      return;
+    }
+
+    // Check if the token is expired
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (decodedToken.exp < currentTimestamp) {
+      setErrorMessage("Session expired. Please log in again.");
+      return;
+    }
+
+    if (!email || !role) {
+      setErrorMessage("Both email and role are required.");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage(null); // Reset any previous error message
+
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
+        { email, role },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      alert("Invitation sent successfully");
+      setEmail(""); // Clear email field after success
+      setRole(""); // Clear role field after success
+    } catch (error) {
+      const axiosError = error as any;
+      if (axiosError.response?.status === 401) {
+        setErrorMessage("Unauthorized. Please log in again.");
+      } else {
+        setErrorMessage(
+          axiosError.response?.data?.message || "Failed to send invitation.",
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -130,7 +125,7 @@ const handleSendInvite = async () => {
                 data-twe-ripple-init
                 data-twe-ripple-color="light"
               >
-                <img src={IconamoonArrow} alt="arrow" className="w-5 h-5" />
+                <img src={IconArrow} alt="arrow" className="w-5 h-5" />
               </button>
             </div>
             <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
@@ -494,7 +489,7 @@ const handleSendInvite = async () => {
                 className="group text-[var(--white-color)] pl-4 py-2 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2]  hover:opacity-100 duration-200"
               >
                 {isLoading ? "Send invite..." : "Send invite"}
-               
+
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
@@ -603,11 +598,9 @@ const handleSendInvite = async () => {
         </div>
       </div>
       {/* Delete Admin when the status is expired */}
-      <div>
-        {errorMessage}
-      </div>
+      <div>{errorMessage}</div>
     </>
   );
 };
 
-export default Orginvitation;
+export default OrgInvitation;

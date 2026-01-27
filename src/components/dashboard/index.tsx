@@ -49,8 +49,6 @@
 
 // export default Dashboard;
 
-
-
 import { useState, useEffect } from "react";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import Sidebar from "../sidebar";
@@ -98,19 +96,19 @@ const Dashboard = () => {
     switch (role) {
       case "superadmin":
         return <SuperAdminOverview />;
-      
+
       case "admin":
         return <AdminOverview />;
-      
+
       case "manager":
         return <ManagerOverview />;
-      
+
       case "leader":
         return <LeaderOverview />;
 
       default:
         // Default fallback if role is unknown or for an "employee" role
-        return <PageNotFound />; 
+        return <PageNotFound />;
     }
   };
 
