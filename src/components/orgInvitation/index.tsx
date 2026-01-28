@@ -93,6 +93,25 @@ const OrgInvitation = () => {
     }
   };
 
+  // --- DELETE FUNCTION (With Logic Check) ---
+  const handleDelete = async (id: string, status: string) => {
+    // Extra safety check: Prevent deletion if not Expired
+    if (status !== "Expire") return;
+
+    if (!window.confirm("Are you sure you want to delete this expired invitation?")) return;
+
+    const token = localStorage.getItem("accessToken");
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}auth/invitation/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchData(); // Refresh list
+    } catch (err: any) {
+      setErrorMessage(err.response?.data?.message || "Failed to delete.");
+    }
+  };
+
   // --- Helper Functions ---
   const renderStatusBadge = (status: string) => {
     const base = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border justify-center";
@@ -151,38 +170,52 @@ const OrgInvitation = () => {
             </thead>
             <tbody>
               {dataList.length > 0 ? (
-                dataList.map((item, index) => (
-                  <tr key={item._id} className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors">
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      {(currentPage - 1) * itemsPerPage + index + 1}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-[#1A3652]">
-                      {isSuperAdmin ? (item.orgName || "Unnamed Org") : (item.name || "—")}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{item.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(item.createdAt).toLocaleDateString("en-GB")}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      {isSuperAdmin ? (
-                        <div className="flex items-center gap-2 bg-blue-50 text-[#448CD2] px-3 py-1 rounded-lg w-fit border border-blue-100">
-                          <Icon icon="solar:users-group-rounded-bold" width="16" />
-                          <span className="font-bold">{item.totalUsers || 0}</span>
-                        </div>
-                      ) : (
-                        <span className="capitalize px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
-                          {item.role}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">{renderStatusBadge(item.status)}</td>
-                    <td className="px-6 py-4 text-center">
-                      <button className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-full transition-all">
-                        <Icon icon="solar:trash-bin-trash-bold" width="20" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                dataList.map((item, index) => {
+                  // Logic to determine if button should be disabled
+                  const canDelete = item.status === "Expire";
+
+                  return (
+                    <tr key={item._id} className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-[#1A3652]">
+                        {isSuperAdmin ? (item.orgName || "Unnamed Org") : (item.name || "—")}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{item.email}</td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {new Date(item.createdAt).toLocaleDateString("en-GB")}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {isSuperAdmin ? (
+                          <div className="flex items-center gap-2 bg-blue-50 text-[#448CD2] px-3 py-1 rounded-lg w-fit border border-blue-100">
+                            <Icon icon="solar:users-group-rounded-bold" width="16" />
+                            <span className="font-bold">{item.totalUsers || 0}</span>
+                          </div>
+                        ) : (
+                          <span className="capitalize px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+                            {item.role}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">{renderStatusBadge(item.status)}</td>
+                      <td className="px-6 py-4 text-center">
+                        <button 
+                          onClick={() => handleDelete(item._id, item.status)}
+                          disabled={!canDelete}
+                          title={!canDelete ? "Only expired invitations can be deleted" : "Delete Invitation"}
+                          className={`p-2 rounded-full transition-all ${
+                            canDelete 
+                            ? "text-red-400 hover:text-red-600 hover:bg-red-50" 
+                            : "text-gray-300 cursor-not-allowed opacity-50"
+                          }`}
+                        >
+                          <Icon icon="solar:trash-bin-trash-bold" width="20" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan={7} className="text-center py-20 text-gray-400">
