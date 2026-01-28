@@ -63,35 +63,35 @@ const OrgInvitation = () => {
     fetchData();
   }, [fetchData]);
 
-  const handleSendInvite = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token || !email || !role) {
-      setErrorMessage("Please fill all fields.");
-      return;
-    }
+  // const handleSendInvite = async () => {
+  //   const token = localStorage.getItem("accessToken");
+  //   if (!token || !email || !role) {
+  //     setErrorMessage("Please fill all fields.");
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    try {
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
-        { email, role },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+  //   setIsLoading(true);
+  //   try {
+  //     await axios.post(
+  //       `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
+  //       { email, role },
+  //       { headers: { Authorization: `Bearer ${token}` } },
+  //     );
 
-      setEmail("");
-      setRole("");
+  //     setEmail("");
+  //     setRole("");
 
-      const modalElem = document.getElementById("inviteModal");
-      const modalInstance = Modal.getInstance(modalElem);
-      modalInstance?.hide();
+  //     const modalElem = document.getElementById("inviteModal");
+  //     const modalInstance = Modal.getInstance(modalElem);
+  //     modalInstance?.hide();
 
-      fetchData();
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || "Failed to send.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     fetchData();
+  //   } catch (error: any) {
+  //     setErrorMessage(error.response?.data?.message || "Failed to send.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // --- DELETE FUNCTION (With Logic Check) ---
   const handleDelete = async (id: string, status: string) => {
@@ -294,18 +294,18 @@ const OrgInvitation = () => {
             </div>
 
             {/* Pagination Section */}
-            {/* <div className="mt-6">
-            <Pagination
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              currentPage={currentPage}
-              onPageChange={setCurrentPage}
-              onItemsPerPageChange={(val) => {
-                setItemsPerPage(val);
-                setCurrentPage(1);
-              }}
-            />
-          </div> */}
+            <div className="mt-6">
+              <Pagination
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                onItemsPerPageChange={(val) => {
+                  setItemsPerPage(val);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
           </div>
         </div>
 
