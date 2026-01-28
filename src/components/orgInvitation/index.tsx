@@ -5,7 +5,7 @@ import { Modal, Ripple, initTWE } from "tw-elements";
 import axios from "axios";
 
 const OrgInvitation = () => {
-  // --- States ---
+  // States
   const [dataList, setDataList] = useState<any[]>([]);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -101,7 +101,7 @@ const OrgInvitation = () => {
   // --- Helper Functions ---
   const renderStatusBadge = (status: string) => {
     const base =
-      "inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium border justify-center";
+      "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border justify-center";
     switch (status) {
       case "Accept":
         return (
@@ -156,26 +156,26 @@ const OrgInvitation = () => {
 
         {/* Table Section */}
         <div className="overflow-x-auto">
-          <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
+          <div className="shadow-sm overflow-x-auto">
             <table className="w-full whitespace-nowrap">
               <thead>
-                <tr className="border-b border-[#edf5fd]">
-                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                <tr className="border-b border-[var(--light-primary-color)]">
+                  <th className="px-6 py-2.5 text-left text-base font-semibold text-[#000000]">
                     #
                   </th>
-                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                  <th className="px-6 py-2.5 text-left text-base font-semibold text-[#000000]">
                     {isSuperAdmin ? "Org Name" : "Name / Email"}
                   </th>
-                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                  <th className="px-6 py-2.5 text-left text-base font-semibold text-[#000000]">
                     Role
                   </th>
-                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                  <th className="px-6 py-2.5 text-left text-base font-semibold text-[#000000]">
                     Start Date
                   </th>
-                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000]">
+                  <th className="px-6 py-2.5 text-left text-base font-semibold text-[#000000]">
                     Status
                   </th>
-                  <th className="px-6 py-2 text-left text-base font-semibold text-[#000000] rounded-t-xl">
+                  <th className="px-6 py-2.5 text-left text-base font-semibold text-[#000000]">
                     Action
                   </th>
                 </tr>
@@ -185,26 +185,26 @@ const OrgInvitation = () => {
                   dataList.map((item, index) => (
                     <tr
                       key={item._id}
-                      className="border-b border-[#edf5fd] hover:bg-[#edf5fd]"
+                      className="border-b border-[var(--light-primary-color)] hover:bg-[#448bd20f]"
                     >
-                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                      <td className="px-6 py-2.5 text-left text-sm font-semibold text-[#000000]">
                         {(currentPage - 1) * itemsPerPage + index + 1}
                       </td>
-                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                      <td className="px-6 py-2.5 text-left text-sm font-normal text-[#000000]">
                         {isSuperAdmin ? item.orgName || "No Name" : item.email}
                       </td>
-                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                      <td className="px-6 py-2.5 text-left text-sm font-normal text-[#000000]">
                         {item.role}
                       </td>
-                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                      <td className="px-6 py-2.5 text-left text-sm font-normal text-[#000000]">
                         {new Date(item.createdAt).toLocaleDateString("en-GB")}
                       </td>
-                      <td className="px-6 py-3 text-left text-base font-normal text-[#000000]">
+                      <td className="px-6 py-2.5 text-left text-sm font-normal text-[#000000]">
                         {renderStatusBadge(item.status)}
                       </td>
-                      <td className="pe-6 ps-9 py-3">
+                      <td className="pe-6 ps-9 py-2.5">
                         <button className="text-red-500 hover:text-red-700 transition-colors">
-                          <Icon icon="la:trash-alt-solid" width="22" />
+                          <Icon icon="la:trash-alt-solid" width="18" />
                         </button>
                       </td>
                     </tr>
@@ -222,7 +222,7 @@ const OrgInvitation = () => {
         </div>
 
         {/* Pagination Section */}
-        <div className="mt-6 border-t pt-4">
+        <div className="mt-6">
           <Pagination
             totalItems={totalItems}
             itemsPerPage={itemsPerPage}
