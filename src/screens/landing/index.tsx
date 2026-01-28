@@ -27,11 +27,11 @@ import SafeMarquee from "../../components/brandsMarquee";
 import CtaMarquee from "../../components/ctaMarquee";
 import { useEffect, useState } from "react";
 import { Modal, Ripple, initTWE } from "tw-elements";
-import LoginModal from "../../components/loginModal";
+// import LoginModal from "../../components/loginModal";
 import SpinnerLoader from "../../components/spinnerLoader";
 
 const Home = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  // const [isVisible, setIsVisible] = useState(false);
   // Page Loader
   const [pageLoading, setPageLoading] = useState(true);
 
@@ -48,16 +48,15 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    // The timer starts immediately when the component mounts
-    const showTimer = setTimeout(() => setIsVisible(true), 60000);
-    const hideTimer = setTimeout(() => setIsVisible(false), 80000);
+  // useEffect(() => {
+  //   const showTimer = setTimeout(() => setIsVisible(true), 60000);
+  //   const hideTimer = setTimeout(() => setIsVisible(false), 80000);
 
-    return () => {
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
-    };
-  }, []);
+  //   return () => {
+  //     clearTimeout(showTimer);
+  //     clearTimeout(hideTimer);
+  //   };
+  // }, []);
 
   if (pageLoading) {
     return <SpinnerLoader />;
@@ -106,7 +105,7 @@ const Home = () => {
 
       {/* Hero Section Start */}
       <div className="relative pt-10 overflow-x-hidden " id="hero-bg">
-        <div className="bg-svg absolute -z-10 pt-4">
+        <div className="bg-svg !w-full absolute left-1/2 -translate-x-1/2 -z-10 pt-4">
           <svg
             width="2025"
             height="591"
@@ -1246,7 +1245,7 @@ const Home = () => {
       <Footer />
 
       {/* Build Resilient Start*/}
-      <div
+      {/* <div
         id="assessmentLink"
         className={`
         sm:flex-nowrap flex-wrap z-[100] fixed left-1/2 sm:w-[600px] w-11/12 sm:min-w-max mx-auto sm:justify-between justify-center flex items-center md:gap-x-10 gap-x-5 gap-y-2 px-2 py-2 pl-4 sm:rounded-full rounded-xl bg-white
@@ -1278,10 +1277,10 @@ const Home = () => {
             className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
           />
         </button>
-      </div>
+      </div> */}
       {/* Build  Resilient End*/}
 
-      <LoginModal />
+      {/* <LoginModal /> */}
     </>
   );
 };

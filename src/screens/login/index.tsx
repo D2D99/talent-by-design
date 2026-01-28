@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
-import LoginOr from "../../../public/static/img/home/login-or.svg";
-import M365Icon from "../../../public/static/img/icons/m365.svg";
+// import LoginOr from "../../../public/static/img/home/login-or.svg";
+// import M365Icon from "../../../public/static/img/icons/m365.svg";
 import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import { Icon } from "@iconify/react";
@@ -99,7 +99,6 @@ const Login = () => {
   //   }
   // };
 
-
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
       setLoading(true);
@@ -108,7 +107,7 @@ const Login = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/login`,
         data,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data?.accessToken) {
@@ -132,7 +131,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
 
   if (pageLoading) {
     return <SpinnerLoader />;
@@ -176,10 +174,11 @@ const Login = () => {
                 type="email"
                 id="email"
                 autoComplete="email"
-                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
-                  ? "border-red-500"
-                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
                 placeholder="Enter your email"
                 {...register("email", {
                   required: "Email is required",
@@ -208,10 +207,11 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   autoComplete="current-password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.password
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
+                    errors.password
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   placeholder="Enter your password"
                   {...register("password", {
                     required: "Password is required",
@@ -240,7 +240,7 @@ const Login = () => {
               )}
             </div>
 
-            <div className="sm:mb-6 mb-3 flex items-center justify-end">
+            <div className="sm:mb-6 mb-4 flex items-center justify-end">
               <Link
                 to="/forgot-password"
                 className="text-sm font-bold text-[var(--primary-color)] hover:opacity-75 transition-opacity"
@@ -252,23 +252,25 @@ const Login = () => {
             <button
               type="submit"
               disabled={isButtonDisabled}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isButtonDisabled
-                ? "disabled:pointer-events-none disabled:opacity-40"
-                : "opacity-100 active:scale-95"
-                }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
+                isButtonDisabled
+                  ? "disabled:pointer-events-none disabled:opacity-40"
+                  : "opacity-100 active:scale-95"
+              }`}
             >
               {loading ? "Logging in..." : "Log In"}
               {!loading && (
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
-                  className={`transition-transform duration-300 ${isButtonDisabled ? "-rotate-45" : "rotate-0"
-                    }`}
+                  className={`transition-transform duration-300 ${
+                    isButtonDisabled ? "-rotate-45" : "rotate-0"
+                  }`}
                 />
               )}
             </button>
 
-            <div className="text-center my-3">
+            {/* <div className="text-center my-3">
               <img src={LoginOr} className="mx-auto" alt="or divider" />
             </div>
 
@@ -278,14 +280,14 @@ const Login = () => {
             >
               Continue with m365
               <img src={M365Icon} alt="m365" />
-            </button>
+            </button> */}
 
             <div className="mt-4 text-center ">
               <p className="text-sm font-medium text-[var(--secondary-color)]">
                 Don't have an account?{" "}
                 <Link
                   to="/register"
-                  className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
+                  className="font-bold text-[var(--primary-color)] underline hover:opacity-75 hover:no-underline"
                 >
                   Register
                 </Link>

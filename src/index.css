@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 :root {
-  --primary-color: #448cd2;
-  --dark-primary-color: #2d5d8c;
-  --light-primary-color: #e4f0fc;
+  --primary-color: rgb(68, 140, 210);
+  --dark-primary-color: rgb(45, 93, 140);
+  --light-primary-color: rgb(228, 240, 252);
   --secondary-color: #242424;
   --white-color: #fff;
   --black-color: #000;
@@ -169,6 +169,11 @@ input:-webkit-autofill:active {
   .bg-svg svg {
     transform: scale(1.6);
   }
+}
+
+button,
+a {
+  @apply outline-none cursor-pointer;
 }
 
 /* a.active {

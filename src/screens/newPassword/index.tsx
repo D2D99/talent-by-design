@@ -67,8 +67,8 @@ const NewPassword = () => {
     strengthCount <= 2
       ? "bg-red-500"
       : strengthCount <= 4
-      ? "bg-yellow-500"
-      : "bg-green-500";
+        ? "bg-yellow-500"
+        : "bg-green-500";
 
   const allCriteriaMet = Object.values(validation).every(Boolean);
   const passwordsMatch =
@@ -83,7 +83,7 @@ const NewPassword = () => {
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/reset-password`,
         { password: data.password },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       navigate("/login");
@@ -136,7 +136,7 @@ const NewPassword = () => {
                   type={showNewPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter new password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${
                     errors.password
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -179,8 +179,8 @@ const NewPassword = () => {
                   {strengthCount === 5
                     ? "Strong"
                     : strengthCount >= 3
-                    ? "Medium"
-                    : "Weak"}
+                      ? "Medium"
+                      : "Weak"}
                 </p>
               </div>
             )}
@@ -224,7 +224,7 @@ const NewPassword = () => {
               </ul>
             )}
 
-            <div className="mb-2">
+            <div>
               <label
                 htmlFor="confirmPassword"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
@@ -236,7 +236,7 @@ const NewPassword = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   placeholder="Confirm password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${
                     errors.confirmPassword
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -268,7 +268,7 @@ const NewPassword = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`sm:mt-6 mt-3 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${
+              className={`sm:mt-6 mt-4 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${
                 isButtonActive
                   ? "opacity-100 cursor-pointer"
                   : "opacity-40 cursor-not-allowed pointer-events-none shadow-none"
@@ -291,7 +291,7 @@ const NewPassword = () => {
             Forgot your email address or no longer have access to it? {""}
             <Link
               to="/contact"
-              className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
+              className="font-bold text-[var(--primary-color)] underline hover:opacity-75 hover:no-underline"
             >
               Contact Us
             </Link>

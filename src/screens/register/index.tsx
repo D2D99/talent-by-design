@@ -79,28 +79,26 @@ const Register = () => {
   const isButtonActive =
     emailValue && allCriteriaMet && passwordsMatch && !loading;
 
+  //   const decodeToken = (token: string) => {
+  //   try {
+  //     const parts = token.split('.');
 
-//   const decodeToken = (token: string) => {
-//   try {
-//     const parts = token.split('.');
+  //     if (parts.length !== 3) {
+  //       throw new Error('Invalid token format');
+  //     }
 
-//     if (parts.length !== 3) {
-//       throw new Error('Invalid token format');
-//     }
+  //     const base64Url = parts[1];
+  //     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  //     const decoded = JSON.parse(atob(base64));
 
-//     const base64Url = parts[1]; 
-//     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); 
-//     const decoded = JSON.parse(atob(base64));
+  //     console.log("Decoded Token:", decoded); // Log decoded token (for debugging)
 
-//     console.log("Decoded Token:", decoded); // Log decoded token (for debugging)
-
-//     return decoded;
-//   } catch (error) {
-//     console.error("Error decoding token:", error);
-//     return null;
-//   }
-// };
-
+  //     return decoded;
+  //   } catch (error) {
+  //     console.error("Error decoding token:", error);
+  //     return null;
+  //   }
+  // };
 
   // const checkTokenExpiry = (token: string): boolean => {
   //   try {
@@ -123,74 +121,70 @@ const Register = () => {
   //   return match ? match[2] : null; // Return null if not found
   // }
 
-
-
   const onSubmit: SubmitHandler<RegisterFields> = async (data) => {
-  try {
-    setLoading(true);
-    clearErrors("root");
+    try {
+      setLoading(true);
+      clearErrors("root");
 
-    // Retrieve both tokens from cookies
-    // const accessToken = getCookie("authToken"); 
-    // const invitationToken = getCookie("token1"); 
+      // Retrieve both tokens from cookies
+      // const accessToken = getCookie("authToken");
+      // const invitationToken = getCookie("token1");
 
-    // console.log(accessToken)
-    // console.log(invitationToken)
+      // console.log(accessToken)
+      // console.log(invitationToken)
 
-    // if (!accessToken || !invitationToken) {
-    //   setError("root", { type: "manual", message: "Both tokens are required." });
-    //   setLoading(false);
-    //   return;
-    // }
+      // if (!accessToken || !invitationToken) {
+      //   setError("root", { type: "manual", message: "Both tokens are required." });
+      //   setLoading(false);
+      //   return;
+      // }
 
-    // // Check if the tokens are expired
-    // const isAccessTokenExpired = checkTokenExpiry(accessToken);
-    // const isInvitationTokenExpired = checkTokenExpiry(invitationToken);
+      // // Check if the tokens are expired
+      // const isAccessTokenExpired = checkTokenExpiry(accessToken);
+      // const isInvitationTokenExpired = checkTokenExpiry(invitationToken);
 
-    // if (isAccessTokenExpired || isInvitationTokenExpired) {
-    //   setError("root", { type: "manual", message: "Your token has expired. Please log in again." });
-    //   setLoading(false);
-    //   return;
-    // }
+      // if (isAccessTokenExpired || isInvitationTokenExpired) {
+      //   setError("root", { type: "manual", message: "Your token has expired. Please log in again." });
+      //   setLoading(false);
+      //   return;
+      // }
 
-    // Proceed with registration
-    await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}auth/register`,
-      {
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-        // token: accessToken,
-        // token1: invitationToken,
-      },
-      {
-        // headers: {
-        //   Authorization: `Bearer ${accessToken}`, // Include authToken in headers
-        // },
-        withCredentials: true, // Ensure cookies are sent with the request
-      }
-    );
+      // Proceed with registration
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}auth/register`,
+        {
+          email: data.email,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+          // token: accessToken,
+          // token1: invitationToken,
+        },
+        {
+          // headers: {
+          //   Authorization: `Bearer ${accessToken}`, // Include authToken in headers
+          // },
+          withCredentials: true, // Ensure cookies are sent with the request
+        },
+      );
 
-    localStorage.setItem("registeredEmail", data.email);
-    navigate("/after-register");
-  } catch (error: unknown) {
-    const axiosError = error as AxiosError<ApiError>;
-    const message =
-      axiosError.response?.data?.message ||
-      "Registration failed. Please try again.";
+      localStorage.setItem("registeredEmail", data.email);
+      navigate("/after-register");
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiError>;
+      const message =
+        axiosError.response?.data?.message ||
+        "Registration failed. Please try again.";
 
-    setError("root", {
-      type: "manual",
-      message: message,
-    });
+      setError("root", {
+        type: "manual",
+        message: message,
+      });
 
-    console.error("Error during registration:", message);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+      console.error("Error during registration:", message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ✅ LOADER RENDERS FIRST
   if (pageLoading) {
@@ -216,11 +210,35 @@ const Register = () => {
             <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] sm:mb-6 mb-3">
               Welcome!
             </h2>
-
+            {/* 
             {errors.root && (
               <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
                 <Icon icon="solar:danger-circle-bold" width="20" />
                 <span>{errors.root.message}</span>
+              </div>
+            )} */}
+
+            {/* Success Toaster */}
+            {errors.root && (
+              <div
+                className={`${
+                  errors ? "block" : "hidden"
+                } px-3 fixed left-1/2 top-6 w-full transform -translate-x-1/2 z-50`}
+              >
+                <div className="flex items-center justify-between bg-gray-800 text-white p-3 rounded-lg max-w-xl mx-auto shadow-lg">
+                  <div className="flex items-center gap-2">
+                    <Icon
+                      icon="pepicons-pop:no-entry-circle-filled"
+                      width="24"
+                      height="24"
+                      color="#f00"
+                      className="sm:size-6 size-4"
+                    />
+                    <span className="sm:text-lg text-sm font-semibold">
+                      {errors.root.message}
+                    </span>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -235,10 +253,11 @@ const Register = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your email"
-                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
-                  ? "border-red-500"
-                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -266,10 +285,11 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter your password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.password
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
+                    errors.password
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("password", {
                     required: "Password is required",
                   })}
@@ -294,14 +314,16 @@ const Register = () => {
                   {[...Array(5)].map((_, i) => (
                     <div
                       key={i}
-                      className={`h-full flex-1 transition-all duration-500 ${i < strengthCount ? strengthColor : "bg-transparent"
-                        }`}
+                      className={`h-full flex-1 transition-all duration-500 ${
+                        i < strengthCount ? strengthColor : "bg-transparent"
+                      }`}
                     />
                   ))}
                 </div>
                 <p
-                  className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5 ? "text-green-600" : "text-gray-400"
-                    }`}
+                  className={`text-[10px] mt-1 font-bold uppercase ${
+                    strengthCount === 5 ? "text-green-600" : "text-gray-400"
+                  }`}
                 >
                   Strength:{" "}
                   {strengthCount === 5
@@ -338,8 +360,9 @@ const Register = () => {
                     <Icon
                       icon="material-symbols-light:check"
                       width="16"
-                      className={`rounded-full p-px transition-all ${item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
-                        }`}
+                      className={`rounded-full p-px transition-all ${
+                        item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
+                      }`}
                     />
                     <span className={item.met ? "text-black" : "text-gray-400"}>
                       {item.label}
@@ -361,10 +384,11 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   placeholder="Confirm your password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.confirmPassword
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
+                    errors.confirmPassword
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
                     validate: (val: string) =>
@@ -393,17 +417,19 @@ const Register = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
-                ? "opacity-100 cursor-pointer"
-                : "opacity-40 cursor-not-allowed pointer-events-none"
-                }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
+                isButtonActive
+                  ? "opacity-100 cursor-pointer"
+                  : "opacity-40 cursor-not-allowed pointer-events-none"
+              }`}
             >
               {loading ? "Registering..." : "Register"}
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="25"
-                className={`transition-transform duration-300 ${isButtonActive ? "rotate-0" : "-rotate-45"
-                  }`}
+                className={`transition-transform duration-300 ${
+                  isButtonActive ? "rotate-0" : "-rotate-45"
+                }`}
               />
             </button>
 
@@ -412,7 +438,7 @@ const Register = () => {
                 Already have an account?{" "}
                 <Link
                   to="/login"
-                  className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
+                  className="font-bold text-[var(--primary-color)] underline hover:opacity-75 hover:no-underline"
                 >
                   Log in
                 </Link>
@@ -426,7 +452,7 @@ const Register = () => {
             to our{" "}
             <Link
               to="/"
-              className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
+              className="font-bold text-[var(--primary-color)] underline hover:opacity-75 hover:no-underline"
             >
               Privacy Policy {""}
             </Link>

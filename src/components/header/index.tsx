@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Collapse, Dropdown, initTWE } from "tw-elements";
 import { Icon } from "@iconify/react";
+import { useNavigate } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -18,10 +19,10 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // const navigate = useNavigate();
-  // const handleClick = () => {
-  //   navigate("/login");
-  // };
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate("/login");
+  };
   return (
     <>
       <nav
@@ -129,11 +130,11 @@ const Header = () => {
                     <button
                       type="button"
                       className="group text-white rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
-                      // onClick={handleClick}
-                      data-twe-toggle="modal"
-                      data-twe-target="#exampleModalCenter"
-                      data-twe-ripple-init
-                      data-twe-ripple-color="light"
+                      onClick={handleClick}
+                      // data-twe-toggle="modal"
+                      // data-twe-target="#exampleModalCenter"
+                      // data-twe-ripple-init
+                      // data-twe-ripple-color="light"
                     >
                       Login
                       <Icon
@@ -152,11 +153,11 @@ const Header = () => {
               <button
                 type="button"
                 className="group text-white rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
-                // onClick={handleClick}
-                data-twe-toggle="modal"
-                data-twe-target="#exampleModalCenter"
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
+                onClick={handleClick}
+                // data-twe-toggle="modal"
+                // data-twe-target="#exampleModalCenter"
+                // data-twe-ripple-init
+                // data-twe-ripple-color="light"
               >
                 Login
                 <Icon

@@ -44,7 +44,7 @@ const AfterRegister = () => {
 
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/resend-verification-email`,
-        { email }
+        { email },
       );
 
       // Handle Success
