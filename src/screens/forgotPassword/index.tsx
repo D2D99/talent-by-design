@@ -78,7 +78,7 @@ const ForgotPassword = () => {
 
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/forgot-password`,
-        { email: data.email }
+        { email: data.email },
       );
 
       localStorage.setItem("emailForResend", data.email);
@@ -129,7 +129,7 @@ const ForgotPassword = () => {
               </div>
             )}
 
-            <div className="mb-4">
+            <div className="sm:mb-6 mb-4">
               <label
                 htmlFor="email"
                 className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
@@ -141,7 +141,7 @@ const ForgotPassword = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your email"
-                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
+                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
                   errors.email
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -184,7 +184,7 @@ const ForgotPassword = () => {
             <div className="mt-4 text-center">
               <Link
                 to="/login"
-                className="text-sm font-bold text-[var(--primary-color)] hover:opacity-75 underline"
+                className="text-sm font-bold text-[var(--primary-color)] hover:opacity-75 underline hover:no-underline"
               >
                 Return to log in
               </Link>
@@ -197,7 +197,7 @@ const ForgotPassword = () => {
             Forgot your email address or no longer have access to it?{" "}
             <Link
               to="/contact"
-              className="font-bold text-[var(--primary-color)] underline hover:opacity-75"
+              className="font-bold text-[var(--primary-color)] underline hover:opacity-75 hover:no-underline"
             >
               Contact Us
             </Link>

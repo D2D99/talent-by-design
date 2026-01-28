@@ -39,7 +39,7 @@ const ProfileInfo = () => {
     defaultValues: {
       firstName: "",
       lastName: "",
-      role: "", 
+      role: "",
       department: "",
       titles: "",
       orgName: "",
@@ -51,7 +51,7 @@ const ProfileInfo = () => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}auth/current-user-session`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         if (response.data.role) {
@@ -90,13 +90,14 @@ const ProfileInfo = () => {
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/complete-profile`,
         data,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       navigate("/login");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
-      const message = axiosError.response?.data?.message || "Profile completion failed.";
+      const message =
+        axiosError.response?.data?.message || "Profile completion failed.";
 
       setError("root", {
         type: "manual",
@@ -113,7 +114,10 @@ const ProfileInfo = () => {
 
   return (
     <div className="flex min-h-screen bg-[var(--light-primary-color)]">
-      <div className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat" id="login-bg">
+      <div
+        className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
+        id="login-bg"
+      >
         <div className="flex justify-center items-center h-full bg-black bg-opacity-50" />
       </div>
 
@@ -131,10 +135,18 @@ const ProfileInfo = () => {
             {/* NEW: Organization Info for non-admins */}
             {inheritedOrg && (
               <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-100 flex items-center gap-2">
-                <Icon icon="solar:buildings-bold" className="text-blue-500" width="20" />
+                <Icon
+                  icon="solar:buildings-bold"
+                  className="text-blue-500"
+                  width="20"
+                />
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-blue-400 font-bold uppercase">Joining Organization</span>
-                  <span className="text-sm font-bold text-blue-700">{inheritedOrg}</span>
+                  <span className="text-[10px] text-blue-400 font-bold uppercase">
+                    Joining Organization
+                  </span>
+                  <span className="text-sm font-bold text-blue-700">
+                    {inheritedOrg}
+                  </span>
                 </div>
               </div>
             )}
@@ -149,44 +161,67 @@ const ProfileInfo = () => {
             {/* NEW: Organization Name Input - Only for Admins */}
             {formValues.role === "admin" && (
               <div className="sm:mb-4 mb-2">
-                <label htmlFor="orgName" className="font-bold text-[var(--secondary-color)] text-sm">
+                <label
+                  htmlFor="orgName"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                >
                   Organization Name
                 </label>
                 <input
                   type="text"
                   id="orgName"
                   placeholder="Enter organization name"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
-                    errors.orgName ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                    errors.orgName
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
-                  {...register("orgName", { required: "Organization name is required" })}
+                  {...register("orgName", {
+                    required: "Organization name is required",
+                  })}
                 />
               </div>
             )}
 
             {/* First Name */}
             <div className="sm:mb-4 mb-2">
-              <label htmlFor="firstName" className="font-bold text-[var(--secondary-color)] text-sm">First Name</label>
+              <label
+                htmlFor="firstName"
+                className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+              >
+                First Name
+              </label>
               <input
                 type="text"
                 id="firstName"
                 placeholder="Enter your first name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.firstName ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.firstName
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 }`}
-                {...register("firstName", { required: "First name is required" })}
+                {...register("firstName", {
+                  required: "First name is required",
+                })}
               />
             </div>
 
             {/* Last Name */}
             <div className="sm:mb-4 mb-2">
-              <label htmlFor="lastName" className="font-bold text-[var(--secondary-color)] text-sm">Last Name</label>
+              <label
+                htmlFor="lastName"
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+              >
+                Last Name
+              </label>
               <input
                 type="text"
                 id="lastName"
                 placeholder="Enter your last name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.lastName ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.lastName
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 }`}
                 {...register("lastName", { required: "Last name is required" })}
               />
@@ -194,37 +229,67 @@ const ProfileInfo = () => {
 
             {/* Role */}
             <div className="sm:mb-4 mb-2">
-              <label htmlFor="role" className="font-bold text-[var(--secondary-color)] text-sm">Role</label>
+              <label
+                htmlFor="role"
+                className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+              >
+                Role
+              </label>
               <div className="relative w-full">
                 <input
                   type="text"
                   id="role"
                   readOnly
-                  className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg bg-gray-50 cursor-not-allowed border-[#E8E8E8]"
+                  className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg bg-gray-100 cursor-not-allowed border-[#E8E8E8] outline-none"
                   {...register("role", { required: "Role is required" })}
                 />
-                <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                  <Icon icon="solar:lock-password-bold" className="text-gray-400" width="18" />
-                </div>
+                {/* <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                  <Icon
+                    icon="solar:lock-password-bold"
+                    className="text-gray-400"
+                    width="18"
+                  />
+                </div> */}
               </div>
-              <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">Role assigned by administrator</p>
+              <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">
+                Role assigned by administrator
+              </p>
             </div>
 
             {/* Department */}
             <div className="sm:mb-4 mb-2">
-              <label htmlFor="department" className="font-bold text-[var(--secondary-color)] text-sm">Department</label>
+              <label
+                htmlFor="department"
+                className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+              >
+                Department
+              </label>
               <div className="relative w-full">
                 <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-[#5D5D5D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="h-4 w-4 text-[#5D5D5D]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
                 <select
                   id="department"
-                  className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all ${
-                    errors.department ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                    errors.department
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
-                  {...register("department", { required: "Department is required" })}
+                  {...register("department", {
+                    required: "Department is required",
+                  })}
                 >
                   <option value="">Select your department</option>
                   <option value="hr">HR</option>
@@ -235,18 +300,35 @@ const ProfileInfo = () => {
             </div>
 
             {/* Titles */}
-            <div className="sm:mb-6 mb-5 max-w-28">
-              <label htmlFor="titles" className="font-bold text-[var(--secondary-color)] text-sm">Title</label>
+            <div className="sm:mb-6 mb-4 max-w-28">
+              <label
+                htmlFor="titles"
+                className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+              >
+                Title
+              </label>
               <div className="relative w-full">
                 <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-[#5D5D5D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="h-4 w-4 text-[#5D5D5D]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
                 <select
                   id="titles"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${
-                    errors.titles ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${
+                    errors.titles
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
                   {...register("titles", { required: "Required" })}
                 >
@@ -266,7 +348,9 @@ const ProfileInfo = () => {
               type="submit"
               disabled={!isButtonActive}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
-                isButtonActive ? "opacity-100 cursor-pointer shadow-md" : "opacity-40 cursor-not-allowed pointer-events-none"
+                isButtonActive
+                  ? "opacity-100 cursor-pointer shadow-md"
+                  : "opacity-40 cursor-not-allowed pointer-events-none"
               }`}
             >
               {loading ? "Saving..." : "Get Started"}
