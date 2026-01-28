@@ -132,7 +132,10 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content Section */}
-      <div className="xl:ml-[343px] md:ml-[278px] ml-[0px] right-content w-full h-full">
+      <div
+        className="
+      xl:ml-[343px] md:ml-[278px] ml-[0px] right-content w-full h-full"
+      >
         {renderRoleContent()}
       </div>
     </div>

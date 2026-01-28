@@ -84,6 +84,10 @@ input:-webkit-autofill:active {
   display: none;
 }
 
+.main-wrapper.active .custom-inset {
+  transform: translate(100px, -100px) !important;
+}
+
 .main-wrapper.active .restore-sidebar {
   rotate: 180deg;
 }
@@ -103,6 +107,12 @@ input:-webkit-autofill:active {
 
 .main-wrapper.active .right-content {
   margin-left: 145px;
+}
+
+@media screen and (max-width: 768px) {
+  .main-wrapper.active .right-content {
+    margin-left: 0;
+  }
 }
 
 .main-wrapper.active .manager-popup {
@@ -176,6 +186,9 @@ a {
   @apply outline-none cursor-pointer;
 }
 
+.custom-inset {
+  inset: 0 0 auto auto !important;
+}
 /* a.active {
   @apply bg-[--light-primary-color] text-[var(--primary-color)];
 } */

@@ -75,7 +75,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex items-center md:justify-between justify-center w-full py-4 flex-wrap gap-3">
+    <div className="flex items-center md:justify-between w-full py-4 flex-wrap gap-3">
       <div className="flex items-center gap-2">
         <select
           value={itemsPerPage}
@@ -92,7 +92,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </span>
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 justify-end md:grow-0 grow">
         <button
           onClick={handlePrevious}
           disabled={currentPage === 1}

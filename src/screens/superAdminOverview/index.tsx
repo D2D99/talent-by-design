@@ -50,7 +50,7 @@ const SuperAdminOverview = () => {
 
         <div className="sticky top-6 z-10 flex items-center gap-2 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 rounded-[12px] py-3 px-3">
           <div>
-            <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-1/2 transform -translate-y-1/2 left-[-12px] cursor-pointer">
+            <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-10 left-[-12px] cursor-pointer">
               <button
                 type="button"
                 data-twe-offcanvas-toggle
