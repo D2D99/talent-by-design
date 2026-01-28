@@ -63,39 +63,40 @@ const OrgInvitation = () => {
     fetchData();
   }, [fetchData]);
 
-  // const handleSendInvite = async () => {
-  //   const token = localStorage.getItem("accessToken");
-  //   if (!token || !email || !role) {
-  //     setErrorMessage("Please fill all fields.");
-  //     return;
-  //   }
+  const handleSendInvite = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token || !email || !role) {
+      setErrorMessage("Please fill all fields.");
+      return;
+    }
 
-  //   setIsLoading(true);
-  //   try {
-  //     await axios.post(
-  //       `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
-  //       { email, role },
-  //       { headers: { Authorization: `Bearer ${token}` } },
-  //     );
+    setIsLoading(true);
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
+        { email, role },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
 
-  //     setEmail("");
-  //     setRole("");
+      setEmail("");
+      setRole("");
 
-  //     const modalElem = document.getElementById("inviteModal");
-  //     const modalInstance = Modal.getInstance(modalElem);
-  //     modalInstance?.hide();
+      const modalElem = document.getElementById("inviteModal");
+      const modalInstance = Modal.getInstance(modalElem);
+      modalInstance?.hide();
 
-  //     fetchData();
-  //   } catch (error: any) {
-  //     setErrorMessage(error.response?.data?.message || "Failed to send.");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+      fetchData();
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.message || "Failed to send.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // --- DELETE FUNCTION (With Logic Check) ---
   const handleDelete = async (id: string, status: string) => {
     // Extra safety check: Prevent deletion if not Expired
+
     if (status !== "Expire") return;
 
     if (
@@ -527,9 +528,11 @@ const OrgInvitation = () => {
 
                 <button
                   type="button"
+                  onClick={handleSendInvite}
+                  disabled={isLoading}
                   className="group text-[var(--white-color)] pl-4 h-10 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:pointer-events-none disabled:opacity-40"
                 >
-                  Send Invite
+                  {isLoading ? "Sending..." : "Send Invite"}
                   <Icon
                     icon="mynaui:arrow-right-circle-solid"
                     width="25"
