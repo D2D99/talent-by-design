@@ -59,6 +59,7 @@ import LeaderOverview from "../../screens/leaderOverview";
 import SuperAdminOverview from "../../screens/superAdminOverview";
 import AdminOverview from "../../screens/adminOverview";
 import PageNotFound from "../../screens/pageNotFound";
+import TopBar from "../topBar";
 
 const Dashboard = () => {
   const [isActive, setIsActive] = useState(false);
@@ -127,7 +128,7 @@ const Dashboard = () => {
           className="restore-sidebar absolute top-[80px] right-[-12px] cursor-pointer"
           onClick={toggleMainWrapper}
         >
-          <img src={IconamoonArrow} alt="arrow" />
+          <img src={IconamoonArrow} alt="arrow" className="rotate-180" />
         </div>
       </div>
 
@@ -136,7 +137,8 @@ const Dashboard = () => {
         className="
       xl:ml-[343px] md:ml-[278px] ml-[0px] right-content w-full h-full"
       >
-        {renderRoleContent()}
+        <TopBar />
+        <div>{renderRoleContent()}</div>
       </div>
     </div>
   );

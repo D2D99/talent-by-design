@@ -2,27 +2,39 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+
+// 1. Defined Interface
+interface Invitation {
+  _id: string;
+  orgName?: string;
+  name?: string;
+  email: string;
+  createdAt: string;
+  totalUsers?: number;
+  role: string;
+  status: string;
+}
 
 const OrgInvitation = () => {
   // --- States ---
-  const [dataList, setDataList] = useState<any[]>([]);
+  const [dataList, setDataList] = useState<Invitation[]>([]); // Changed from any[]
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Pagination States
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [totalItems, setTotalItems] = useState<number>(0);
 
-  // Form States (Modal)
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
 
   const isSuperAdmin = currentUserRole === "superadmin";
 
-  // --- Initial Setup ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = dataList.slice(indexOfFirstItem, indexOfLastItem);
+
   useEffect(() => {
     initTWE({ Ripple, Modal });
 
@@ -37,23 +49,22 @@ const OrgInvitation = () => {
     }
   }, []);
 
-  // --- API Functions ---
   const fetchData = useCallback(async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
     setIsLoading(true);
     try {
-      const res = await axios.get(
+      const res = await axios.get<Invitation[]>( // Typed the GET request
         `${import.meta.env.VITE_API_BASE_URL}auth/invitations`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
       setDataList(res.data);
-      setTotalItems(res.data.length);
-    } catch (err: any) {
-      setErrorMessage(err.response?.data?.message || "Failed to load data.");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
+      setErrorMessage(error.response?.data?.message || "Failed to load data.");
     } finally {
       setIsLoading(false);
     }
@@ -86,17 +97,15 @@ const OrgInvitation = () => {
       modalInstance?.hide();
 
       fetchData();
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
       setErrorMessage(error.response?.data?.message || "Failed to send.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --- DELETE FUNCTION (With Logic Check) ---
   const handleDelete = async (id: string, status: string) => {
-    // Extra safety check: Prevent deletion if not Expired
-
     if (status !== "Expire") return;
 
     if (
@@ -112,16 +121,16 @@ const OrgInvitation = () => {
         `${import.meta.env.VITE_API_BASE_URL}auth/invitation/${id}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      fetchData(); // Refresh list
-    } catch (err: any) {
-      setErrorMessage(err.response?.data?.message || "Failed to delete.");
+      fetchData();
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
+      setErrorMessage(error.response?.data?.message || "Failed to delete.");
     }
   };
 
-  // --- Helper Functions ---
   const renderStatusBadge = (status: string) => {
     const base =
-      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border justify-center";
+      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center";
     switch (status) {
       case "Accept":
         return (
@@ -153,9 +162,8 @@ const OrgInvitation = () => {
   return (
     <>
       <div>
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-180px)]">
+        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-180px)]">
           <div className="grid">
-            {/* Header Section */}
             <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
               <div>
                 <h2 className="md:text-2xl text-xl font-bold">
@@ -173,26 +181,40 @@ const OrgInvitation = () => {
                 type="button"
                 data-twe-toggle="modal"
                 data-twe-target="#inviteModal"
-                className="text-white rounded-full py-2 px-4 flex items-center gap-2 font-semibold text-sm uppercase bg-gradient-to-r from-[#1A3652] to-[#448CD2] shadow-lg transition-all"
+                className="relative overflow-hidden z-0
+  text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full 
+  flex justify-center items-center gap-1.5 
+  font-semibold text-base uppercase 
+  bg-gradient-to-r from-[#1a3652] to-[#448bd2] 
+  duration-200 disabled:opacity-40
+  before:content-[''] 
+  before:absolute before:inset-0 
+  before:bg-[#448cd2]/30 
+  before:origin-bottom-left 
+  before:scale-x-0 
+  before:transition-transform 
+  before:duration-300 
+  before:ease-out 
+  hover:before:scale-x-100
+  before:-z-10"
               >
                 <Icon icon="material-symbols:add-rounded" width="22" />
                 {isSuperAdmin ? "Add New Organization" : "Invite New User"}
               </button>
             </div>
 
-            {/* Table Section */}
             <div className="overflow-x-auto rounded-xl">
               <table className="w-full whitespace-nowrap border-collapse">
                 <thead>
                   <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
                     <th className="px-6 py-4 font-semibold">#</th>
                     <th className="px-6 py-4 font-semibold">
-                      {isSuperAdmin ? "Organization" : "Full Name"}
+                      {isSuperAdmin ? "Organization" : "Name"}
                     </th>
                     <th className="px-6 py-4 font-semibold">Email</th>
                     <th className="px-6 py-4 font-semibold">Created Date</th>
                     <th className="px-6 py-4 font-semibold">
-                      {isSuperAdmin ? "Total Users" : "Assigned Role"}
+                      {isSuperAdmin ? "Total Users" : "Role"}
                     </th>
                     <th className="px-6 py-4 font-semibold">Status</th>
                     <th className="px-6 py-4 font-semibold text-center">
@@ -201,20 +223,18 @@ const OrgInvitation = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataList.length > 0 ? (
-                    dataList.map((item, index) => {
-                      // Logic to determine if button should be disabled
+                  {currentData.length > 0 ? (
+                    currentData.map((item, index) => {
                       const canDelete = item.status === "Expire";
-
                       return (
                         <tr
                           key={item._id}
                           className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
                         >
                           <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                            {(currentPage - 1) * itemsPerPage + index + 1}
+                            {indexOfFirstItem + index + 1}
                           </td>
-                          <td className="px-6 py-4 text-sm font-medium text-[#1A3652]">
+                          <td className="px-6 py-4 text-sm font-medium">
                             {isSuperAdmin
                               ? item.orgName || "Unnamed Org"
                               : item.name || "—"}
@@ -239,7 +259,7 @@ const OrgInvitation = () => {
                                 </span>
                               </div>
                             ) : (
-                              <span className="capitalize px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold">
+                              <span className="text-sm text-gray-500 capitalize">
                                 {item.role}
                               </span>
                             )}
@@ -253,21 +273,13 @@ const OrgInvitation = () => {
                                 handleDelete(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              title={
-                                !canDelete
-                                  ? "Only expired invitations can be deleted"
-                                  : "Delete Invitation"
-                              }
                               className={`p-2 rounded-full transition-all ${
                                 canDelete
-                                  ? "text-red-400 hover:text-red-600 hover:bg-red-50"
+                                  ? "text-red-600  hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
                               }`}
                             >
-                              <Icon
-                                icon="solar:trash-bin-trash-bold"
-                                width="20"
-                              />
+                              <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
                           </td>
                         </tr>
@@ -294,109 +306,17 @@ const OrgInvitation = () => {
               </table>
             </div>
 
-            {/* Pagination Section */}
-            <div className="mt-6">
-              <Pagination
-                totalItems={totalItems}
-                itemsPerPage={itemsPerPage}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-                onItemsPerPageChange={(val) => {
-                  setItemsPerPage(val);
-                  setCurrentPage(1);
-                }}
-              />
-            </div>
+            <Pagination
+              totalItems={dataList.length}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
           </div>
         </div>
 
         {/* --- Invite Modal --- */}
-        {/* <div
-          data-twe-modal-init
-          className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto outline-none"
-          id="inviteModal"
-          tabIndex={-1}
-        >
-          <div
-            data-twe-modal-dialog-ref
-            className="relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-xl mx-auto p-4 transition-all"
-          >
-            <div className="bg-white w-full rounded-3xl shadow-2xl flex flex-col p-8 border border-gray-100">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h5 className="text-2xl font-bold text-[#1A3652]">
-                    {isSuperAdmin
-                      ? "New Organization Admin"
-                      : "Invite Team Member"}
-                  </h5>
-                  <p className="text-sm text-gray-500">
-                    Access will be sent via email.
-                  </p>
-                </div>
-                <button
-                  data-twe-modal-dismiss
-                  className="text-gray-400 hover:text-black p-2 bg-gray-50 rounded-full"
-                >
-                  <Icon icon="material-symbols:close" width="24" />
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-xs font-bold text-[#1A3652] mb-2 uppercase tracking-widest">
-                    Recipient Email
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@company.com"
-                    className="w-full p-4 border-2 border-[#F3F4F6] rounded-2xl outline-none focus:border-[#448CD2] bg-[#F9FAFB] transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-[#1A3652] mb-2 uppercase tracking-widest">
-                    Select Permission Level
-                  </label>
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="w-full p-4 border-2 border-[#F3F4F6] rounded-2xl outline-none focus:border-[#448CD2] bg-[#F9FAFB] transition-all capitalize"
-                  >
-                    <option value="">Select a role...</option>
-                    {isSuperAdmin ? (
-                      <option value="admin">Admin (Full Org Access)</option>
-                    ) : (
-                      <>
-                        <option value="leader">Leader</option>
-                        <option value="manager">Manager</option>
-                        <option value="employee">Employee</option>
-                      </>
-                    )}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-10">
-                <button
-                  data-twe-modal-dismiss
-                  className="px-8 py-3 rounded-full font-bold text-gray-500 hover:bg-gray-100 transition-all uppercase text-xs tracking-widest"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSendInvite}
-                  disabled={isLoading}
-                  className="px-8 py-3 bg-gradient-to-r from-[#1A3652] to-[#448CD2] text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-all disabled:opacity-50 uppercase text-xs tracking-widest"
-                >
-                  {isLoading ? "Sending..." : "Send Invitation"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
         <div
           data-twe-modal-init
           className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
@@ -407,7 +327,6 @@ const OrgInvitation = () => {
           role="dialog"
           data-twe-backdrop="static"
           data-twe-keyboard="false"
-          aria-hidden="true"
         >
           <div
             data-twe-modal-dialog-ref
@@ -421,28 +340,13 @@ const OrgInvitation = () => {
                 >
                   {isSuperAdmin ? "Add New Organization" : "Add New Member"}
                 </h5>
-
                 <button
                   type="button"
-                  className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
                   data-twe-modal-dismiss
                   aria-label="Close"
+                  className="text-neutral-500 hover:text-neutral-800"
                 >
-                  <span className="[&>svg]:h-6 [&>svg]:w-6">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </span>
+                  <Icon icon="material-symbols:close" width="24" />
                 </button>
               </div>
 
@@ -450,16 +354,16 @@ const OrgInvitation = () => {
                 <div className="sm:mb-4 mb-2">
                   <label
                     htmlFor="email"
-                    className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                    className="font-bold text-[var(--secondary-color)] text-sm"
                   >
                     Email
                   </label>
                   <input
                     type="email"
-                    value={email}
                     id="email"
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]`}
+                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     placeholder="Enter email"
                   />
                 </div>
@@ -467,11 +371,10 @@ const OrgInvitation = () => {
                 <div className="sm:mb-4 mb-2">
                   <label
                     htmlFor="role"
-                    className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                    className="font-bold text-[var(--secondary-color)] text-sm"
                   >
                     Role
                   </label>
-
                   <div className="relative w-full">
                     <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
                       <svg
@@ -492,7 +395,7 @@ const OrgInvitation = () => {
                       id="role"
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
-                      className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]`}
+                      className="font-medium text-sm appearance-none text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     >
                       <option value="">Select a role...</option>
                       {isSuperAdmin ? (
@@ -512,47 +415,67 @@ const OrgInvitation = () => {
               <div className="flex items-center justify-end gap-3 border-t border-neutral-200 py-4 px-4">
                 <button
                   type="button"
-                  className="group text-[var(--primary-color)] pl-4 py-2 h-10 pr-2 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase   hover:opacity-100 duration-200"
                   data-twe-modal-dismiss
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
+                  className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40
+  before:content-[''] 
+  before:absolute before:inset-0 
+  before:bg-[#448cd2]/10 
+  before:origin-bottom-left 
+  before:scale-x-0 
+  before:transition-transform 
+  before:duration-300 
+  before:ease-out 
+  hover:before:scale-x-100
+  before:-z-10"
                 >
                   Cancel
-                  <Icon
+                  {/* <Icon
                     icon="mynaui:arrow-right-circle-solid"
                     width="25"
-                    height="25"
                     className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                  />
+                  /> */}
                 </button>
-
                 <button
                   type="button"
                   onClick={handleSendInvite}
                   disabled={isLoading}
-                  className="group text-[var(--white-color)] pl-4 h-10 pr-2 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:pointer-events-none disabled:opacity-40"
+                  className="group relative overflow-hidden z-0
+  text-[var(--white-color)] px-5 h-10 rounded-full 
+  flex justify-center items-center gap-1.5 
+  font-semibold text-base uppercase 
+  bg-gradient-to-r from-[#1a3652] to-[#448bd2] 
+  duration-200 disabled:opacity-40
+  before:content-[''] 
+  before:absolute before:inset-0 
+  before:bg-[#448cd2]/30 
+  before:origin-bottom-left 
+  before:scale-x-0 
+  before:transition-transform 
+  before:duration-300 
+  before:ease-out 
+  hover:before:scale-x-100
+  before:-z-10
+"
                 >
                   {isLoading ? "Sending..." : "Send Invite"}
-                  <Icon
+                  {/* <Icon
                     icon="mynaui:arrow-right-circle-solid"
                     width="25"
-                    height="25"
                     className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                  />
+                  /> */}
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Error Message Toast */}
         {errorMessage && (
           <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-4 rounded-2xl shadow-2xl z-[9999] flex items-center gap-4 animate-bounce">
             <Icon icon="solar:danger-bold" width="24" />
             <span className="font-semibold">{errorMessage}</span>
             <button
               onClick={() => setErrorMessage(null)}
-              className="ml-2 bg-white/20 rounded-full p-1 hover:bg-white/40"
+              className="ml-2 bg-white/20 rounded-full p-1"
             >
               <Icon icon="material-symbols:close" width="18" />
             </button>

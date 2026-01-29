@@ -34,7 +34,7 @@ const Sidebar = () => {
     <>
       <div className="flex justify-between flex-col h-full md:p-0 p-4">
         <div>
-          <div className="logo mb-12 ">
+          <div className="logo mb-12">
             <a href="">
               <img
                 src={DashboardLogo}
@@ -85,7 +85,7 @@ const Sidebar = () => {
                   <Icon
                     className="dashboard-icon absolute right-[12px] rotate-90"
                     icon="weui:arrow-filled"
-                    width="12"
+                    width="20"
                     height="20"
                   />
                 </a>
