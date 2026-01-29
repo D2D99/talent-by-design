@@ -1,5 +1,6 @@
 import DashboardLogo from "../../../public/static/img/home/logo.svg";
-import SuperAdminImg from "../../../public/static/img/ic-sadmin.svg";
+// import SuperAdminImg from "../../../public/static/img/ic-sadmin.svg";
+import ProfilePlaceholderImg from "../../../public/static/img/ic-profile-ph.svg";
 import { Icon } from "@iconify/react";
 import { Collapse, Ripple, initTWE, Dropdown } from "tw-elements";
 import { useEffect, useState } from "react";
@@ -10,10 +11,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({ firstName: "", lastName: "", role: "" });
 
-  // 1. Logic to fetch user data from the backend
   const fetchUser = async () => {
-    // UPDATED: Changed 'token' to 'accessToken' to match your storage screenshot
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
 
     if (!token) {
       console.warn("No token found, skipping fetchUser");
@@ -21,19 +20,20 @@ const Sidebar = () => {
     }
 
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      // Assuming your API returns { firstName, lastName, role }
-      setUser(response.data); 
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}auth/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setUser(response.data);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
-           // Clear storage and redirect if token is expired/invalid
-           localStorage.clear();
-           navigate("/login");
+          localStorage.clear();
+          navigate("/login");
         }
         console.error("API Error:", error.response?.status, error.message);
       } else {
@@ -42,16 +42,12 @@ const Sidebar = () => {
     }
   };
 
-  // 2. Lifecycle hook to run logic on mount
   useEffect(() => {
-    // Initialize UI library components
     initTWE({ Collapse, Ripple, Dropdown });
-    
-    // Trigger the data fetch
-    fetchUser();
-  }, []); 
 
-  // 3. Logout handler
+    fetchUser();
+  }, []);
+
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
@@ -61,7 +57,6 @@ const Sidebar = () => {
         { withCredentials: true },
       );
     } finally {
-      // Clear all local data and force a clean state
       localStorage.clear();
       sessionStorage.clear();
       navigate("/login");
@@ -84,7 +79,6 @@ const Sidebar = () => {
           </div>
           <div className="dashboard-menu">
             <ul>
-              {/* Overview */}
               <li className="mb-2">
                 <NavLink
                   to={"/dashboard"}
@@ -103,7 +97,6 @@ const Sidebar = () => {
                 </NavLink>
               </li>
 
-              {/* Reports Dropdown */}
               <li className="mb-2 relative">
                 <a
                   data-twe-collapse-init
@@ -190,7 +183,6 @@ const Sidebar = () => {
                 </div>
               </li>
 
-              {/* Questions */}
               <li className="mb-2">
                 <NavLink
                   to={"/dashboard/questions"}
@@ -205,7 +197,6 @@ const Sidebar = () => {
                 </NavLink>
               </li>
 
-              {/* Invite */}
               <li className="mb-2">
                 <NavLink
                   to={"/dashboard/invite"}
@@ -216,7 +207,6 @@ const Sidebar = () => {
                 </NavLink>
               </li>
 
-              {/* Settings */}
               <li className="mb-2">
                 <NavLink
                   to={"/dashboard/settings"}
@@ -231,77 +221,6 @@ const Sidebar = () => {
         </div>
 
         {/* Profile Section */}
-        {/* <div className="md:mx-0 mx-3 manager-popup flex items-center justify-between bg-[#4B9BE91A] p-4 rounded-[12px]">
-          <div className="flex items-center gap-2 ">
-            <img
-              src={SuperAdminImg}
-              alt="Profile"
-              className="xl:size-auto size-12"
-            />
-            <div>
-              <h4 className="xl:text-xl text-lg text-[var(--secondary-color)] font-normal truncate xl:max-w-36 max-w-20 capitalize">
-                Suzanna de Souza
-              </h4>
-              <h4 className="xl:text-base text-sm text-[var(--secondary-color)] font-semibold">
-                Super Admin
-              </h4>
-            </div>
-          </div>
-
-          <div className="relative" data-twe-dropdown-ref>
-            <button
-              className="flex items-center transition duration-150 ease-in-out focus:outline-none"
-              type="button"
-              id="dropdownMenuButton1"
-              data-twe-dropdown-toggle-ref
-            >
-              <Icon icon="pepicons-pencil:dots-y" width="20" height="20" />
-            </button>
-            <ul
-              className="absolute z-[1000] float-left m-0 hidden min-w-32 list-none overflow-hidden rounded-lg border-none bg-white shadow data-[twe-dropdown-show]:block"
-              aria-labelledby="dropdownMenuButton1"
-              data-twe-dropdown-menu-ref
-            >
-              <li className="bg-white hover:bg-neutral-100">
-                <NavLink
-                  to={"#"}
-                  className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5"
-                  data-twe-dropdown-item-ref
-                >
-                  <Icon icon="solar:user-linear" width="14" height="14" />
-                  Profile
-                </NavLink>
-              </li>
-              <li className="bg-white hover:bg-neutral-100">
-                <NavLink
-                  to={"#"}
-                  className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5"
-                  data-twe-dropdown-item-ref
-                >
-                  <Icon icon="si:help-line" width="14" height="14" />
-                  Help
-                </NavLink>
-              </li>
-              <hr />
-              <li className="bg-white hover:bg-red-50">
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm font-medium text-red-700 flex items-center gap-1.5"
-                  data-twe-dropdown-item-ref
-                >
-                  <Icon
-                    icon="hugeicons:logout-square-01"
-                    width="14"
-                    height="14"
-                  />
-                  Log Out
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div> */}
-
-        {/* <div className="md:mx-0 mx-3 manager-popup flex items-center justify-between bg-[#4B9BE91A] p-4 rounded-[12px]"> */}
         <div className="relative" data-twe-dropdown-ref>
           <button
             className="transition duration-150 ease-in-out focus:outline-none w-full"
@@ -312,17 +231,19 @@ const Sidebar = () => {
             <div className="md:mx-0 mx-3 manager-popup flex items-center justify-between bg-[#4B9BE91A] p-4 rounded-[12px] text-left">
               <div className="flex items-center gap-2 w-full">
                 <img
-                  src={SuperAdminImg}
+                  src={ProfilePlaceholderImg}
                   alt="Profile"
                   className="xl:size-auto size-12"
                 />
                 <div>
                   <h4 className="xl:text-xl text-lg text-[var(--secondary-color)] font-normal truncate xl:max-w-36 md:max-w-20 max-w-32 capitalize">
-                    {user.firstName ? `${user.firstName} ${user.lastName}` : "Loading..."}
+                    {user.firstName
+                      ? `${user.firstName} ${user.lastName}`
+                      : "Loading..."}
                   </h4>
-                  <h4 className="xl:text-base text-sm text-[var(--secondary-color)] font-semibold">
+                  <h5 className="xl:text-base text-sm text-[var(--secondary-color)] font-semibold capitalize !leading-4">
                     {user.role || "User"}
-                  </h4>
+                  </h5>
                 </div>
               </div>
               <Icon icon="pepicons-pencil:dots-y" width="20" height="20" />
@@ -369,7 +290,6 @@ const Sidebar = () => {
               </button>
             </li>
           </ul>
-          {/* </div> */}
         </div>
       </div>
     </>

@@ -20,7 +20,7 @@ const TopBar = () => {
             </button>
           </div>
           <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
-            Welcome back,
+            Welcome back!
           </h3>
           <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1 ">
             Complete platform oversight with real-time performance insights,
