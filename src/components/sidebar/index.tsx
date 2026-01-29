@@ -2,17 +2,56 @@ import DashboardLogo from "../../../public/static/img/home/logo.svg";
 import SuperAdminImg from "../../../public/static/img/ic-sadmin.svg";
 import { Icon } from "@iconify/react";
 import { Collapse, Ripple, initTWE, Dropdown } from "tw-elements";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState({ firstName: "", lastName: "", role: "" });
 
+  // 1. Logic to fetch user data from the backend
+  const fetchUser = async () => {
+    // UPDATED: Changed 'token' to 'accessToken' to match your storage screenshot
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      console.warn("No token found, skipping fetchUser");
+      return;
+    }
+
+    try {
+      const response = await axios.get('http://localhost:3000/api/v1/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      // Assuming your API returns { firstName, lastName, role }
+      setUser(response.data); 
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+           // Clear storage and redirect if token is expired/invalid
+           localStorage.clear();
+           navigate("/login");
+        }
+        console.error("API Error:", error.response?.status, error.message);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
+  };
+
+  // 2. Lifecycle hook to run logic on mount
   useEffect(() => {
+    // Initialize UI library components
     initTWE({ Collapse, Ripple, Dropdown });
-  }, []);
+    
+    // Trigger the data fetch
+    fetchUser();
+  }, []); 
 
+  // 3. Logout handler
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
@@ -22,7 +61,7 @@ const Sidebar = () => {
         { withCredentials: true },
       );
     } finally {
-      // This ensures storage is wiped and user is redirected regardless of server response
+      // Clear all local data and force a clean state
       localStorage.clear();
       sessionStorage.clear();
       navigate("/login");
@@ -279,10 +318,10 @@ const Sidebar = () => {
                 />
                 <div>
                   <h4 className="xl:text-xl text-lg text-[var(--secondary-color)] font-normal truncate xl:max-w-36 md:max-w-20 max-w-32 capitalize">
-                    Suzanna de Souza
+                    {user.firstName ? `${user.firstName} ${user.lastName}` : "Loading..."}
                   </h4>
                   <h4 className="xl:text-base text-sm text-[var(--secondary-color)] font-semibold">
-                    Super Admin
+                    {user.role || "User"}
                   </h4>
                 </div>
               </div>
