@@ -3,8 +3,9 @@ import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import axios, { AxiosError } from "axios";
+import ProgressIcon from "../../../public/static/img/home/progress-icon.png";
 
-// 1. Defined Interface
+// Defined Interface
 interface Invitation {
   _id: string;
   orgName?: string;
@@ -18,7 +19,7 @@ interface Invitation {
 
 const OrgInvitation = () => {
   // --- States ---
-  const [dataList, setDataList] = useState<Invitation[]>([]); // Changed from any[]
+  const [dataList, setDataList] = useState<Invitation[]>([]);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -28,6 +29,9 @@ const OrgInvitation = () => {
 
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
+
+  // New state to track which item is being deleted
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const isSuperAdmin = currentUserRole === "superadmin";
 
@@ -55,7 +59,7 @@ const OrgInvitation = () => {
 
     setIsLoading(true);
     try {
-      const res = await axios.get<Invitation[]>( // Typed the GET request
+      const res = await axios.get<Invitation[]>(
         `${import.meta.env.VITE_API_BASE_URL}auth/invitations`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -105,26 +109,39 @@ const OrgInvitation = () => {
     }
   };
 
-  const handleDelete = async (id: string, status: string) => {
+  // Triggered when clicking the trash icon in the table
+  const openDeleteModal = (id: string, status: string) => {
     if (status !== "Expire") return;
+    setSelectedId(id);
 
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this expired invitation?",
-      )
-    )
-      return;
+    // The data-twe-target on the button usually handles opening,
+    // but we ensure the ID is set first.
+  };
+
+  // Triggered when clicking "Delete" inside the actual Modal
+  const confirmDelete = async () => {
+    if (!selectedId) return;
 
     const token = localStorage.getItem("accessToken");
+    setIsLoading(true);
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_BASE_URL}auth/invitation/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}auth/invitation/${selectedId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
+
+      // Close the modal
+      const modalElem = document.getElementById("deleteModal");
+      const modalInstance = Modal.getInstance(modalElem);
+      modalInstance?.hide();
+
       fetchData();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
       setErrorMessage(error.response?.data?.message || "Failed to delete.");
+    } finally {
+      setIsLoading(false);
+      setSelectedId(null);
     }
   };
 
@@ -181,22 +198,7 @@ const OrgInvitation = () => {
                 type="button"
                 data-twe-toggle="modal"
                 data-twe-target="#inviteModal"
-                className="relative overflow-hidden z-0
-  text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full 
-  flex justify-center items-center gap-1.5 
-  font-semibold text-base uppercase 
-  bg-gradient-to-r from-[#1a3652] to-[#448bd2] 
-  duration-200 disabled:opacity-40
-  before:content-[''] 
-  before:absolute before:inset-0 
-  before:bg-[#448cd2]/30 
-  before:origin-bottom-left 
-  before:scale-x-0 
-  before:transition-transform 
-  before:duration-300 
-  before:ease-out 
-  hover:before:scale-x-100
-  before:-z-10"
+                className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
                 <Icon icon="material-symbols:add-rounded" width="22" />
                 {isSuperAdmin ? "Add New Organization" : "Invite New User"}
@@ -269,13 +271,15 @@ const OrgInvitation = () => {
                           </td>
                           <td className="px-6 py-4 text-center">
                             <button
+                              data-twe-toggle="modal"
+                              data-twe-target="#deleteModal"
                               onClick={() =>
-                                handleDelete(item._id, item.status)
+                                openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
                               className={`p-2 rounded-full transition-all ${
                                 canDelete
-                                  ? "text-red-600  hover:bg-red-50"
+                                  ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
                               }`}
                             >
@@ -326,7 +330,6 @@ const OrgInvitation = () => {
           aria-modal="true"
           role="dialog"
           data-twe-backdrop="static"
-          data-twe-keyboard="false"
         >
           <div
             data-twe-modal-dialog-ref
@@ -343,7 +346,6 @@ const OrgInvitation = () => {
                 <button
                   type="button"
                   data-twe-modal-dismiss
-                  aria-label="Close"
                   className="text-neutral-500 hover:text-neutral-800"
                 >
                   <Icon icon="material-symbols:close" width="24" />
@@ -416,53 +418,82 @@ const OrgInvitation = () => {
                 <button
                   type="button"
                   data-twe-modal-dismiss
-                  className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40
-  before:content-[''] 
-  before:absolute before:inset-0 
-  before:bg-[#448cd2]/10 
-  before:origin-bottom-left 
-  before:scale-x-0 
-  before:transition-transform 
-  before:duration-300 
-  before:ease-out 
-  hover:before:scale-x-100
-  before:-z-10"
+                  className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
                   Cancel
-                  {/* <Icon
-                    icon="mynaui:arrow-right-circle-solid"
-                    width="25"
-                    className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                  /> */}
                 </button>
                 <button
                   type="button"
                   onClick={handleSendInvite}
                   disabled={isLoading}
-                  className="group relative overflow-hidden z-0
-  text-[var(--white-color)] px-5 h-10 rounded-full 
-  flex justify-center items-center gap-1.5 
-  font-semibold text-base uppercase 
-  bg-gradient-to-r from-[#1a3652] to-[#448bd2] 
-  duration-200 disabled:opacity-40
-  before:content-[''] 
-  before:absolute before:inset-0 
-  before:bg-[#448cd2]/30 
-  before:origin-bottom-left 
-  before:scale-x-0 
-  before:transition-transform 
-  before:duration-300 
-  before:ease-out 
-  hover:before:scale-x-100
-  before:-z-10
-"
+                  className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
                   {isLoading ? "Sending..." : "Send Invite"}
-                  {/* <Icon
-                    icon="mynaui:arrow-right-circle-solid"
-                    width="25"
-                    className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-                  /> */}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* --- Delete Modal --- */}
+        <div
+          data-twe-modal-init
+          className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+          id="deleteModal"
+          tabIndex={-1}
+          aria-labelledby="deleteModalTitle"
+          aria-modal="true"
+          role="dialog"
+          data-twe-backdrop="static"
+        >
+          <div
+            data-twe-modal-dialog-ref
+            className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
+          >
+            <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+              <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
+                <h5
+                  className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold"
+                  id="deleteModalTitle"
+                >
+                  Delete
+                </h5>
+                <button
+                  type="button"
+                  data-twe-modal-dismiss
+                  className="text-neutral-500 hover:text-neutral-800"
+                >
+                  <Icon icon="material-symbols:close" width="24" />
+                </button>
+              </div>
+
+              <div className="relative sm:py-8 py-4 px-4 grid place-items-center gap-4">
+                <img src={ProgressIcon} alt="Progress Icon" width={80} />
+                <div className="text-center">
+                  <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
+                    Are you sure to delete the user?
+                  </h5>
+                  <p className="text-sm text-neutral-600">
+                    This action is permanent and the data cannot be retrieved.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 border-t border-neutral-200 py-4 px-4">
+                <button
+                  type="button"
+                  data-twe-modal-dismiss
+                  className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDelete}
+                  disabled={isLoading}
+                  className="group relative overflow-hidden z-0 bg-red-500 px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase text-white duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                >
+                  {isLoading ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>

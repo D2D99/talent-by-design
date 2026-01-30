@@ -200,7 +200,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <NavLink
                   to={"/dashboard/invite"}
-                  className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)] "
+                  className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)]"
                 >
                   <Icon icon="mingcute:invite-line" width="22" height="22" />
                   <span>Invite</span>
@@ -210,7 +210,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <NavLink
                   to={"/dashboard/settings"}
-                  className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)] "
+                  className="flex items-center text-base font-semibold text-[var(--secondary-color)] gap-2 py-2 px-3 rounded-[4px] hover:bg-[#E4F0FC] hover:text-[var(--primary-color)]"
                 >
                   <Icon icon="uil:setting" width="22" height="22" />
                   <span>Settings</span>
