@@ -159,6 +159,8 @@
 // export default AssessmentQuestion;
 
 
+
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -172,47 +174,89 @@ const AssessmentQuestion = () => {
   const navigate = useNavigate();
   const { token: routeToken } = useParams();
   const [searchParams] = useSearchParams();
+
+  // ✅ FIX 1: token + assessmentId from URL
   const token = searchParams.get("token") || routeToken;
+  const assessmentIdFromUrl = searchParams.get("assessmentId");
 
   const [pageLoading, setPageLoading] = useState(true);
   const [questions, setQuestions] = useState<any[]>([]);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<string>("employee"); 
+  const [userRole, setUserRole] = useState<string>("employee");
+
 
   const [currentIndex, setCurrentIndex] = useState<number>(() => {
     const savedIndex = localStorage.getItem(`idx_${token}`);
     return savedIndex ? parseInt(savedIndex) : 0;
   });
+  const currentQuestion = questions[currentIndex];
+  const isForcedChoice = currentQuestion?.questionType === "Forced-Choice";
+  const higherValueOption = currentQuestion?.forcedChoice?.higherValueOption;
 
   const [answers, setAnswers] = useState<Record<string, any>>(() => {
     const savedAnswers = localStorage.getItem(`ans_${token}`);
     return savedAnswers ? JSON.parse(savedAnswers) : {};
   });
 
-  const [selectedValue, setSelectedValue] = useState<number | null>(null);
+  const [selectedValue, setSelectedValue] = useState<number | "A" | "B" | null>(null);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
+  // ✅ FIX 2: set assessmentId ONCE from URL
+  useEffect(() => {
+    if (assessmentIdFromUrl) {
+      setAssessmentId(assessmentIdFromUrl);
+    }
+  }, [assessmentIdFromUrl]);
+
+  // =====================================================
+  // INIT
+  // =====================================================
   useEffect(() => {
     initTWE({ Modal, Ripple });
-    if (token) {
-      try {
-        // Get the role (admin, leader, manager, etc.) from the token
-        const decoded: any = jwtDecode(token);
-        const role = decoded.role?.toLowerCase() || "employee";
-        setUserRole(role);
-        loadAssessmentFlow(role);
-      } catch (err) {
-        console.error("Token error", err);
-        loadAssessmentFlow("employee");
-      }
-    } else {
+
+    if (!token) {
       setPageLoading(false);
+      return;
+    }
+
+    try {
+      const decoded: any = jwtDecode(token);
+      const role = decoded.role?.toLowerCase() || "employee";
+      setUserRole(role);
+      loadQuestions(role);
+    } catch (err) {
+      console.error("Token decode error", err);
+      loadQuestions("employee");
     }
   }, [token]);
 
+  // =====================================================
+  // LOAD QUESTIONS ONLY (NO START AGAIN ❌)
+  // =====================================================
+  const loadQuestions = async (role: string) => {
+    try {
+      const res = await axios.get(
+        `${API_URL}questions?stakeholder=${role}`,
+        {
+          headers: {
+            "x-invite-token": token
+          }
+        }
+      );
+      setQuestions(res.data?.data || []);
+    } catch (error) {
+      console.error("Question load error:", error);
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
+  // =====================================================
+  // SYNC ANSWERS ON NAVIGATION
+  // =====================================================
   useEffect(() => {
     if (questions.length > 0) {
       const currentQId = questions[currentIndex]?._id;
@@ -223,33 +267,41 @@ const AssessmentQuestion = () => {
     }
   }, [currentIndex, questions]);
 
-  const loadAssessmentFlow = async (role: string) => {
-    try {
-      // Dynamic start endpoint: e.g., leader-assessment/start/TOKEN
-      const startRes = await axios.post(`${API_URL}employee-assessment/start/${token}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAssessmentId(startRes.data?.assessmentId);
+  // =====================================================
+  // NEXT BUTTON
+  // =====================================================
 
-      // Dynamic stakeholder query: e.g., questions?stakeholder=leader
-      const questionsRes = await axios.get(`${API_URL}questions?stakeholder=${role}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setQuestions(questionsRes.data?.data || []);
-    } catch (error) {
-      console.error("Init Error:", error);
-    } finally {
-      setPageLoading(false);
-    }
-  };
 
   const handleNext = async (passedValue?: number) => {
     const finalValue = passedValue ?? selectedValue;
-    if (finalValue === null || !assessmentId) return;
-    
-    if (finalValue <= 3 && !comment.trim()) return;
+
+    if (finalValue === null || !assessmentId) {
+      console.warn("Missing answer or assessmentId");
+      return;
+    }
+
+    // ✅ FIX 3: assessmentId now exists
+
+    if (
+      !isForcedChoice &&
+      typeof finalValue === "number" &&
+      finalValue <= 3 &&
+      !comment.trim()
+    ) {
+      return;
+    }
+
+    // Forced-choice rule
+    if (
+      isForcedChoice &&
+      finalValue === higherValueOption &&
+      !comment.trim()
+    ) {
+      return;
+    }
 
     const currentQ = questions[currentIndex];
+
     const updatedAnswers = {
       ...answers,
       [currentQ._id]: {
@@ -257,47 +309,51 @@ const AssessmentQuestion = () => {
         questionId: currentQ._id,
         questionCode: currentQ.questionCode || "Q-CODE",
         answer: finalValue,
-        comment: finalValue <= 3 ? comment : ""
+        // comment: finalValue <= 3 ? comment : ""
+        comment: isForcedChoice
+          ? finalValue === higherValueOption
+            ? comment
+            : ""
+          : typeof finalValue === "number" && finalValue <= 3
+            ? comment
+            : ""
+
       }
     };
-    
+
     setAnswers(updatedAnswers);
     localStorage.setItem(`ans_${token}`, JSON.stringify(updatedAnswers));
 
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      if (Object.keys(updatedAnswers).length < questions.length) {
-        alert("Please answer all questions before finishing.");
-        return;
-      }
       submitFinal(updatedAnswers);
     }
   };
 
+  // =====================================================
+  // FINAL SUBMIT
+  // =====================================================
   const submitFinal = async (finalAnswers: any) => {
     setIsSubmitting(true);
     try {
-      const responsePayload = {
-        responses: Object.values(finalAnswers)
-      };
+      await axios.post(
+        `${API_URL}responses`,
+        { responses: Object.values(finalAnswers) },
+        { headers: { "x-invite-token": token } }
+      );
 
-      await axios.post(`${API_URL}responses`, responsePayload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      // Dynamic submit endpoint: e.g., leader-assessment/ID/submit/TOKEN
-      await axios.post(`${API_URL}${userRole}-assessment/${assessmentId}/submit/${token}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post(
+        `${API_URL}${userRole}-assessment/${assessmentId}/submit/${token}`
+      );
 
       localStorage.removeItem(`ans_${token}`);
       localStorage.removeItem(`idx_${token}`);
       navigate("/success");
     } catch (error: any) {
-      console.error("Submission Error Details:", error.response?.data);
-      alert(error.response?.data?.message || "Submission failed. Please check your connection.");
+      console.error("Submission error:", error.response?.data);
+      alert(error.response?.data?.message || "Submission failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -305,9 +361,22 @@ const AssessmentQuestion = () => {
 
   if (pageLoading) return <SpinnerLoader />;
 
-  const currentQuestion = questions[currentIndex];
+  // const currentQuestion = questions[currentIndex];
   const progressPercentage = ((currentIndex + 1) / questions.length) * 100;
-  const isButtonDisabled = selectedValue === null || isSubmitting || (selectedValue <= 3 && !comment.trim());
+  const isButtonDisabled =
+    selectedValue === null ||
+    isSubmitting ||
+    (
+      !isForcedChoice &&
+      typeof selectedValue === "number" &&
+      selectedValue <= 3 &&
+      !comment.trim()
+    ) ||
+    (
+      isForcedChoice &&
+      selectedValue === higherValueOption &&
+      !comment.trim()
+    );
 
   return (
     <div className="min-h-screen bg-[var(--light-primary-color)]">
@@ -320,8 +389,8 @@ const AssessmentQuestion = () => {
 
         <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
           <div className="flex justify-between items-center">
-             <h2 className="text-base font-bold text-[var(--secondary-color)] uppercase tracking-wide">
-               Question {currentIndex + 1} of {questions.length}
+            <h2 className="text-base font-bold text-[var(--secondary-color)] uppercase tracking-wide">
+              Question {currentIndex + 1} of {questions.length}
             </h2>
           </div>
 
@@ -335,52 +404,145 @@ const AssessmentQuestion = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-5 max-w-96 mx-auto mb-8">
-            {[1, 2, 3, 4, 5].map((num) => (
-              <div key={num} className="flex flex-col items-center">
-                <label className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num ? "bg-[var(--dark-primary-color)] text-white scale-110 shadow-lg" : "text-[var(--secondary-color)] hover:bg-blue-50"}`}>
-                  {num}
-                  <input 
-                    type="radio" 
-                    name="answer" 
-                    className="hidden" 
-                    checked={selectedValue === num}
-                    onChange={() => {
-                      setSelectedValue(num);
-                    }} 
-                  />
-                </label>
-                {num === 1 && <span className="text-[10px] mt-2 text-center leading-tight">Strongly Disagree</span>}
-                {num === 3 && <span className="text-[10px] mt-2 text-center leading-tight">Neutral</span>}
-                {num === 5 && <span className="text-[10px] mt-2 text-center leading-tight">Strongly Agree</span>}
-              </div>
-            ))}
-          </div>
+          {/* {isForcedChoice && (
+            <div className="grid grid-cols-2 max-w-96 mx-auto mb-8">
+              {(["A", "B"] as const).map(opt => (
+                <div key={opt} className="flex flex-col items-center">
+                  <label className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === opt
+                    ? "bg-[var(--dark-primary-color)] text-white scale-110 shadow-lg"
+                    : "text-[var(--secondary-color)] hover:bg-blue-50"
+                    }`}>
+                    {opt}
+                    <input
+                      type="radio"
+                      className="hidden"
+                      checked={selectedValue === opt}
+                      onChange={() => setSelectedValue(opt)}
+                    />
+                  </label>
+                  <span className="text-[10px] mt-2 text-center leading-tight">
+                    {currentQuestion?.forcedChoice?.[`option${opt}`]?.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )} */}
 
-          <div className={`transition-all duration-300 ${selectedValue !== null && selectedValue <= 3 ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
-            <label className="text-sm font-bold block mb-2">{currentQuestion?.insightPrompt || "Why did you choose this score?"} <span className="text-red-500">*</span></label>
-            <textarea 
-               className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none" 
-               rows={4} 
-               value={comment} 
-               onChange={(e) => setComment(e.target.value)}
+          {!isForcedChoice && (
+            <div className="grid grid-cols-5 max-w-96 mx-auto mb-8">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <div key={num} className="flex flex-col items-center">
+                  <label
+                    className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 
+          border border-[#448CD233] rounded-full flex items-center justify-center 
+          cursor-pointer transition-all ${selectedValue === num
+                        ? "bg-[var(--dark-primary-color)] text-white scale-110 shadow-lg"
+                        : "text-[var(--secondary-color)] hover:bg-blue-50"
+                      }`}
+                  >
+                    {num}
+                    <input
+                      type="radio"
+                      name="answer"
+                      className="hidden"
+                      checked={selectedValue === num}
+                      onChange={() => setSelectedValue(num)}
+                    />
+                  </label>
+
+                  {num === 1 && (
+                    <span className="text-[10px] mt-2 text-center leading-tight">
+                      Strongly Disagree
+                    </span>
+                  )}
+                  {num === 3 && (
+                    <span className="text-[10px] mt-2 text-center leading-tight">
+                      Neutral
+                    </span>
+                  )}
+                  {num === 5 && (
+                    <span className="text-[10px] mt-2 text-center leading-tight">
+                      Strongly Agree
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {isForcedChoice && (
+            <div className="flex flex-col gap-4 mb-8">
+              {(["A", "B"] as const).map((opt) => {
+                const optionData = currentQuestion?.forcedChoice?.[`option${opt}`];
+
+                return (
+                  <label
+                    key={opt}
+                    className={`flex items-center justify-between cursor-pointer 
+          border border-[#E8E8E8] p-3 rounded-lg gap-1 flex-row-reverse 
+          transition-all ${selectedValue === opt
+                        ? "border-[var(--dark-primary-color)] bg-blue-50"
+                        : ""
+                      }`}
+                  >
+                    <input
+                      className="w-4 h-4"
+                      type="radio"
+                      name="forcedChoice"
+                      checked={selectedValue === opt}
+                      onChange={() => setSelectedValue(opt)}
+                    />
+
+                    <h3 className="text-sm font-medium text-[#5D5D5D]">
+                      {optionData?.label}
+                    </h3>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+
+
+
+
+          <div className={`transition-all duration-300 ${(
+            (!isForcedChoice &&
+              typeof selectedValue === "number" &&
+              selectedValue <= 3) ||
+            (isForcedChoice &&
+              selectedValue === higherValueOption)
+          )
+            ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
+            <label className="text-sm font-bold block mb-2">
+              {isForcedChoice
+                ? currentQuestion?.forcedChoice?.[`option${selectedValue}`]?.insightPrompt
+                : currentQuestion?.insightPrompt || "Why did you choose this score?"
+              }
+              <span className="text-red-500">*</span>
+            </label>
+
+            <textarea
+              className="font-medium text-sm text-[#5D5D5D] outline-0 focus:border-[var(--primary-color)] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
             ></textarea>
           </div>
 
           <div className="sm:mt-12 mt-8 flex justify-between items-center">
-            <button 
-              type="button" 
-              disabled={currentIndex === 0} 
-              onClick={() => setCurrentIndex(prev => prev - 1)} 
+            <button
+              type="button"
+              disabled={currentIndex === 0}
+              onClick={() => setCurrentIndex(prev => prev - 1)}
               className={`group text-[var(--primary-color)] px-5 py-2 rounded-full border border-[var(--primary-color)] flex items-center gap-2 font-semibold text-sm uppercase transition-all ${currentIndex === 0 ? "invisible" : "visible"}`}
             >
               Previous
             </button>
 
-            <button 
-              type="button" 
-              disabled={isButtonDisabled} 
-              onClick={() => handleNext()} 
+            <button
+              type="button"
+              disabled={isButtonDisabled}
+              onClick={() => handleNext()}
               className={`group text-white px-6 py-2.5 rounded-full flex items-center gap-2 font-semibold text-sm uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isButtonDisabled ? "opacity-40 cursor-not-allowed grayscale" : "hover:shadow-lg active:scale-95"}`}
             >
               {isSubmitting ? "Processing..." : currentIndex === questions.length - 1 ? "Finish Assessment" : "Continue"}

@@ -202,6 +202,7 @@
 // export default StartAssessment;
 
 
+
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
@@ -239,6 +240,7 @@ const StartAssessment = () => {
       // 🔹 Employee via invite link
       if (inviteToken) {
         setStakeholder("employee");
+        setPageLoading(false); // ✅ FIX
         return;
       }
 
@@ -263,6 +265,8 @@ const StartAssessment = () => {
         setStakeholder(res.data.role); // admin | leader | manager
       } catch (error) {
         console.error("Failed to determine user role", error);
+      } finally {
+        setPageLoading(false); // ✅ always clear
       }
     };
 
@@ -275,30 +279,29 @@ const StartAssessment = () => {
   useEffect(() => {
     if (!stakeholder) return;
 
-    console.log("Determined stakeholder:", stakeholder);
     const fetchStartData = async () => {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}assessment/start`,
           {
             params: { stakeholder },
+            headers:
+              stakeholder === "employee" && inviteToken
+                ? { "x-invite-token": inviteToken }
+                : {},
             withCredentials: true,
           }
         );
         setData(res.data);
       } catch (error) {
         console.error("Error fetching assessment start data:", error);
-      } finally {
-        setTimeout(() => setPageLoading(false), 500);
       }
     };
 
     fetchStartData();
-  }, [stakeholder]);
+  }, [stakeholder, inviteToken]);
 
-  // =====================================================
-  // ▶️ HANDLE START BUTTON
-  // =====================================================
+ 
   const handleClick = async () => {
     if (!stakeholder) return;
 
@@ -308,7 +311,13 @@ const StartAssessment = () => {
       // 🔹 EMPLOYEE FLOW
       if (stakeholder === "employee" && inviteToken) {
         const res = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}employee-assessment/start/${inviteToken}`
+          `${import.meta.env.VITE_API_BASE_URL}employee-assessment/start`,
+          {},
+          {
+            headers: {
+              "x-invite-token": inviteToken, // ✅ FIX
+            },
+          }
         );
 
         navigate(
