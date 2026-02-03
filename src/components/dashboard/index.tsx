@@ -34,7 +34,7 @@ const Dashboard = () => {
       <div className="xl:ml-[343px] md:ml-[278px] w-full right-content">
         {/* Mobile Sidebar Offcanvas */}
         <div
-          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
+          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none md:hidden sidebar-offcanvas"
           tabIndex={-1}
           id="offcanvasExample"
           aria-labelledby="offcanvasExampleLabel"

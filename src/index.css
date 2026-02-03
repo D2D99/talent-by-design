@@ -97,6 +97,15 @@ input:-webkit-autofill:active {
   display: none;
 }
 
+.main-wrapper.active .sidebar-offcanvas span,
+.main-wrapper.active .sidebar-offcanvas .manager-popup h4,
+.main-wrapper.active .sidebar-offcanvas .manager-popup h5,
+.main-wrapper.active .sidebar-offcanvas a span,
+.main-wrapper.active .sidebar-offcanvas span span,
+.main-wrapper.active .sidebar-offcanvas .ic-hidden {
+  display: flex !important;
+}
+
 .main-wrapper.active img.logo {
   width: 100%;
 }

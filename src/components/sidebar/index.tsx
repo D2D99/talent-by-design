@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLogo from "../../../public/static/img/home/logo.svg";
 import ProfilePlaceholderImg from "../../../public/static/img/ic-profile-ph.svg";
-import { Tooltip, initTWE } from "tw-elements";
+import { Tooltip } from "react-tooltip";
 
+// import { Tooltip, initTWE } from "tw-elements";
 const FIRST_REPORT_ROUTE = "/dashboard/reports/org-head";
 
 const Sidebar = () => {
@@ -34,10 +35,6 @@ const Sidebar = () => {
         localStorage.clear();
         navigate("/login");
       });
-  }, [navigate]);
-
-  useEffect(() => {
-    initTWE({ Tooltip });
   }, []);
 
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -60,15 +57,14 @@ const Sidebar = () => {
     "flex items-center gap-2 py-2 px-3 rounded text-base font-semibold";
   const active = "bg-[#E4F0FC] text-[var(--primary-color)]";
   const inactive = "text-[var(--secondary-color)] hover:bg-[#E4F0FC]";
+  // useEffect(() => {
+  //   initTWE({ Tooltip });
+  // }, []);
 
   return (
     <div className="flex flex-col justify-between h-full md:p-0 p-4">
       <div>
-        <img
-          src={DashboardLogo}
-          className="mx-auto mb-12 max-w-[135px] logo"
-          alt="Logo"
-        />
+        <img src={DashboardLogo} className="mx-auto mb-12 max-w-[135px] logo" />
 
         <ul>
           {/* Overview */}
@@ -79,16 +75,16 @@ const Sidebar = () => {
               className={({ isActive }) =>
                 `${base} ${isActive ? active : inactive}`
               }
-              data-twe-toggle="tooltip"
-              title="Overview"
-              data-twe-placement="right"
+              data-tooltip-id="menu-item1"
+              data-tooltip-content="Overview"
             >
-              <Icon
-                icon="hugeicons:dashboard-square-02"
-                width="22"
-                className="shrink-0"
+              <Icon icon="hugeicons:dashboard-square-02" width="22" />
+              <span>Overview</span>
+              <Tooltip
+                id="menu-item1"
+                className="md:hidden block"
+                place="right"
               />
-              <span className="hidden md:block">Overview</span>
             </NavLink>
           </li>
 
@@ -96,33 +92,38 @@ const Sidebar = () => {
           <li className="mb-2">
             <button
               onClick={() => {
-                setOpenReports(!openReports);
+                setOpenReports(true);
+
                 if (!isReportsRoute) {
                   navigate(FIRST_REPORT_ROUTE);
                 }
               }}
-              className={`${base} w-full justify-between ${isReportsRoute ? active : inactive}`}
-              data-twe-toggle="tooltip"
-              title="Reports"
-              data-twe-placement="right"
+              className={`${base} w-full justify-between ${
+                isReportsRoute ? active : inactive
+              }`}
+              data-tooltip-id="menu-item2"
+              data-tooltip-content="Reports"
             >
               <span className="flex items-center gap-2">
-                <Icon
-                  icon="majesticons:analytics-line"
-                  width="22"
-                  className="shrink-0"
+                <Icon icon="majesticons:analytics-line" width="22" />
+                <span>Reports</span>
+                <Tooltip
+                  id="menu-item2"
+                  className="md:hidden block"
+                  place="right"
                 />
-                <span className="hidden md:block">Reports</span>
               </span>
               <Icon
                 icon="weui:arrow-filled"
                 width="10"
-                className={`transition-transform hidden md:block ${openReports ? "rotate-90" : ""}`}
+                className={`transition-transform ${
+                  openReports ? "rotate-90" : ""
+                }`}
               />
             </button>
 
             {openReports && (
-              <ul className="md:pl-6 pl-0 mt-2 space-y-1" id="sub-menu">
+              <ul className="pl-6 mt-2 space-y-1" id="sub-menu">
                 <ReportLink
                   to="org-head"
                   label="Org Head / Coach"
@@ -154,16 +155,16 @@ const Sidebar = () => {
               className={({ isActive }) =>
                 `${base} ${isActive ? active : inactive}`
               }
-              data-twe-toggle="tooltip"
-              title="Questions"
-              data-twe-placement="right"
+              data-tooltip-id="menu-item3"
+              data-tooltip-content="Questions"
             >
-              <Icon
-                icon="mingcute:question-line"
-                width="22"
-                className="shrink-0"
+              <Icon icon="mingcute:question-line" width="22" />
+              <span>Questions</span>
+              <Tooltip
+                id="menu-item3"
+                className="md:hidden block"
+                place="right"
               />
-              <span className="hidden md:block">Questions</span>
             </NavLink>
           </li>
 
@@ -174,16 +175,16 @@ const Sidebar = () => {
               className={({ isActive }) =>
                 `${base} ${isActive ? active : inactive}`
               }
-              data-twe-toggle="tooltip"
-              title="Invite"
-              data-twe-placement="right"
+              data-tooltip-id="menu-item1"
+              data-tooltip-content="Invite"
             >
-              <Icon
-                icon="mingcute:invite-line"
-                width="22"
-                className="shrink-0"
+              <Icon icon="mingcute:invite-line" width="22" />
+              <span>Invite</span>
+              <Tooltip
+                id="menu-item4"
+                className="md:hidden block"
+                place="right"
               />
-              <span className="hidden md:block">Invite</span>
             </NavLink>
           </li>
 
@@ -194,12 +195,16 @@ const Sidebar = () => {
               className={({ isActive }) =>
                 `${base} ${isActive ? active : inactive}`
               }
-              data-twe-toggle="tooltip"
-              title="Settings"
-              data-twe-placement="right"
+              data-tooltip-id="menu-item1"
+              data-tooltip-content="Settings"
             >
-              <Icon icon="uil:setting" width="22" className="shrink-0" />
-              <span className="hidden md:block">Settings</span>
+              <Icon icon="uil:setting" width="22" />
+              <span>Settings</span>
+              <Tooltip
+                id="menu-item5"
+                className="md:hidden block"
+                place="right"
+              />
             </NavLink>
           </li>
         </ul>
@@ -213,20 +218,20 @@ const Sidebar = () => {
           id="dropdownMenuButton1"
           data-twe-dropdown-toggle-ref
         >
-          <div className="md:mx-0 mx-3 flex items-center justify-center md:justify-between bg-[#4B9BE91A] p-3 md:p-4 rounded-[12px] text-left">
-            <div className="flex items-center gap-2">
+          <div className="md:mx-0 manager-popup flex items-center justify-between bg-[#4B9BE91A] md:p-4 !p-3 rounded-[12px] text-left">
+            <div className="flex items-center gap-2 w-full">
               <img
                 src={ProfilePlaceholderImg}
                 alt="Profile"
-                className="size-10 md:size-12 shrink-0"
+                className="xl:size-auto size-12"
               />
-              <div className="hidden md:block">
-                <h4 className="text-sm text-[var(--secondary-color)] font-normal truncate max-w-24 capitalize">
+              <div>
+                <h4 className="xl:text-xl text-lg text-[var(--secondary-color)] font-normal truncate xl:max-w-36 md:max-w-20 max-w-32 capitalize">
                   {user.firstName
                     ? `${user.firstName} ${user.lastName}`
                     : "Loading..."}
                 </h4>
-                <h5 className="text-xs text-[var(--secondary-color)] font-semibold capitalize leading-tight">
+                <h5 className="xl:text-base text-sm text-[var(--secondary-color)] font-semibold capitalize !leading-4">
                   {user.role || "User"}
                 </h5>
               </div>
@@ -235,11 +240,10 @@ const Sidebar = () => {
               icon="pepicons-pencil:dots-y"
               width="20"
               height="20"
-              className="hidden md:block"
+              className="ic-hidden"
             />
           </div>
         </button>
-        {/* Dropdown Menu */}
         <ul
           className="absolute z-[1000] float-left m-0 hidden min-w-32 list-none overflow-hidden rounded-lg border-none bg-white shadow data-[twe-dropdown-show]:block custom-inset"
           aria-labelledby="dropdownMenuButton1"
@@ -251,7 +255,8 @@ const Sidebar = () => {
               className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5"
               data-twe-dropdown-item-ref
             >
-              <Icon icon="solar:user-linear" width="14" height="14" /> Profile
+              <Icon icon="solar:user-linear" width="14" height="14" />
+              Profile
             </NavLink>
           </li>
           <li className="bg-white hover:bg-neutral-100">
@@ -260,17 +265,18 @@ const Sidebar = () => {
               className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5"
               data-twe-dropdown-item-ref
             >
-              <Icon icon="si:help-line" width="14" height="14" /> Help
+              <Icon icon="si:help-line" width="14" height="14" />
+              Help
             </NavLink>
           </li>
-          <hr className="my-1 border-neutral-100" />
+          <hr />
           <li className="bg-white hover:bg-red-50">
             <button
               onClick={handleLogout}
               className="w-full text-left px-4 py-2 text-sm font-medium text-red-700 flex items-center gap-1.5"
               data-twe-dropdown-item-ref
             >
-              <Icon icon="hugeicons:logout-square-01" width="14" height="14" />{" "}
+              <Icon icon="hugeicons:logout-square-01" width="14" height="14" />
               Log Out
             </button>
           </li>
@@ -280,7 +286,9 @@ const Sidebar = () => {
   );
 };
 
-// Sub-Menu Link Component
+export default Sidebar;
+
+// Report Sub Menu
 const ReportLink = ({
   to,
   label,
@@ -301,15 +309,13 @@ const ReportLink = ({
               : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
           }`
         }
-        data-twe-toggle="tooltip"
-        title={label}
-        data-twe-placement="right"
+        data-tooltip-id="menu-item6"
+        data-tooltip-content={label}
       >
-        <Icon icon={icon} width="18" className="shrink-0" />
-        <span className="hidden md:block whitespace-nowrap">{label}</span>
+        <Icon icon={icon} width="18" />
+        <span>{label}</span>
+        <Tooltip id="menu-item6" className="md:hidden block" place="right" />
       </NavLink>
     </li>
   );
 };
-
-export default Sidebar;

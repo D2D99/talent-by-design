@@ -17,6 +17,7 @@ import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
 import SuperAdminOverview from "./screens/superAdminOverview";
+import "react-tooltip/dist/react-tooltip.css";
 
 function App() {
   return (
