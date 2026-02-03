@@ -44,10 +44,10 @@ function App() {
 
             {/* Reports */}
             <Route path="reports/org-head" element={<SuperAdminOverview />} />
-            <Route
-            // path="reports/senior-leader"
-            // element={<SeniorLeaderReport />}
-            />
+            {/* <Route
+            path="reports/senior-leader"
+            element={<SeniorLeaderReport />}
+            /> */}
             {/* <Route path="reports/manager" element={<ManagerReport />} /> */}
             {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
           </Route>

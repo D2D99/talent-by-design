@@ -1,12 +1,12 @@
-import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
-import { useEffect } from "react";
+// import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
+// import { useEffect } from "react";
 // import Sidebar from "../../components/sidebar";
 // import OrgInvitation from "../../components/orgInvitation";
 
 const SuperAdminOverview = () => {
-  useEffect(() => {
-    initTWE({ Ripple, Offcanvas, Dropdown });
-  }, []);
+  // useEffect(() => {
+  //   initTWE({ Ripple, Offcanvas, Dropdown });
+  // }, []);
 
   return (
     <>
