@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
-import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
+// import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 
 import Sidebar from "../../components/sidebar";
 import { Tab, initTWE } from "tw-elements";

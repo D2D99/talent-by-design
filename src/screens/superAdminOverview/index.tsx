@@ -1,7 +1,7 @@
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
-import Sidebar from "../../components/sidebar";
-import OrgInvitation from "../../components/orgInvitation";
+// import Sidebar from "../../components/sidebar";
+// import OrgInvitation from "../../components/orgInvitation";
 
 const SuperAdminOverview = () => {
   useEffect(() => {
