@@ -1,64 +1,11 @@
-import { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import { useState } from "react";
 import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 import Sidebar from "../sidebar";
-
-// Import your screens
-import ManagerOverview from "../../screens/managerOverview";
-import LeaderOverview from "../../screens/leaderOverview";
-import SuperAdminOverview from "../../screens/superAdminOverview";
-import AdminOverview from "../../screens/adminOverview";
-import PageNotFound from "../../screens/pageNotFound";
 import TopBar from "../topBar";
 
 const Dashboard = () => {
   const [isActive, setIsActive] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Read user from localStorage on component mount
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        setUserRole(parsedUser.role);
-      } catch (error) {
-        console.error("Error parsing user from localStorage", error);
-      }
-    }
-  }, []);
-
-  const toggleMainWrapper = () => {
-    setIsActive((prevState) => !prevState);
-  };
-
-  const renderRoleContent = () => {
-    if (!userRole) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-gray-500 font-medium">Loading Dashboard...</p>
-        </div>
-      );
-    }
-
-    const role = userRole.toLowerCase();
-
-    switch (role) {
-      case "superadmin":
-        return <SuperAdminOverview />;
-
-      case "admin":
-        return <AdminOverview />;
-
-      case "manager":
-        return <ManagerOverview />;
-
-      case "leader":
-        return <LeaderOverview />;
-
-      default:
-        return <PageNotFound />;
-    }
-  };
 
   return (
     <div
@@ -66,26 +13,22 @@ const Dashboard = () => {
         isActive ? "active" : ""
       }`}
     >
-      {/* Sidebar Section */}
-      <div className="md:block hidden fixed h-[-webkit-fill-available] mb-6 xl:max-w-80 max-w-64 w-full left-content bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] pt-8 pr-6 pb-6 pl-6 rounded-[12px]">
+      {/* Sidebar */}
+      <div className="md:block hidden fixed h-[-webkit-fill-available] mb-6 xl:max-w-80 max-w-64 w-full bg-white border border-[#448CD2] border-opacity-20 shadow rounded-[12px] pt-8 pr-6 pb-6 pl-6">
         <Sidebar />
 
-        {/* Restore Sidebar Button (Arrow) */}
         <div
           className="restore-sidebar absolute top-[80px] right-[-12px] cursor-pointer"
-          onClick={toggleMainWrapper}
+          onClick={() => setIsActive(!isActive)}
         >
           <img src={IconamoonArrow} alt="arrow" className="rotate-180" />
         </div>
       </div>
 
-      {/* Main Content Section */}
-      <div
-        className="
-      xl:ml-[343px] md:ml-[278px] ml-[0px] right-content w-full h-full"
-      >
+      {/* Right Content */}
+      <div className="xl:ml-[343px] md:ml-[278px] w-full">
         <TopBar />
-        <div>{renderRoleContent()}</div>
+        <Outlet />
       </div>
     </div>
   );

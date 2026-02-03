@@ -15,6 +15,8 @@ import { AuthProvider } from "./context/AuthProvider";
 import OrgInvitation from "./components/orgInvitation";
 import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
+import OverviewRoute from "./components/overviewRoute";
+import SuperAdminOverview from "./screens/superAdminOverview";
 
 function App() {
   return (
@@ -34,10 +36,20 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile-info" element={<ProfileInfo />} />
 
-          <Route path="dashboard" element={<Dashboard />}>
-            <Route index element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route index element={<OverviewRoute />} />
             <Route path="questions" element={<CrudQuestion />} />
-            <Route path="settings" element={<OrgInvitation />} />
+            <Route path="invite" element={<OrgInvitation />} />
+            {/* <Route path="settings" element={<Settings />} /> */}
+
+            {/* Reports */}
+            <Route path="reports/org-head" element={<SuperAdminOverview />} />
+            <Route
+            // path="reports/senior-leader"
+            // element={<SeniorLeaderReport />}
+            />
+            {/* <Route path="reports/manager" element={<ManagerReport />} /> */}
+            {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
           </Route>
         </Route>
 
