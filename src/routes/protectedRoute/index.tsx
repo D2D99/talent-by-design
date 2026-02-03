@@ -6,8 +6,7 @@ const ProtectedRoute = () => {
   const location = useLocation();
 
   if (!token) {
-    // Save the location the user was trying to go to
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

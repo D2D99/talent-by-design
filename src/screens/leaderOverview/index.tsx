@@ -40,10 +40,10 @@ const LeaderOverview = () => {
   };
 
   const roleData = [
-  { label: 'EMPLOYEE', value: 90, color: '#FF5656' },
-  { label: 'MANAGER', value: 72, color: '#FEE114' },
-  { label: 'SENIOR LEADER', value: 78, color: '#30AD43' },
-]
+    { label: "EMPLOYEE", value: 90, color: "#FF5656" },
+    { label: "MANAGER", value: 72, color: "#FEE114" },
+    { label: "SENIOR LEADER", value: 78, color: "#30AD43" },
+  ];
 
   return (
     <div>
@@ -440,10 +440,11 @@ const LeaderOverview = () => {
                 </div>
               </div>
               <div className="sm:w-[400px] w-full my-10">
-                <RoleProgressChart data= {roleData} />
+                <RoleProgressChart data={roleData} />
               </div>
               <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                <b className="">Largest Gap:</b> Senior Leader VS Employee (+28){" "}
+                <b className="">Largest Gap:</b> Senior Leader VS Employee
+                (+28){" "}
               </p>
               <div className="sm:mt-16 mt-6 ">
                 <button
@@ -487,7 +488,7 @@ const LeaderOverview = () => {
           </div>
         </div>
 
-          <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
             <div className="flex flex-wrap justify-between items-center gap-2">
               <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -557,11 +558,8 @@ const LeaderOverview = () => {
               <MultiRadarChart />
             </div>
           </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-           
-          </div>
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
         </div>
-
 
         <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
@@ -777,11 +775,11 @@ const LeaderOverview = () => {
               </div>
             </div>
             <div className="mt-10">
-              <MultiLineChart data={trendData}/>
+              <MultiLineChart data={trendData} />
             </div>
           </div>
         </div>
-      
+
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
             <div className="flex items-center justify-between ">
@@ -916,7 +914,7 @@ const LeaderOverview = () => {
         </div>
         {/*  */}
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
             <div className="flex items-center justify-between ">
               <div>
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -971,14 +969,14 @@ const LeaderOverview = () => {
             <div></div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-               <div className="flex items-center justify-between ">
+            <div className="flex items-center justify-between ">
               <div>
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Key Recommendations
                 </h3>
               </div>
               <div>
-                 <img src={Healthicons} alt="images" />
+                <img src={Healthicons} alt="images" />
               </div>
             </div>
             <ul className="mt-4 space-y-2">
@@ -1023,11 +1021,8 @@ const LeaderOverview = () => {
               </li>
             </ul>
           </div>
-        
         </div>
         {/*  */}
-        
-   
 
         {/* <div className="last-graph mt-8">
           <ScoreBar score={50} label ="hello world"/>

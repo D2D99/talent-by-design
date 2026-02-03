@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-
 import Login from "./screens/login";
 import Home from "./screens/landing";
 import ForgotPassword from "./screens/forgotPassword";
@@ -8,23 +7,21 @@ import NewPassword from "./screens/newPassword";
 import Register from "./screens/register";
 import AfterRegister from "./screens/afterRegister";
 import ProfileInfo from "./screens/profileInfo";
-
 import AssessmentQuestion from "./components/assessmentQuestion";
 import Dashboard from "./components/dashboard";
 import StartAssessment from "./components/startAssessment";
-// import LoaderTest from "./components/loaderTest";
-
 import PageNotFound from "./screens/pageNotFound";
-// import ProtectedRoute from "./routes/protectedRoute";
 import { AuthProvider } from "./context/AuthProvider";
 import OrgInvitation from "./components/orgInvitation";
 import CrudQuestion from "./screens/crudQuestion";
+import ProtectedRoute from "./routes/protectedRoute";
+import OverviewRoute from "./components/overviewRoute";
+import SuperAdminOverview from "./screens/superAdminOverview";
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Public Guest Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -32,18 +29,29 @@ function App() {
         <Route path="/after-register" element={<AfterRegister />} />
         <Route path="/after-send-email" element={<AfterSendEmail />} />
         <Route path="/new-password" element={<NewPassword />} />
-
-        <Route path="/profile-info" element={<ProfileInfo />} />
         <Route path="/start-assessment" element={<StartAssessment />} />
-        <Route path="dashboard" element={<Dashboard />}>
-          <Route index element={<Home />} />
-          <Route path="questions" element={<CrudQuestion />} />
-          <Route path="settings" element={<OrgInvitation />} />
-        </Route>
         <Route path="/assessment-question" element={<AssessmentQuestion />} />
-        {/* Private Routes */}
-        {/* <Route element={<ProtectedRoute />}>
-        </Route> */}
+
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile-info" element={<ProfileInfo />} />
+
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route index element={<OverviewRoute />} />
+            <Route path="questions" element={<CrudQuestion />} />
+            <Route path="invite" element={<OrgInvitation />} />
+            {/* <Route path="settings" element={<Settings />} /> */}
+
+            {/* Reports */}
+            <Route path="reports/org-head" element={<SuperAdminOverview />} />
+            {/* <Route
+            path="reports/senior-leader"
+            element={<SeniorLeaderReport />}
+            /> */}
+            {/* <Route path="reports/manager" element={<ManagerReport />} /> */}
+            {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
+          </Route>
+        </Route>
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>
