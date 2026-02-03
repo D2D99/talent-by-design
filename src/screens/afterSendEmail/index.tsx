@@ -49,7 +49,7 @@ const AfterSendEmail = () => {
       const lastAttempt = localStorage.getItem("lastResendTimestamp");
       const currentCount = parseInt(
         localStorage.getItem("resendAttempts") || "0",
-        10
+        10,
       );
 
       if (currentCount >= 2 && lastAttempt) {
@@ -84,7 +84,7 @@ const AfterSendEmail = () => {
 
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}auth/forgot-password`,
-        { email }
+        { email },
       );
 
       const nextCount = resendCount + 1;

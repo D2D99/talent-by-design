@@ -92,11 +92,30 @@ input:-webkit-autofill:active {
   rotate: 180deg;
 }
 
-.main-wrapper.active .manager-popup h4 {
+.main-wrapper.active .manager-popup h4,
+.main-wrapper.active .manager-popup h5 {
   display: none;
 }
 
-.main-wrapper.active .manager-popup button {
+.main-wrapper.active img.logo {
+  width: 100%;
+}
+
+.main-wrapper.active .sidebar {
+  width: 95px;
+}
+
+.main-wrapper.active .right-content {
+  margin-left: 120px;
+}
+
+.main-wrapper.active #sub-menu {
+  padding-left: 0;
+}
+
+.main-wrapper.active a span,
+.main-wrapper.active span span,
+.main-wrapper.active .ic-hidden {
   display: none;
 }
 
@@ -105,9 +124,9 @@ input:-webkit-autofill:active {
   max-width: 110;
 }
 
-.main-wrapper.active .right-content {
+/* .main-wrapper.active .right-content {
   margin-left: 145px;
-}
+} */
 
 @media screen and (max-width: 768px) {
   .main-wrapper.active .right-content {
