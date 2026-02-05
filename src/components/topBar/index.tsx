@@ -14,7 +14,7 @@ const TopBar = () => {
     <>
       <div className="sticky top-6 z-10 flex items-center gap-4 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 rounded-[12px] py-3 px-3 mb-6">
         {/* Mobile Sidebar Toggle */}
-        <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-10 transform left-[-12px] cursor-pointer">
+        <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-6 transform left-[-12px] cursor-pointer">
           <button
             type="button"
             data-twe-offcanvas-toggle
