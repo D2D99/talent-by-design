@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { Icon } from "@iconify/react";
 import { Collapse, Tab, Modal, initTWE, Ripple } from "tw-elements";
+import type { DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   questionService,
 } from "../../services/questionService";
@@ -202,7 +204,7 @@ const CrudQuestion = () => {
 
     const orderedSubdomains: string[] = [];
     rolesToCheck.forEach(role => {
-      domainsToCheck.forEach(domain => {
+      domainsToCheck.forEach((domain: string) => {
         const subs = ROLE_DOMAIN_SUBDOMAINS[role]?.[domain];
         if (subs) {
           subs.forEach((s: string) => {
@@ -218,7 +220,7 @@ const CrudQuestion = () => {
   }, [filterRole, filterDomains]);
 
   const filteredQuestions = useMemo(() => {
-    return allQuestions.filter(q => {
+    return allQuestions.filter((q: Question) => {
       if (filterRole && q.stakeholder !== filterRole) return false;
       if (filterDomains.length > 0 && !filterDomains.includes(q.domain)) return false;
       if (filterSubdomains.length > 0 && !filterSubdomains.includes(q.subdomain)) return false;
@@ -230,9 +232,9 @@ const CrudQuestion = () => {
 
   const displayGroups = useMemo(() => {
     if (filterSubdomains.length > 0) {
-      return availableSubdomains.filter(sd => filterSubdomains.includes(sd));
+      return availableSubdomains.filter((sd: string) => filterSubdomains.includes(sd));
     }
-    return availableSubdomains.filter(sd => {
+    return availableSubdomains.filter((sd: string) => {
       const relevantRoles = filterRole ? [filterRole] : Object.keys(ROLE_DOMAIN_SUBDOMAINS);
       return relevantRoles.some(role => ROLE_DOMAIN_SUBDOMAINS[role]?.[activeTabDomain]?.includes(sd));
     });
@@ -285,7 +287,7 @@ const CrudQuestion = () => {
 
 
   const updateAddForm = (index: number, field: keyof QuestionFormData, value: string) => {
-    setAddForms(prev => {
+    setAddForms((prev: QuestionFormData[]) => {
       const newList = [...prev];
       newList[index] = { ...newList[index], [field]: value };
 
@@ -321,7 +323,7 @@ const CrudQuestion = () => {
 
   const removeAddForm = (index: number) => {
     if (addForms.length <= 1) return; // Don't delete the last one
-    setAddForms(prev => prev.filter((_, i) => i !== index));
+    setAddForms((prev: QuestionFormData[]) => prev.filter((_, i) => i !== index));
   };
 
 
@@ -407,7 +409,7 @@ const CrudQuestion = () => {
     setLoading(true);
     try {
       await questionService.deleteQuestion(selectedQuestion._id);
-      setAllQuestions(prev => prev.filter(q => q._id !== selectedQuestion._id));
+      setAllQuestions((prev: Question[]) => prev.filter((q: Question) => q._id !== selectedQuestion._id));
       Modal.getInstance(document.getElementById("deleteModal") as HTMLElement)?.hide();
     } catch (err: any) {
       alert(err.message || "Failed");
@@ -416,36 +418,45 @@ const CrudQuestion = () => {
     }
   };
 
-  const moveQuestion = (id: string, direction: 'up' | 'down') => {
-    setAllQuestions(prev => {
-      const index = prev.findIndex(q => q._id === id);
-      if (index === -1) return prev;
+  const handleOnDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
 
-      const question = prev[index];
-      const subdomain = question.subdomain;
+    const { source, destination, draggableId } = result;
 
-      // Filter indices of questions in the SAME subdomain
-      const sameSubIndices = prev
-        .map((q, i) => q.subdomain === subdomain ? i : -1)
-        .filter(i => i !== -1);
+    setAllQuestions((prev: Question[]) => {
+      const newQuestions = [...prev];
 
-      const posInSub = sameSubIndices.indexOf(index);
+      // 1. Find the question being dragged
+      const draggedIdx = newQuestions.findIndex((q: Question) => q._id === draggableId);
+      if (draggedIdx === -1) return prev;
 
-      if (direction === 'up' && posInSub > 0) {
-        const targetIndex = sameSubIndices[posInSub - 1];
-        const newQuestions = [...prev];
-        [newQuestions[index], newQuestions[targetIndex]] = [newQuestions[targetIndex], newQuestions[index]];
-        return newQuestions;
+      const [draggedItem] = newQuestions.splice(draggedIdx, 1);
+
+      // 2. Update its subdomain if it moved to a different droppable
+      if (source.droppableId !== destination.droppableId) {
+        draggedItem.subdomain = destination.droppableId;
       }
 
-      if (direction === 'down' && posInSub < sameSubIndices.length - 1) {
-        const targetIndex = sameSubIndices[posInSub + 1];
-        const newQuestions = [...prev];
-        [newQuestions[index], newQuestions[targetIndex]] = [newQuestions[targetIndex], newQuestions[index]];
-        return newQuestions;
+      // 3. Find the correct insertion point in the flat array
+      // We want to insert it at destination.index relative to other questions in the target subdomain
+      const questionsInTargetSub = newQuestions.filter((q: Question) => q.subdomain === destination.droppableId);
+
+      let insertionIdx;
+      if (questionsInTargetSub.length === 0) {
+        // If target subdomain is empty, we just append to the end
+        insertionIdx = newQuestions.length;
+      } else if (destination.index >= questionsInTargetSub.length) {
+        // Insert after the last question of target subdomain
+        const lastQuestionIdx = newQuestions.lastIndexOf(questionsInTargetSub[questionsInTargetSub.length - 1]);
+        insertionIdx = lastQuestionIdx + 1;
+      } else {
+        // Insert at the specific index among target subdomain questions
+        const targetRefQuestion = questionsInTargetSub[destination.index];
+        insertionIdx = newQuestions.indexOf(targetRefQuestion);
       }
 
-      return prev;
+      newQuestions.splice(insertionIdx, 0, draggedItem);
+      return newQuestions;
     });
   };
 
@@ -622,87 +633,92 @@ const CrudQuestion = () => {
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {displayGroups.map((subdomainTitle, idx) => {
-              const questionsInGroup = filteredQuestions.filter(q => q.subdomain === subdomainTitle);
-              const safeId = subdomainTitle.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+          <DragDropContext onDragEnd={handleOnDragEnd}>
+            <div className="space-y-4">
+              {displayGroups.map((subdomainTitle, idx) => {
+                const questionsInGroup = filteredQuestions.filter(q => q.subdomain === subdomainTitle);
+                const safeId = subdomainTitle.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
 
-              return (
-                <div key={subdomainTitle} className="rounded-xl border border-gray-100 bg-white overflow-hidden">
-                  <h2 className="mb-0" id={`heading-${safeId}`}>
-                    <button
-                      className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
-                      type="button"
-                      data-twe-collapse-init
-                      data-twe-target={`#collapse-${safeId}`}
-                      aria-expanded={idx === 0}
-                      aria-controls={`collapse-${safeId}`}
+                return (
+                  <div key={subdomainTitle} className="rounded-xl border border-gray-100 bg-white overflow-hidden">
+                    <h2 className="mb-0" id={`heading-${safeId}`}>
+                      <button
+                        className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
+                        type="button"
+                        data-twe-collapse-init
+                        data-twe-target={`#collapse-${safeId}`}
+                        aria-expanded={idx === 0}
+                        aria-controls={`collapse-${safeId}`}
+                      >
+                        <span className="pr-4">{subdomainTitle}</span>
+                        <span className="ms-auto h-6 w-6 shrink-0 rotate-[-180deg] transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 flex items-center justify-center rounded-full bg-[#1A365D] text-white">
+                          <Icon icon="mdi:chevron-up" width="18" />
+                        </span>
+                      </button>
+                    </h2>
+                    <div
+                      id={`collapse-${safeId}`}
+                      className={`!visible ${idx === 0 ? "" : "hidden"}`} // Default expand first item
+                      data-twe-collapse-item
+                      data-twe-collapse-show={idx === 0}
+                      aria-labelledby={`heading-${safeId}`}
                     >
-                      <span className="pr-4">{subdomainTitle}</span>
-                      <span className="ms-auto h-6 w-6 shrink-0 rotate-[-180deg] transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:rotate-0 flex items-center justify-center rounded-full bg-[#1A365D] text-white">
-                        <Icon icon="mdi:chevron-up" width="18" />
-                      </span>
-                    </button>
-                  </h2>
-                  <div
-                    id={`collapse-${safeId}`}
-                    className={`!visible ${idx === 0 ? "" : "hidden"}`} // Default expand first item
-                    data-twe-collapse-item
-                    data-twe-collapse-show={idx === 0}
-                    aria-labelledby={`heading-${safeId}`}
-                  >
-                    <div className="px-4 text-sm sm:px-6 pb-6 pt-2">
-                      {questionsInGroup.length > 0 ? (
-                        <div className="space-y-4">
-                          {questionsInGroup.map((q, qIdx) => (
-                            <div key={q._id} className="flex justify-between items-start group">
-                              <div className="flex gap-3 pr-2 min-w-0">
-                                <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">Q{qIdx + 1}.</span>
-                                <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">{q.questionStem}</p>
+                      <Droppable droppableId={subdomainTitle}>
+                        {(provided) => (
+                          <div
+                            className="px-4 text-sm sm:px-6 pb-6 pt-2"
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                          >
+                            {questionsInGroup.length > 0 ? (
+                              <div className="space-y-4">
+                                {questionsInGroup.map((q, qIdx) => (
+                                  <Draggable key={q._id} draggableId={q._id} index={qIdx}>
+                                    {(provided) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
+                                      >
+                                        <div className="flex gap-3 pr-2 min-w-0">
+                                          <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">Q{qIdx + 1}.</span>
+                                          <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">{q.questionStem}</p>
+                                        </div>
+                                        <div className="flex gap-3 lg:gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0">
+                                          <button onClick={() => openEditModal(q)} className="text-blue-400 hover:text-blue-600 transition-colors p-1" title="Edit">
+                                            <Icon icon="lucide:pencil" width="16" />
+                                          </button>
+                                          <button onClick={() => openDeleteModal(q)} className="text-red-400 hover:text-red-600 transition-colors p-1" title="Delete">
+                                            <Icon icon="lucide:trash-2" width="16" />
+                                          </button>
+                                          <div
+                                            {...provided.dragHandleProps}
+                                            className="text-gray-400 hover:text-gray-600 cursor-grab p-1"
+                                            title="Drag to reorder"
+                                          >
+                                            <Icon icon="lucide:menu" width="16" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {provided.placeholder}
                               </div>
-                              <div className="flex gap-3 lg:gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start">
-                                <div className="flex bg-gray-50 rounded-md p-0.5 border border-gray-100">
-                                  <button
-                                    onClick={() => moveQuestion(q._id, 'up')}
-                                    disabled={qIdx === 0}
-                                    className={`p-1 rounded transition-colors ${qIdx === 0 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-500 hover:text-blue-500 hover:bg-white'}`}
-                                    title="Move Up"
-                                  >
-                                    <Icon icon="lucide:chevron-up" width="14" />
-                                  </button>
-                                  <button
-                                    onClick={() => moveQuestion(q._id, 'down')}
-                                    disabled={qIdx === questionsInGroup.length - 1}
-                                    className={`p-1 rounded transition-colors ${qIdx === questionsInGroup.length - 1 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-500 hover:text-blue-500 hover:bg-white'}`}
-                                    title="Move Down"
-                                  >
-                                    <Icon icon="lucide:chevron-down" width="14" />
-                                  </button>
-                                </div>
-                                <button onClick={() => openEditModal(q)} className="text-blue-400 hover:text-blue-600 transition-colors p-1" title="Edit">
-                                  <Icon icon="lucide:pencil" width="16" />
-                                </button>
-                                <button onClick={() => openDeleteModal(q)} className="text-red-400 hover:text-red-600 transition-colors p-1" title="Delete">
-                                  <Icon icon="lucide:trash-2" width="16" />
-                                </button>
-                                <button className="text-gray-400 hover:text-gray-600 cursor-grab p-1">
-                                  <Icon icon="lucide:menu" width="16" />
-                                </button>
+                            ) : (
+                              <div className="text-gray-400 text-sm italic py-2 pl-9">
+                                {filterRole ? "No questions added yet." : "Select a filter to view questions."}
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-gray-400 text-sm italic py-2 pl-9">
-                          {filterRole ? "No questions added yet." : "Select a filter to view questions."}
-                        </div>
-                      )}
+                            )}
+                          </div>
+                        )}
+                      </Droppable>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </DragDropContext>
         )}
       </div>
 
@@ -743,7 +759,21 @@ const FilterSection = ({ title, children, open = false }: { title: string, child
   )
 }
 
-const CrudModals = (props: any) => {
+interface CrudModalsProps {
+  addForms: QuestionFormData[];
+  updateAddForm: (index: number, field: keyof QuestionFormData, value: string) => void;
+  addMoreQuestion: () => void;
+  removeAddForm: (index: number) => void;
+  editFormData: QuestionFormData;
+  handleEditInputChange: (e: { target: { id: string; value: string } }) => void;
+  handleCreate: () => Promise<void>;
+  handleUpdate: () => Promise<void>;
+  confirmDelete: () => Promise<void>;
+  loading: boolean;
+  subdomainsGetter: (role: string, domain: string) => string[];
+}
+
+const CrudModals = (props: CrudModalsProps) => {
   const {
     addForms, updateAddForm, addMoreQuestion, removeAddForm,
     editFormData, handleEditInputChange,
