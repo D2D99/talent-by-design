@@ -27,11 +27,11 @@ const Login = () => {
   const { login } = useAuth();
 
   // Commented out to allow users to see the login form even if a token exists
-  // useEffect(() => {
-  //   if (token) {
-  //     navigate("/dashboard", { replace: true });
-  //   }
-  // }, [token, navigate]);
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [token, navigate]);
 
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
