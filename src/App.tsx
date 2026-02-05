@@ -33,10 +33,10 @@ function App() {
         <Route path="/start-assessment" element={<StartAssessment />} />
         <Route path="/assessment-question" element={<AssessmentQuestion />} />
 
+        <Route path="/profile-info" element={<ProfileInfo />} />
+
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/profile-info" element={<ProfileInfo />} />
-
           <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<OverviewRoute />} />
             <Route path="questions" element={<CrudQuestion />} />
