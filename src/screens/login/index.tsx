@@ -24,7 +24,7 @@ type FormFields = {
 const Login = () => {
   const navigate = useNavigate();
   // const location = useLocation();
-  const { login, token } = useAuth();
+  const { login } = useAuth();
 
   // Commented out to allow users to see the login form even if a token exists
   // useEffect(() => {
