@@ -196,19 +196,25 @@ const CrudQuestion = () => {
   };
 
   const availableSubdomains = useMemo(() => {
-    const subdomains = new Set<string>();
+    const subdomainsSet = new Set<string>();
     const rolesToCheck = filterRole ? [filterRole] : Object.keys(ROLE_DOMAIN_SUBDOMAINS);
     const domainsToCheck = filterDomains.length > 0 ? filterDomains : DOMAINS;
 
+    const orderedSubdomains: string[] = [];
     rolesToCheck.forEach(role => {
       domainsToCheck.forEach(domain => {
         const subs = ROLE_DOMAIN_SUBDOMAINS[role]?.[domain];
         if (subs) {
-          subs.forEach((s: string) => subdomains.add(s));
+          subs.forEach((s: string) => {
+            if (!subdomainsSet.has(s)) {
+              subdomainsSet.add(s);
+              orderedSubdomains.push(s);
+            }
+          });
         }
       });
     });
-    return Array.from(subdomains).sort();
+    return orderedSubdomains;
   }, [filterRole, filterDomains]);
 
   const filteredQuestions = useMemo(() => {
@@ -223,18 +229,14 @@ const CrudQuestion = () => {
   }, [allQuestions, filterRole, filterDomains, filterSubdomains, filterTypes, filterScales]);
 
   const displayGroups = useMemo(() => {
-    if (filterSubdomains.length > 0) return filterSubdomains;
-    const relevantRoles = filterRole ? [filterRole] : Object.keys(ROLE_DOMAIN_SUBDOMAINS);
-    const currentDomain = activeTabDomain;
-
-    const mergedSubdomains = new Set<string>();
-    relevantRoles.forEach(role => {
-      const subs = ROLE_DOMAIN_SUBDOMAINS[role]?.[currentDomain];
-      if (subs) subs.forEach((s: string) => mergedSubdomains.add(s));
+    if (filterSubdomains.length > 0) {
+      return availableSubdomains.filter(sd => filterSubdomains.includes(sd));
+    }
+    return availableSubdomains.filter(sd => {
+      const relevantRoles = filterRole ? [filterRole] : Object.keys(ROLE_DOMAIN_SUBDOMAINS);
+      return relevantRoles.some(role => ROLE_DOMAIN_SUBDOMAINS[role]?.[activeTabDomain]?.includes(sd));
     });
-
-    return Array.from(mergedSubdomains).sort();
-  }, [filterSubdomains, filterRole, activeTabDomain]);
+  }, [availableSubdomains, filterSubdomains, filterRole, activeTabDomain]);
 
 
   // 3. MODAL HANDLERS
@@ -412,6 +414,39 @@ const CrudQuestion = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const moveQuestion = (id: string, direction: 'up' | 'down') => {
+    setAllQuestions(prev => {
+      const index = prev.findIndex(q => q._id === id);
+      if (index === -1) return prev;
+
+      const question = prev[index];
+      const subdomain = question.subdomain;
+
+      // Filter indices of questions in the SAME subdomain
+      const sameSubIndices = prev
+        .map((q, i) => q.subdomain === subdomain ? i : -1)
+        .filter(i => i !== -1);
+
+      const posInSub = sameSubIndices.indexOf(index);
+
+      if (direction === 'up' && posInSub > 0) {
+        const targetIndex = sameSubIndices[posInSub - 1];
+        const newQuestions = [...prev];
+        [newQuestions[index], newQuestions[targetIndex]] = [newQuestions[targetIndex], newQuestions[index]];
+        return newQuestions;
+      }
+
+      if (direction === 'down' && posInSub < sameSubIndices.length - 1) {
+        const targetIndex = sameSubIndices[posInSub + 1];
+        const newQuestions = [...prev];
+        [newQuestions[index], newQuestions[targetIndex]] = [newQuestions[targetIndex], newQuestions[index]];
+        return newQuestions;
+      }
+
+      return prev;
+    });
   };
 
   // Helper for form
@@ -625,14 +660,32 @@ const CrudQuestion = () => {
                                 <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">Q{qIdx + 1}.</span>
                                 <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">{q.questionStem}</p>
                               </div>
-                              <div className="flex gap-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start">
-                                <button onClick={() => openEditModal(q)} className="text-blue-400 hover:text-blue-600 transition-colors">
+                              <div className="flex gap-3 lg:gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start">
+                                <div className="flex bg-gray-50 rounded-md p-0.5 border border-gray-100">
+                                  <button
+                                    onClick={() => moveQuestion(q._id, 'up')}
+                                    disabled={qIdx === 0}
+                                    className={`p-1 rounded transition-colors ${qIdx === 0 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-500 hover:text-blue-500 hover:bg-white'}`}
+                                    title="Move Up"
+                                  >
+                                    <Icon icon="lucide:chevron-up" width="14" />
+                                  </button>
+                                  <button
+                                    onClick={() => moveQuestion(q._id, 'down')}
+                                    disabled={qIdx === questionsInGroup.length - 1}
+                                    className={`p-1 rounded transition-colors ${qIdx === questionsInGroup.length - 1 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-500 hover:text-blue-500 hover:bg-white'}`}
+                                    title="Move Down"
+                                  >
+                                    <Icon icon="lucide:chevron-down" width="14" />
+                                  </button>
+                                </div>
+                                <button onClick={() => openEditModal(q)} className="text-blue-400 hover:text-blue-600 transition-colors p-1" title="Edit">
                                   <Icon icon="lucide:pencil" width="16" />
                                 </button>
-                                <button onClick={() => openDeleteModal(q)} className="text-red-400 hover:text-red-600 transition-colors">
+                                <button onClick={() => openDeleteModal(q)} className="text-red-400 hover:text-red-600 transition-colors p-1" title="Delete">
                                   <Icon icon="lucide:trash-2" width="16" />
                                 </button>
-                                <button className="text-gray-400 hover:text-gray-600 cursor-grab">
+                                <button className="text-gray-400 hover:text-gray-600 cursor-grab p-1">
                                   <Icon icon="lucide:menu" width="16" />
                                 </button>
                               </div>
