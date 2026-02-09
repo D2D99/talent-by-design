@@ -6,7 +6,8 @@ import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
-import axios, { AxiosError } from "axios";
+import api from "../../services/axios";
+import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { useAuth } from "../../context/useAuth"; // Ensure this path is correct
@@ -24,14 +25,14 @@ type FormFields = {
 const Login = () => {
   const navigate = useNavigate();
   // const location = useLocation();
-  const { login , token} = useAuth();
+  const { login, token, user } = useAuth();
 
   // Commented out to allow users to see the login form even if a token exists
   useEffect(() => {
-    if (token) {
+    if (token && user) {
       navigate("/dashboard", { replace: true });
     }
-  }, [token, navigate]);
+  }, [token, user, navigate]);
 
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -104,19 +105,11 @@ const Login = () => {
       setLoading(true);
       clearErrors("root");
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/login`,
-        data,
-        { withCredentials: true },
-      );
+      const res = await api.post("auth/login", data);
 
       if (res.data?.accessToken) {
-        // 1. Save the token
-        login(res.data.accessToken);
-
-        // 2. Save the user object (containing the role) to localStorage
-        // We stringify it because localStorage only stores strings
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        // Use the context login function which handles both token and user object
+        login(res.data.accessToken, res.data.user);
 
         // 3. Go to dashboard
         navigate("/dashboard", { replace: true });
@@ -175,8 +168,8 @@ const Login = () => {
                 id="email"
                 autoComplete="email"
                 className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.email
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
                 placeholder="Enter your email"
                 {...register("email", {
@@ -207,8 +200,8 @@ const Login = () => {
                   id="password"
                   autoComplete="current-password"
                   className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.password
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   placeholder="Enter your password"
                   {...register("password", {
@@ -251,8 +244,8 @@ const Login = () => {
               type="submit"
               disabled={isButtonDisabled}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isButtonDisabled
-                  ? "disabled:pointer-events-none disabled:opacity-40"
-                  : "opacity-100 active:scale-95"
+                ? "disabled:pointer-events-none disabled:opacity-40"
+                : "opacity-100 active:scale-95"
                 }`}
             >
               {loading ? "Logging in..." : "Log In"}

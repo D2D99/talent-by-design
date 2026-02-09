@@ -18,10 +18,12 @@ import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
 import SuperAdminOverview from "./screens/superAdminOverview";
 import "react-tooltip/dist/react-tooltip.css";
+import SessionPopup from "./components/sessionPopup";
 
 function App() {
   return (
     <AuthProvider>
+      <SessionPopup />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

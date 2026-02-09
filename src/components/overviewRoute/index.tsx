@@ -4,8 +4,10 @@ import ManagerOverview from "../../screens/managerOverview";
 import PageNotFound from "../../screens/pageNotFound";
 import SuperAdminOverview from "../../screens/superAdminOverview";
 
+import { useAuth } from "../../context/useAuth";
+
 const OverviewRoute = () => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const { user } = useAuth();
   const role = user?.role?.toLowerCase();
 
   switch (role) {

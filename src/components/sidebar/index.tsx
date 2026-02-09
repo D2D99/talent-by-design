@@ -1,7 +1,7 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/axios";
 import DashboardLogo from "../../../public/static/img/home/logo.svg";
 import ProfilePlaceholderImg from "../../../public/static/img/ic-profile-ph.svg";
 import { Tooltip } from "react-tooltip";
@@ -26,12 +26,11 @@ const Sidebar = () => {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
-    axios
-      .get(`${import.meta.env.VITE_API_BASE_URL}auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setUser(res.data))
-      .catch(() => {
+    api
+      .get(`auth/me`)
+      .then((res: any) => setUser(res.data))
+      .catch((err) => {
+        if (err.response?.status === 401) return;
         localStorage.clear();
         navigate("/login");
       });
@@ -40,8 +39,8 @@ const Sidebar = () => {
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/logout`,
+      await api.post(
+        `auth/logout`,
         {},
         { withCredentials: true },
       );
@@ -98,9 +97,8 @@ const Sidebar = () => {
                   navigate(FIRST_REPORT_ROUTE);
                 }
               }}
-              className={`${base} w-full justify-between ${
-                isReportsRoute ? active : inactive
-              }`}
+              className={`${base} w-full justify-between ${isReportsRoute ? active : inactive
+                }`}
               data-tooltip-id="menu-item2"
               data-tooltip-content="Reports"
             >
@@ -116,9 +114,8 @@ const Sidebar = () => {
               <Icon
                 icon="weui:arrow-filled"
                 width="10"
-                className={`transition-transform ${
-                  openReports ? "rotate-90" : ""
-                }`}
+                className={`transition-transform ${openReports ? "rotate-90" : ""
+                  }`}
               />
             </button>
 
@@ -303,10 +300,9 @@ const ReportLink = ({
       <NavLink
         to={`/dashboard/reports/${to}`}
         className={({ isActive }) =>
-          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${
-            isActive
-              ? "bg-[#E4F0FC] text-[var(--primary-color)]"
-              : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
+          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${isActive
+            ? "bg-[#E4F0FC] text-[var(--primary-color)]"
+            : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
           }`
         }
         data-tooltip-id="menu-item6"

@@ -4,7 +4,8 @@ import Logo from "../../../public/static/img/home/logo.svg";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
-import axios, { AxiosError } from "axios";
+import api from "../../services/axios";
+import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 
@@ -150,27 +151,19 @@ const Register = () => {
       // }
 
       // Proceed with registration
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/register`,
-        {
-          email: data.email,
-          password: data.password,
-          confirmPassword: data.confirmPassword,
-          // token: accessToken,
-          // token1: invitationToken,
-        },
-        {
-          // headers: {
-          //   Authorization: `Bearer ${accessToken}`, // Include authToken in headers
-          // },
-          withCredentials: true, // Ensure cookies are sent with the request
-        },
-      );
+      await api.post("auth/register", {
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
 
       localStorage.setItem("registeredEmail", data.email);
       navigate("/after-register");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
+
+      if (axiosError.response?.status === 401) return;
+
       const message =
         axiosError.response?.data?.message ||
         "Registration failed. Please try again.";
@@ -221,9 +214,8 @@ const Register = () => {
             {/* Success Toaster */}
             {errors.root && (
               <div
-                className={`${
-                  errors ? "block" : "hidden"
-                } px-3 fixed left-1/2 top-6 w-full transform -translate-x-1/2 z-50`}
+                className={`${errors ? "block" : "hidden"
+                  } px-3 fixed left-1/2 top-6 w-full transform -translate-x-1/2 z-50`}
               >
                 <div className="flex items-center justify-between bg-gray-800 text-white p-3 rounded-lg max-w-xl mx-auto shadow-lg">
                   <div className="flex items-center gap-2">
@@ -253,11 +245,10 @@ const Register = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your email"
-                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.email
+                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                  }`}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -285,11 +276,10 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter your password"
-                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
-                    errors.password
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.password
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   {...register("password", {
                     required: "Password is required",
                   })}
@@ -314,16 +304,14 @@ const Register = () => {
                   {[...Array(5)].map((_, i) => (
                     <div
                       key={i}
-                      className={`h-full flex-1 transition-all duration-500 ${
-                        i < strengthCount ? strengthColor : "bg-transparent"
-                      }`}
+                      className={`h-full flex-1 transition-all duration-500 ${i < strengthCount ? strengthColor : "bg-transparent"
+                        }`}
                     />
                   ))}
                 </div>
                 <p
-                  className={`text-[10px] mt-1 font-bold uppercase ${
-                    strengthCount === 5 ? "text-green-600" : "text-gray-400"
-                  }`}
+                  className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5 ? "text-green-600" : "text-gray-400"
+                    }`}
                 >
                   Strength:{" "}
                   {strengthCount === 5
@@ -360,9 +348,8 @@ const Register = () => {
                     <Icon
                       icon="material-symbols-light:check"
                       width="16"
-                      className={`rounded-full p-px transition-all ${
-                        item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
-                      }`}
+                      className={`rounded-full p-px transition-all ${item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
+                        }`}
                     />
                     <span className={item.met ? "text-black" : "text-gray-400"}>
                       {item.label}
@@ -384,11 +371,10 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   placeholder="Confirm your password"
-                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
-                    errors.confirmPassword
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.confirmPassword
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
                     validate: (val: string) =>
@@ -417,19 +403,17 @@ const Register = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
-                isButtonActive
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
                   ? "opacity-100 cursor-pointer"
                   : "opacity-40 cursor-not-allowed pointer-events-none"
-              }`}
+                }`}
             >
               {loading ? "Registering..." : "Register"}
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="25"
-                className={`transition-transform duration-300 ${
-                  isButtonActive ? "rotate-0" : "-rotate-45"
-                }`}
+                className={`transition-transform duration-300 ${isButtonActive ? "rotate-0" : "-rotate-45"
+                  }`}
               />
             </button>
 
