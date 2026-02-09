@@ -251,7 +251,14 @@ const Sidebar = () => {
         >
           <li className="bg-white hover:bg-neutral-100">
             <NavLink
-              to={"#"}
+             to={`/dashboard/user-profile`}
+        // className={({ isActive }) =>
+        //   `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${
+        //     isActive
+        //       ? "bg-[#E4F0FC] text-[var(--primary-color)]"
+        //       : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
+        //   }`
+        // }
               className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5"
               data-twe-dropdown-item-ref
             >

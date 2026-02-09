@@ -18,6 +18,7 @@ import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
 import SuperAdminOverview from "./screens/superAdminOverview";
 import "react-tooltip/dist/react-tooltip.css";
+import UserProfile from "./screens/userProfile";
 
 function App() {
   return (
@@ -41,6 +42,8 @@ function App() {
             <Route index element={<OverviewRoute />} />
             <Route path="questions" element={<CrudQuestion />} />
             <Route path="invite" element={<OrgInvitation />} />
+            <Route path="user-profile" element={<UserProfile />} />
+
             {/* <Route path="settings" element={<Settings />} /> */}
 
             {/* Reports */}
