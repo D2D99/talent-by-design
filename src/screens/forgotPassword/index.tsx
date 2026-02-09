@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
-import axios, { AxiosError } from "axios";
+import api from "../../services/axios";
+import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 
@@ -76,16 +77,16 @@ const ForgotPassword = () => {
       setLoading(true);
       clearErrors("root");
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/forgot-password`,
-        { email: data.email },
-      );
+      await api.post("auth/forgot-password", { email: data.email });
 
       localStorage.setItem("emailForResend", data.email);
 
       navigate("/after-send-email");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
+
+      if (axiosError.response?.status === 401) return;
+
       const message =
         axiosError.response?.data?.message || "Failed to send reset email";
 
@@ -141,11 +142,10 @@ const ForgotPassword = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your email"
-                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.email
+                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                  }`}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -164,20 +164,18 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={loading || !isFormValid}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${
-                !isFormValid || loading
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${!isFormValid || loading
                   ? "disabled:pointer-events-none opacity-40"
                   : "opacity-100"
-              }`}
+                }`}
             >
               {loading ? "Sending..." : "Send email"}
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="25"
                 height="25"
-                className={`transition-transform duration-300 ${
-                  isFormValid ? "rotate-0" : "-rotate-45"
-                }`}
+                className={`transition-transform duration-300 ${isFormValid ? "rotate-0" : "-rotate-45"
+                  }`}
               />
             </button>
 

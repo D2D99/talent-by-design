@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/axios";
+import { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
@@ -90,7 +91,7 @@ const AssessmentQuestion = () => {
   const loadQuestions = useCallback(
     async (role: string) => {
       try {
-        const res = await axios.get(`${API_URL}questions?stakeholder=${role}`, {
+        const res = await api.get(`questions?stakeholder=${role}`, {
           headers: { "x-invite-token": token },
         });
         setQuestions(res.data?.data || []);
@@ -168,17 +169,17 @@ const AssessmentQuestion = () => {
     } else {
       setIsSubmitting(true);
       try {
-        await axios.post(
-          `${API_URL}responses`,
+        await api.post(
+          "responses",
           { responses: Object.values(updatedAnswers) },
           { headers: { "x-invite-token": token } },
         );
         setShowFinalForm(true);
-      } catch (error) {
-        let message = "Check fields";
-        if (axios.isAxiosError(error) && error.response) {
-          message = error.response.data.message;
-        }
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        if (axiosError.response?.status === 401) return;
+
+        let message = axiosError.response?.data?.message || "Check fields";
         alert(`Server error: ${message}`);
       } finally {
         setIsSubmitting(false);
@@ -200,8 +201,8 @@ const AssessmentQuestion = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post(
-        `${API_URL}${userRole}-assessment/${assessmentId}/submit/${token}`,
+      const response = await api.post(
+        `${userRole}-assessment/${assessmentId}/submit/${token}`,
         finalForm,
         {
           headers: {
@@ -216,11 +217,11 @@ const AssessmentQuestion = () => {
         localStorage.removeItem(`idx_${token}`);
         setIsSubmitted(true);
       }
-    } catch (error) {
-      let message = "Submission failed.";
-      if (axios.isAxiosError(error) && error.response) {
-        message = error.response.data.message;
-      }
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      if (axiosError.response?.status === 401) return;
+
+      let message = axiosError.response?.data?.message || "Submission failed.";
       alert(message);
     } finally {
       setIsSubmitting(false);
@@ -312,11 +313,10 @@ const AssessmentQuestion = () => {
                       {[1, 2, 3, 4, 5].map((num) => (
                         <div key={num} className="flex flex-col items-center">
                           <label
-                            className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
-                              selectedValue === num
-                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                                : "text-[var(--secondary-color)] hover:bg-blue-50"
-                            }`}
+                            className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
+                              ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                              : "text-[var(--secondary-color)] hover:bg-blue-50"
+                              }`}
                           >
                             {num}
                             <input
@@ -343,11 +343,10 @@ const AssessmentQuestion = () => {
                       {(["A", "B"] as const).map((opt) => (
                         <label
                           key={opt}
-                          className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${
-                            selectedValue === opt
-                              ? "border-[var(--primary-color)] bg-blue-50"
-                              : ""
-                          }`}
+                          className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${selectedValue === opt
+                            ? "border-[var(--primary-color)] bg-blue-50"
+                            : ""
+                            }`}
                         >
                           <input
                             className="w-4 h-4 accent-blue-500"
@@ -366,14 +365,13 @@ const AssessmentQuestion = () => {
                   )}
 
                   <div
-                    className={`transition-all duration-300 ${
-                      (!isForcedChoice &&
-                        typeof selectedValue === "number" &&
-                        selectedValue <= 3) ||
+                    className={`transition-all duration-300 ${(!isForcedChoice &&
+                      typeof selectedValue === "number" &&
+                      selectedValue <= 3) ||
                       (isForcedChoice && selectedValue === higherValueOption)
-                        ? "opacity-100 h-auto"
-                        : "opacity-0 h-0 overflow-hidden"
-                    }`}
+                      ? "opacity-100 h-auto"
+                      : "opacity-0 h-0 overflow-hidden"
+                      }`}
                   >
                     <label className="text-sm font-bold block mb-2">
                       {isForcedChoice
@@ -381,7 +379,7 @@ const AssessmentQuestion = () => {
                           ? currentQuestion?.forcedChoice?.optionA.insightPrompt
                           : currentQuestion?.forcedChoice?.optionB.insightPrompt
                         : currentQuestion?.insightPrompt ||
-                          "Why did you choose this score?"}
+                        "Why did you choose this score?"}
                       <span className="text-black"> *</span>
                     </label>
                     <textarea

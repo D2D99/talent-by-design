@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../public/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
-import axios, { AxiosError } from "axios";
+import api from "../../services/axios";
+import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 
@@ -49,10 +50,7 @@ const ProfileInfo = () => {
   useEffect(() => {
     const fetchAssignedRole = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}auth/current-user-session`,
-          { withCredentials: true },
-        );
+        const response = await api.get("auth/current-user-session");
 
         if (response.data.role) {
           setValue("role", response.data.role);
@@ -87,15 +85,16 @@ const ProfileInfo = () => {
       setLoading(true);
       clearErrors("root");
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/complete-profile`,
-        data,
-        { withCredentials: true },
-      );
+      await api.post("auth/complete-profile", data);
 
       navigate("/login");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
+
+      // If session expired, the popup handles it, so we don't show 
+      // the redundant "token expired" message in the form.
+      if (axiosError.response?.status === 401) return;
+
       const message =
         axiosError.response?.data?.message || "Profile completion failed.";
 
@@ -171,11 +170,10 @@ const ProfileInfo = () => {
                   type="text"
                   id="orgName"
                   placeholder="Enter organization name"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                    errors.orgName
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.orgName
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   {...register("orgName", {
                     required: "Organization name is required",
                   })}
@@ -195,11 +193,10 @@ const ProfileInfo = () => {
                 type="text"
                 id="firstName"
                 placeholder="Enter your first name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.firstName
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.firstName
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                  }`}
                 {...register("firstName", {
                   required: "First name is required",
                 })}
@@ -218,11 +215,10 @@ const ProfileInfo = () => {
                 type="text"
                 id="lastName"
                 placeholder="Enter your last name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.lastName
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.lastName
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                  }`}
                 {...register("lastName", { required: "Last name is required" })}
               />
             </div>
@@ -282,11 +278,10 @@ const ProfileInfo = () => {
                 </div>
                 <select
                   id="department"
-                  className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                    errors.department
+                  className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.department
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   {...register("department", {
                     required: "Department is required",
                   })}
@@ -325,11 +320,10 @@ const ProfileInfo = () => {
                 </div>
                 <select
                   id="titles"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${
-                    errors.titles
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${errors.titles
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   {...register("titles", { required: "Required" })}
                 >
                   <option value="">Select</option>
@@ -347,11 +341,10 @@ const ProfileInfo = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
-                isButtonActive
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
                   ? "opacity-100 cursor-pointer shadow-md"
                   : "opacity-40 cursor-not-allowed pointer-events-none"
-              }`}
+                }`}
             >
               {loading ? "Saving..." : "Get Started"}
               <Icon

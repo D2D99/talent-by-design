@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
-import axios from "axios";
+import api from "../../services/axios";
+import { AxiosError } from "axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 
 const AfterRegister = () => {
@@ -42,23 +43,15 @@ const AfterRegister = () => {
     try {
       setLoading(true);
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/resend-verification-email`,
-        { email },
-      );
+      await api.post("auth/resend-verification-email", { email });
 
       // Handle Success
       triggerToast("Verification email resent", true);
     } catch (error: unknown) {
-      // Fixed: Specified 'unknown' and used type guarding to avoid 'any'
-      let errorMsg = "Failed to resend email";
+      const axiosError = error as AxiosError<{ message: string }>;
+      if (axiosError.response?.status === 401) return;
 
-      if (axios.isAxiosError(error)) {
-        errorMsg = error.response?.data?.message || error.message || errorMsg;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-
+      let errorMsg = axiosError.response?.data?.message || "Failed to resend email";
       triggerToast(errorMsg, false);
     } finally {
       setLoading(false);
@@ -74,17 +67,15 @@ const AfterRegister = () => {
     <>
       {/* Dynamic Toaster */}
       <div
-        className={`${
-          showToast ? "block" : "hidden"
-        } px-3 absolute left-1/2 top-6 w-full transform -translate-x-1/2 z-50 transition-all`}
+        className={`${showToast ? "block" : "hidden"
+          } px-3 absolute left-1/2 top-6 w-full transform -translate-x-1/2 z-50 transition-all`}
       >
         <div className="flex items-center justify-between bg-gray-800 text-white p-3 rounded-lg max-w-xl mx-auto shadow-lg">
           <div className="flex items-center gap-2">
             {/* Dynamic Icon Color based on success/error */}
             <div
-              className={`${
-                isSuccess ? "bg-green-500" : "bg-red-500"
-              } rounded-full p-1 grid place-items-center`}
+              className={`${isSuccess ? "bg-green-500" : "bg-red-500"
+                } rounded-full p-1 grid place-items-center`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -145,11 +136,10 @@ const AfterRegister = () => {
               <button
                 disabled={loading}
                 onClick={handleResend}
-                className={`text-sm font-bold transition-all ${
-                  loading
+                className={`text-sm font-bold transition-all ${loading
                     ? "text-gray-400 cursor-not-allowed"
                     : "text-[#448bd2] hover:underline cursor-pointer"
-                }`}
+                  }`}
               >
                 {loading ? "Resending..." : "Resend Email"}
               </button>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/axios";
 import Logo from "../../../public/static/img/home/logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import BackIcon from "../../../public/static/img/icons/back-icon.svg";
@@ -82,10 +82,7 @@ const AfterSendEmail = () => {
     try {
       setLoading(true);
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/forgot-password`,
-        { email },
-      );
+      await api.post("auth/forgot-password", { email });
 
       const nextCount = resendCount + 1;
       setResendCount(nextCount);
@@ -98,11 +95,9 @@ const AfterSendEmail = () => {
 
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    } catch (error: unknown) {
-      let errorMessage = "Failed to resend email";
-      if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.message || error.message;
-      }
+    } catch (error: any) {
+      if (error.response?.status === 401) return;
+      let errorMessage = error.response?.data?.message || "Failed to resend email";
       alert(errorMessage);
     } finally {
       setLoading(false);
@@ -125,9 +120,8 @@ const AfterSendEmail = () => {
     <div className="min-h-screen bg-[var(--light-primary-color)] relative">
       {/* Success Toaster */}
       <div
-        className={`${
-          showToast ? "block" : "hidden"
-        } px-3 absolute left-1/2 top-6 w-full transform -translate-x-1/2 z-50`}
+        className={`${showToast ? "block" : "hidden"
+          } px-3 absolute left-1/2 top-6 w-full transform -translate-x-1/2 z-50`}
       >
         <div className="flex items-center justify-between bg-gray-800 text-white p-3 rounded-lg max-w-xl mx-auto shadow-lg">
           <div className="flex items-center gap-2">
@@ -173,11 +167,10 @@ const AfterSendEmail = () => {
             <button
               onClick={handleResend}
               disabled={loading || timeLeft > 0}
-              className={`text-sm font-bold transition-all ${
-                loading || timeLeft > 0
+              className={`text-sm font-bold transition-all ${loading || timeLeft > 0
                   ? "text-gray-400 cursor-not-allowed no-underline"
                   : "text-[#448CD2] hover:underline cursor-pointer"
-              }`}
+                }`}
             >
               {loading ? "Sending..." : "Resend Email"}
             </button>

@@ -8,7 +8,8 @@ import { useAuth } from "../../context/useAuth";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const isSessionActive = !!(token && user);
 
   useEffect(() => {
     initTWE({ Collapse, Dropdown });
@@ -23,7 +24,7 @@ const Header = () => {
 
   const navigate = useNavigate();
   const handleClick = () => {
-    if (token) {
+    if (isSessionActive) {
       navigate("/dashboard");
     } else {
       navigate("/login");
@@ -142,7 +143,7 @@ const Header = () => {
                     // data-twe-ripple-init
                     // data-twe-ripple-color="light"
                     >
-                      {token ? "Go to Dashboard" : "Login"}
+                      {isSessionActive ? "Go to Dashboard" : "Login"}
                       <Icon
                         icon="mynaui:arrow-right-circle-solid"
                         width="20"
@@ -165,7 +166,7 @@ const Header = () => {
               // data-twe-ripple-init
               // data-twe-ripple-color="light"
               >
-                {token ? "Go to Dashboard" : "Login"}
+                {isSessionActive ? "Go to Dashboard" : "Login"}
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="20"

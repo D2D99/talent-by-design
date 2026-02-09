@@ -2,10 +2,10 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 
 const ProtectedRoute = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const location = useLocation();
 
-  if (!token) {
+  if (!token || !user) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 

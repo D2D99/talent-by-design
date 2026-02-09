@@ -2,7 +2,8 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
-import axios, { AxiosError } from "axios";
+import api from "../../services/axios";
+import { AxiosError } from "axios";
 import ProgressIcon from "../../../public/static/img/home/progress-icon.png";
 
 // Defined Interface
@@ -54,21 +55,16 @@ const OrgInvitation = () => {
   }, []);
 
   const fetchData = useCallback(async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) return;
-
     setIsLoading(true);
     try {
-      const res = await axios.get<Invitation[]>(
-        `${import.meta.env.VITE_API_BASE_URL}auth/invitations`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const res = await api.get<Invitation[]>("auth/invitations");
       setDataList(res.data);
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
-      setErrorMessage(error.response?.data?.message || "Failed to load data.");
+      // Only show error if it's not a session expiry (401)
+      if (error.response?.status !== 401) {
+        setErrorMessage(error.response?.data?.message || "Failed to load data.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -79,19 +75,14 @@ const OrgInvitation = () => {
   }, [fetchData]);
 
   const handleSendInvite = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token || !email || !role) {
+    if (!email || !role) {
       setErrorMessage("Please fill all fields.");
       return;
     }
 
     setIsLoading(true);
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}auth/send-invitation`,
-        { email, role },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      await api.post("auth/send-invitation", { email, role });
 
       setEmail("");
       setRole("");
@@ -103,7 +94,9 @@ const OrgInvitation = () => {
       fetchData();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
-      setErrorMessage(error.response?.data?.message || "Failed to send.");
+      if (error.response?.status !== 401) {
+        setErrorMessage(error.response?.data?.message || "Failed to send.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -122,13 +115,9 @@ const OrgInvitation = () => {
   const confirmDelete = async () => {
     if (!selectedId) return;
 
-    const token = localStorage.getItem("accessToken");
     setIsLoading(true);
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_API_BASE_URL}auth/invitation/${selectedId}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      await api.delete(`auth/invitation/${selectedId}`);
 
       // Close the modal
       const modalElem = document.getElementById("deleteModal");
@@ -138,7 +127,9 @@ const OrgInvitation = () => {
       fetchData();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
-      setErrorMessage(error.response?.data?.message || "Failed to delete.");
+      if (error.response?.status !== 401) {
+        setErrorMessage(error.response?.data?.message || "Failed to delete.");
+      }
     } finally {
       setIsLoading(false);
       setSelectedId(null);
@@ -277,11 +268,10 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${
-                                canDelete
+                              className={`p-2 rounded-full transition-all ${canDelete
                                   ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
-                              }`}
+                                }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>

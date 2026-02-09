@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1').replace(/\/$/, '');
+import api from "./axios";
 
 export interface Question {
   _id: string;
@@ -40,7 +40,7 @@ export interface CreateQuestionData {
 }
 
 class QuestionService {
-  private baseUrl = `${API_BASE_URL}/questions`;
+  private endpoint = "/questions";
 
   // Get all questions with optional filters
   async getAllQuestions(filters?: {
@@ -48,68 +48,25 @@ class QuestionService {
     domain?: string;
     subdomain?: string;
   }): Promise<Question[]> {
-    const queryParams = new URLSearchParams();
+    const params = new URLSearchParams();
+    if (filters?.stakeholder) params.append('stakeholder', filters.stakeholder);
+    if (filters?.domain) params.append('domain', filters.domain);
+    if (filters?.subdomain) params.append('subdomain', filters.subdomain);
 
-    if (filters?.stakeholder) queryParams.append('stakeholder', filters.stakeholder);
-    if (filters?.domain) queryParams.append('domain', filters.domain);
-    if (filters?.subdomain) queryParams.append('subdomain', filters.subdomain);
-
-    const url = `${this.baseUrl}/all${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch questions');
-    }
-
-    const data = await response.json();
-    return data.data;
+    const response = await api.get(`${this.endpoint}/all`, { params });
+    return response.data.data;
   }
 
   // Get single question by ID
   async getQuestionById(id: string): Promise<Question> {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch question');
-    }
-
-    const data = await response.json();
-    return data.data;
+    const response = await api.get(`${this.endpoint}/${id}`);
+    return response.data.data;
   }
 
   // Create multiple questions
   async createQuestions(questions: Record<string, CreateQuestionData>): Promise<Question[]> {
-    const response = await fetch(`${this.baseUrl}/multiple`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(questions),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create questions');
-    }
-
-    const data = await response.json();
-    return data.data;
+    const response = await api.post(`${this.endpoint}/multiple`, questions);
+    return response.data.data;
   }
 
   // Update question
@@ -120,38 +77,13 @@ class QuestionService {
     insightPrompt?: string;
     forcedChoice?: any;
   }): Promise<Question> {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(updateData),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to update question');
-    }
-
-    const data = await response.json();
-    return data.data;
+    const response = await api.put(`${this.endpoint}/${id}`, updateData);
+    return response.data.data;
   }
 
   // Delete question (soft delete)
   async deleteQuestion(id: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to delete question');
-    }
+    await api.delete(`${this.endpoint}/${id}`);
   }
 }
 
