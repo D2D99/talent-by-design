@@ -30,6 +30,20 @@ const Register = () => {
 
   // ✅ PAGE LOADER EFFECT (ADDED)
   useEffect(() => {
+    // Capture tokens from URL if they exist (Fallback for local dev cookie issues)
+    const params = new URLSearchParams(window.location.search);
+    const authToken = params.get("authToken");
+    const token1 = params.get("token1");
+
+    if (authToken && token1) {
+      console.log("Tokens found in URL, setting cookies manually...");
+      // Set cookies manually to bypass cross-site redirect issues on localhost
+      // This specifically fixes the "You are not invited yet" error
+      const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+      document.cookie = `authToken=${authToken}; path=/; expires=${expires}; SameSite=Lax`;
+      document.cookie = `token1=${token1}; path=/; expires=${expires}; SameSite=Lax`;
+    }
+
     const timer = setTimeout(() => {
       setPageLoading(false);
     }, 1000); // adjust if needed
@@ -246,8 +260,8 @@ const Register = () => {
                 id="email"
                 placeholder="Enter your email"
                 className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
                 {...register("email", {
                   required: "Email is required",
@@ -277,8 +291,8 @@ const Register = () => {
                   id="password"
                   placeholder="Enter your password"
                   className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.password
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   {...register("password", {
                     required: "Password is required",
@@ -372,8 +386,8 @@ const Register = () => {
                   id="confirmPassword"
                   placeholder="Confirm your password"
                   className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.confirmPassword
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
@@ -404,8 +418,8 @@ const Register = () => {
               type="submit"
               disabled={!isButtonActive}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
-                  ? "opacity-100 cursor-pointer"
-                  : "opacity-40 cursor-not-allowed pointer-events-none"
+                ? "opacity-100 cursor-pointer"
+                : "opacity-40 cursor-not-allowed pointer-events-none"
                 }`}
             >
               {loading ? "Registering..." : "Register"}
