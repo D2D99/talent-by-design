@@ -48,6 +48,17 @@ const ProfileInfo = () => {
   });
 
   useEffect(() => {
+    // Capture verifyToken from URL if it exists (Fallback for local dev or cross-domain cookie issues)
+    const params = new URLSearchParams(window.location.search);
+    const verifyToken = params.get("verifyToken");
+
+    if (verifyToken) {
+      console.log("Verify token found in URL, setting cookie manually...");
+      const isProduction = window.location.hostname !== "localhost";
+      const expires = new Date(Date.now() + 15 * 60 * 1000).toUTCString();
+      document.cookie = `verifyToken=${verifyToken}; path=/; expires=${expires}; ${isProduction ? "SameSite=None; Secure" : "SameSite=Lax"}`;
+    }
+
     const fetchAssignedRole = async () => {
       try {
         const response = await api.get("auth/current-user-session");
@@ -171,8 +182,8 @@ const ProfileInfo = () => {
                   id="orgName"
                   placeholder="Enter organization name"
                   className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.orgName
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   {...register("orgName", {
                     required: "Organization name is required",
@@ -194,8 +205,8 @@ const ProfileInfo = () => {
                 id="firstName"
                 placeholder="Enter your first name"
                 className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.firstName
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
                 {...register("firstName", {
                   required: "First name is required",
@@ -216,8 +227,8 @@ const ProfileInfo = () => {
                 id="lastName"
                 placeholder="Enter your last name"
                 className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.lastName
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
                 {...register("lastName", { required: "Last name is required" })}
               />
@@ -279,8 +290,8 @@ const ProfileInfo = () => {
                 <select
                   id="department"
                   className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.department
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   {...register("department", {
                     required: "Department is required",
@@ -321,8 +332,8 @@ const ProfileInfo = () => {
                 <select
                   id="titles"
                   className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${errors.titles
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   {...register("titles", { required: "Required" })}
                 >
@@ -342,8 +353,8 @@ const ProfileInfo = () => {
               type="submit"
               disabled={!isButtonActive}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
-                  ? "opacity-100 cursor-pointer shadow-md"
-                  : "opacity-40 cursor-not-allowed pointer-events-none"
+                ? "opacity-100 cursor-pointer shadow-md"
+                : "opacity-40 cursor-not-allowed pointer-events-none"
                 }`}
             >
               {loading ? "Saving..." : "Get Started"}
