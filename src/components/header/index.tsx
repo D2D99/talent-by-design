@@ -3,10 +3,12 @@ import Logo from "../../../public/static/img/home/logo.svg";
 import { Collapse, Dropdown, initTWE } from "tw-elements";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
 // import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
+  const { token } = useAuth();
 
   useEffect(() => {
     initTWE({ Collapse, Dropdown });
@@ -21,7 +23,11 @@ const Header = () => {
 
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate("/login");
+    if (token) {
+      navigate("/dashboard");
+    } else {
+      navigate("/login");
+    }
   };
   return (
     <>
@@ -131,12 +137,12 @@ const Header = () => {
                       type="button"
                       className="group text-white rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
                       onClick={handleClick}
-                      // data-twe-toggle="modal"
-                      // data-twe-target="#exampleModalCenter"
-                      // data-twe-ripple-init
-                      // data-twe-ripple-color="light"
+                    // data-twe-toggle="modal"
+                    // data-twe-target="#exampleModalCenter"
+                    // data-twe-ripple-init
+                    // data-twe-ripple-color="light"
                     >
-                      Login
+                      {token ? "Go to Dashboard" : "Login"}
                       <Icon
                         icon="mynaui:arrow-right-circle-solid"
                         width="20"
@@ -154,12 +160,12 @@ const Header = () => {
                 type="button"
                 className="group text-white rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
                 onClick={handleClick}
-                // data-twe-toggle="modal"
-                // data-twe-target="#exampleModalCenter"
-                // data-twe-ripple-init
-                // data-twe-ripple-color="light"
+              // data-twe-toggle="modal"
+              // data-twe-target="#exampleModalCenter"
+              // data-twe-ripple-init
+              // data-twe-ripple-color="light"
               >
-                Login
+                {token ? "Go to Dashboard" : "Login"}
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="20"

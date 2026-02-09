@@ -1,10 +1,11 @@
+/// <reference types="vite/client" />
 import { useEffect, useState, useMemo } from "react";
 import { Icon } from "@iconify/react";
 import { Collapse, Tab, Modal, initTWE, Ripple } from "tw-elements";
 import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { questionService } from "../../services/questionService";
-import ProgressIcon from "../../../public/static/img/home/progress-icon.png";
+const ProgressIcon = "/static/img/home/progress-icon.png";
 
 import type {
   Question,
@@ -149,6 +150,7 @@ const CrudQuestion = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null,
   );
+  const [openSubdomains, setOpenSubdomains] = useState<string[]>([]);
 
   // -- Filter State --
   // -- Filter State (PERSISTENT) --
@@ -220,27 +222,6 @@ const CrudQuestion = () => {
       ? filterDomains[0]
       : filterDomains[0] || "People Potential";
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
-  useEffect(() => {
-    initTWE({ Tab, Collapse, Modal, Ripple });
-  }, [filterRole, activeTabDomain, filterSubdomains]);
-
-  const fetchQuestions = async () => {
-    setLoading(true);
-    try {
-      const data = await questionService.getAllQuestions();
-      setAllQuestions(data);
-    } catch (err: any) {
-      console.error("Error fetching questions:", err);
-      // setError(err.message || "Failed to load questions"); // Optional: Don't show global error if not critical
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // 2. FILTER LOGIC
   const toggleFilter = (
     setter: React.Dispatch<React.SetStateAction<string[]>>,
@@ -277,9 +258,18 @@ const CrudQuestion = () => {
     return orderedSubdomains;
   }, [filterRole, filterDomains]);
 
+  const resetFilters = () => {
+    setFilterRole("");
+    setFilterDomains(["People Potential"]);
+    setFilterSubdomains([]);
+    setFilterTypes([]);
+    setFilterScales([]);
+  };
+
   const filteredQuestions = useMemo(() => {
+    if (!filterRole) return []; // Ensure no questions show if no role is selected
     return allQuestions.filter((q: Question) => {
-      if (filterRole && q.stakeholder !== filterRole) return false;
+      if (q.stakeholder !== filterRole) return false;
       if (filterDomains.length > 0 && !filterDomains.includes(q.domain))
         return false;
       if (
@@ -317,6 +307,58 @@ const CrudQuestion = () => {
       );
     });
   }, [availableSubdomains, filterSubdomains, filterRole, activeTabDomain]);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filterRole) count++;
+    // filterDomains is always size 1 (default or selected), 
+    // but usually we count things explicitly filtered.
+    // Let's count subdomains, types, and scales.
+    count += filterSubdomains.length;
+    count += filterTypes.length;
+    count += filterScales.length;
+    return count;
+  }, [filterRole, filterSubdomains, filterTypes, filterScales]);
+
+  const fetchQuestions = async () => {
+    setLoading(true);
+    try {
+      const data = await questionService.getAllQuestions();
+      setAllQuestions(data);
+    } catch (err) {
+      const error = err as Error;
+      console.error("Error fetching questions:", error);
+      // setError(error.message || "Failed to load questions"); // Optional: Don't show global error if not critical
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  useEffect(() => {
+    if (displayGroups.length > 0) {
+      setOpenSubdomains([displayGroups[0]]);
+    } else {
+      setOpenSubdomains([]);
+    }
+  }, [displayGroups]);
+
+  useEffect(() => {
+    // Re-initialize TW Elements when dependency changes to ensure new DOM elements are caught correctly
+    const timer = setTimeout(() => {
+      initTWE({ Tab, Collapse, Modal, Ripple });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [
+    filterRole,
+    activeTabDomain,
+    filterSubdomains,
+    allQuestions,
+    displayGroups,
+  ]);
 
   // 3. MODAL HANDLERS
   const openAddModal = () => {
@@ -426,7 +468,7 @@ const CrudQuestion = () => {
       key = key.charAt(0).toLowerCase() + key.slice(1);
     }
     // If using cleaner IDs in Edit Modal:
-    setEditFormData((prev: any) => ({ ...prev, [key]: value }));
+    setEditFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   // 4. API ACTIONS
@@ -455,27 +497,27 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                  optionA: {
-                    label: form.optionALabel,
-                    insightPrompt: form.optionAPrompt,
-                  },
-                  optionB: {
-                    label: form.optionBLabel,
-                    insightPrompt: form.optionBPrompt,
-                  },
-                  higherValueOption: form.higherValueOption as "A" | "B",
-                }
+                optionA: {
+                  label: form.optionALabel,
+                  insightPrompt: form.optionAPrompt,
+                },
+                optionB: {
+                  label: form.optionBLabel,
+                  insightPrompt: form.optionBPrompt,
+                },
+                higherValueOption: form.higherValueOption as "A" | "B",
+              }
               : undefined,
         };
       });
 
       await questionService.createQuestions(payload);
-      await fetchQuestions();
       Modal.getInstance(
         document.getElementById("addModal") as HTMLElement,
       )?.hide();
-    } catch (err: any) {
-      alert(err.message || "Failed");
+    } catch (err) {
+      const error = err as Error;
+      alert(error.message || "Failed");
     } finally {
       setLoading(false);
     }
@@ -496,24 +538,25 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-                optionA: {
-                  label: editFormData.optionALabel,
-                  insightPrompt: editFormData.optionAPrompt,
-                },
-                optionB: {
-                  label: editFormData.optionBLabel,
-                  insightPrompt: editFormData.optionBPrompt,
-                },
-                higherValueOption: editFormData.higherValueOption as "A" | "B",
-              }
+              optionA: {
+                label: editFormData.optionALabel,
+                insightPrompt: editFormData.optionAPrompt,
+              },
+              optionB: {
+                label: editFormData.optionBLabel,
+                insightPrompt: editFormData.optionBPrompt,
+              },
+              higherValueOption: editFormData.higherValueOption as "A" | "B",
+            }
             : undefined,
       });
       await fetchQuestions();
       Modal.getInstance(
         document.getElementById("editModal") as HTMLElement,
       )?.hide();
-    } catch (err: any) {
-      alert(err.message || "Failed");
+    } catch (err) {
+      const error = err as Error;
+      alert(error.message || "Failed");
     } finally {
       setLoading(false);
     }
@@ -530,8 +573,9 @@ const CrudQuestion = () => {
       Modal.getInstance(
         document.getElementById("deleteModal") as HTMLElement,
       )?.hide();
-    } catch (err: any) {
-      alert(err.message || "Failed");
+    } catch (err) {
+      const error = err as Error;
+      alert(error.message || "Failed");
     } finally {
       setLoading(false);
     }
@@ -596,19 +640,21 @@ const CrudQuestion = () => {
       {/* --- FILTER SIDEBAR --- */}
       {showFilters && (
         <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-10 md:absolute fixed md:top-44 md:right-7 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full">
-          <div className="flex justify-between items-center mb-4 px-5">
-            <h3 className="font-bold text-lg">Filters</h3>
+          <div className="flex justify-between items-center mb-6 px-5">
+            <div className="flex items-center gap-3">
+              <h3 className="font-bold text-lg text-gray-800">Filters</h3>
+              <button
+                onClick={resetFilters}
+                className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors"
+              >
+                Reset
+              </button>
+            </div>
             <button
               onClick={() => setShowFilters(false)}
-              className="text-blue-500 text-sm font-semibold lg:hidden"
+              className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              Close
-            </button>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="text-blue-500 text-sm font-semibold hidden lg:block"
-            >
-              Save View
+              <Icon icon="material-symbols:close" width="22" />
             </button>
           </div>
 
@@ -637,7 +683,10 @@ const CrudQuestion = () => {
                 <select
                   className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   value={filterRole}
-                  onChange={(e) => setFilterRole(e.target.value)}
+                  onChange={(e) => {
+                    setFilterRole(e.target.value);
+                    setFilterSubdomains([]); // Reset subdomains when role changes
+                  }}
                 >
                   <option value="">Select role</option>
                   {Object.keys(ROLE_DOMAIN_SUBDOMAINS).map((r) => (
@@ -659,7 +708,10 @@ const CrudQuestion = () => {
                   <input
                     type="checkbox"
                     checked={filterDomains.includes(d)}
-                    onChange={() => setFilterDomains([d])} // Enforce Single Select
+                    onChange={() => {
+                      setFilterDomains([d]);
+                      setFilterSubdomains([]); // Clear subdomains when changing domain to avoid empty results
+                    }}
                     className="accent-blue-500 text-blue-600 focus:ring-blue-500 rounded-full"
                   />
                   <span className="text-sm text-gray-700">{d}</span>
@@ -761,13 +813,15 @@ const CrudQuestion = () => {
               {DOMAINS.map((domain, index) => (
                 <li key={index}>
                   <button
-                    onClick={() => setFilterDomains([domain])}
+                    onClick={() => {
+                      setFilterDomains([domain]);
+                      setFilterSubdomains([]); // Reset subdomains when changing domain to ensure immediate updates
+                    }}
                     className={`px-6 py-2.5 text-sm  uppercase rounded-full transition-all whitespace-nowrap
-                            ${
-                              filterDomains.includes(domain)
-                                ? "bg-white text-gray-900 shadow-sm  font-semibold"
-                                : "text-neutral-500 font-semibold"
-                            }`}
+                            ${filterDomains.includes(domain)
+                        ? "bg-white text-gray-900 shadow-sm  font-semibold"
+                        : "text-neutral-500 font-semibold"
+                      }`}
                   >
                     {domain}
                   </button>
@@ -780,163 +834,208 @@ const CrudQuestion = () => {
           <button
             type="button"
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${
-                      showFilters
-                        ? "bg-[var(--primary-color)] text-white"
-                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
-                    }`}
+            className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
+                    ${showFilters
+                ? "bg-[var(--primary-color)] text-white"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+              }`}
           >
-            <Icon icon="hugeicons:filter" width="16" height="16" />
-            Filter
+            <div className="flex items-center gap-2">
+              <Icon icon="hugeicons:filter" width="16" height="16" />
+              <span>Filter</span>
+            </div>
+            {activeFilterCount > 0 && (
+              <span className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors
+                ${showFilters ? "bg-white text-[var(--primary-color)]" : "bg-[var(--primary-color)] text-white"}`}>
+                {activeFilterCount}
+              </span>
+            )}
           </button>
         </div>
 
-        {/* --- CONTENT AREA (Accordions or Empty State) --- */}
-        {!filterRole ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="bg-white p-4 rounded-full shadow-sm mb-4">
-              <Icon
-                icon="hugeicons:audit-02"
-                className="text-gray-400 w-12 h-12"
-              />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800">
-              No Role Selected
-            </h3>
-            <p className="text-gray-500 max-w-sm mb-6 text-sm leading-relaxed px-4">
-              To view the assessment structure and questions, Please select a{" "}
-              <strong>Role</strong> from the filters.
-            </p>
-            {/* <button
-              onClick={() => setShowFilters(true)}
-              className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-bold rounded-full hover:bg-gray-50 hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm text-sm"
-            >
-              Open Filters
-            </button> */}
-          </div>
-        ) : (
-          <DragDropContext onDragEnd={handleOnDragEnd}>
-            <div className="space-y-4">
-              {displayGroups.map((subdomainTitle, idx) => {
-                const questionsInGroup = filteredQuestions.filter(
-                  (q) => q.subdomain === subdomainTitle,
-                );
-                const safeId = subdomainTitle
-                  .replace(/[^a-zA-Z0-9]/g, "-")
-                  .toLowerCase();
+        {/* --- CONTENT AREA (Accordions + Role Prompt) --- */}
+        <div className="space-y-6">
+          {!filterRole && (
+            <div className="bg-[#448CD208] border border-[#448CD21A] rounded-2xl p-8 text-center flex flex-col items-center">
+              <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                <Icon
+                  icon="hugeicons:audit-02"
+                  className="text-[var(--primary-color)] w-10 h-10"
+                />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">
+                No Role Selected
+              </h3>
+              <p className="text-gray-500 max-w-sm mb-6 text-sm leading-relaxed px-4">
+                To view the assessment structure and questions, Please select a{" "}
+                <strong>Role</strong>.
+              </p>
 
-                return (
-                  <div
-                    key={subdomainTitle}
-                    className="rounded-xl border border-gray-100 bg-white overflow-hidden"
+              <div className="w-full max-w-xs relative">
+                <div className="absolute inset-y-0 right-0 top-1.5 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    className="h-4 w-4 text-[#5D5D5D]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <h2 className="mb-0" id={`heading-${safeId}`}>
-                      <button
-                        className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
-                        type="button"
-                        data-twe-collapse-init
-                        data-twe-target={`#collapse-${safeId}`}
-                        aria-expanded={idx === 0}
-                        aria-controls={`collapse-${safeId}`}
-                      >
-                        <span className="pr-4">{subdomainTitle}</span>
-                        <span className="ms-auto h-6 w-6 shrink-0 rotate-[-180deg] transition-transform duration-200 ease-in-out group-data-[twe-collapse-collapsed]:text-[var(--primary-color)] group-data-[twe-collapse-collapsed]:from-[var(--light-primary-color)] group-data-[twe-collapse-collapsed]:to-[var(--light-primary-color)] group-data-[twe-collapse-collapsed]:rotate-0 motion-reduce:transition-none flex items-center justify-center rounded-full text-white  bg-gradient-to-t from-[#1a3652] to-[#448bd2]">
-                          <Icon icon="mdi:chevron-up" width="18" />
-                        </span>
-                      </button>
-                    </h2>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+                <select
+                  className="font-bold text-sm appearance-none text-[#1A3652] outline-none shadow-sm sm:w-full w-fit p-3 px-8 border rounded-full transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50"
+                  value={filterRole}
+                  onChange={(e) => {
+                    setFilterRole(e.target.value);
+                    setFilterSubdomains([]); // Reset subdomains when role changes
+                  }}
+                >
+                  <option value="">Select Role</option>
+                  {Object.keys(ROLE_DOMAIN_SUBDOMAINS).map((r) => (
+                    <option key={r} value={r} className="capitalize">
+                      {r.charAt(0).toUpperCase() + r.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
+          {filterRole ? (
+            <DragDropContext onDragEnd={handleOnDragEnd}>
+              <div className="space-y-4">
+                {displayGroups.map((subdomainTitle) => {
+                  const questionsInGroup = filteredQuestions.filter(
+                    (q) => q.subdomain === subdomainTitle,
+                  );
+                  const safeId = subdomainTitle
+                    .replace(/[^a-zA-Z0-9]/g, "-")
+                    .toLowerCase();
+
+                  return (
                     <div
-                      id={`collapse-${safeId}`}
-                      className={`!visible ${idx === 0 ? "" : "hidden"}`} // Default expand first item
-                      data-twe-collapse-item
-                      data-twe-collapse-show={idx === 0}
-                      aria-labelledby={`heading-${safeId}`}
+                      key={subdomainTitle}
+                      className="rounded-xl border border-gray-100 bg-white overflow-hidden"
                     >
-                      <Droppable droppableId={subdomainTitle}>
-                        {(provided) => (
-                          <div
-                            className="px-4 text-sm sm:px-6 pb-6 pt-2"
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
+                      <h2 className="mb-0" id={`heading-${safeId}`}>
+                        <button
+                          className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
+                          type="button"
+                          onClick={() => {
+                            setOpenSubdomains((prev) =>
+                              prev.includes(subdomainTitle)
+                                ? prev.filter((t) => t !== subdomainTitle)
+                                : [...prev, subdomainTitle],
+                            );
+                          }}
+                          aria-expanded={openSubdomains.includes(subdomainTitle)}
+                          aria-controls={`collapse-${safeId}`}
+                        >
+                          <span className="pr-4">{subdomainTitle}</span>
+                          <span
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full text-white bg-gradient-to-t from-[#1a3652] to-[#448bd2] ${openSubdomains.includes(subdomainTitle) ? "rotate-[-180deg]" : "rotate-0"
+                              }`}
                           >
-                            {questionsInGroup.length > 0 ? (
-                              <div className="space-y-1">
-                                {questionsInGroup.map((q, qIdx) => (
-                                  <Draggable
-                                    key={q._id}
-                                    draggableId={q._id}
-                                    index={qIdx}
-                                  >
-                                    {(provided) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
-                                      >
-                                        <div className="flex gap-3 pr-2 min-w-0">
-                                          <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">
-                                            Q{qIdx + 1}.
-                                          </span>
-                                          <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">
-                                            {q.questionStem}
-                                          </p>
-                                        </div>
-                                        <div className="flex gap-3 lg:gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0">
-                                          <button
-                                            onClick={() => openEditModal(q)}
-                                            className="text-blue-400 hover:text-blue-600 transition-colors p-1"
-                                            title="Edit"
-                                          >
-                                            <Icon
-                                              icon="lucide:pencil"
-                                              width="16"
-                                            />
-                                          </button>
-                                          <button
-                                            onClick={() => openDeleteModal(q)}
-                                            className="text-red-400 hover:text-red-600 transition-colors p-1"
-                                            title="Delete"
-                                          >
-                                            <Icon
-                                              icon="lucide:trash-2"
-                                              width="16"
-                                            />
-                                          </button>
-                                          <div
-                                            {...provided.dragHandleProps}
-                                            className="text-gray-400 hover:text-gray-600 cursor-grab p-1"
-                                            title="Drag to reorder"
-                                          >
-                                            <Icon
-                                              icon="lucide:menu"
-                                              width="16"
-                                            />
+                            <Icon icon="mdi:chevron-up" width="18" />
+                          </span>
+                        </button>
+                      </h2>
+                      <div
+                        id={`collapse-${safeId}`}
+                        className={`!visible ${openSubdomains.includes(subdomainTitle) ? "" : "hidden"
+                          }`}
+                        aria-labelledby={`heading-${safeId}`}
+                      >
+                        <Droppable droppableId={subdomainTitle}>
+                          {(provided) => (
+                            <div
+                              className="px-4 text-sm sm:px-6 pb-6 pt-2"
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
+                              {questionsInGroup.length > 0 ? (
+                                <div className="space-y-1">
+                                  {questionsInGroup.map((q, qIdx) => (
+                                    <Draggable
+                                      key={q._id}
+                                      draggableId={q._id}
+                                      index={qIdx}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
+                                        >
+                                          <div className="flex gap-3 pr-2 min-w-0">
+                                            <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">
+                                              Q{qIdx + 1}.
+                                            </span>
+                                            <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">
+                                              {q.questionStem}
+                                            </p>
+                                          </div>
+                                          <div className="flex gap-3 lg:gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0">
+                                            <button
+                                              onClick={() => openEditModal(q)}
+                                              className="text-blue-400 hover:text-blue-600 transition-colors p-1"
+                                              title="Edit"
+                                            >
+                                              <Icon
+                                                icon="lucide:pencil"
+                                                width="16"
+                                              />
+                                            </button>
+                                            <button
+                                              onClick={() => openDeleteModal(q)}
+                                              className="text-red-400 hover:text-red-600 transition-colors p-1"
+                                              title="Delete"
+                                            >
+                                              <Icon
+                                                icon="lucide:trash-2"
+                                                width="16"
+                                              />
+                                            </button>
+                                            <div
+                                              {...provided.dragHandleProps}
+                                              className="text-gray-400 hover:text-gray-600 cursor-grab p-1"
+                                              title="Drag to reorder"
+                                            >
+                                              <Icon
+                                                icon="lucide:menu"
+                                                width="16"
+                                              />
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                ))}
-                                {provided.placeholder}
-                              </div>
-                            ) : (
-                              <div className="text-gray-400 text-sm italic py-2 pl-9">
-                                {filterRole
-                                  ? "No questions added yet."
-                                  : "Select a filter to view questions."}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </Droppable>
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {provided.placeholder}
+                                </div>
+                              ) : (
+                                <div className="text-gray-400 text-sm italic py-2 pl-9">
+                                  {filterRole
+                                    ? "No questions added yet."
+                                    : "Select a filter to view questions."}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Droppable>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </DragDropContext>
-        )}
+                  );
+                })}
+              </div>
+            </DragDropContext>
+          ) : null}
+        </div>
       </div>
 
       {/* --- MODALS (Add/Edit/Delete) --- */}
@@ -1138,7 +1237,7 @@ const CrudModals = (props: CrudModalsProps) => {
               disabled={!data.role || !data.domain}
             >
               <option value="">Select Sub-Domain</option>
-              {subdomains.map((sd: any) => (
+              {subdomains.map((sd: string) => (
                 <option key={sd} value={sd}>
                   {sd}
                 </option>
