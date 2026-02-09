@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Logo from "../../../public/static/img/home/logo.svg";
+const Logo = "/static/img/home/logo.svg";
 import { Collapse, Dropdown, initTWE } from "tw-elements";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";

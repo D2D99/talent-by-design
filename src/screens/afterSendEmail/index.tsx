@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
-import Logo from "../../../public/static/img/home/logo.svg";
-import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
-import BackIcon from "../../../public/static/img/icons/back-icon.svg";
+const Logo = "/static/img/home/logo.svg";
+const ResendMail = "/static/img/icons/resend-email-icon.svg";
+const BackIcon = "/static/img/icons/back-icon.svg";
 import SpinnerLoader from "../../components/spinnerLoader";
 
 const COOLDOWN_MS = 15 * 60 * 1000; // 15 Minutes
@@ -168,8 +168,8 @@ const AfterSendEmail = () => {
               onClick={handleResend}
               disabled={loading || timeLeft > 0}
               className={`text-sm font-bold transition-all ${loading || timeLeft > 0
-                  ? "text-gray-400 cursor-not-allowed no-underline"
-                  : "text-[#448CD2] hover:underline cursor-pointer"
+                ? "text-gray-400 cursor-not-allowed no-underline"
+                : "text-[#448CD2] hover:underline cursor-pointer"
                 }`}
             >
               {loading ? "Sending..." : "Resend Email"}

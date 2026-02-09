@@ -1,10 +1,10 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Logo from "../../../public/static/img/home/logo.svg";
+const Logo = "/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import api from "../../services/axios";
 import SpinnerLoader from "../spinnerLoader";
-import IconStar from "../../../public/static/img/icons/ic-star.svg";
+const IconStar = "/static/img/icons/ic-star.svg";
 import { AxiosError } from "axios";
 
 interface AssessmentStartData {

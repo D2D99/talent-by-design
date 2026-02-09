@@ -1,6 +1,163 @@
-import UserProfilePic from "../../../public/static/img/ic-profile-ph.svg";
+import { useState, useEffect, type ChangeEvent } from "react";
+import api from "../../services/axios";
+
+const UserProfilePic = "/static/img/ic-profile-ph.svg";
+
+interface ProfileFormData {
+  firstName: string;
+  middleInitial: string;
+  lastName: string;
+  dob: string;
+  gender: string;
+  email: string;
+  phoneNumber: string;
+  role: string;
+  country: string;
+  state: string;
+  zipCode: string;
+  profileImage: string;
+  orgName: string;
+}
 
 const UserProfile = () => {
+  const [formData, setFormData] = useState<ProfileFormData>({
+    firstName: "",
+    middleInitial: "",
+    lastName: "",
+    dob: "",
+    gender: "",
+    email: "",
+    phoneNumber: "",
+    role: "",
+    country: "",
+    state: "",
+    zipCode: "",
+    profileImage: "",
+    orgName: ""
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await api.get("/auth/my-profile");
+      const data = response.data;
+
+      // Format date for input field safely
+      let formattedDob = "";
+      if (data.dob) {
+        const dateObj = new Date(data.dob);
+        if (!isNaN(dateObj.getTime())) {
+          formattedDob = dateObj.toISOString().split("T")[0];
+        }
+      }
+
+      setFormData({
+        firstName: data.firstName || "",
+        middleInitial: data.middleInitial || "",
+        lastName: data.lastName || "",
+        dob: formattedDob,
+        gender: data.gender || "",
+        email: data.email || "",
+        phoneNumber: data.phoneNumber || "",
+        role: data.role || "",
+        country: data.country || "",
+        state: data.state || "",
+        zipCode: data.zipCode || "",
+        profileImage: data.profileImage || "",
+        orgName: data.orgName || ""
+      });
+      setPreviewUrl(data.profileImage || "");
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      alert("Failed to load profile data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    // Map IDs to state keys
+    const fieldMapping: { [key: string]: string } = {
+      fname: "firstName",
+      mname: "middleInitial",
+      lname: "lastName",
+      dob: "dob",
+      gender: "gender",
+      email: "email",
+      phno: "phoneNumber",
+      userRole: "role",
+      country: "country",
+      city: "state", // Mapping 'city' ID to 'state' field as requested
+      zipCode: "zipCode"
+    };
+
+    const fieldName = fieldMapping[id] || id;
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const data = new FormData();
+      data.append("firstName", formData.firstName);
+      data.append("middleInitial", formData.middleInitial);
+      data.append("lastName", formData.lastName);
+      data.append("dob", formData.dob);
+      data.append("gender", formData.gender);
+      data.append("phoneNumber", formData.phoneNumber);
+      data.append("country", formData.country);
+      data.append("state", formData.state);
+      data.append("zipCode", formData.zipCode);
+
+      if (selectedFile) {
+        data.append("profileImage", selectedFile);
+      }
+
+      const response = await api.patch("/auth/update-profile", data);
+
+      // Update localStorage user object if it exists
+      const savedUser = localStorage.getItem("user");
+      if (savedUser && response.data.user) {
+        const userObj = JSON.parse(savedUser);
+        localStorage.setItem("user", JSON.stringify({ ...userObj, ...response.data.user }));
+      }
+
+      alert("Profile updated successfully!");
+      window.dispatchEvent(new CustomEvent("profile-updated"));
+      fetchProfile(); // Refresh data
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
+      alert(error.response?.data?.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#448CD2]"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
@@ -9,11 +166,11 @@ const UserProfile = () => {
 
           <button
             type="button"
-            data-twe-toggle="modal"
-            data-twe-target="#inviteModal"
-            className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            onClick={handleSave}
+            disabled={saving}
+            className="relative overflow-hidden z-0 text-white px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
           >
-            Save
+            {saving ? "Saving..." : "Save"}
           </button>
         </div>
 
@@ -24,14 +181,14 @@ const UserProfile = () => {
           <div className="mt-6 flex gap-3 items-center">
             <div className="relative">
               <img
-                src={UserProfilePic}
+                src={previewUrl || UserProfilePic}
                 alt="Profile Picture"
-                className="rounded-full min-w-20 min-h-20"
+                className="rounded-full w-20 h-20 object-cover border-2 border-[#448CD2]/20"
               />
 
               <label
                 htmlFor="upload"
-                className="border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-2.5 bg-white -right-1"
+                className="border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-0 bg-white -right-1 cursor-pointer shadow-sm hover:bg-neutral-50"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -41,14 +198,14 @@ const UserProfile = () => {
                 >
                   <g
                     stroke="#4B9BE9"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                   >
                     <path
                       fill="#4B9BE9"
-                      fill-opacity="0"
-                      stroke-dasharray="20"
+                      fillOpacity="0"
+                      strokeDasharray="20"
                       d="M12 15h2v-6h2.5l-4.5 -4.5M12 15h-2v-6h-2.5l4.5 -4.5"
                     >
                       <animate
@@ -74,8 +231,8 @@ const UserProfile = () => {
                     </path>
                     <path
                       fill="none"
-                      stroke-dasharray="14"
-                      stroke-dashoffset="14"
+                      strokeDasharray="14"
+                      strokeDashoffset="14"
                       d="M6 19h12"
                     >
                       <animate
@@ -88,13 +245,23 @@ const UserProfile = () => {
                     </path>
                   </g>
                 </svg>
-                <input type="file" id="upload" className="hidden" />
+                <input
+                  type="file"
+                  id="upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
               </label>
             </div>
             <div>
-              <h5 className="font-semibold text-lg">User Name</h5>
-              <p className="text-sm text-neutral-400 font-medium -mt-0.5">
-                User Role
+              <h5 className="font-semibold text-lg">
+                {formData.firstName || formData.lastName
+                  ? `${formData.firstName} ${formData.lastName}`
+                  : "User Name"}
+              </h5>
+              <p className="text-sm text-neutral-400 font-medium -mt-0.5 uppercase">
+                {formData.role || "User Role"}
               </p>
             </div>
           </div>
@@ -110,7 +277,8 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="fname"
-                // autoComplete="email"
+                value={formData.firstName}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 placeholder="Enter your first name"
                 required
@@ -127,7 +295,8 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="mname"
-                // autoComplete="email"
+                value={formData.middleInitial}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 placeholder="Enter your middle initial"
               />
@@ -143,7 +312,8 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="lname"
-                // autoComplete="email"
+                value={formData.lastName}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 placeholder="Enter your last name"
                 required
@@ -160,8 +330,9 @@ const UserProfile = () => {
               <input
                 type="date"
                 id="dob"
+                value={formData.dob}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                // placeholder="Enter your phone number"
               />
             </div>
 
@@ -190,11 +361,14 @@ const UserProfile = () => {
                 </div>
                 <select
                   id="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
                   className="font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 >
                   <option value="">Select</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
             </div>
@@ -209,8 +383,9 @@ const UserProfile = () => {
               <input
                 type="email"
                 id="email"
-                autoComplete="email"
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                value={formData.email}
+                readOnly
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
                 placeholder="Enter your email"
               />
             </div>
@@ -225,7 +400,8 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="phno"
-                // autoComplete="email"
+                value={formData.phoneNumber}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 placeholder="Enter your phone number"
                 required
@@ -242,8 +418,27 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="userRole"
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] read-only:bg-neutral-100 read-only:pointer-events-none"
-                placeholder="Enter your role"
+                value={formData.role}
+                readOnly
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
+                placeholder="User role"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="orgName"
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+              >
+                Organization
+              </label>
+              <input
+                type="text"
+                id="orgName"
+                value={formData.orgName}
+                readOnly
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
+                placeholder="Organization name"
               />
             </div>
           </div>
@@ -264,7 +459,8 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="country"
-                // autoComplete="email"
+                value={formData.country}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 placeholder="Enter your country"
               />
@@ -275,13 +471,15 @@ const UserProfile = () => {
                 htmlFor="city"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                City/State
+                State
               </label>
               <input
                 type="text"
                 id="city"
+                value={formData.state}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                placeholder="Enter your city/state"
+                placeholder="Enter your state"
               />
             </div>
 
@@ -295,7 +493,8 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="zipCode"
-                // autoComplete="email"
+                value={formData.zipCode}
+                onChange={handleChange}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 placeholder="Enter your zip code"
               />

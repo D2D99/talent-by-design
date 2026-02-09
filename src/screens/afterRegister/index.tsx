@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Logo from "../../../public/static/img/home/logo.svg";
-import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
+const Logo = "/static/img/home/logo.svg";
+const ResendMail = "/static/img/icons/resend-email-icon.svg";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
 import SpinnerLoader from "../../components/spinnerLoader";
@@ -137,8 +137,8 @@ const AfterRegister = () => {
                 disabled={loading}
                 onClick={handleResend}
                 className={`text-sm font-bold transition-all ${loading
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-[#448bd2] hover:underline cursor-pointer"
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-[#448bd2] hover:underline cursor-pointer"
                   }`}
               >
                 {loading ? "Resending..." : "Resend Email"}

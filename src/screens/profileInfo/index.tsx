@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Logo from "../../../public/static/img/home/logo.svg";
+const Logo = "/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 import api from "../../services/axios";
 import { AxiosError } from "axios";

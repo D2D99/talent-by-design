@@ -4,7 +4,7 @@ import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
-import ProgressIcon from "../../../public/static/img/home/progress-icon.png";
+const ProgressIcon = "/static/img/home/progress-icon.png";
 
 // Defined Interface
 interface Invitation {
@@ -269,8 +269,8 @@ const OrgInvitation = () => {
                               }
                               disabled={!canDelete}
                               className={`p-2 rounded-full transition-all ${canDelete
-                                  ? "text-red-600 hover:bg-red-50"
-                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                                ? "text-red-600 hover:bg-red-50"
+                                : "text-gray-300 cursor-not-allowed opacity-50"
                                 }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />

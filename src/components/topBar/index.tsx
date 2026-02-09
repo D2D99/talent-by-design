@@ -1,4 +1,4 @@
-import IconArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
+const IconArrow = "/static/img/icons/iconamoon_arrow.png";
 import { Icon } from "@iconify/react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 

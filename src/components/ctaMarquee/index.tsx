@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import type { ComponentType, ReactNode } from "react";
 import Marquee from "react-fast-marquee";
-import Workplace from "../../../public/static/img/icons/workplace.svg";
+const Workplace = "/static/img/icons/workplace.svg";
 
 interface MarqueeProps {
   children?: ReactNode;

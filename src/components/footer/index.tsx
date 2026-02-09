@@ -1,12 +1,12 @@
-import FooterLogo from "../../../public/static/img/home/footer-logo.svg";
-import Facebook from "../../../public/static/img/icons/facebook-icon.svg";
-import Instagram from "../../../public/static/img/icons/instagram-icon.svg";
-import Twitter from "../../../public/static/img/icons/twitter.svg";
-import Linkedin from "../../../public/static/img/icons/linkedin.png";
-import CallIcon from "../../../public/static/img/icons/phone-icon.svg";
-import GmailIcon from "../../../public/static/img/icons/gmail-icon.svg";
-import LocationIcon from "../../../public/static/img/icons/location-icon.svg";
-import HomeIcon from "../../../public/static/img/icons/home-icon.svg";
+const FooterLogo = "/static/img/home/footer-logo.svg";
+const Facebook = "/static/img/icons/facebook-icon.svg";
+const Instagram = "/static/img/icons/instagram-icon.svg";
+const Twitter = "/static/img/icons/twitter.svg";
+const Linkedin = "/static/img/icons/linkedin.png";
+const CallIcon = "/static/img/icons/phone-icon.svg";
+const GmailIcon = "/static/img/icons/gmail-icon.svg";
+const LocationIcon = "/static/img/icons/location-icon.svg";
+const HomeIcon = "/static/img/icons/home-icon.svg";
 import { Icon } from "@iconify/react";
 const Footer = () => {
   return (

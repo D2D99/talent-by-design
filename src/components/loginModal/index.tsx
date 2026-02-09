@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react";
-import Dashboard from "../../../public/static/img/icons/dashboard-login.png";
-import SolarUser from "../../../public/static/img/icons/solar_user-line-duotone.png";
+const Dashboard = "/static/img/icons/dashboard-login.png";
+const SolarUser = "/static/img/icons/solar_user-line-duotone.png";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
@@ -82,11 +82,10 @@ const LoginModal = () => {
               <div className="grid sm:grid-cols-2 grid-cols-1 sm:gap-6 gap-4">
                 <label
                   htmlFor="dashboard1"
-                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${
-                    selectedDashboard === "dashboard1"
+                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${selectedDashboard === "dashboard1"
                       ? "bg-primary-100"
                       : "bg-white"
-                  }`}
+                    }`}
                 >
                   <div className="text-right">
                     <input
@@ -108,11 +107,10 @@ const LoginModal = () => {
 
                 <label
                   htmlFor="dashboard2"
-                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${
-                    selectedDashboard === "dashboard2"
+                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${selectedDashboard === "dashboard2"
                       ? "bg-primary-100"
                       : "bg-white"
-                  }`}
+                    }`}
                 >
                   <div className="text-right">
                     <input

@@ -2,8 +2,8 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import api from "../../services/axios";
-import DashboardLogo from "../../../public/static/img/home/logo.svg";
-import ProfilePlaceholderImg from "../../../public/static/img/ic-profile-ph.svg";
+const DashboardLogo = "/static/img/home/logo.svg";
+const ProfilePlaceholderImg = "/static/img/ic-profile-ph.svg";
 import { Tooltip } from "react-tooltip";
 
 // import { Tooltip, initTWE } from "tw-elements";
@@ -13,7 +13,7 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({ firstName: "", lastName: "", role: "" });
+  const [user, setUser] = useState({ firstName: "", lastName: "", role: "", profileImage: "" });
   const [openReports, setOpenReports] = useState(false);
 
   const isReportsRoute = location.pathname.startsWith("/dashboard/reports");
@@ -23,17 +23,28 @@ const Sidebar = () => {
   }, [isReportsRoute]);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) return;
+    const fetchUser = () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
 
-    api
-      .get(`auth/me`)
-      .then((res: any) => setUser(res.data))
-      .catch((err) => {
-        if (err.response?.status === 401) return;
-        localStorage.clear();
-        navigate("/login");
-      });
+      api
+        .get(`auth/me?t=${new Date().getTime()}`)
+        .then((res: any) => {
+          console.log("Sidebar User Data:", res.data);
+          setUser(res.data);
+        })
+        .catch((err) => {
+          if (err.response?.status === 401) return;
+          localStorage.clear();
+          navigate("/login");
+        });
+    };
+
+    fetchUser();
+
+    // Listen for profile updates
+    window.addEventListener("profile-updated", fetchUser);
+    return () => window.removeEventListener("profile-updated", fetchUser);
   }, []);
 
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -218,9 +229,13 @@ const Sidebar = () => {
           <div className="md:mx-0 manager-popup flex items-center justify-between bg-[#4B9BE91A] md:p-4 !p-3 rounded-[12px] text-left">
             <div className="flex items-center gap-2 w-full">
               <img
-                src={ProfilePlaceholderImg}
-                alt="Profile"
-                className="xl:size-auto size-12"
+                key={user.profileImage || "placeholder"}
+                src={user.profileImage || ProfilePlaceholderImg}
+                alt={`${user.firstName || "User"}'s profile`}
+                className="w-12 h-12 rounded-full object-cover shrink-0 border border-[#448CD2]/10"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = ProfilePlaceholderImg;
+                }}
               />
               <div>
                 <h4 className="xl:text-xl text-lg text-[var(--secondary-color)] font-normal truncate xl:max-w-36 md:max-w-20 max-w-32 capitalize">
@@ -248,14 +263,14 @@ const Sidebar = () => {
         >
           <li className="bg-white hover:bg-neutral-100">
             <NavLink
-             to={`/dashboard/user-profile`}
-        // className={({ isActive }) =>
-        //   `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${
-        //     isActive
-        //       ? "bg-[#E4F0FC] text-[var(--primary-color)]"
-        //       : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
-        //   }`
-        // }
+              to={`/dashboard/user-profile`}
+              // className={({ isActive }) =>
+              //   `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${
+              //     isActive
+              //       ? "bg-[#E4F0FC] text-[var(--primary-color)]"
+              //       : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
+              //   }`
+              // }
               className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5"
               data-twe-dropdown-item-ref
             >

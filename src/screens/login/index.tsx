@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import Logo from "../../../public/static/img/home/logo.svg";
-// import LoginOr from "../../../public/static/img/home/login-or.svg";
-// import M365Icon from "../../../public/static/img/icons/m365.svg";
-import ImageOpen from "../../../public/static/img/icons/eye-open.png";
-import ImageClose from "../../../public/static/img/icons/eye-closed.png";
+const Logo = "/static/img/home/logo.svg";
+const ImageOpen = "/static/img/icons/eye-open.png";
+const ImageClose = "/static/img/icons/eye-closed.png";
 import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/axios";

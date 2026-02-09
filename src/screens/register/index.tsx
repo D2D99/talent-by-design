@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Logo from "../../../public/static/img/home/logo.svg";
-import ImageClose from "../../../public/static/img/icons/eye-closed.png";
-import ImageOpen from "../../../public/static/img/icons/eye-open.png";
+const Logo = "/static/img/home/logo.svg";
+const ImageClose = "/static/img/icons/eye-closed.png";
+const ImageOpen = "/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
 import api from "../../services/axios";
 import { AxiosError } from "axios";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Logo from "../../../public/static/img/home/logo.svg";
+const Logo = "/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
@@ -143,8 +143,8 @@ const ForgotPassword = () => {
                 id="email"
                 placeholder="Enter your email"
                 className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   }`}
                 {...register("email", {
                   required: "Email is required",
@@ -165,8 +165,8 @@ const ForgotPassword = () => {
               type="submit"
               disabled={loading || !isFormValid}
               className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${!isFormValid || loading
-                  ? "disabled:pointer-events-none opacity-40"
-                  : "opacity-100"
+                ? "disabled:pointer-events-none opacity-40"
+                : "opacity-100"
                 }`}
             >
               {loading ? "Sending..." : "Send email"}
