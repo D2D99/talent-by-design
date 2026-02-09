@@ -20,6 +20,7 @@ import SuperAdminOverview from "./screens/superAdminOverview";
 import "react-tooltip/dist/react-tooltip.css";
 import UserProfile from "./screens/userProfile";
 import SessionPopup from "./components/sessionPopup";
+import AccountSetting from "./components/accountSetting";
 
 function App() {
   return (
@@ -46,7 +47,7 @@ function App() {
             <Route path="invite" element={<OrgInvitation />} />
             <Route path="user-profile" element={<UserProfile />} />
 
-            {/* <Route path="settings" element={<Settings />} /> */}
+            <Route path="settings" element={<AccountSetting />} />
 
             {/* Reports */}
             <Route path="reports/org-head" element={<SuperAdminOverview />} />
