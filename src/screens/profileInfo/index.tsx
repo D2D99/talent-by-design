@@ -61,7 +61,13 @@ const ProfileInfo = () => {
 
     const fetchAssignedRole = async () => {
       try {
-        const response = await api.get("auth/current-user-session");
+        const verifyTokenFromUrl = new URLSearchParams(window.location.search).get("verifyToken");
+
+        const response = await api.get("auth/current-user-session", {
+          headers: {
+            "x-verify-token": verifyTokenFromUrl || ""
+          }
+        });
 
         if (response.data.role) {
           setValue("role", response.data.role);
@@ -96,7 +102,13 @@ const ProfileInfo = () => {
       setLoading(true);
       clearErrors("root");
 
-      await api.post("auth/complete-profile", data);
+      const verifyTokenFromUrl = new URLSearchParams(window.location.search).get("verifyToken");
+
+      await api.post("auth/complete-profile", data, {
+        headers: {
+          "x-verify-token": verifyTokenFromUrl || ""
+        }
+      });
 
       navigate("/login");
     } catch (error: unknown) {

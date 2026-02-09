@@ -164,11 +164,20 @@ const Register = () => {
       //   return;
       // }
 
+      const params = new URLSearchParams(window.location.search);
+      const authTokenFromUrl = params.get("authToken");
+      const token1FromUrl = params.get("token1");
+
       // Proceed with registration
       await api.post("auth/register", {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
+      }, {
+        headers: {
+          "x-auth-token": authTokenFromUrl || "",
+          "x-invitation-token": token1FromUrl || ""
+        }
       });
 
       localStorage.setItem("registeredEmail", data.email);
