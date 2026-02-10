@@ -257,7 +257,7 @@ const UserProfile = () => {
             <div>
               <h5 className="font-semibold text-lg">
                 {formData.firstName || formData.lastName
-                  ? `${formData.firstName} ${formData.lastName}`
+                  ? `${formData.firstName}${formData.middleInitial ? ` ${formData.middleInitial}` : ""} ${formData.lastName}`
                   : "User Name"}
               </h5>
               <p className="text-sm text-neutral-400 font-medium -mt-0.5 uppercase">

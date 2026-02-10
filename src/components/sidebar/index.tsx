@@ -13,7 +13,13 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({ firstName: "", lastName: "", role: "", profileImage: "" });
+  const [user, setUser] = useState({
+    firstName: "",
+    middleInitial: "",
+    lastName: "",
+    role: "",
+    profileImage: ""
+  });
   const [openReports, setOpenReports] = useState(false);
 
   const isReportsRoute = location.pathname.startsWith("/dashboard/reports");
@@ -240,7 +246,7 @@ const Sidebar = () => {
               <div>
                 <h4 className="xl:text-xl text-lg text-[var(--secondary-color)] font-normal truncate xl:max-w-36 md:max-w-20 max-w-32 capitalize">
                   {user.firstName
-                    ? `${user.firstName} ${user.lastName}`
+                    ? `${user.firstName}${user.middleInitial ? ` ${user.middleInitial}` : ""} ${user.lastName}`
                     : "Loading..."}
                 </h4>
                 <h5 className="xl:text-base text-sm text-[var(--secondary-color)] font-semibold capitalize !leading-4">
