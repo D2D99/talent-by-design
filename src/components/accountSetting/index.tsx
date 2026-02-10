@@ -109,7 +109,7 @@ const AccountSetting = () => {
                   <h6 className="text-sm font-semibold mb-0.5 flex items-center gap-1">
                     Email:
                     <span
-                      data-tooltip-id="menu-item1"
+                      data-tooltip-id="email-info"
                       data-tooltip-content="If you need to change your e-mail address, please contact Sdesouza@tbdcollective.ca"
                       className="cursor-pointer"
                     >
@@ -119,7 +119,7 @@ const AccountSetting = () => {
                         height="14"
                       />
                       <Tooltip
-                        id="menu-item1"
+                        id="email-info"
                         place="top"
                         className="!w-64 !text-xs !leading-normal !text-center"
                       />
@@ -305,7 +305,103 @@ const AccountSetting = () => {
               role="tabpanel"
               aria-labelledby="tabs-preference-tab"
             >
-              Tab 4 content
+              <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-5">
+                <div>
+                  <label
+                    htmlFor="timeZone"
+                    className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+                  >
+                    Time Zone
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                      <svg
+                        className="h-4 w-4 text-[#5D5D5D]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                    <select
+                      id="timeZone"
+                      className="font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] appearance-none"
+                    >
+                      <option value="">English</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="lang"
+                    className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+                  >
+                    Language
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                      <svg
+                        className="h-4 w-4 text-[#5D5D5D]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                    <select
+                      id="lang"
+                      className="font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] read-only:bg-neutral-100 read-only:border-[#E8E8E8] pointer-events-none appearance-none"
+                    >
+                      <option value="">English</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="dateFormat"
+                    className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+                  >
+                    Date Format
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                      <svg
+                        className="h-4 w-4 text-[#5D5D5D]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                    <select
+                      id="dateFormat"
+                      className="font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] appearance-none"
+                    >
+                      <option value="">English</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
