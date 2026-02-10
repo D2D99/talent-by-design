@@ -6,6 +6,8 @@ import api from "../../services/axios";
 import SpinnerLoader from "../spinnerLoader";
 const IconStar = "/static/img/icons/ic-star.svg";
 import { AxiosError } from "axios";
+import { toast } from "react-toastify";
+
 
 interface AssessmentStartData {
   title: string;
@@ -102,8 +104,9 @@ const StartAssessment = () => {
       if (axiosError.response?.status === 401) return;
 
       console.error("Error starting assessment:", error);
-      alert(axiosError.response?.data?.message || "Something went wrong");
+      toast.error(axiosError.response?.data?.message || "Something went wrong");
     } finally {
+
       setLoading(false);
     }
   };

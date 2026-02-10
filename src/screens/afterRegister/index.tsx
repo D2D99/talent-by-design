@@ -4,6 +4,8 @@ const ResendMail = "/static/img/icons/resend-email-icon.svg";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { toast } from "react-toastify";
+
 
 const AfterRegister = () => {
   const [email, setEmail] = useState<string | null>(null);
@@ -20,22 +22,11 @@ const AfterRegister = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Toast States
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [isSuccess, setIsSuccess] = useState(true); // Fixed: added 'isSuccess' variable
-
   useEffect(() => {
     const savedEmail = localStorage.getItem("registeredEmail");
     setEmail(savedEmail);
   }, []);
 
-  const triggerToast = (msg: string, success: boolean) => {
-    setToastMessage(msg);
-    setIsSuccess(success);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 4000);
-  };
 
   const handleResend = async () => {
     if (!email || loading) return;
@@ -46,14 +37,15 @@ const AfterRegister = () => {
       await api.post("auth/resend-verification-email", { email });
 
       // Handle Success
-      triggerToast("Verification email resent", true);
+      toast.success("Verification email resent successfully");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{ message: string }>;
       if (axiosError.response?.status === 401) return;
 
       let errorMsg = axiosError.response?.data?.message || "Failed to resend email";
-      triggerToast(errorMsg, false);
+      toast.error(errorMsg);
     } finally {
+
       setLoading(false);
     }
   };
@@ -65,45 +57,8 @@ const AfterRegister = () => {
 
   return (
     <>
-      {/* Dynamic Toaster */}
-      <div
-        className={`${showToast ? "block" : "hidden"
-          } px-3 absolute left-1/2 top-6 w-full transform -translate-x-1/2 z-50 transition-all`}
-      >
-        <div className="flex items-center justify-between bg-gray-800 text-white p-3 rounded-lg max-w-xl mx-auto shadow-lg">
-          <div className="flex items-center gap-2">
-            {/* Dynamic Icon Color based on success/error */}
-            <div
-              className={`${isSuccess ? "bg-green-500" : "bg-red-500"
-                } rounded-full p-1 grid place-items-center`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 16 16"
-              >
-                {isSuccess ? (
-                  <path
-                    fill="#ffffff"
-                    d="M13.485 3.485a.75.75 0 0 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 1 1 1.06-1.06L6.5 10.44l6.985-6.955Z"
-                  />
-                ) : (
-                  <path
-                    fill="#ffffff"
-                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8s8-3.6 8-8s-3.6-8-8-8m0 2c1.3 0 2.5.4 3.5 1.1l-8.4 8.4C2.4 10.5 2 9.3 2 8c0-3.3 2.7-6 6-6m0 12c-1.3 0-2.5-.4-3.5-1.1l8.4-8.4c.7 1 1.1 2.2 1.1 3.5c0 3.3-2.7 6-6 6"
-                  />
-                )}
-              </svg>
-            </div>
-            <span className="sm:text-lg text-sm font-semibold">
-              {toastMessage}
-            </span>
-          </div>
-        </div>
-      </div>
-
       <div className="flex min-h-screen bg-[var(--light-primary-color)] relative">
+
         <div
           className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
           id="login-bg"

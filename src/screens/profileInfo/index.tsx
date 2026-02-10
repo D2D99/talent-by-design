@@ -6,6 +6,8 @@ import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { toast } from "react-toastify";
+
 
 interface ApiError {
   message: string;
@@ -121,10 +123,20 @@ const ProfileInfo = () => {
       const message =
         axiosError.response?.data?.message || "Profile completion failed.";
 
+      if (message.includes(",")) {
+        message.split(",").forEach((msg, index) => {
+          toast.error(msg.trim(), { autoClose: 3000 + index * 1000 });
+        });
+      } else {
+        toast.error(message);
+      }
+
+
       setError("root", {
         type: "manual",
         message: message,
       });
+
     } finally {
       setLoading(false);
     }
@@ -173,12 +185,7 @@ const ProfileInfo = () => {
               </div>
             )}
 
-            {errors.root && (
-              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
-                <Icon icon="solar:danger-circle-bold" width="20" />
-                <span>{errors.root.message}</span>
-              </div>
-            )}
+
 
             {/* NEW: Organization Name Input - Only for Admins */}
             {formValues.role === "admin" && (

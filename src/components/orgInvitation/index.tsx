@@ -4,6 +4,8 @@ import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
+import { toast } from "react-toastify";
+
 const ProgressIcon = "/static/img/home/progress-icon.png";
 
 // Defined Interface
@@ -23,7 +25,7 @@ const OrgInvitation = () => {
   const [dataList, setDataList] = useState<Invitation[]>([]);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -63,8 +65,15 @@ const OrgInvitation = () => {
       const error = err as AxiosError<{ message: string }>;
       // Only show error if it's not a session expiry (401)
       if (error.response?.status !== 401) {
-        setErrorMessage(error.response?.data?.message || "Failed to load data.");
+        const message = error.response?.data?.message || "Failed to load invitations.";
+        if (message.includes(",")) {
+          message.split(",").forEach((msg: string) => toast.error(msg.trim()));
+        } else {
+          toast.error(message);
+        }
       }
+
+
     } finally {
       setIsLoading(false);
     }
@@ -76,9 +85,10 @@ const OrgInvitation = () => {
 
   const handleSendInvite = async () => {
     if (!email || !role) {
-      setErrorMessage("Please fill all fields.");
+      toast.warn("Please fill all fields.");
       return;
     }
+
 
     setIsLoading(true);
     try {
@@ -91,13 +101,21 @@ const OrgInvitation = () => {
       const modalInstance = Modal.getInstance(modalElem);
       modalInstance?.hide();
 
+      toast.success(isSuperAdmin ? "Organization added successfully!" : "Invitation sent successfully!");
       fetchData();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
       if (error.response?.status !== 401) {
-        setErrorMessage(error.response?.data?.message || "Failed to send.");
+        const message = error.response?.data?.message || "Failed to send invitation.";
+        if (message.includes(",")) {
+          message.split(",").forEach((msg: string) => toast.error(msg.trim()));
+        } else {
+          toast.error(message);
+        }
       }
+
     } finally {
+
       setIsLoading(false);
     }
   };
@@ -124,13 +142,15 @@ const OrgInvitation = () => {
       const modalInstance = Modal.getInstance(modalElem);
       modalInstance?.hide();
 
+      toast.success("Invitation deleted successfully.");
       fetchData();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
       if (error.response?.status !== 401) {
-        setErrorMessage(error.response?.data?.message || "Failed to delete.");
+        toast.error(error.response?.data?.message || "Failed to delete invitation.");
       }
     } finally {
+
       setIsLoading(false);
       setSelectedId(null);
     }
@@ -490,20 +510,10 @@ const OrgInvitation = () => {
           </div>
         </div>
 
-        {errorMessage && (
-          <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-4 rounded-2xl shadow-2xl z-[9999] flex items-center gap-4 animate-bounce">
-            <Icon icon="solar:danger-bold" width="24" />
-            <span className="font-semibold">{errorMessage}</span>
-            <button
-              onClick={() => setErrorMessage(null)}
-              className="ml-2 bg-white/20 rounded-full p-1"
-            >
-              <Icon icon="material-symbols:close" width="18" />
-            </button>
-          </div>
-        )}
+        {/* Toaster removed, using react-toastify */}
       </div>
     </>
+
   );
 };
 

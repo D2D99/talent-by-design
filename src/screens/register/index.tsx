@@ -8,6 +8,8 @@ import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { toast } from "react-toastify";
+
 
 interface ApiError {
   message: string;
@@ -181,6 +183,7 @@ const Register = () => {
       });
 
       localStorage.setItem("registeredEmail", data.email);
+      toast.success("Registration successful! Please check your email for verification.");
       navigate("/after-register");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
@@ -191,10 +194,21 @@ const Register = () => {
         axiosError.response?.data?.message ||
         "Registration failed. Please try again.";
 
+      if (message.includes(",")) {
+        message.split(",").forEach((msg, index) => {
+          toast.error(msg.trim(), { autoClose: 3000 + index * 1000 });
+        });
+      } else {
+        toast.error(message);
+      }
+
+
       setError("root", {
         type: "manual",
         message: message,
       });
+
+
 
       console.error("Error during registration:", message);
     } finally {
@@ -226,36 +240,8 @@ const Register = () => {
             <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] sm:mb-6 mb-3">
               Welcome!
             </h2>
-            {/* 
-            {errors.root && (
-              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
-                <Icon icon="solar:danger-circle-bold" width="20" />
-                <span>{errors.root.message}</span>
-              </div>
-            )} */}
 
-            {/* Success Toaster */}
-            {errors.root && (
-              <div
-                className={`${errors ? "block" : "hidden"
-                  } px-3 fixed left-1/2 top-6 w-full transform -translate-x-1/2 z-50`}
-              >
-                <div className="flex items-center justify-between bg-gray-800 text-white p-3 rounded-lg max-w-xl mx-auto shadow-lg">
-                  <div className="flex items-center gap-2">
-                    <Icon
-                      icon="pepicons-pop:no-entry-circle-filled"
-                      width="24"
-                      height="24"
-                      color="#f00"
-                      className="sm:size-6 size-4"
-                    />
-                    <span className="sm:text-lg text-sm font-semibold">
-                      {errors.root.message}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
+
 
             <div className="sm:mb-4 mb-2">
               <label

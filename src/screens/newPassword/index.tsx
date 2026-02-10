@@ -8,6 +8,8 @@ import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { toast } from "react-toastify";
+
 
 interface ApiError {
   message: string;
@@ -82,16 +84,28 @@ const NewPassword = () => {
       clearErrors("root");
 
       await api.post("auth/reset-password", { password: data.password });
-
+      toast.success("Password reset successful! Please login with your new password.");
       navigate("/login");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
       if (axiosError.response?.status === 401) return;
+
+      const message = axiosError.response?.data?.message || "Reset link expired";
+      if (message.includes(",")) {
+        message.split(",").forEach((msg, index) => {
+          toast.error(msg.trim(), { autoClose: 3000 + index * 1000 });
+        });
+      } else {
+        toast.error(message);
+      }
+
+
       setError("root", {
         type: "manual",
-        message: axiosError.response?.data?.message || "Reset link expired",
+        message: message,
       });
     } finally {
+
       setLoading(false);
     }
   };
@@ -114,12 +128,7 @@ const NewPassword = () => {
               New Password
             </h2>
 
-            {errors.root && (
-              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
-                <Icon icon="solar:danger-circle-bold" width="20" />
-                <span>{errors.root.message}</span>
-              </div>
-            )}
+
 
             <div className="mb-2">
               <label
@@ -135,8 +144,8 @@ const NewPassword = () => {
                   id="password"
                   placeholder="Enter new password"
                   className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${errors.password
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   {...register("password", {
                     required: "Password is required",
@@ -206,8 +215,8 @@ const NewPassword = () => {
                       icon="material-symbols-light:check"
                       width="16"
                       className={`rounded-full p-px transition-all ${item.met
-                          ? "bg-[#D1E9FF] text-black"
-                          : "bg-gray-100 text-transparent"
+                        ? "bg-[#D1E9FF] text-black"
+                        : "bg-gray-100 text-transparent"
                         }`}
                     />
                     <span className={item.met ? "text-black" : "text-gray-400"}>
@@ -231,8 +240,8 @@ const NewPassword = () => {
                   id="confirmPassword"
                   placeholder="Confirm password"
                   className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${errors.confirmPassword
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                   {...register("confirmPassword", {
                     required: "Confirm password is required",
@@ -262,8 +271,8 @@ const NewPassword = () => {
               type="submit"
               disabled={!isButtonActive}
               className={`sm:mt-6 mt-4 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${isButtonActive
-                  ? "opacity-100 cursor-pointer"
-                  : "opacity-40 cursor-not-allowed pointer-events-none shadow-none"
+                ? "opacity-100 cursor-pointer"
+                : "opacity-40 cursor-not-allowed pointer-events-none shadow-none"
                 }`}
             >
               {loading ? "Saving..." : "Save password"}

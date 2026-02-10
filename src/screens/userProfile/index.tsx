@@ -1,5 +1,7 @@
 import { useState, useEffect, type ChangeEvent } from "react";
 import api from "../../services/axios";
+import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 const UserProfilePic = "/static/img/ic-profile-ph.svg";
 
@@ -41,6 +43,8 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
+
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -77,7 +81,7 @@ const UserProfile = () => {
       setPreviewUrl(data.profileImage || "");
     } catch (error) {
       console.error("Error fetching profile:", error);
-      alert("Failed to load profile data");
+      toast.error("Failed to load profile data");
     } finally {
       setLoading(false);
     }
@@ -112,6 +116,7 @@ const UserProfile = () => {
     }
   };
 
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -130,7 +135,10 @@ const UserProfile = () => {
         data.append("profileImage", selectedFile);
       }
 
-      const response = await api.patch("/auth/update-profile", data);
+      const response = await api.patch("/auth/update-profile", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
 
       // Update localStorage user object if it exists
       const savedUser = localStorage.getItem("user");
@@ -139,12 +147,24 @@ const UserProfile = () => {
         localStorage.setItem("user", JSON.stringify({ ...userObj, ...response.data.user }));
       }
 
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
       window.dispatchEvent(new CustomEvent("profile-updated"));
       fetchProfile(); // Refresh data
     } catch (error: any) {
       console.error("Error updating profile:", error);
-      alert(error.response?.data?.message || "Failed to update profile");
+      const axiosError = error as AxiosError<{ message: string }>;
+      if (axiosError.response?.status === 401) return;
+
+      const fullMessage = axiosError.response?.data?.message || "Failed to update profile.";
+
+      // If the message contains multiple errors (separated by comma), split and show multiple toasts
+      if (fullMessage.includes(",")) {
+        fullMessage.split(",").forEach((msg, index) => {
+          toast.error(msg.trim(), { autoClose: 3000 + index * 1000 });
+        });
+      } else {
+        toast.error(fullMessage);
+      }
     } finally {
       setSaving(false);
     }

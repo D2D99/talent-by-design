@@ -21,11 +21,27 @@ import "react-tooltip/dist/react-tooltip.css";
 import UserProfile from "./screens/userProfile";
 import SessionPopup from "./components/sessionPopup";
 import AccountSetting from "./components/accountSetting";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function App() {
   return (
     <AuthProvider>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <SessionPopup />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

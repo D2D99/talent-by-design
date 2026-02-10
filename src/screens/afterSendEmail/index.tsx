@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
+import { toast } from "react-toastify";
+
 const Logo = "/static/img/home/logo.svg";
 const ResendMail = "/static/img/icons/resend-email-icon.svg";
 const BackIcon = "/static/img/icons/back-icon.svg";
@@ -15,7 +17,7 @@ const AfterSendEmail = () => {
 
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
+
 
   // ✅ PAGE LOADER EFFECT (ADDED)
   useEffect(() => {
@@ -93,13 +95,14 @@ const AfterSendEmail = () => {
         localStorage.setItem("lastResendTimestamp", Date.now().toString());
       }
 
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+
+      toast.success("Verification email resent successfully");
     } catch (error: any) {
       if (error.response?.status === 401) return;
       let errorMessage = error.response?.data?.message || "Failed to resend email";
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
+
       setLoading(false);
     }
   };
@@ -118,28 +121,8 @@ const AfterSendEmail = () => {
 
   return (
     <div className="min-h-screen bg-[var(--light-primary-color)] relative">
-      {/* Success Toaster */}
-      <div
-        className={`${showToast ? "block" : "hidden"
-          } px-3 absolute left-1/2 top-6 w-full transform -translate-x-1/2 z-50`}
-      >
-        <div className="flex items-center justify-between bg-gray-800 text-white p-3 rounded-lg max-w-xl mx-auto shadow-lg">
-          <div className="flex items-center gap-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect width="24" height="24" rx="12" fill="#3F9933" />
-              <path
-                d="M9.98429 14.588L16.953 7.61924C17.1175 7.45479 17.3094 7.37256 17.5286 7.37256C17.7479 7.37256 17.9398 7.45479 18.1042 7.61924C18.2687 7.78369 18.3509 7.97912 18.3509 8.20552C18.3509 8.43192 18.2687 8.62707 18.1042 8.79098L10.5599 16.3559C10.3954 16.5203 10.2036 16.6026 9.98429 16.6026C9.76502 16.6026 9.57316 16.5203 9.4087 16.3559L5.87294 12.8201C5.70848 12.6557 5.62954 12.4605 5.63612 12.2347C5.6427 12.0088 5.72849 11.8134 5.89349 11.6484C6.0585 11.4834 6.25392 11.4011 6.47977 11.4017C6.70562 11.4022 6.90078 11.4845 7.06523 11.6484L9.98429 14.588Z"
-                fill="white"
-              />
-            </svg>
-            <span className="sm:text-lg text-sm font-semibold">
-              Email was resent
-            </span>
-          </div>
-        </div>
-      </div>
+      <div className="min-h-screen bg-[var(--light-primary-color)] relative">
 
-      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
         <div className="text-center mb-8 mx-auto">
           <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
         </div>

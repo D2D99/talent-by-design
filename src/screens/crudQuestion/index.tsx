@@ -5,6 +5,8 @@ import { Collapse, Tab, Modal, initTWE, Ripple } from "tw-elements";
 import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { questionService } from "../../services/questionService";
+import { toast } from "react-toastify";
+
 const ProgressIcon = "/static/img/home/progress-icon.png";
 
 import type {
@@ -326,13 +328,12 @@ const CrudQuestion = () => {
       const data = await questionService.getAllQuestions();
       setAllQuestions(data);
     } catch (err) {
-      const error = err as Error;
-      console.error("Error fetching questions:", error);
-      // setError(error.message || "Failed to load questions"); // Optional: Don't show global error if not critical
+      // Optional: Don't show global error if not critical
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchQuestions();
@@ -512,13 +513,22 @@ const CrudQuestion = () => {
       });
 
       await questionService.createQuestions(payload);
+      toast.success("Questions created successfully!");
+      await fetchQuestions();
       Modal.getInstance(
         document.getElementById("addModal") as HTMLElement,
       )?.hide();
     } catch (err) {
       const error = err as Error;
-      alert(error.message || "Failed");
+      const message = error.message || "Failed to create questions";
+      if (message.includes(",")) {
+        message.split(",").forEach((msg: string) => toast.error(msg.trim()));
+      } else {
+        toast.error(message);
+      }
     } finally {
+
+
       setLoading(false);
     }
   };
@@ -551,13 +561,21 @@ const CrudQuestion = () => {
             : undefined,
       });
       await fetchQuestions();
+      toast.success("Question updated successfully!");
       Modal.getInstance(
         document.getElementById("editModal") as HTMLElement,
       )?.hide();
     } catch (err) {
       const error = err as Error;
-      alert(error.message || "Failed");
+      const message = error.message || "Failed to update question";
+      if (message.includes(",")) {
+        message.split(",").forEach((msg: string) => toast.error(msg.trim()));
+      } else {
+        toast.error(message);
+      }
     } finally {
+
+
       setLoading(false);
     }
   };
@@ -566,17 +584,24 @@ const CrudQuestion = () => {
     if (!selectedQuestion) return;
     setLoading(true);
     try {
-      await questionService.deleteQuestion(selectedQuestion._id);
       setAllQuestions((prev: Question[]) =>
         prev.filter((q: Question) => q._id !== selectedQuestion._id),
       );
+      toast.success("Question deleted successfully!");
       Modal.getInstance(
         document.getElementById("deleteModal") as HTMLElement,
       )?.hide();
     } catch (err) {
       const error = err as Error;
-      alert(error.message || "Failed");
+      const message = error.message || "Failed to delete question";
+      if (message.includes(",")) {
+        message.split(",").forEach((msg: string) => toast.error(msg.trim()));
+      } else {
+        toast.error(message);
+      }
     } finally {
+
+
       setLoading(false);
     }
   };

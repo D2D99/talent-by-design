@@ -6,6 +6,8 @@ import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { toast } from "react-toastify";
+
 
 interface ApiError {
   message: string;
@@ -87,8 +89,14 @@ const ForgotPassword = () => {
 
       if (axiosError.response?.status === 401) return;
 
-      const message =
-        axiosError.response?.data?.message || "Failed to send reset email";
+      const message = axiosError.response?.data?.message || "Something went wrong";
+      if (message.includes(",")) {
+        message.split(",").forEach((msg, index) => {
+          toast.error(msg.trim(), { autoClose: 3000 + index * 1000 });
+        });
+      } else {
+        toast.error(message);
+      }
 
       setError("root", {
         type: "manual",
@@ -122,13 +130,7 @@ const ForgotPassword = () => {
               receive an email with instructions for resetting your password.
             </p>
 
-            {/* Root Error Message (API Errors) */}
-            {errors.root && (
-              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-2 text-red-600 text-sm font-semibold">
-                <Icon icon="solar:danger-circle-bold" width="20" />
-                <span>{errors.root.message}</span>
-              </div>
-            )}
+
 
             <div className="sm:mb-6 mb-4">
               <label

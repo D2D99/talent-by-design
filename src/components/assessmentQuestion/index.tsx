@@ -8,6 +8,8 @@ import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import { Icon } from "@iconify/react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import SpinnerLoader from "../spinnerLoader";
+import { toast } from "react-toastify";
+
 
 interface ForcedChoiceOption {
   label: string;
@@ -180,8 +182,9 @@ const AssessmentQuestion = () => {
         if (axiosError.response?.status === 401) return;
 
         let message = axiosError.response?.data?.message || "Check fields";
-        alert(`Server error: ${message}`);
+        toast.error(`Server error: ${message}`);
       } finally {
+
         setIsSubmitting(false);
       }
     }
@@ -195,9 +198,10 @@ const AssessmentQuestion = () => {
       !finalForm.email ||
       !finalForm.department
     ) {
-      alert("Please fill all details");
+      toast.warn("Please fill all details");
       return;
     }
+
 
     setIsSubmitting(true);
     try {
@@ -222,8 +226,9 @@ const AssessmentQuestion = () => {
       if (axiosError.response?.status === 401) return;
 
       let message = axiosError.response?.data?.message || "Submission failed.";
-      alert(message);
+      toast.error(message);
     } finally {
+
       setIsSubmitting(false);
     }
   };
