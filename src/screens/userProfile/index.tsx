@@ -2,6 +2,7 @@ import { useState, useEffect, type ChangeEvent } from "react";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import { Icon } from "@iconify/react";
 
 const UserProfilePic = "/static/img/ic-profile-ph.svg";
 
@@ -40,6 +41,7 @@ const UserProfile = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
@@ -150,6 +152,7 @@ const UserProfile = () => {
       toast.success("Profile updated successfully!");
       window.dispatchEvent(new CustomEvent("profile-updated"));
       fetchProfile(); // Refresh data
+      setIsEditing(false); // Return to read-only mode
     } catch (error: any) {
       console.error("Error updating profile:", error);
       const axiosError = error as AxiosError<{ message: string }>;
@@ -186,11 +189,29 @@ const UserProfile = () => {
 
           <button
             type="button"
-            onClick={handleSave}
+            onClick={() => {
+              if (isEditing) {
+                handleSave();
+              } else {
+                setIsEditing(true);
+              }
+            }}
             disabled={saving}
             className="relative overflow-hidden z-0 text-white px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? (
+              "Saving..."
+            ) : isEditing ? (
+              <>
+                <Icon icon="solar:diskette-bold" width="18" />
+                Save
+              </>
+            ) : (
+              <>
+                <Icon icon="solar:pen-bold" width="18" />
+                Edit
+              </>
+            )}
           </button>
         </div>
 
@@ -208,7 +229,10 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className="border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-0 bg-white -right-1 cursor-pointer shadow-sm hover:bg-neutral-50"
+                className={`border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-0 bg-white -right-1 shadow-sm ${isEditing
+                    ? 'cursor-pointer hover:bg-neutral-50'
+                    : 'opacity-50 cursor-not-allowed pointer-events-none'
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -271,6 +295,7 @@ const UserProfile = () => {
                   className="hidden"
                   accept="image/*"
                   onChange={handleFileChange}
+                  disabled={!isEditing}
                 />
               </label>
             </div>
@@ -299,7 +324,8 @@ const UserProfile = () => {
                 id="fname"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your first name"
                 required
               />
@@ -317,7 +343,8 @@ const UserProfile = () => {
                 id="mname"
                 value={formData.middleInitial}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your middle initial"
               />
             </div>
@@ -334,7 +361,8 @@ const UserProfile = () => {
                 id="lname"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your last name"
                 required
               />
@@ -352,7 +380,8 @@ const UserProfile = () => {
                 id="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -383,7 +412,8 @@ const UserProfile = () => {
                   id="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  className="font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  disabled={!isEditing}
+                  className="font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Select</option>
                   <option value="male">Male</option>
@@ -422,7 +452,8 @@ const UserProfile = () => {
                 id="phno"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your phone number"
                 required
               />
@@ -481,7 +512,8 @@ const UserProfile = () => {
                 id="country"
                 value={formData.country}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your country"
               />
             </div>
@@ -498,7 +530,8 @@ const UserProfile = () => {
                 id="city"
                 value={formData.state}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your state"
               />
             </div>
@@ -515,7 +548,8 @@ const UserProfile = () => {
                 id="zipCode"
                 value={formData.zipCode}
                 onChange={handleChange}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                disabled={!isEditing}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your zip code"
               />
             </div>

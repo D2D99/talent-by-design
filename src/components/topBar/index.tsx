@@ -187,7 +187,7 @@ const TopBar = () => {
           >
             <Icon
               icon="solar:bell-bing-linear"
-              className={`w-7 h-7 text-[var(--secondary-color)] transition-transform duration-300 ${isOpen ? "rotate-12 scale-110" : ""}`}
+              className="w-7 h-7 text-[var(--secondary-color)]"
             />
             {unreadCount > 0 && (
               <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-[#FF4D4D] border-2 border-white rounded-full animate-pulse shadow-sm"></span>
@@ -196,7 +196,7 @@ const TopBar = () => {
 
           {/* Dropdown Menu */}
           {isOpen && (
-            <div className="absolute right-0 top-16 w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-[9999] overflow-hidden transform transition-all duration-200 origin-top-right ring-1 ring-black/5">
+            <div className="absolute right-[-10px] sm:right-0 top-16 w-[92vw] sm:w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-[9999] overflow-hidden transform transition-all duration-200 origin-top-right ring-1 ring-black/5">
 
               {/* Header */}
               <div className="px-6 py-5 bg-white border-b border-gray-50 flex items-center justify-between sticky top-0 z-20">
@@ -328,7 +328,10 @@ const TopBar = () => {
               {notifications.length > 0 && (
                 <div className="bg-gray-50/50 p-3 border-t border-gray-100 flex justify-center sticky bottom-0 z-20 backdrop-blur-sm">
                   <button
-                    onClick={() => navigate('/notifications')}
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/dashboard/notifications');
+                    }}
                     className="text-xs font-bold text-[#448CD2] hover:text-[#1a3652] transition-colors uppercase tracking-wider flex items-center gap-1"
                   >
                     View Full History <Icon icon="solar:arrow-right-linear" width="12" />

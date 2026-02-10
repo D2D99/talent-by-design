@@ -21,6 +21,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import UserProfile from "./screens/userProfile";
 import SessionPopup from "./components/sessionPopup";
 import AccountSetting from "./components/accountSetting";
+import NotificationHistory from "./screens/notifications";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -61,6 +62,7 @@ function App() {
             <Route index element={<OverviewRoute />} />
             <Route path="questions" element={<CrudQuestion />} />
             <Route path="invite" element={<OrgInvitation />} />
+            <Route path="notifications" element={<NotificationHistory />} />
             <Route path="user-profile" element={<UserProfile />} />
 
             <Route path="settings" element={<AccountSetting />} />

@@ -13,6 +13,7 @@ const AccountSetting = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState<"info" | "password" | "notification">("info");
 
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
@@ -116,14 +117,16 @@ const AccountSetting = () => {
         <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
           <h2 className="md:text-2xl text-xl font-bold">Account Setting</h2>
 
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={loading}
-            className="relative overflow-hidden z-0 text-[var(--white-color)] px-6 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+          {activeTab === "password" && (
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={loading}
+              className="relative overflow-hidden z-0 text-[var(--white-color)] px-6 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              {loading ? "Saving..." : "Save"}
+            </button>
+          )}
 
         </div>
 
@@ -136,6 +139,7 @@ const AccountSetting = () => {
             <li role="presentation">
               <a
                 href="#tabs-info"
+                onClick={() => setActiveTab("info")}
                 className="block border-x-0 border-b-2 border-t-0 border-transparent p-3 text-sm font-semibold capitalize  leading-tight text-neutral-400 hover:isolate hover:border-transparent focus:isolate focus:border-transparent data-[twe-nav-active]:border-[var(--primary-color)] data-[twe-nav-active]:text-[var(--primary-color)]"
                 data-twe-toggle="pill"
                 data-twe-target="#tabs-info"
@@ -150,6 +154,7 @@ const AccountSetting = () => {
             <li role="presentation">
               <a
                 href="#tabs-password"
+                onClick={() => setActiveTab("password")}
                 className="block border-x-0 border-b-2 border-t-0 border-transparent p-3 text-sm font-semibold capitalize  leading-tight text-neutral-400 hover:isolate hover:border-transparent focus:isolate focus:border-transparent data-[twe-nav-active]:border-[var(--primary-color)] data-[twe-nav-active]:text-[var(--primary-color)]"
                 data-twe-toggle="pill"
                 data-twe-target="#tabs-password"
@@ -163,6 +168,7 @@ const AccountSetting = () => {
             <li role="presentation">
               <a
                 href="#tabs-notification"
+                onClick={() => setActiveTab("notification")}
                 className="block border-x-0 border-b-2 border-t-0 border-transparent p-3 text-sm font-semibold capitalize  leading-tight text-neutral-400 hover:isolate hover:border-transparent focus:isolate focus:border-transparent data-[twe-nav-active]:border-[var(--primary-color)] data-[twe-nav-active]:text-[var(--primary-color)]"
                 data-twe-toggle="pill"
                 data-twe-target="#tabs-notification"
@@ -436,23 +442,90 @@ const AccountSetting = () => {
               role="tabpanel"
               aria-labelledby="tabs-notification-tab"
             >
-              <div className="space-y-5">
-                <div>
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" value="" className="sr-only peer" />
-                    <div className="relative w-9 h-5 bg-[var(--light-primary-color)] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-soft dark:peer-focus:ring-brand-soft rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-[var(--primary-color)] after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
-                    <span className="select-none ms-3 text-sm font-semibold text-heading">
-                      System Notification
-                    </span>
+              <div className="space-y-6 max-w-2xl">
+                <div className="bg-blue-50/50 p-4 rounded-lg flex items-start gap-3 border border-blue-100">
+                  <Icon icon="solar:info-circle-bold" className="text-[#448CD2] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h5 className="font-bold text-[#1a3652] text-sm">Control your alerts</h5>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Choose how you want to be notified about important updates. Changes are saved automatically.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:shadow-sm transition-shadow">
+                  <div>
+                    <h6 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                      <Icon icon="solar:bell-bold-duotone" className="text-[#448CD2]" width="20" />
+                      System Notifications
+                    </h6>
+                    <p className="text-xs text-gray-500 mt-1 max-w-sm">
+                      Get in-app alerts for assessments, team updates, and system announcements.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={profileData?.notificationPreferences?.system ?? true}
+                      onChange={async (e) => {
+                        const newValue = e.target.checked;
+                        // Optimistic update
+                        setProfileData((prev: any) => ({
+                          ...prev,
+                          notificationPreferences: { ...prev?.notificationPreferences, system: newValue }
+                        }));
+                        try {
+                          await api.patch("/auth/update-notifications", { system: newValue });
+                          toast.success("Preference updated");
+                        } catch (error) {
+                          toast.error("Failed to update preference");
+                          // Revert
+                          setProfileData((prev: any) => ({
+                            ...prev,
+                            notificationPreferences: { ...prev?.notificationPreferences, system: !newValue }
+                          }));
+                        }
+                      }}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#448CD2]"></div>
                   </label>
                 </div>
-                <div>
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" value="" className="sr-only peer" />
-                    <div className="relative w-9 h-5 bg-[var(--light-primary-color)] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-soft dark:peer-focus:ring-brand-soft rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-[var(--primary-color)] after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
-                    <span className="select-none ms-3 text-sm font-semibold text-heading">
-                      Email Notification
-                    </span>
+
+                <div className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:shadow-sm transition-shadow">
+                  <div>
+                    <h6 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                      <Icon icon="solar:letter-bold-duotone" className="text-[#448CD2]" width="20" />
+                      Email Notifications
+                    </h6>
+                    <p className="text-xs text-gray-500 mt-1 max-w-sm">
+                      Receive important updates and digests via email. We won't spam you.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={profileData?.notificationPreferences?.email ?? false}
+                      onChange={async (e) => {
+                        const newValue = e.target.checked;
+                        setProfileData((prev: any) => ({
+                          ...prev,
+                          notificationPreferences: { ...prev?.notificationPreferences, email: newValue }
+                        }));
+                        try {
+                          await api.patch("/auth/update-notifications", { email: newValue });
+                          toast.success("Preference updated");
+                        } catch (error) {
+                          toast.error("Failed to update preference");
+                          setProfileData((prev: any) => ({
+                            ...prev,
+                            notificationPreferences: { ...prev?.notificationPreferences, email: !newValue }
+                          }));
+                        }
+                      }}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#448CD2]"></div>
                   </label>
                 </div>
               </div>
