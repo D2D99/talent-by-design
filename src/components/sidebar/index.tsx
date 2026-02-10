@@ -9,7 +9,11 @@ import { Tooltip } from "react-tooltip";
 // import { Tooltip, initTWE } from "tw-elements";
 const FIRST_REPORT_ROUTE = "/dashboard/reports/org-head";
 
-const Sidebar = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+const Sidebar = ({ onClose }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -69,6 +73,12 @@ const Sidebar = () => {
     }
   };
 
+  const handleLinkClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   const base =
     "flex items-center gap-2 py-2 px-3 rounded text-base font-semibold";
   const active = "bg-[#E4F0FC] text-[var(--primary-color)]";
@@ -88,6 +98,7 @@ const Sidebar = () => {
             <NavLink
               to="/dashboard"
               end
+              onClick={handleLinkClick}
               className={({ isActive }) =>
                 `${base} ${isActive ? active : inactive}`
               }
@@ -142,70 +153,81 @@ const Sidebar = () => {
                   to="org-head"
                   label="Org Head / Coach"
                   icon="fluent:organization-20-regular"
+                  onClose={onClose}
                 />
                 <ReportLink
                   to="senior-leader"
                   label="Senior Leader"
                   icon="solar:user-rounded-outline"
+                  onClose={onClose}
                 />
                 <ReportLink
                   to="manager"
                   label="Manager"
                   icon="solar:users-group-rounded-outline"
+                  onClose={onClose}
                 />
                 <ReportLink
                   to="employee"
                   label="Employee"
                   icon="solar:users-group-two-rounded-linear"
+                  onClose={onClose}
                 />
               </ul>
             )}
           </li>
 
-          {/* Questions */}
-          <li className="mb-2">
-            <NavLink
-              to="/dashboard/questions"
-              className={({ isActive }) =>
-                `${base} ${isActive ? active : inactive}`
-              }
-              data-tooltip-id="menu-item3"
-              data-tooltip-content="Questions"
-            >
-              <Icon icon="mingcute:question-line" width="22" />
-              <span>Questions</span>
-              <Tooltip
-                id="menu-item3"
-                className="md:hidden block"
-                place="right"
-              />
-            </NavLink>
-          </li>
+          {/* Questions - Only for Super Admin */}
+          {user.role === "superAdmin" && (
+            <li className="mb-2">
+              <NavLink
+                to="/dashboard/questions"
+                onClick={handleLinkClick}
+                className={({ isActive }) =>
+                  `${base} ${isActive ? active : inactive}`
+                }
+                data-tooltip-id="menu-item3"
+                data-tooltip-content="Questions"
+              >
+                <Icon icon="mingcute:question-line" width="22" />
+                <span>Questions</span>
+                <Tooltip
+                  id="menu-item3"
+                  className="md:hidden block"
+                  place="right"
+                />
+              </NavLink>
+            </li>
+          )}
 
-          {/* Invite */}
-          <li className="mb-2">
-            <NavLink
-              to="/dashboard/invite"
-              className={({ isActive }) =>
-                `${base} ${isActive ? active : inactive}`
-              }
-              data-tooltip-id="menu-item1"
-              data-tooltip-content="Invite"
-            >
-              <Icon icon="mingcute:invite-line" width="22" />
-              <span>Invite</span>
-              <Tooltip
-                id="menu-item4"
-                className="md:hidden block"
-                place="right"
-              />
-            </NavLink>
-          </li>
+          {/* Invite - Only for Super Admin and Admin */}
+          {(user.role === "superAdmin" || user.role === "admin") && (
+            <li className="mb-2">
+              <NavLink
+                to="/dashboard/invite"
+                onClick={handleLinkClick}
+                className={({ isActive }) =>
+                  `${base} ${isActive ? active : inactive}`
+                }
+                data-tooltip-id="menu-item1"
+                data-tooltip-content="Invite"
+              >
+                <Icon icon="mingcute:invite-line" width="22" />
+                <span>Invite</span>
+                <Tooltip
+                  id="menu-item4"
+                  className="md:hidden block"
+                  place="right"
+                />
+              </NavLink>
+            </li>
+          )}
 
           {/* Settings */}
           <li className="mb-2">
             <NavLink
               to="/dashboard/settings"
+              onClick={handleLinkClick}
               className={({ isActive }) =>
                 `${base} ${isActive ? active : inactive}`
               }
@@ -270,6 +292,7 @@ const Sidebar = () => {
           <li className="bg-white hover:bg-neutral-100">
             <NavLink
               to={`/dashboard/user-profile`}
+              onClick={handleLinkClick}
               // className={({ isActive }) =>
               //   `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${
               //     isActive
@@ -318,15 +341,18 @@ const ReportLink = ({
   to,
   label,
   icon,
+  onClose,
 }: {
   to: string;
   label: string;
   icon: string;
+  onClose?: () => void;
 }) => {
   return (
     <li>
       <NavLink
         to={`/dashboard/reports/${to}`}
+        onClick={() => onClose && onClose()}
         className={({ isActive }) =>
           `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${isActive
             ? "bg-[#E4F0FC] text-[var(--primary-color)]"

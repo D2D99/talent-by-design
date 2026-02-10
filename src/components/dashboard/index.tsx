@@ -63,9 +63,16 @@ const Dashboard = () => {
               </span>
             </button>
           </div>
-          <Sidebar />
+          <Sidebar onClose={() => {
+            const offcanvasElement = document.getElementById("offcanvasExample");
+            if (offcanvasElement) {
+              const instance = Offcanvas.getInstance(offcanvasElement);
+              instance?.hide();
+            }
+          }} />
         </div>
         <TopBar />
+
         <Outlet />
       </div>
     </div>
