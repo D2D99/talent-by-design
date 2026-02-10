@@ -181,7 +181,7 @@ const AssessmentQuestion = () => {
         const axiosError = error as AxiosError<{ message: string }>;
         if (axiosError.response?.status === 401) return;
 
-        let message = axiosError.response?.data?.message || "Check fields";
+        const message = axiosError.response?.data?.message || "Check fields";
         toast.error(`Server error: ${message}`);
       } finally {
 
@@ -225,7 +225,7 @@ const AssessmentQuestion = () => {
       const axiosError = error as AxiosError<{ message: string }>;
       if (axiosError.response?.status === 401) return;
 
-      let message = axiosError.response?.data?.message || "Submission failed.";
+      const message = axiosError.response?.data?.message || "Submission failed.";
       toast.error(message);
     } finally {
 

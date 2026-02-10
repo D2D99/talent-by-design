@@ -42,7 +42,7 @@ const AfterRegister = () => {
       const axiosError = error as AxiosError<{ message: string }>;
       if (axiosError.response?.status === 401) return;
 
-      let errorMsg = axiosError.response?.data?.message || "Failed to resend email";
+      const errorMsg = axiosError.response?.data?.message || "Failed to resend email";
       toast.error(errorMsg);
     } finally {
 

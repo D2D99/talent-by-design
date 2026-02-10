@@ -99,7 +99,7 @@ const AfterSendEmail = () => {
       toast.success("Verification email resent successfully");
     } catch (error: any) {
       if (error.response?.status === 401) return;
-      let errorMessage = error.response?.data?.message || "Failed to resend email";
+      const errorMessage = error.response?.data?.message || "Failed to resend email";
       toast.error(errorMessage);
     } finally {
 
