@@ -313,7 +313,7 @@ const CrudQuestion = () => {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filterRole) count++;
-    // filterDomains is always size 1 (default or selected), 
+    // filterDomains is always size 1 (default or selected),
     // but usually we count things explicitly filtered.
     // Let's count subdomains, types, and scales.
     count += filterSubdomains.length;
@@ -333,7 +333,6 @@ const CrudQuestion = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchQuestions();
@@ -498,16 +497,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                optionA: {
-                  label: form.optionALabel,
-                  insightPrompt: form.optionAPrompt,
-                },
-                optionB: {
-                  label: form.optionBLabel,
-                  insightPrompt: form.optionBPrompt,
-                },
-                higherValueOption: form.higherValueOption as "A" | "B",
-              }
+                  optionA: {
+                    label: form.optionALabel,
+                    insightPrompt: form.optionAPrompt,
+                  },
+                  optionB: {
+                    label: form.optionBLabel,
+                    insightPrompt: form.optionBPrompt,
+                  },
+                  higherValueOption: form.higherValueOption as "A" | "B",
+                }
               : undefined,
         };
       });
@@ -527,8 +526,6 @@ const CrudQuestion = () => {
         toast.error(message);
       }
     } finally {
-
-
       setLoading(false);
     }
   };
@@ -548,16 +545,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-              optionA: {
-                label: editFormData.optionALabel,
-                insightPrompt: editFormData.optionAPrompt,
-              },
-              optionB: {
-                label: editFormData.optionBLabel,
-                insightPrompt: editFormData.optionBPrompt,
-              },
-              higherValueOption: editFormData.higherValueOption as "A" | "B",
-            }
+                optionA: {
+                  label: editFormData.optionALabel,
+                  insightPrompt: editFormData.optionAPrompt,
+                },
+                optionB: {
+                  label: editFormData.optionBLabel,
+                  insightPrompt: editFormData.optionBPrompt,
+                },
+                higherValueOption: editFormData.higherValueOption as "A" | "B",
+              }
             : undefined,
       });
       await fetchQuestions();
@@ -574,8 +571,6 @@ const CrudQuestion = () => {
         toast.error(message);
       }
     } finally {
-
-
       setLoading(false);
     }
   };
@@ -600,8 +595,6 @@ const CrudQuestion = () => {
         toast.error(message);
       }
     } finally {
-
-
       setLoading(false);
     }
   };
@@ -843,10 +836,11 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain to ensure immediate updates
                     }}
                     className={`px-6 py-2.5 text-sm  uppercase rounded-full transition-all whitespace-nowrap
-                            ${filterDomains.includes(domain)
-                        ? "bg-white text-gray-900 shadow-sm  font-semibold"
-                        : "text-neutral-500 font-semibold"
-                      }`}
+                            ${
+                              filterDomains.includes(domain)
+                                ? "bg-white text-gray-900 shadow-sm  font-semibold"
+                                : "text-neutral-500 font-semibold"
+                            }`}
                   >
                     {domain}
                   </button>
@@ -860,18 +854,21 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${showFilters
-                ? "bg-[var(--primary-color)] text-white"
-                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
-              }`}
+                    ${
+                      showFilters
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+                    }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
               <span>Filter</span>
             </div>
             {activeFilterCount > 0 && (
-              <span className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors
-                ${showFilters ? "bg-white text-[var(--primary-color)]" : "bg-[var(--primary-color)] text-white"}`}>
+              <span
+                className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors
+                ${showFilters ? "bg-white text-[var(--primary-color)]" : "bg-[var(--primary-color)] text-white"}`}
+              >
                 {activeFilterCount}
               </span>
             )}
@@ -881,8 +878,8 @@ const CrudQuestion = () => {
         {/* --- CONTENT AREA (Accordions + Role Prompt) --- */}
         <div className="space-y-6">
           {!filterRole && (
-            <div className="bg-[#448CD208] border border-[#448CD21A] rounded-2xl p-8 text-center flex flex-col items-center">
-              <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+            <div className="p-8 text-center flex flex-col items-center">
+              <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
                 <Icon
                   icon="hugeicons:audit-02"
                   className="text-[var(--primary-color)] w-10 h-10"
@@ -897,7 +894,7 @@ const CrudQuestion = () => {
               </p>
 
               <div className="w-full max-w-xs relative">
-                <div className="absolute inset-y-0 right-0 top-1.5 flex items-center pr-3 pointer-events-none">
+                <div className="absolute inset-y-0 right-0 top-1 flex items-center pr-3 pointer-events-none">
                   <svg
                     className="h-4 w-4 text-[#5D5D5D]"
                     fill="none"
@@ -913,7 +910,7 @@ const CrudQuestion = () => {
                   </svg>
                 </div>
                 <select
-                  className="font-bold text-sm appearance-none text-[#1A3652] outline-none shadow-sm sm:w-full w-fit p-3 px-8 border rounded-full transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50"
+                  className="font-semibold text-sm appearance-none text-[#1A3652] outline-none shadow-sm sm:w-full w-fit p-3 border rounded-md transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50"
                   value={filterRole}
                   onChange={(e) => {
                     setFilterRole(e.target.value);
@@ -958,13 +955,18 @@ const CrudQuestion = () => {
                                 : [...prev, subdomainTitle],
                             );
                           }}
-                          aria-expanded={openSubdomains.includes(subdomainTitle)}
+                          aria-expanded={openSubdomains.includes(
+                            subdomainTitle,
+                          )}
                           aria-controls={`collapse-${safeId}`}
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full text-white bg-gradient-to-t from-[#1a3652] to-[#448bd2] ${openSubdomains.includes(subdomainTitle) ? "rotate-[-180deg]" : "rotate-0"
-                              }`}
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full text-white bg-gradient-to-t from-[#1a3652] to-[#448bd2] ${
+                              openSubdomains.includes(subdomainTitle)
+                                ? "rotate-[-180deg]"
+                                : "rotate-0"
+                            }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -972,8 +974,11 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${openSubdomains.includes(subdomainTitle) ? "" : "hidden"
-                          }`}
+                        className={`!visible ${
+                          openSubdomains.includes(subdomainTitle)
+                            ? ""
+                            : "hidden"
+                        }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
                         <Droppable droppableId={subdomainTitle}>

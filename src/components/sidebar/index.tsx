@@ -22,7 +22,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     middleInitial: "",
     lastName: "",
     role: "",
-    profileImage: ""
+    profileImage: "",
   });
   const [openReports, setOpenReports] = useState(false);
 
@@ -60,11 +60,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      await api.post(
-        `auth/logout`,
-        {},
-        { withCredentials: true },
-      );
+      await api.post(`auth/logout`, {}, { withCredentials: true });
     } finally {
       localStorage.clear();
       sessionStorage.clear();
@@ -125,8 +121,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                   navigate(FIRST_REPORT_ROUTE);
                 }
               }}
-              className={`${base} w-full justify-between ${isReportsRoute ? active : inactive
-                }`}
+              className={`${base} w-full justify-between ${
+                isReportsRoute ? active : inactive
+              }`}
               data-tooltip-id="menu-item2"
               data-tooltip-content="Reports"
             >
@@ -142,8 +139,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
               <Icon
                 icon="weui:arrow-filled"
                 width="10"
-                className={`transition-transform ${openReports ? "rotate-90" : ""
-                  }`}
+                className={`transition-transform ${
+                  openReports ? "rotate-90" : ""
+                }`}
               />
             </button>
 
@@ -260,7 +258,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 key={user.profileImage || "placeholder"}
                 src={user.profileImage || ProfilePlaceholderImg}
                 alt={`${user.firstName || "User"}'s profile`}
-                className="w-12 h-12 rounded-full object-cover shrink-0 border border-[#448CD2]/10"
+                className="md:w-14 md:h-14 w-12 h-12 rounded-full object-cover shrink-0 border border-[#448CD2]/10 bg-white"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = ProfilePlaceholderImg;
                 }}
@@ -354,9 +352,10 @@ const ReportLink = ({
         to={`/dashboard/reports/${to}`}
         onClick={() => onClose && onClose()}
         className={({ isActive }) =>
-          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${isActive
-            ? "bg-[#E4F0FC] text-[var(--primary-color)]"
-            : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
+          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${
+            isActive
+              ? "bg-[#E4F0FC] text-[var(--primary-color)]"
+              : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
           }`
         }
         data-tooltip-id="menu-item6"
