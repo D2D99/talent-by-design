@@ -3,6 +3,7 @@ import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { Icon } from "@iconify/react";
+import SpinnerLoader from "../../components/spinnerLoader";
 
 const UserProfilePic = "/static/img/ic-profile-ph.svg";
 
@@ -36,7 +37,7 @@ const UserProfile = () => {
     state: "",
     zipCode: "",
     profileImage: "",
-    orgName: ""
+    orgName: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -44,8 +45,6 @@ const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-
-
 
   useEffect(() => {
     fetchProfile();
@@ -78,7 +77,7 @@ const UserProfile = () => {
         state: data.state || "",
         zipCode: data.zipCode || "",
         profileImage: data.profileImage || "",
-        orgName: data.orgName || ""
+        orgName: data.orgName || "",
       });
       setPreviewUrl(data.profileImage || "");
     } catch (error) {
@@ -89,7 +88,9 @@ const UserProfile = () => {
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { id, value } = e.target;
     // Map IDs to state keys
     const fieldMapping: { [key: string]: string } = {
@@ -103,7 +104,7 @@ const UserProfile = () => {
       userRole: "role",
       country: "country",
       city: "state", // Mapping 'city' ID to 'state' field as requested
-      zipCode: "zipCode"
+      zipCode: "zipCode",
     };
 
     const fieldName = fieldMapping[id] || id;
@@ -117,7 +118,6 @@ const UserProfile = () => {
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
-
 
   const handleSave = async () => {
     setSaving(true);
@@ -141,12 +141,14 @@ const UserProfile = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-
       // Update localStorage user object if it exists
       const savedUser = localStorage.getItem("user");
       if (savedUser && response.data.user) {
         const userObj = JSON.parse(savedUser);
-        localStorage.setItem("user", JSON.stringify({ ...userObj, ...response.data.user }));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...userObj, ...response.data.user }),
+        );
       }
 
       toast.success("Profile updated successfully!");
@@ -158,7 +160,8 @@ const UserProfile = () => {
       const axiosError = error as AxiosError<{ message: string }>;
       if (axiosError.response?.status === 401) return;
 
-      const fullMessage = axiosError.response?.data?.message || "Failed to update profile.";
+      const fullMessage =
+        axiosError.response?.data?.message || "Failed to update profile.";
 
       // If the message contains multiple errors (separated by comma), split and show multiple toasts
       if (fullMessage.includes(",")) {
@@ -175,9 +178,10 @@ const UserProfile = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#448CD2]"></div>
-      </div>
+      // <div className="flex justify-center items-center h-screen">
+      //   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#448CD2]"></div>
+      // </div>
+      <SpinnerLoader />
     );
   }
 
@@ -373,7 +377,7 @@ const UserProfile = () => {
                 htmlFor="dob"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                Date of Birth
+                Date of Birth *
               </label>
               <input
                 type="date"
@@ -505,7 +509,7 @@ const UserProfile = () => {
                 htmlFor="country"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                Country
+                Country *
               </label>
               <input
                 type="text"
@@ -523,7 +527,7 @@ const UserProfile = () => {
                 htmlFor="city"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                State
+                State *
               </label>
               <input
                 type="text"
@@ -541,7 +545,7 @@ const UserProfile = () => {
                 htmlFor="zipCode"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                Zip Code
+                Zip Code *
               </label>
               <input
                 type="text"
