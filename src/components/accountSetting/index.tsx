@@ -8,12 +8,13 @@ import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import api from "../../services/axios";
 import { toast } from "react-toastify";
 
-
 const AccountSetting = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState<"info" | "password" | "notification">("info");
+  const [activeTab, setActiveTab] = useState<
+    "info" | "password" | "notification"
+  >("info");
 
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
@@ -40,7 +41,6 @@ const AccountSetting = () => {
         : "bg-green-500";
 
   useEffect(() => {
-
     initTWE({ Tab });
     fetchProfile();
   }, []);
@@ -59,14 +59,20 @@ const AccountSetting = () => {
     setPasswordData((prev) => ({ ...prev, [name]: value }));
   };
 
-
-
   const handleSave = async () => {
-    // Check which tab is active (this is a bit tricky with TWE without controlled state, 
+    // Check which tab is active (this is a bit tricky with TWE without controlled state,
     // but we can check the URL or just always try to save password if there's data)
 
-    if (passwordData.oldPassword || passwordData.newPassword || passwordData.confirmPassword) {
-      if (!passwordData.oldPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+    if (
+      passwordData.oldPassword ||
+      passwordData.newPassword ||
+      passwordData.confirmPassword
+    ) {
+      if (
+        !passwordData.oldPassword ||
+        !passwordData.newPassword ||
+        !passwordData.confirmPassword
+      ) {
         toast.error("Please fill all password fields");
         return;
       }
@@ -86,8 +92,6 @@ const AccountSetting = () => {
         return;
       }
 
-
-
       try {
         setLoading(true);
         await api.post("auth/change-password", passwordData);
@@ -98,7 +102,8 @@ const AccountSetting = () => {
           confirmPassword: "",
         });
       } catch (error: any) {
-        const message = error.response?.data?.message || "Failed to update password";
+        const message =
+          error.response?.data?.message || "Failed to update password";
         toast.error(message);
       } finally {
         setLoading(false);
@@ -108,13 +113,11 @@ const AccountSetting = () => {
     }
   };
 
-
-
   return (
     <>
       {/* Account Setting Section Start */}
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
-        <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
+        <div className="flex sm:items-center items-start justify-between gap-4 flex-wrap mb-8 sm:min-h-10 sm:flex-row flex-col">
           <h2 className="md:text-2xl text-xl font-bold">Account Setting</h2>
 
           {activeTab === "password" && (
@@ -127,7 +130,6 @@ const AccountSetting = () => {
               {loading ? "Saving..." : "Save"}
             </button>
           )}
-
         </div>
 
         <div>
@@ -181,7 +183,6 @@ const AccountSetting = () => {
             </li>
           </ul>
 
-
           <div className="mt-7">
             <div
               className="hidden opacity-100 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
@@ -194,10 +195,11 @@ const AccountSetting = () => {
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5">Name:</h6>
                   <p className="text-base text-neutral-500 capitalize">
-                    {profileData ? `${profileData.firstName} ${profileData.middleInitial ? profileData.middleInitial + " " : ""}${profileData.lastName}` : "Loading..."}
+                    {profileData
+                      ? `${profileData.firstName} ${profileData.middleInitial ? profileData.middleInitial + " " : ""}${profileData.lastName}`
+                      : "Loading..."}
                   </p>
                 </div>
-
 
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5 flex items-center gap-1">
@@ -227,11 +229,12 @@ const AccountSetting = () => {
                   </p>
                 </div>
 
-
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5">DOB:</h6>
                   <p className="text-base text-neutral-500">
-                    {profileData?.dob ? new Date(profileData.dob).toLocaleDateString() : "—"}
+                    {profileData?.dob
+                      ? new Date(profileData.dob).toLocaleDateString()
+                      : "—"}
                   </p>
                 </div>
 
@@ -242,14 +245,12 @@ const AccountSetting = () => {
                   </p>
                 </div>
 
-
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5">Phone No:</h6>
                   <p className="text-base text-neutral-500">
                     {profileData?.phoneNumber || "—"}
                   </p>
                 </div>
-
 
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5">User Role:</h6>
@@ -258,14 +259,18 @@ const AccountSetting = () => {
                   </p>
                 </div>
 
-
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5">Address:</h6>
                   <p className="text-base text-neutral-500 capitalize">
-                    {[profileData?.state, profileData?.country, profileData?.zipCode].filter(Boolean).join(", ") || "—"}
+                    {[
+                      profileData?.state,
+                      profileData?.country,
+                      profileData?.zipCode,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || "—"}
                   </p>
                 </div>
-
               </div>
             </div>
             <div
@@ -347,14 +352,20 @@ const AccountSetting = () => {
                         {[...Array(5)].map((_, i) => (
                           <div
                             key={i}
-                            className={`h-full flex-1 transition-all duration-500 ${i < strengthCount ? strengthColor : "bg-transparent"
-                              }`}
+                            className={`h-full flex-1 transition-all duration-500 ${
+                              i < strengthCount
+                                ? strengthColor
+                                : "bg-transparent"
+                            }`}
                           />
                         ))}
                       </div>
                       <p
-                        className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5 ? "text-green-600" : "text-gray-400"
-                          }`}
+                        className={`text-[10px] mt-1 font-bold uppercase ${
+                          strengthCount === 5
+                            ? "text-green-600"
+                            : "text-gray-400"
+                        }`}
                       >
                         Strength:{" "}
                         {strengthCount === 5
@@ -369,11 +380,26 @@ const AccountSetting = () => {
                   {passwordData.newPassword.length > 0 && (
                     <ul className="mt-4 space-y-1">
                       {[
-                        { label: "Minimum 8 characters", met: validation.minLength },
-                        { label: "At least 1 uppercase letter", met: validation.hasUpper },
-                        { label: "At least 1 lowercase letter", met: validation.hasLower },
-                        { label: "At least 1 number", met: validation.hasNumber },
-                        { label: "At least 1 special character", met: validation.hasSpecial },
+                        {
+                          label: "Minimum 8 characters",
+                          met: validation.minLength,
+                        },
+                        {
+                          label: "At least 1 uppercase letter",
+                          met: validation.hasUpper,
+                        },
+                        {
+                          label: "At least 1 lowercase letter",
+                          met: validation.hasLower,
+                        },
+                        {
+                          label: "At least 1 number",
+                          met: validation.hasNumber,
+                        },
+                        {
+                          label: "At least 1 special character",
+                          met: validation.hasSpecial,
+                        },
                       ].map((item, index) => (
                         <li
                           key={index}
@@ -384,7 +410,11 @@ const AccountSetting = () => {
                             width="16"
                             className={`rounded-full p-px transition-all ${item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"}`}
                           />
-                          <span className={item.met ? "text-black" : "text-gray-400"}>
+                          <span
+                            className={
+                              item.met ? "text-black" : "text-gray-400"
+                            }
+                          >
                             {item.label}
                           </span>
                         </li>
@@ -392,8 +422,6 @@ const AccountSetting = () => {
                     </ul>
                   )}
                 </div>
-
-
 
                 <div>
                   <label
@@ -433,7 +461,6 @@ const AccountSetting = () => {
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
             <div
@@ -444,11 +471,17 @@ const AccountSetting = () => {
             >
               <div className="space-y-6 max-w-2xl">
                 <div className="bg-blue-50/50 p-4 rounded-lg flex items-start gap-3 border border-blue-100">
-                  <Icon icon="solar:info-circle-bold" className="text-[#448CD2] w-6 h-6 flex-shrink-0 mt-0.5" />
+                  <Icon
+                    icon="solar:info-circle-bold"
+                    className="text-[#448CD2] w-6 h-6 flex-shrink-0 mt-0.5"
+                  />
                   <div>
-                    <h5 className="font-bold text-[#1a3652] text-sm">Control your alerts</h5>
+                    <h5 className="font-bold text-[#1a3652] text-sm">
+                      Control your alerts
+                    </h5>
                     <p className="text-xs text-gray-500 mt-1">
-                      Choose how you want to be notified about important updates. Changes are saved automatically.
+                      Choose how you want to be notified about important
+                      updates. Changes are saved automatically.
                     </p>
                   </div>
                 </div>
@@ -456,34 +489,49 @@ const AccountSetting = () => {
                 <div className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:shadow-sm transition-shadow">
                   <div>
                     <h6 className="font-bold text-gray-800 text-sm flex items-center gap-2">
-                      <Icon icon="solar:bell-bold-duotone" className="text-[#448CD2]" width="20" />
+                      {/* <Icon
+                        icon="solar:bell-bold-duotone"
+                        className="text-[#448CD2]"
+                        width="20"
+                      /> */}
                       System Notifications
                     </h6>
                     <p className="text-xs text-gray-500 mt-1 max-w-sm">
-                      Get in-app alerts for assessments, team updates, and system announcements.
+                      Get in-app alerts for assessments, team updates, and
+                      system announcements.
                     </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       className="sr-only peer"
-                      checked={profileData?.notificationPreferences?.system ?? true}
+                      checked={
+                        profileData?.notificationPreferences?.system ?? true
+                      }
                       onChange={async (e) => {
                         const newValue = e.target.checked;
                         // Optimistic update
                         setProfileData((prev: any) => ({
                           ...prev,
-                          notificationPreferences: { ...prev?.notificationPreferences, system: newValue }
+                          notificationPreferences: {
+                            ...prev?.notificationPreferences,
+                            system: newValue,
+                          },
                         }));
                         try {
-                          await api.patch("/auth/update-notifications", { system: newValue });
+                          await api.patch("/auth/update-notifications", {
+                            system: newValue,
+                          });
                           toast.success("Preference updated");
                         } catch (error) {
                           toast.error("Failed to update preference");
                           // Revert
                           setProfileData((prev: any) => ({
                             ...prev,
-                            notificationPreferences: { ...prev?.notificationPreferences, system: !newValue }
+                            notificationPreferences: {
+                              ...prev?.notificationPreferences,
+                              system: !newValue,
+                            },
                           }));
                         }
                       }}
@@ -495,32 +543,43 @@ const AccountSetting = () => {
                 <div className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:shadow-sm transition-shadow">
                   <div>
                     <h6 className="font-bold text-gray-800 text-sm flex items-center gap-2">
-                      <Icon icon="solar:letter-bold-duotone" className="text-[#448CD2]" width="20" />
+                      {/* <Icon icon="solar:letter-bold-duotone" className="text-[#448CD2]" width="20" /> */}
                       Email Notifications
                     </h6>
                     <p className="text-xs text-gray-500 mt-1 max-w-sm">
-                      Receive important updates and digests via email. We won't spam you.
+                      Receive important updates and digests via email. We won't
+                      spam you.
                     </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       className="sr-only peer"
-                      checked={profileData?.notificationPreferences?.email ?? false}
+                      checked={
+                        profileData?.notificationPreferences?.email ?? false
+                      }
                       onChange={async (e) => {
                         const newValue = e.target.checked;
                         setProfileData((prev: any) => ({
                           ...prev,
-                          notificationPreferences: { ...prev?.notificationPreferences, email: newValue }
+                          notificationPreferences: {
+                            ...prev?.notificationPreferences,
+                            email: newValue,
+                          },
                         }));
                         try {
-                          await api.patch("/auth/update-notifications", { email: newValue });
+                          await api.patch("/auth/update-notifications", {
+                            email: newValue,
+                          });
                           toast.success("Preference updated");
                         } catch (error) {
                           toast.error("Failed to update preference");
                           setProfileData((prev: any) => ({
                             ...prev,
-                            notificationPreferences: { ...prev?.notificationPreferences, email: !newValue }
+                            notificationPreferences: {
+                              ...prev?.notificationPreferences,
+                              email: !newValue,
+                            },
                           }));
                         }
                       }}
@@ -530,14 +589,12 @@ const AccountSetting = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-      </div >
+      </div>
       {/* Account Setting Section End */}
     </>
   );
 };
-
 
 export default AccountSetting;

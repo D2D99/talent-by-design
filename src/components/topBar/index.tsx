@@ -3,6 +3,7 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import api from "../../services/axios";
 import { formatDistanceToNow } from "date-fns";
+import { Tooltip } from "react-tooltip";
 
 const IconArrow = "/static/img/icons/iconamoon_arrow.png";
 
@@ -28,7 +29,9 @@ const TopBar = () => {
   // Notification State
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"All" | "Invites" | "Activity">("All");
+  const [activeTab, setActiveTab] = useState<"All" | "Invites" | "Activity">(
+    "All",
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Fetch Notifications
@@ -51,7 +54,10 @@ const TopBar = () => {
   // Handle Outside Click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -63,7 +69,7 @@ const TopBar = () => {
   const handleMarkAllRead = async () => {
     try {
       await api.patch("/auth/notifications/read-all");
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch (error) {
       console.error(error);
     }
@@ -81,26 +87,35 @@ const TopBar = () => {
   const handleMarkRead = async (id: string) => {
     try {
       await api.patch(`/auth/notifications/${id}/read`);
-      setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
+      );
     } catch (error) {
       console.error(error);
     }
   };
 
   // derived state
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-  const filteredNotifications = notifications.filter(n => {
+  const filteredNotifications = notifications.filter((n) => {
     if (activeTab === "All") return true;
-    if (activeTab === "Invites") return n.title.toLowerCase().includes("invit") || n.message.toLowerCase().includes("invit");
-    if (activeTab === "Activity") return !n.title.toLowerCase().includes("invit") && !n.message.toLowerCase().includes("invit");
+    if (activeTab === "Invites")
+      return (
+        n.title.toLowerCase().includes("invit") ||
+        n.message.toLowerCase().includes("invit")
+      );
+    if (activeTab === "Activity")
+      return (
+        !n.title.toLowerCase().includes("invit") &&
+        !n.message.toLowerCase().includes("invit")
+      );
     return true;
   });
 
   return (
     <>
       <div className="sticky top-6 z-30 flex items-center gap-4 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 rounded-[12px] py-3 px-3 mb-6">
-
         {/* Mobile Sidebar Toggle */}
         <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-6 transform left-[-12px] cursor-pointer">
           <button
@@ -183,56 +198,67 @@ const TopBar = () => {
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="relative p-2 rounded-full hover:bg-gray-50 transition-colors focus:outline-none"
+            className="relative p-2 rounded-full hover:bg-primary-500/10 transition-colors focus:outline-none"
           >
-            <Icon
+            {/* <Icon
               icon="solar:bell-bing-linear"
               className="w-7 h-7 text-[var(--secondary-color)]"
-            />
+            /> */}
+            <Icon icon="mage:notification-bell" width="24" height="24" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-[#FF4D4D] border-2 border-white rounded-full animate-pulse shadow-sm"></span>
+              <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-[#FF4D4D] border-2 border-white rounded-full shadow-sm"></span>
             )}
           </button>
 
           {/* Dropdown Menu */}
           {isOpen && (
             <div className="absolute right-[-10px] sm:right-0 top-16 w-[92vw] sm:w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-[9999] overflow-hidden transform transition-all duration-200 origin-top-right ring-1 ring-black/5">
-
               {/* Header */}
-              <div className="px-6 py-5 bg-white border-b border-gray-50 flex items-center justify-between sticky top-0 z-20">
+              <div className="px-6 py-5 bg-white flex items-center justify-between sticky top-0 z-20">
                 <div>
-                  <h4 className="text-xl font-bold text-gray-900 tracking-tight">Notification</h4>
-                  <p className="text-xs text-gray-500 font-medium mt-0.5">Stay Update With Your Latest Notifications</p>
+                  <h4 className="text-xl font-bold text-gray-900 tracking-tight">
+                    Notification
+                  </h4>
+                  <p className="text-xs text-gray-500 font-medium mt-0.5">
+                    Stay Update With Your Latest Notifications
+                  </p>
                 </div>
 
                 <div className="flex gap-2">
                   <button
                     onClick={handleMarkAllRead}
-                    className="p-2 hover:bg-gray-50 rounded-lg text-gray-500 hover:text-[#448CD2] transition-colors"
+                    className="p-2 hover:bg-primary-500/10 rounded-lg text-gray-500 hover:text-[#448CD2] transition-colors"
                     title="Mark all as read"
+                    data-tooltip-id="mark-read"
+                    data-tooltip-content="Mark all as read"
                   >
                     <Icon icon="solar:check-read-linear" width="20" />
+                    <Tooltip id="mark-read" className="!text-xs" />
                   </button>
                   <button
                     onClick={handleClearAll}
                     className="p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
-                    title="Clear List"
+                    data-tooltip-id="delete-notification"
+                    data-tooltip-content="Clear List"
                   >
                     <Icon icon="solar:trash-bin-trash-linear" width="20" />
+
+                    <Tooltip id="delete-notification" className="!text-xs" />
                   </button>
                 </div>
               </div>
 
               {/* Filter Tabs */}
-              <div className="px-6 py-3 flex items-center gap-6 border-b border-gray-50 bg-white sticky top-[85px] z-10">
+              <div className="px-6 py-3 flex items-center gap-6 border-b border-gray-100 bg-white sticky top-[85px] z-10">
                 {(["All", "Invites", "Activity"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${activeTab === tab
-                      ? "text-gray-900"
-                      : "text-gray-400 hover:text-gray-600"
-                      }`}
+                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${
+                      activeTab === tab
+                        ? "text-gray-900"
+                        : "text-gray-400 hover:text-gray-600"
+                    }`}
                   >
                     {tab}
                     {tab === "All" && unreadCount > 0 && (
@@ -241,7 +267,7 @@ const TopBar = () => {
                       </span>
                     )}
                     {activeTab === tab && (
-                      <span className="absolute bottom-[-13px] left-0 w-full h-[2px] bg-black rounded-full" />
+                      <span className="absolute bottom-[-13px] left-0 w-full h-[2px] bg-[var(--primary-color)] rounded-full" />
                     )}
                   </button>
                 ))}
@@ -255,7 +281,9 @@ const TopBar = () => {
                       <div
                         key={notif._id}
                         className={`flex gap-4 p-5 hover:bg-gray-50/80 transition-all duration-300 group cursor-default relative overflow-hidden ${!notif.isRead ? "bg-blue-50/30" : ""}`}
-                        onMouseEnter={() => !notif.isRead && handleMarkRead(notif._id)}
+                        onMouseEnter={() =>
+                          !notif.isRead && handleMarkRead(notif._id)
+                        }
                       >
                         {/* Status Indicator Line */}
                         {!notif.isRead && (
@@ -263,15 +291,22 @@ const TopBar = () => {
                         )}
 
                         {/* Icon Avatar */}
-                        <div className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${notif.type === 'success' ? 'bg-green-50 text-green-600' :
-                          notif.type === 'error' ? 'bg-red-50 text-red-600' :
-                            'bg-blue-50 text-[#448CD2]'
-                          }`}>
+                        <div
+                          className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${
+                            notif.type === "success"
+                              ? "bg-green-50 text-green-600"
+                              : notif.type === "error"
+                                ? "bg-red-50 text-red-600"
+                                : "bg-blue-50 text-[#448CD2]"
+                          }`}
+                        >
                           <Icon
                             icon={
-                              notif.type === 'success' ? 'solar:check-circle-bold' :
-                                notif.type === 'info' ? 'solar:bell-bold' :
-                                  'solar:info-circle-bold'
+                              notif.type === "success"
+                                ? "solar:check-circle-bold"
+                                : notif.type === "info"
+                                  ? "solar:bell-bold"
+                                  : "solar:info-circle-bold"
                             }
                             width="20"
                           />
@@ -280,23 +315,34 @@ const TopBar = () => {
                         {/* Content */}
                         <div className="flex-1 min-w-0 pr-6">
                           <div className="flex justify-between items-start mb-1">
-                            <p className={`text-sm leading-snug truncate pr-2 ${!notif.isRead ? "font-extrabold text-[#1a3652]" : "font-semibold text-gray-800"}`}>
+                            <p
+                              className={`text-sm leading-snug truncate pr-2 ${!notif.isRead ? "font-extrabold text-[#1a3652]" : "font-semibold text-gray-800"}`}
+                            >
                               {notif.title}
                             </p>
-                            <span className="text-[10px] font-medium text-gray-400 whitespace-nowrap bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
-                              {notif.type === 'success' ? 'Confirmed' : 'Activity'}
+                            <span className="text-[10px] font-medium text-gray-500 whitespace-nowrap bg-gray-100 px-1.5 py-0.5 rounded border border-gray-100">
+                              {notif.type === "success"
+                                ? "Confirmed"
+                                : "Activity"}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-2">
+                          <p className="text-xs text-gray-500 leading-snug line-clamp-2 mb-5">
                             {notif.message}
                           </p>
-                          <p className="text-[10px] font-medium text-gray-400 flex items-center gap-1">
-                            <Icon icon="solar:clock-circle-linear" width="10" />
+                          <p className="text-[11px] font-medium text-gray-400 flex items-center gap-1">
+                            <Icon
+                              icon="solar:clock-circle-linear"
+                              width="12"
+                              className="text-gray-500"
+                            />
                             {(() => {
                               try {
-                                return formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true });
+                                return formatDistanceToNow(
+                                  new Date(notif.createdAt),
+                                  { addSuffix: true },
+                                );
                               } catch (e) {
-                                return 'Just now';
+                                return "Just now";
                               }
                             })()}
                           </p>
@@ -314,11 +360,17 @@ const TopBar = () => {
                 ) : (
                   <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
                     <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 shadow-inner">
-                      <Icon icon="solar:bell-off-outline" className="text-gray-300 w-8 h-8" />
+                      <Icon
+                        icon="solar:bell-off-outline"
+                        className="text-gray-300 w-8 h-8"
+                      />
                     </div>
-                    <h5 className="text-gray-900 font-bold mb-1">All Caught Up!</h5>
+                    <h5 className="text-gray-900 font-bold mb-1">
+                      All Caught Up!
+                    </h5>
                     <p className="text-xs text-gray-400 max-w-[200px] leading-relaxed">
-                      You have zero new notifications. We'll alert you when something happens.
+                      You have zero new notifications. We'll alert you when
+                      something happens.
                     </p>
                   </div>
                 )}
@@ -326,19 +378,18 @@ const TopBar = () => {
 
               {/* Footer */}
               {notifications.length > 0 && (
-                <div className="bg-gray-50/50 p-3 border-t border-gray-100 flex justify-center sticky bottom-0 z-20 backdrop-blur-sm">
+                <div className="bg-primary-500/5 p-3 border-t border-gray-100 flex justify-center sticky bottom-0 z-20 backdrop-blur-sm">
                   <button
                     onClick={() => {
                       setIsOpen(false);
-                      navigate('/dashboard/notifications');
+                      navigate("/dashboard/notifications");
                     }}
                     className="text-xs font-bold text-[#448CD2] hover:text-[#1a3652] transition-colors uppercase tracking-wider flex items-center gap-1"
                   >
-                    View Full History <Icon icon="solar:arrow-right-linear" width="12" />
+                    View All Notification
                   </button>
                 </div>
               )}
-
             </div>
           )}
         </div>
@@ -346,7 +397,11 @@ const TopBar = () => {
 
       {/* Overlay to close when clicking outside (in case ref fails or for mobile) */}
       {isOpen && (
-        <div className="fixed inset-0 z-20 bg-transparent" onClick={() => setIsOpen(false)} style={{ pointerEvents: 'none' }}></div>
+        <div
+          className="fixed inset-0 z-20 bg-transparent"
+          onClick={() => setIsOpen(false)}
+          style={{ pointerEvents: "none" }}
+        ></div>
       )}
     </>
   );

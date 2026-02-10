@@ -207,12 +207,12 @@ const UserProfile = () => {
               "Saving..."
             ) : isEditing ? (
               <>
-                <Icon icon="solar:diskette-bold" width="18" />
+                {/* <Icon icon="solar:diskette-bold" width="18" /> */}
                 Save
               </>
             ) : (
               <>
-                <Icon icon="solar:pen-bold" width="18" />
+                {/* <Icon icon="solar:pen-bold" width="18" /> */}
                 Edit
               </>
             )}
@@ -233,10 +233,11 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className={`border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-0 bg-white -right-1 shadow-sm ${isEditing
-                    ? 'cursor-pointer hover:bg-neutral-50'
-                    : 'opacity-50 cursor-not-allowed pointer-events-none'
-                  }`}
+                className={`border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
+                  isEditing
+                    ? "cursor-pointer bg-white hover:bg-neutral-50"
+                    : "bg-gray-100 cursor-not-allowed pointer-events-none"
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
