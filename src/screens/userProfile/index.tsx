@@ -2,7 +2,6 @@ import { useState, useEffect, type ChangeEvent } from "react";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import { Icon } from "@iconify/react";
 import SpinnerLoader from "../../components/spinnerLoader";
 
 const UserProfilePic = "/static/img/ic-profile-ph.svg";
