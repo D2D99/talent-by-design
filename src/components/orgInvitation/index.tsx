@@ -239,7 +239,7 @@ const OrgInvitation = () => {
                   placeholder={isSuperAdmin ? "Search organizations, emails..." : "Search members, emails..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border  rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 />
               </div>
 
@@ -472,9 +472,13 @@ const OrgInvitation = () => {
                   <input
                     type="email"
                     id="email"
+                    name="invitation-email-field"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    onFocus={(e) => e.target.removeAttribute('readonly')}
+                    autoComplete="new-password"
+                    readOnly
+                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)] focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all"
                     placeholder="Enter email"
                   />
                 </div>
