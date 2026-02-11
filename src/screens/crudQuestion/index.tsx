@@ -962,10 +962,10 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full text-white bg-gradient-to-t from-[#1a3652] to-[#448bd2] ${
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
                               openSubdomains.includes(subdomainTitle)
-                                ? "rotate-[-180deg]"
-                                : "rotate-0"
+                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
                             }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
