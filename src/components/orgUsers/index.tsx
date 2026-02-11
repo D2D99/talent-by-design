@@ -95,7 +95,8 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
     const filteredMembers = sortedMembers.filter((m) => {
         const matchesSearch = `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""}`.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesRole = roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
-        return matchesSearch && matchesRole;
+        const notAdmin = m.role.toLowerCase() !== "admin";
+        return matchesSearch && matchesRole && notAdmin;
     });
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -112,14 +113,10 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
                     <Icon icon="material-symbols:arrow-back-rounded" width="16" />
                     <span className="uppercase tracking-wider">Back to Management</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Organization Details</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">{details?.orgName || "Organization Details"}</h2>
 
                 {details && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100">
-                            <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.1em] mb-1">Organization Name</p>
-                            <p className="text-lg font-bold text-[#1a3652] truncate" title={details.orgName}>{details.orgName}</p>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100">
                             <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.1em] mb-1">Created On</p>
                             <p className="text-base font-bold text-gray-700">{new Date(details.createdAt).toLocaleDateString()}</p>
@@ -200,7 +197,7 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
                         <div>
                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Role</label>
                             <div className="space-y-2">
-                                {["admin", "leader", "manager", "employee"].map((r) => (
+                                {["leader", "manager", "employee"].map((r) => (
                                     <label key={r} className="flex items-center gap-3 cursor-pointer group">
                                         <input
                                             type="checkbox"
