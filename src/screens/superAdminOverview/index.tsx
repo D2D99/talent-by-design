@@ -8,7 +8,7 @@ const SuperAdminOverview = () => {
         <div className="grid">
           <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
             <div>
-              <h2 className="md:text-2xl text-xl font-bold">Overview</h2>
+              <h2 className="md:text-2xl text-xl font-bold">Org Head / Coach Report</h2>
               {/* <p className="text-sm text-gray-500 md:mt-1">isSuperAdmin</p> */}
             </div>
             <button

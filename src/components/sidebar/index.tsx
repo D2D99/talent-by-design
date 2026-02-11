@@ -7,7 +7,6 @@ const ProfilePlaceholderImg = "/static/img/ic-profile-ph.svg";
 import { Tooltip } from "react-tooltip";
 
 // import { Tooltip, initTWE } from "tw-elements";
-const FIRST_REPORT_ROUTE = "/dashboard/reports/org-head";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -24,9 +23,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     role: "",
     profileImage: "",
   });
-  const [openReports, setOpenReports] = useState(false);
 
   const isReportsRoute = location.pathname.startsWith("/dashboard/reports");
+  const [openReports, setOpenReports] = useState(isReportsRoute);
 
   useEffect(() => {
     setOpenReports(isReportsRoute);
@@ -75,6 +74,18 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     }
   };
 
+  // Get the first report route based on user role
+  const getFirstReportRoute = () => {
+    if (user.role === "superAdmin" || user.role === "admin") {
+      return "/dashboard/reports/org-head";
+    } else if (user.role === "leader") {
+      return "/dashboard/reports/senior-leader";
+    } else if (user.role === "manager") {
+      return "/dashboard/reports/manager";
+    }
+    return "/dashboard/reports/employee"; // Default for employees
+  };
+
   const base =
     "flex items-center gap-2 py-2 px-3 rounded text-base font-semibold";
   const active = "bg-[#E4F0FC] text-[var(--primary-color)]";
@@ -118,7 +129,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 setOpenReports(true);
 
                 if (!isReportsRoute) {
-                  navigate(FIRST_REPORT_ROUTE);
+                  navigate(getFirstReportRoute());
                 }
               }}
               className={`${base} w-full justify-between ${isReportsRoute ? active : inactive

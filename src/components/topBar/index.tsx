@@ -171,11 +171,25 @@ const TopBar = () => {
                     let to = `/dashboard/${filteredArray.slice(0, index + 1).join("/")}`;
                     let displayValue = decodedValue;
 
+                    // Handle special cases
                     if (value.toLowerCase() === "organization") {
                       to = "/dashboard/invite";
                       displayValue = "Invite";
                     } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "organization") {
                       displayValue = "Organization Details";
+                    } else if (value.toLowerCase() === "reports") {
+                      displayValue = "Reports";
+                    } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "reports") {
+                      // Handle report sub-routes
+                      if (value === "org-head") {
+                        displayValue = "Org Head / Coach";
+                      } else if (value === "senior-leader") {
+                        displayValue = "Senior Leader";
+                      } else if (value === "manager") {
+                        displayValue = "Manager";
+                      } else if (value === "employee") {
+                        displayValue = "Employee";
+                      }
                     }
 
                     return (

@@ -32,18 +32,24 @@ const Register = () => {
 
   // ✅ PAGE LOADER EFFECT (ADDED)
   useEffect(() => {
-    // Capture tokens from URL if they exist (Fallback for local dev cookie issues)
+    // Capture tokens from URL if they exist (Fallback for cross-site cookie issues)
     const params = new URLSearchParams(window.location.search);
     const authToken = params.get("authToken");
     const token1 = params.get("token1");
 
     if (authToken && token1) {
-      console.log("Tokens found in URL, setting cookies manually...");
-      // Set cookies manually to bypass cross-site redirect issues on localhost
-      // This specifically fixes the "You are not invited yet" error
+      console.log("Tokens found in URL, storing in localStorage...");
+      // Store in localStorage for reliable access
+      localStorage.setItem("tempAuthToken", authToken);
+      localStorage.setItem("tempToken1", token1);
+
+      // Also try to set cookies as backup
       const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
       document.cookie = `authToken=${authToken}; path=/; expires=${expires}; SameSite=Lax`;
       document.cookie = `token1=${token1}; path=/; expires=${expires}; SameSite=Lax`;
+
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     const timer = setTimeout(() => {
@@ -166,9 +172,15 @@ const Register = () => {
       //   return;
       // }
 
-      const params = new URLSearchParams(window.location.search);
-      const authTokenFromUrl = params.get("authToken");
-      const token1FromUrl = params.get("token1");
+      // Get tokens from localStorage (most reliable) or fallback to URL params
+      const authToken = localStorage.getItem("tempAuthToken") || "";
+      const token1 = localStorage.getItem("tempToken1") || "";
+
+      if (!authToken || !token1) {
+        setError("root", { type: "manual", message: "You are not invited yet so you cannot register." });
+        setLoading(false);
+        return;
+      }
 
       // Proceed with registration
       await api.post("auth/register", {
@@ -177,10 +189,14 @@ const Register = () => {
         confirmPassword: data.confirmPassword,
       }, {
         headers: {
-          "x-auth-token": authTokenFromUrl || "",
-          "x-invitation-token": token1FromUrl || ""
+          "x-auth-token": authToken,
+          "x-invitation-token": token1
         }
       });
+
+      // Clear temporary tokens after successful registration
+      localStorage.removeItem("tempAuthToken");
+      localStorage.removeItem("tempToken1");
 
       localStorage.setItem("registeredEmail", data.email);
       toast.success("Registration successful! Please check your email for verification.");

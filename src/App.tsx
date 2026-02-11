@@ -18,6 +18,8 @@ import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
 import SuperAdminOverview from "./screens/superAdminOverview";
+import LeaderOverview from "./screens/leaderOverview";
+import ManagerOverview from "./screens/managerOverview";
 import "react-tooltip/dist/react-tooltip.css";
 import UserProfile from "./screens/userProfile";
 import SessionPopup from "./components/sessionPopup";
@@ -72,11 +74,8 @@ function App() {
 
             {/* Reports */}
             <Route path="reports/org-head" element={<SuperAdminOverview />} />
-            {/* <Route
-            path="reports/senior-leader"
-            element={<SeniorLeaderReport />}
-            /> */}
-            {/* <Route path="reports/manager" element={<ManagerReport />} /> */}
+            <Route path="reports/senior-leader" element={<LeaderOverview />} />
+            <Route path="reports/manager" element={<ManagerOverview />} />
             {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
           </Route>
         </Route>
