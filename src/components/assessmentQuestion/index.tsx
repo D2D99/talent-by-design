@@ -51,7 +51,7 @@ const AssessmentQuestion = () => {
   const { token: routeToken } = useParams();
   const [searchParams] = useSearchParams();
 
-  const token = searchParams.get("token") || routeToken;
+  const token = searchParams.get("token") || routeToken || localStorage.getItem("accessToken") || localStorage.getItem("token");
   const assessmentIdFromUrl = searchParams.get("assessmentId");
 
   const [pageLoading, setPageLoading] = useState(true);
@@ -82,6 +82,7 @@ const AssessmentQuestion = () => {
     lastName: "",
     email: "",
     department: "",
+    orgName: "",
   });
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -118,7 +119,8 @@ const AssessmentQuestion = () => {
     }
     try {
       const decoded: DecodedToken = jwtDecode(token);
-      const role = decoded.role?.toLowerCase() || "employee";
+      let role = decoded.role?.toLowerCase() || "employee";
+      if (role === 'superadmin') role = 'admin'; // Mapping superAdmin to admin questions
       setUserRole(role);
 
       setFinalForm((prev) => ({
@@ -127,6 +129,7 @@ const AssessmentQuestion = () => {
         lastName: decoded.lastName || decoded.name?.split(" ")[1] || "",
         email: decoded.email || "",
         department: decoded.department || "",
+        orgName: (decoded as any).orgName || "",
       }));
 
       loadQuestions(role);
@@ -176,7 +179,11 @@ const AssessmentQuestion = () => {
           { responses: Object.values(updatedAnswers) },
           { headers: { "x-invite-token": token } },
         );
-        setShowFinalForm(true);
+        if (userRole === "employee") {
+          setShowFinalForm(true);
+        } else {
+          await handleFinalSubmit(true);
+        }
       } catch (error: unknown) {
         const axiosError = error as AxiosError<{ message: string }>;
         if (axiosError.response?.status === 401) return;
@@ -190,13 +197,14 @@ const AssessmentQuestion = () => {
     }
   };
 
-  const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async (isAutoSubmit = false) => {
     if (!token || !assessmentId) return;
     if (
-      !finalForm.firstName ||
-      !finalForm.lastName ||
-      !finalForm.email ||
-      !finalForm.department
+      !isAutoSubmit &&
+      (!finalForm.firstName ||
+        !finalForm.lastName ||
+        !finalForm.email ||
+        !finalForm.department)
     ) {
       toast.warn("Please fill all details");
       return;
@@ -205,8 +213,12 @@ const AssessmentQuestion = () => {
 
     setIsSubmitting(true);
     try {
+      const submissionUrl = userRole === 'employee'
+        ? `employee-assessment/${assessmentId}/submit/${token}`
+        : `assessment/${assessmentId}/submit`;
+
       const response = await api.post(
-        `${userRole}-assessment/${assessmentId}/submit/${token}`,
+        submissionUrl,
         finalForm,
         {
           headers: {
@@ -260,236 +272,253 @@ const AssessmentQuestion = () => {
           </button>
         </div>
 
-        <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
-          {isSubmitted ? (
-            <div className="py-10">
-              <img
-                src={ResendMail}
-                className="mx-auto w-auto mb-6"
-                alt="email-icon"
-              />
-              <h2 className="sm:text-2xl text-xl text-center font-bold text-[var(--secondary-color)] mb-4">
-                Thank You{" "}
-                <span className="text-[var(--dark-primary-color)]">
-                  {finalForm.firstName} {finalForm.lastName}.
-                </span>
-              </h2>
-              <p className="text-sm font-normal sm:mb-6 mb-3 text-center text-gray-600">
-                Your inputs have been securely recorded...
-              </p>
-              <div className="flex justify-center mt-8">
-                <button
-                  type="button"
-                  onClick={() => navigate("/")}
-                  className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200"
-                >
-                  Back To Home
-                </button>
-              </div>
+        {questions.length === 0 && !pageLoading ? (
+          <div className="text-center p-10 bg-white rounded-xl shadow-md">
+            <h2 className="text-xl font-bold text-gray-700">No Questions Found</h2>
+            <p className="text-gray-500 mt-2">There are no assessment questions available for your role ({userRole}).</p>
+            <div className="mt-6">
+              <button
+                onClick={() => navigate("/")}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-full transition-colors"
+              >
+                Go Home
+              </button>
             </div>
-          ) : (
-            <>
-              <div className="flex justify-between items-center">
-                <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide">
-                  {showFinalForm
-                    ? "Final Step"
-                    : `Question ${currentIndex + 1} of ${questions.length}`}
+          </div>
+        ) : (
+          <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
+            {isSubmitted ? (
+              <div className="py-10">
+                <img
+                  src={ResendMail}
+                  className="mx-auto w-auto mb-6"
+                  alt="email-icon"
+                />
+                <h2 className="sm:text-2xl text-xl text-center font-bold text-[var(--secondary-color)] mb-4">
+                  Thank You{" "}
+                  <span className="text-[var(--dark-primary-color)]">
+                    {finalForm.firstName} {finalForm.lastName}.
+                  </span>
                 </h2>
+                <p className="text-sm font-normal sm:mb-6 mb-3 text-center text-gray-600">
+                  Your inputs have been securely recorded...
+                </p>
+                <div className="flex justify-center mt-8">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200"
+                  >
+                    Back To Home
+                  </button>
+                </div>
               </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide">
+                    {showFinalForm
+                      ? "Final Step"
+                      : `Question ${currentIndex + 1} of ${questions.length}`}
+                  </h2>
+                </div>
 
-              <div className="w-full bg-[var(--light-primary-color)] rounded-full h-2 mt-3">
-                <div
-                  className="bg-[var(--dark-primary-color)] h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${progressPercentage}%` }}
-                ></div>
-              </div>
+                <div className="w-full bg-[var(--light-primary-color)] rounded-full h-2 mt-3">
+                  <div
+                    className="bg-[var(--dark-primary-color)] h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+                </div>
 
-              {!showFinalForm ? (
-                <>
-                  <div className="sm:my-6 my-4">
-                    <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
-                      {currentQuestion?.questionStem}{" "}
-                      <span className="text-black">*</span>
-                    </h2>
-                  </div>
+                {!showFinalForm ? (
+                  <>
+                    <div className="sm:my-6 my-4">
+                      <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
+                        {currentQuestion?.questionStem}{" "}
+                        <span className="text-black">*</span>
+                      </h2>
+                    </div>
 
-                  {!isForcedChoice ? (
-                    <div className="grid grid-cols-5 max-w-96 mx-auto mb-8">
-                      {[1, 2, 3, 4, 5].map((num) => (
-                        <div key={num} className="flex flex-col items-center">
+                    {!isForcedChoice ? (
+                      <div className="grid grid-cols-5 max-w-96 mx-auto mb-8">
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <div key={num} className="flex flex-col items-center">
+                            <label
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
+                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                                : "text-[var(--secondary-color)] hover:bg-blue-50"
+                                }`}
+                            >
+                              {num}
+                              <input
+                                type="radio"
+                                className="hidden"
+                                checked={selectedValue === num}
+                                onChange={() => setSelectedValue(num)}
+                              />
+                            </label>
+                            <span className="text-[10px] mt-2 text-center leading-tight">
+                              {num === 1
+                                ? "Strongly Disagree"
+                                : num === 3
+                                  ? "Neutral"
+                                  : num === 5
+                                    ? "Strongly Agree"
+                                    : ""}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-4 mb-8">
+                        {(["A", "B"] as const).map((opt) => (
                           <label
-                            className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
-                              ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                              : "text-[var(--secondary-color)] hover:bg-blue-50"
+                            key={opt}
+                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${selectedValue === opt
+                              ? "border-[var(--primary-color)] bg-blue-50"
+                              : ""
                               }`}
                           >
-                            {num}
                             <input
+                              className="w-4 h-4 accent-blue-500"
                               type="radio"
-                              className="hidden"
-                              checked={selectedValue === num}
-                              onChange={() => setSelectedValue(num)}
+                              checked={selectedValue === opt}
+                              onChange={() => setSelectedValue(opt)}
                             />
+                            <h3 className="text-sm font-medium text-[#5D5D5D]">
+                              {opt === "A"
+                                ? currentQuestion?.forcedChoice?.optionA.label
+                                : currentQuestion?.forcedChoice?.optionB.label}
+                            </h3>
                           </label>
-                          <span className="text-[10px] mt-2 text-center leading-tight">
-                            {num === 1
-                              ? "Strongly Disagree"
-                              : num === 3
-                                ? "Neutral"
-                                : num === 5
-                                  ? "Strongly Agree"
-                                  : ""}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-4 mb-8">
-                      {(["A", "B"] as const).map((opt) => (
-                        <label
-                          key={opt}
-                          className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${selectedValue === opt
-                            ? "border-[var(--primary-color)] bg-blue-50"
-                            : ""
-                            }`}
-                        >
-                          <input
-                            className="w-4 h-4 accent-blue-500"
-                            type="radio"
-                            checked={selectedValue === opt}
-                            onChange={() => setSelectedValue(opt)}
-                          />
-                          <h3 className="text-sm font-medium text-[#5D5D5D]">
-                            {opt === "A"
-                              ? currentQuestion?.forcedChoice?.optionA.label
-                              : currentQuestion?.forcedChoice?.optionB.label}
-                          </h3>
-                        </label>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
 
-                  <div
-                    className={`transition-all duration-300 ${(!isForcedChoice &&
-                      typeof selectedValue === "number" &&
-                      selectedValue <= 3) ||
-                      (isForcedChoice && selectedValue === higherValueOption)
-                      ? "opacity-100 h-auto"
-                      : "opacity-0 h-0 overflow-hidden"
-                      }`}
-                  >
-                    <label className="text-sm font-bold block mb-2">
-                      {isForcedChoice
-                        ? selectedValue === "A"
-                          ? currentQuestion?.forcedChoice?.optionA.insightPrompt
-                          : currentQuestion?.forcedChoice?.optionB.insightPrompt
-                        : currentQuestion?.insightPrompt ||
-                        "Why did you choose this score?"}
-                      <span className="text-black"> *</span>
-                    </label>
-                    <textarea
-                      className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
-                      rows={4}
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                    ></textarea>
-                  </div>
-                </>
-              ) : (
-                <div className="sm:my-6 my-4">
-                  <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
-                    Finalizing Your Confidential Submission
-                  </h2>
-                  <div className="sm:mb-4 mb-2">
-                    <label className="font-bold text-sm">First Name</label>
-                    <input
-                      value={finalForm.firstName}
-                      onChange={(e) =>
-                        setFinalForm({
-                          ...finalForm,
-                          firstName: e.target.value,
-                        })
-                      }
-                      className="w-full p-3 mt-2 border rounded-lg"
-                    />
-                  </div>
-                  <div className="sm:mb-4 mb-2">
-                    <label className="font-bold text-sm">Last Name</label>
-                    <input
-                      value={finalForm.lastName}
-                      onChange={(e) =>
-                        setFinalForm({ ...finalForm, lastName: e.target.value })
-                      }
-                      className="w-full p-3 mt-2 border rounded-lg"
-                    />
-                  </div>
-                  <div className="sm:mb-4 mb-2">
-                    <label className="font-bold text-sm">Email</label>
-                    <input
-                      type="email"
-                      value={finalForm.email}
-                      readOnly={!!finalForm.email}
-                      className={`w-full p-3 mt-2 border rounded-lg ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
-                    />
-                  </div>
-                  <div className="sm:mb-6 mb-5">
-                    <label className="font-bold text-sm">Department</label>
-                    <select
-                      value={finalForm.department}
-                      onChange={(e) =>
-                        setFinalForm({
-                          ...finalForm,
-                          department: e.target.value,
-                        })
-                      }
-                      className="w-full p-3 mt-2 border rounded-lg appearance-none"
+                    <div
+                      className={`transition-all duration-300 ${(!isForcedChoice &&
+                        typeof selectedValue === "number" &&
+                        selectedValue <= 3) ||
+                        (isForcedChoice && selectedValue === higherValueOption)
+                        ? "opacity-100 h-auto"
+                        : "opacity-0 h-0 overflow-hidden"
+                        }`}
                     >
-                      <option value="">Select your department</option>
-                      <option value="hr">HR</option>
-                      <option value="engineering">Engineering</option>
-                      <option value="marketing">Marketing</option>
-                      <option value="operations">Operations</option>
-                    </select>
+                      <label className="text-sm font-bold block mb-2">
+                        {isForcedChoice
+                          ? selectedValue === "A"
+                            ? currentQuestion?.forcedChoice?.optionA.insightPrompt
+                            : currentQuestion?.forcedChoice?.optionB.insightPrompt
+                          : currentQuestion?.insightPrompt ||
+                          "Why did you choose this score?"}
+                        <span className="text-black"> *</span>
+                      </label>
+                      <textarea
+                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                        rows={4}
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                      ></textarea>
+                    </div>
+                  </>
+                ) : (
+                  <div className="sm:my-6 my-4">
+                    <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
+                      Finalizing Your Confidential Submission
+                    </h2>
+                    <div className="sm:mb-4 mb-2">
+                      <label className="font-bold text-sm">First Name</label>
+                      <input
+                        value={finalForm.firstName}
+                        onChange={(e) =>
+                          setFinalForm({
+                            ...finalForm,
+                            firstName: e.target.value,
+                          })
+                        }
+                        className="w-full p-3 mt-2 border rounded-lg"
+                      />
+                    </div>
+                    <div className="sm:mb-4 mb-2">
+                      <label className="font-bold text-sm">Last Name</label>
+                      <input
+                        value={finalForm.lastName}
+                        onChange={(e) =>
+                          setFinalForm({ ...finalForm, lastName: e.target.value })
+                        }
+                        className="w-full p-3 mt-2 border rounded-lg"
+                      />
+                    </div>
+                    <div className="sm:mb-4 mb-2">
+                      <label className="font-bold text-sm">Email</label>
+                      <input
+                        type="email"
+                        value={finalForm.email}
+                        readOnly={!!finalForm.email}
+                        className={`w-full p-3 mt-2 border rounded-lg ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
+                      />
+                    </div>
+                    <div className="sm:mb-6 mb-5">
+                      <label className="font-bold text-sm">Department</label>
+                      <select
+                        value={finalForm.department}
+                        onChange={(e) =>
+                          setFinalForm({
+                            ...finalForm,
+                            department: e.target.value,
+                          })
+                        }
+                        className="w-full p-3 mt-2 border rounded-lg appearance-none"
+                      >
+                        <option value="">Select your department</option>
+                        <option value="hr">HR</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="operations">Operations</option>
+                      </select>
+                    </div>
                   </div>
+                )}
+
+                <div className="sm:mt-12 mt-8 flex justify-between items-center">
+                  <button
+                    type="button"
+                    disabled={
+                      (currentIndex === 0 && !showFinalForm) || isSubmitting
+                    }
+                    onClick={() =>
+                      showFinalForm
+                        ? setShowFinalForm(false)
+                        : setCurrentIndex((p) => p - 1)
+                    }
+                    className={`flex items-center gap-1.5 font-semibold uppercase ${currentIndex === 0 && !showFinalForm ? "invisible" : "visible"}`}
+                  >
+                    <Icon icon="mynaui:arrow-left-circle-solid" width="22" />
+                    Previous
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isContinueDisabled || isSubmitting}
+                    onClick={showFinalForm ? () => handleFinalSubmit() : () => handleNext()}
+                    className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white px-6 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
+                  >
+                    {isSubmitting
+                      ? "Processing..."
+                      : showFinalForm
+                        ? "Finish Assessment"
+                        : (currentIndex === questions.length - 1 && userRole !== 'employee')
+                          ? "Finish Assessment"
+                          : "Continue"}
+                    {!isSubmitting && (
+                      <Icon icon="mynaui:arrow-right-circle-solid" width="22" />
+                    )}
+                  </button>
                 </div>
-              )}
-
-              <div className="sm:mt-12 mt-8 flex justify-between items-center">
-                <button
-                  type="button"
-                  disabled={
-                    (currentIndex === 0 && !showFinalForm) || isSubmitting
-                  }
-                  onClick={() =>
-                    showFinalForm
-                      ? setShowFinalForm(false)
-                      : setCurrentIndex((p) => p - 1)
-                  }
-                  className={`flex items-center gap-1.5 font-semibold uppercase ${currentIndex === 0 && !showFinalForm ? "invisible" : "visible"}`}
-                >
-                  <Icon icon="mynaui:arrow-left-circle-solid" width="22" />
-                  Previous
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isContinueDisabled || isSubmitting}
-                  onClick={showFinalForm ? handleFinalSubmit : handleNext}
-                  className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white px-6 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
-                >
-                  {isSubmitting
-                    ? "Processing..."
-                    : showFinalForm
-                      ? "Finish Assessment"
-                      : "Continue"}
-                  {!isSubmitting && (
-                    <Icon icon="mynaui:arrow-right-circle-solid" width="22" />
-                  )}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
