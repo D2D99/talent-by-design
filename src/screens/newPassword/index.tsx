@@ -10,7 +10,6 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 
-
 interface ApiError {
   message: string;
 }
@@ -84,13 +83,16 @@ const NewPassword = () => {
       clearErrors("root");
 
       await api.post("auth/reset-password", { password: data.password });
-      toast.success("Password reset successful! Please login with your new password.");
+      toast.success(
+        "Password reset successful! Please login with your new password.",
+      );
       navigate("/login");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
       if (axiosError.response?.status === 401) return;
 
-      const message = axiosError.response?.data?.message || "Reset link expired";
+      const message =
+        axiosError.response?.data?.message || "Reset link expired";
       if (message.includes(",")) {
         message.split(",").forEach((msg, index) => {
           toast.error(msg.trim(), { autoClose: 3000 + index * 1000 });
@@ -99,13 +101,11 @@ const NewPassword = () => {
         toast.error(message);
       }
 
-
       setError("root", {
         type: "manual",
         message: message,
       });
     } finally {
-
       setLoading(false);
     }
   };
@@ -128,8 +128,6 @@ const NewPassword = () => {
               New Password
             </h2>
 
-
-
             <div className="mb-2">
               <label
                 htmlFor="password"
@@ -143,10 +141,11 @@ const NewPassword = () => {
                   type={showNewPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter new password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${errors.password
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${
+                    errors.password
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("password", {
                     required: "Password is required",
                   })}
@@ -170,14 +169,16 @@ const NewPassword = () => {
                   {[...Array(5)].map((_, i) => (
                     <div
                       key={i}
-                      className={`h-full flex-1 transition-all duration-500 ${i < strengthCount ? strengthColor : "bg-transparent"
-                        }`}
+                      className={`h-full flex-1 transition-all duration-500 ${
+                        i < strengthCount ? strengthColor : "bg-transparent"
+                      }`}
                     />
                   ))}
                 </div>
                 <p
-                  className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5 ? "text-green-600" : "text-gray-400"
-                    }`}
+                  className={`text-[10px] mt-1 font-bold uppercase ${
+                    strengthCount === 5 ? "text-green-600" : "text-gray-400"
+                  }`}
                 >
                   Strength:{" "}
                   {strengthCount === 5
@@ -214,10 +215,11 @@ const NewPassword = () => {
                     <Icon
                       icon="material-symbols-light:check"
                       width="16"
-                      className={`rounded-full p-px transition-all ${item.met
-                        ? "bg-[#D1E9FF] text-black"
-                        : "bg-gray-100 text-transparent"
-                        }`}
+                      className={`rounded-full p-px transition-all ${
+                        item.met
+                          ? "bg-[#D1E9FF] text-black"
+                          : "bg-gray-100 text-transparent"
+                      }`}
                     />
                     <span className={item.met ? "text-black" : "text-gray-400"}>
                       {item.label}
@@ -239,10 +241,11 @@ const NewPassword = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   placeholder="Confirm password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${errors.confirmPassword
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-10 ${
+                    errors.confirmPassword
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("confirmPassword", {
                     required: "Confirm password is required",
                     validate: (val) =>
@@ -270,17 +273,19 @@ const NewPassword = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`sm:mt-6 mt-4 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${isButtonActive
-                ? "opacity-100 cursor-pointer"
-                : "opacity-40 cursor-not-allowed pointer-events-none shadow-none"
-                }`}
+              className={`sm:mt-6 mt-4 w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${
+                isButtonActive
+                  ? "opacity-100 cursor-pointer"
+                  : "opacity-40 cursor-not-allowed pointer-events-none shadow-none"
+              }`}
             >
               {loading ? "Saving..." : "Save password"}
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="22"
-                className={`transition-transform duration-300 ${isButtonActive ? "rotate-0" : "-rotate-45"
-                  }`}
+                className={`transition-transform duration-300 ${
+                  isButtonActive ? "rotate-0" : "-rotate-45"
+                }`}
               />
             </button>
           </form>
@@ -290,7 +295,7 @@ const NewPassword = () => {
           <p className="max-w-80 mx-auto text-sm font-medium text-[var(--secondary-color)]">
             Forgot your email address or no longer have access to it? {""}
             <Link
-              to="/contact"
+              to="mailto:Sdesouza@tbdcollective.ca"
               className="font-bold text-[var(--primary-color)] underline hover:opacity-75 hover:no-underline"
             >
               Contact Us

@@ -8,7 +8,6 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 
-
 interface ApiError {
   message: string;
 }
@@ -89,7 +88,8 @@ const ForgotPassword = () => {
 
       if (axiosError.response?.status === 401) return;
 
-      const message = axiosError.response?.data?.message || "Something went wrong";
+      const message =
+        axiosError.response?.data?.message || "Something went wrong";
       if (message.includes(",")) {
         message.split(",").forEach((msg, index) => {
           toast.error(msg.trim(), { autoClose: 3000 + index * 1000 });
@@ -130,8 +130,6 @@ const ForgotPassword = () => {
               receive an email with instructions for resetting your password.
             </p>
 
-
-
             <div className="sm:mb-6 mb-4">
               <label
                 htmlFor="email"
@@ -144,10 +142,11 @@ const ForgotPassword = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your email"
-                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
-                  ? "border-red-500"
-                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -166,18 +165,20 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={loading || !isFormValid}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${!isFormValid || loading
-                ? "disabled:pointer-events-none opacity-40"
-                : "opacity-100"
-                }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] transition-all duration-200 ${
+                !isFormValid || loading
+                  ? "disabled:pointer-events-none opacity-40"
+                  : "opacity-100"
+              }`}
             >
               {loading ? "Sending..." : "Send email"}
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="25"
                 height="25"
-                className={`transition-transform duration-300 ${isFormValid ? "rotate-0" : "-rotate-45"
-                  }`}
+                className={`transition-transform duration-300 ${
+                  isFormValid ? "rotate-0" : "-rotate-45"
+                }`}
               />
             </button>
 
@@ -196,7 +197,7 @@ const ForgotPassword = () => {
           <p className="max-w-80 mx-auto text-sm font-medium text-[var(--secondary-color)]">
             Forgot your email address or no longer have access to it?{" "}
             <Link
-              to="/contact"
+              to="mailto:Sdesouza@tbdcollective.ca"
               className="font-bold text-[var(--primary-color)] underline hover:opacity-75 hover:no-underline"
             >
               Contact Us
