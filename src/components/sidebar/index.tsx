@@ -40,7 +40,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
       api
         .get(`auth/me?t=${new Date().getTime()}`)
         .then((res: any) => {
-          console.log("Sidebar User Data:", res.data);
+          // console.log("Sidebar User Data:", res.data);
           setUser(res.data);
         })
         .catch((err) => {
@@ -121,9 +121,8 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                   navigate(FIRST_REPORT_ROUTE);
                 }
               }}
-              className={`${base} w-full justify-between ${
-                isReportsRoute ? active : inactive
-              }`}
+              className={`${base} w-full justify-between ${isReportsRoute ? active : inactive
+                }`}
               data-tooltip-id="menu-item2"
               data-tooltip-content="Reports"
             >
@@ -139,9 +138,8 @@ const Sidebar = ({ onClose }: SidebarProps) => {
               <Icon
                 icon="weui:arrow-filled"
                 width="10"
-                className={`transition-transform ${
-                  openReports ? "rotate-90" : ""
-                }`}
+                className={`transition-transform ${openReports ? "rotate-90" : ""
+                  }`}
               />
             </button>
 
@@ -352,10 +350,9 @@ const ReportLink = ({
         to={`/dashboard/reports/${to}`}
         onClick={() => onClose && onClose()}
         className={({ isActive }) =>
-          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${
-            isActive
-              ? "bg-[#E4F0FC] text-[var(--primary-color)]"
-              : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
+          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${isActive
+            ? "bg-[#E4F0FC] text-[var(--primary-color)]"
+            : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
           }`
         }
         data-tooltip-id="menu-item6"
