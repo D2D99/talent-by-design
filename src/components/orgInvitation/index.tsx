@@ -30,7 +30,6 @@ const OrgInvitation = () => {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
-
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
@@ -42,13 +41,14 @@ const OrgInvitation = () => {
 
   const isSuperAdmin = currentUserRole === "superadmin";
 
-  const sortedData = [...dataList].filter(item => {
+  const sortedData = [...dataList].filter((item) => {
     const matchesSearch =
       (item.orgName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.email || "").toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter.length === 0 || statusFilter.includes(item.status);
+    const matchesStatus =
+      statusFilter.length === 0 || statusFilter.includes(item.status);
 
     return matchesSearch && matchesStatus;
   });
@@ -80,15 +80,14 @@ const OrgInvitation = () => {
       const error = err as AxiosError<{ message: string }>;
       // Only show error if it's not a session expiry (401)
       if (error.response?.status !== 401) {
-        const message = error.response?.data?.message || "Failed to load invitations.";
+        const message =
+          error.response?.data?.message || "Failed to load invitations.";
         if (message.includes(",")) {
           message.split(",").forEach((msg: string) => toast.error(msg.trim()));
         } else {
           toast.error(message);
         }
       }
-
-
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +103,6 @@ const OrgInvitation = () => {
       return;
     }
 
-
     setIsLoading(true);
     try {
       await api.post("auth/send-invitation", { email, role });
@@ -116,21 +114,24 @@ const OrgInvitation = () => {
       const modalInstance = Modal.getInstance(modalElem);
       modalInstance?.hide();
 
-      toast.success(isSuperAdmin ? "Organization added successfully!" : "Invitation sent successfully!");
+      toast.success(
+        isSuperAdmin
+          ? "Organization added successfully!"
+          : "Invitation sent successfully!",
+      );
       fetchData();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
       if (error.response?.status !== 401) {
-        const message = error.response?.data?.message || "Failed to send invitation.";
+        const message =
+          error.response?.data?.message || "Failed to send invitation.";
         if (message.includes(",")) {
           message.split(",").forEach((msg: string) => toast.error(msg.trim()));
         } else {
           toast.error(message);
         }
       }
-
     } finally {
-
       setIsLoading(false);
     }
   };
@@ -162,10 +163,11 @@ const OrgInvitation = () => {
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
       if (error.response?.status !== 401) {
-        toast.error(error.response?.data?.message || "Failed to delete invitation.");
+        toast.error(
+          error.response?.data?.message || "Failed to delete invitation.",
+        );
       }
     } finally {
-
       setIsLoading(false);
       setSelectedId(null);
     }
@@ -233,80 +235,112 @@ const OrgInvitation = () => {
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div className="relative flex-1 max-w-md">
-                <Icon icon="tabler:search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="20" />
+                <Icon
+                  icon="tabler:search"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  width="20"
+                />
                 <input
                   type="text"
-                  placeholder={isSuperAdmin ? "Search organizations, emails..." : "Search members, emails..."}
+                  placeholder={
+                    isSuperAdmin
+                      ? "Search organizations, emails..."
+                      : "Search members, emails..."
+                  }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 bg-gray-50 border  rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters || statusFilter.length > 0
-                    ? "bg-blue-50 border-blue-200 text-blue-600 font-bold"
-                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+              <div className="relative">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${
+                      showFilters || statusFilter.length > 0
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
                     }`}
-                >
-                  <Icon icon="mi:filter" width="18" />
-                  <span>Filters</span>
-                  {statusFilter.length > 0 && (
-                    <span className="bg-blue-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full ml-1">{statusFilter.length}</span>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* --- FILTER SIDEBAR --- */}
-            {showFilters && (
-              <div className="absolute right-0 top-32 w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-gray-800">Filters</h3>
+                  >
+                    {/* <Icon icon="mi:filter" width="18" /> */}
+                    <Icon icon="hugeicons:filter" width="16" height="16" />
+                    <span>Filters</span>
                     {statusFilter.length > 0 && (
-                      <button
-                        onClick={() => setStatusFilter([])}
-                        className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase"
-                      >
-                        Reset
-                      </button>
+                      <span className="bg-white text-[var(--primary-color)] text-[10px] w-4 h-4 flex items-center justify-center rounded-full ml-1">
+                        {statusFilter.length}
+                      </span>
                     )}
-                  </div>
-                  <button onClick={() => setShowFilters(false)} className="text-gray-400 hover:text-gray-600">
-                    <Icon icon="material-symbols:close" width="20" />
                   </button>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Status Filter Component */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Status</label>
-                    <div className="space-y-2">
-                      {["Accept", "Pending", "Expire"].map((s) => (
-                        <label key={s} className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={statusFilter.includes(s)}
-                            onChange={() => {
-                              setStatusFilter(prev =>
-                                prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]
-                              );
-                            }}
-                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className={`text-sm ${statusFilter.includes(s) ? "text-blue-600 font-bold" : "text-gray-600"}`}>
-                            {s === "Accept" ? "Accepted" : s === "Expire" ? "Expired" : "Pending"}
-                          </span>
+                {/* --- FILTER SIDEBAR --- */}
+                {showFilters && (
+                  <div className="w-full md:w-72 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl p-5 flex-shrink-0 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full">
+                    <div className="flex justify-between items-center mb-6">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-lg text-gray-800">
+                          Filters
+                        </h3>
+                        {statusFilter.length > 0 && (
+                          <button
+                            onClick={() => setStatusFilter([])}
+                            className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors"
+                          >
+                            Reset
+                          </button>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setShowFilters(false)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <Icon icon="material-symbols:close" width="20" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-6">
+                      {/* Status Filter Component */}
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                          Status
                         </label>
-                      ))}
+                        <div className="space-y-2">
+                          {["Accept", "Pending", "Expire"].map((s) => (
+                            <label
+                              key={s}
+                              className="flex items-center gap-3 cursor-pointer group"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={statusFilter.includes(s)}
+                                onChange={() => {
+                                  setStatusFilter((prev) =>
+                                    prev.includes(s)
+                                      ? prev.filter((x) => x !== s)
+                                      : [...prev, s],
+                                  );
+                                }}
+                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-500"
+                              />
+                              <span
+                                className={`text-sm ${statusFilter.includes(s) ? "text-gray-800 font-medium" : "text-gray-600"}`}
+                              >
+                                {s === "Accept"
+                                  ? "Accepted"
+                                  : s === "Expire"
+                                    ? "Expired"
+                                    : "Pending"}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            )}
+            </div>
 
             <div className="overflow-x-auto rounded-xl">
               <table className="w-full whitespace-nowrap border-collapse">
@@ -387,10 +421,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
+                                  ? "text-red-600 hover:bg-red-50"
+                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -616,7 +651,6 @@ const OrgInvitation = () => {
         {/* Toaster removed, using react-toastify */}
       </div>
     </>
-
   );
 };
 
