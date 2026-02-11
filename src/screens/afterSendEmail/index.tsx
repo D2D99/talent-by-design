@@ -18,7 +18,6 @@ const AfterSendEmail = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
 
-
   // ✅ PAGE LOADER EFFECT (ADDED)
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -95,14 +94,13 @@ const AfterSendEmail = () => {
         localStorage.setItem("lastResendTimestamp", Date.now().toString());
       }
 
-
       toast.success("Verification email resent successfully");
     } catch (error: any) {
       if (error.response?.status === 401) return;
-      const errorMessage = error.response?.data?.message || "Failed to resend email";
+      const errorMessage =
+        error.response?.data?.message || "Failed to resend email";
       toast.error(errorMessage);
     } finally {
-
       setLoading(false);
     }
   };
@@ -121,8 +119,7 @@ const AfterSendEmail = () => {
 
   return (
     <div className="min-h-screen bg-[var(--light-primary-color)] relative">
-      <div className="min-h-screen bg-[var(--light-primary-color)] relative">
-
+      <div className="min-h-screen bg-[var(--light-primary-color)] relative sm:pt-20 pt-10">
         <div className="text-center mb-8 mx-auto">
           <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
         </div>
@@ -150,10 +147,11 @@ const AfterSendEmail = () => {
             <button
               onClick={handleResend}
               disabled={loading || timeLeft > 0}
-              className={`text-sm font-bold transition-all ${loading || timeLeft > 0
-                ? "text-gray-400 cursor-not-allowed no-underline"
-                : "text-[#448CD2] hover:underline cursor-pointer"
-                }`}
+              className={`text-sm font-bold transition-all ${
+                loading || timeLeft > 0
+                  ? "text-gray-400 cursor-not-allowed no-underline"
+                  : "text-[#448CD2] hover:underline cursor-pointer"
+              }`}
             >
               {loading ? "Sending..." : "Resend Email"}
             </button>
