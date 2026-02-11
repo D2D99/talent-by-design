@@ -145,24 +145,30 @@ const Sidebar = ({ onClose }: SidebarProps) => {
 
             {openReports && (
               <ul className="pl-6 mt-2 space-y-1" id="sub-menu">
-                <ReportLink
-                  to="org-head"
-                  label="Org Head / Coach"
-                  icon="fluent:organization-20-regular"
-                  onClose={onClose}
-                />
-                <ReportLink
-                  to="senior-leader"
-                  label="Senior Leader"
-                  icon="solar:user-rounded-outline"
-                  onClose={onClose}
-                />
-                <ReportLink
-                  to="manager"
-                  label="Manager"
-                  icon="solar:users-group-rounded-outline"
-                  onClose={onClose}
-                />
+                {(user.role === "superAdmin" || user.role === "admin") && (
+                  <ReportLink
+                    to="org-head"
+                    label="Org Head / Coach"
+                    icon="fluent:organization-20-regular"
+                    onClose={onClose}
+                  />
+                )}
+                {(user.role === "superAdmin" || user.role === "admin" || user.role === "leader") && (
+                  <ReportLink
+                    to="senior-leader"
+                    label="Senior Leader"
+                    icon="solar:user-rounded-outline"
+                    onClose={onClose}
+                  />
+                )}
+                {(user.role === "superAdmin" || user.role === "admin" || user.role === "leader" || user.role === "manager") && (
+                  <ReportLink
+                    to="manager"
+                    label="Manager"
+                    icon="solar:users-group-rounded-outline"
+                    onClose={onClose}
+                  />
+                )}
                 <ReportLink
                   to="employee"
                   label="Employee"
