@@ -290,8 +290,8 @@ const TopBar = () => {
                     {filteredNotifications.map((notif) => (
                       <div
                         key={notif._id}
-                        className={`flex gap-4 p-5 hover:bg-gray-50/80 transition-all duration-300 group cursor-default relative overflow-hidden ${!notif.isRead ? "bg-blue-50/30" : ""}`}
-                        onMouseEnter={() =>
+                        className={`flex gap-4 p-5 hover:bg-gray-50/80 transition-all duration-300 group cursor-pointer relative overflow-hidden ${!notif.isRead ? "bg-blue-50/30" : ""}`}
+                        onClick={() =>
                           !notif.isRead && handleMarkRead(notif._id)
                         }
                       >

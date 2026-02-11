@@ -249,7 +249,9 @@ const AssessmentQuestion = () => {
 
   const progressPercentage =
     questions.length > 0
-      ? ((currentIndex + (showFinalForm ? 1 : 0)) / questions.length) * 100
+      ? ((currentIndex + (showFinalForm || userRole !== "employee" ? 1 : 0)) /
+        questions.length) *
+      100
       : 0;
 
   const isContinueDisabled =
@@ -491,7 +493,8 @@ const AssessmentQuestion = () => {
                         ? setShowFinalForm(false)
                         : setCurrentIndex((p) => p - 1)
                     }
-                    className={`flex items-center gap-1.5 font-semibold uppercase ${currentIndex === 0 && !showFinalForm ? "invisible" : "visible"}`}
+                    className={`group text-[var(--primary-color)] rounded-full ps-3 pe-5 h-10 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase 
+               bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] border ${currentIndex === 0 && !showFinalForm ? "invisible" : "visible"}`}
                   >
                     <Icon icon="mynaui:arrow-left-circle-solid" width="22" />
                     Previous
@@ -501,7 +504,7 @@ const AssessmentQuestion = () => {
                     type="button"
                     disabled={isContinueDisabled || isSubmitting}
                     onClick={showFinalForm ? () => handleFinalSubmit() : () => handleNext()}
-                    className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white px-6 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
+                    className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white ps-3 pe-5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
                   >
                     {isSubmitting
                       ? "Processing..."
