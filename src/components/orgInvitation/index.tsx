@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import Pagination from "../Pagination";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import api from "../../services/axios";
@@ -25,6 +26,9 @@ const OrgInvitation = () => {
   const [dataList, setDataList] = useState<Invitation[]>([]);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -38,9 +42,20 @@ const OrgInvitation = () => {
 
   const isSuperAdmin = currentUserRole === "superadmin";
 
+  const sortedData = [...dataList].filter(item => {
+    const matchesSearch =
+      (item.orgName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.email || "").toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = statusFilter.length === 0 || statusFilter.includes(item.status);
+
+    return matchesSearch && matchesStatus;
+  });
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = dataList.slice(indexOfFirstItem, indexOfLastItem);
+  const currentData = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     initTWE({ Ripple, Modal });
@@ -216,6 +231,83 @@ const OrgInvitation = () => {
               </button>
             </div>
 
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div className="relative flex-1 max-w-md">
+                <Icon icon="tabler:search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="20" />
+                <input
+                  type="text"
+                  placeholder={isSuperAdmin ? "Search organizations, emails..." : "Search members, emails..."}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters || statusFilter.length > 0
+                    ? "bg-blue-50 border-blue-200 text-blue-600 font-bold"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                    }`}
+                >
+                  <Icon icon="mi:filter" width="18" />
+                  <span>Filters</span>
+                  {statusFilter.length > 0 && (
+                    <span className="bg-blue-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full ml-1">{statusFilter.length}</span>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* --- FILTER SIDEBAR --- */}
+            {showFilters && (
+              <div className="absolute right-0 top-32 w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300">
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-gray-800">Filters</h3>
+                    {statusFilter.length > 0 && (
+                      <button
+                        onClick={() => setStatusFilter([])}
+                        className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                  <button onClick={() => setShowFilters(false)} className="text-gray-400 hover:text-gray-600">
+                    <Icon icon="material-symbols:close" width="20" />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Status Filter Component */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Status</label>
+                    <div className="space-y-2">
+                      {["Accept", "Pending", "Expire"].map((s) => (
+                        <label key={s} className="flex items-center gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={statusFilter.includes(s)}
+                            onChange={() => {
+                              setStatusFilter(prev =>
+                                prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]
+                              );
+                            }}
+                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className={`text-sm ${statusFilter.includes(s) ? "text-blue-600 font-bold" : "text-gray-600"}`}>
+                            {s === "Accept" ? "Accepted" : s === "Expire" ? "Expired" : "Pending"}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="overflow-x-auto rounded-xl">
               <table className="w-full whitespace-nowrap border-collapse">
                 <thead>
@@ -248,9 +340,16 @@ const OrgInvitation = () => {
                             {indexOfFirstItem + index + 1}
                           </td>
                           <td className="px-6 py-4 text-sm font-medium">
-                            {isSuperAdmin
-                              ? item.orgName || "Unnamed Org"
-                              : item.name || "—"}
+                            {isSuperAdmin ? (
+                              <Link
+                                to={`/dashboard/organization/${item.orgName}`}
+                                className="text-[#448CD2] hover:underline font-bold"
+                              >
+                                {item.orgName || "Unnamed Org"}
+                              </Link>
+                            ) : (
+                              item.name || "—"
+                            )}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-600">
                             {item.email}

@@ -165,24 +165,35 @@ const TopBar = () => {
                   .filter((value) => value.toLowerCase() !== "dashboard")
                   .map((value, index, filteredArray) => {
                     const last = index === filteredArray.length - 1;
-                    const to = `/dashboard/${filteredArray.slice(0, index + 1).join("/")}`;
+                    const decodedValue = decodeURIComponent(value).replace(/-/g, " ");
+
+                    // Logic to handle special route mapping for breadcrumbs
+                    let to = `/dashboard/${filteredArray.slice(0, index + 1).join("/")}`;
+                    let displayValue = decodedValue;
+
+                    if (value.toLowerCase() === "organization") {
+                      to = "/dashboard/invite";
+                      displayValue = "Invite";
+                    } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "organization") {
+                      displayValue = "Organization Details";
+                    }
 
                     return (
-                      <li key={to} className="flex items-center">
+                      <li key={to + index} className="flex items-center">
                         <Icon
                           icon="lucide:chevron-right"
                           className="text-gray-400 w-4 h-4"
                         />
                         {last ? (
                           <span className="ml-1 text-sm font-bold text-[var(--secondary-color)] capitalize md:ml-2">
-                            {value.replace(/-/g, " ")}
+                            {displayValue}
                           </span>
                         ) : (
                           <Link
                             to={to}
                             className="ml-1 text-sm font-medium text-gray-400 hover:text-[#448CD2] capitalize md:ml-2"
                           >
-                            {value.replace(/-/g, " ")}
+                            {displayValue}
                           </Link>
                         )}
                       </li>
@@ -254,11 +265,10 @@ const TopBar = () => {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${
-                      activeTab === tab
-                        ? "text-gray-900"
-                        : "text-gray-400 hover:text-gray-600"
-                    }`}
+                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${activeTab === tab
+                      ? "text-gray-900"
+                      : "text-gray-400 hover:text-gray-600"
+                      }`}
                   >
                     {tab}
                     {tab === "All" && unreadCount > 0 && (
@@ -292,13 +302,12 @@ const TopBar = () => {
 
                         {/* Icon Avatar */}
                         <div
-                          className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${
-                            notif.type === "success"
-                              ? "bg-green-50 text-green-600"
-                              : notif.type === "error"
-                                ? "bg-red-50 text-red-600"
-                                : "bg-blue-50 text-[#448CD2]"
-                          }`}
+                          className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${notif.type === "success"
+                            ? "bg-green-50 text-green-600"
+                            : notif.type === "error"
+                              ? "bg-red-50 text-red-600"
+                              : "bg-blue-50 text-[#448CD2]"
+                            }`}
                         >
                           <Icon
                             icon={

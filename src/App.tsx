@@ -13,6 +13,7 @@ import StartAssessment from "./components/startAssessment";
 import PageNotFound from "./screens/pageNotFound";
 import { AuthProvider } from "./context/AuthProvider";
 import OrgInvitation from "./components/orgInvitation";
+import OrgUsers from "./components/orgUsers";
 import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
@@ -62,6 +63,8 @@ function App() {
             <Route index element={<OverviewRoute />} />
             <Route path="questions" element={<CrudQuestion />} />
             <Route path="invite" element={<OrgInvitation />} />
+            <Route path="organization/:orgName" element={<OrgUsers />} />
+            <Route path="users" element={<OrgUsers isAdminView={true} />} />
             <Route path="notifications" element={<NotificationHistory />} />
             <Route path="user-profile" element={<UserProfile />} />
 

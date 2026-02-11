@@ -219,6 +219,29 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             </li>
           )}
 
+          {/* Users - Only for Admin */}
+          {user.role === "admin" && (
+            <li className="mb-2">
+              <NavLink
+                to="/dashboard/users"
+                onClick={handleLinkClick}
+                className={({ isActive }) =>
+                  `${base} ${isActive ? active : inactive}`
+                }
+                data-tooltip-id="menu-item-users"
+                data-tooltip-content="Users"
+              >
+                <Icon icon="solar:users-group-rounded-linear" width="22" />
+                <span>Users</span>
+                <Tooltip
+                  id="menu-item-users"
+                  className="md:hidden block"
+                  place="right"
+                />
+              </NavLink>
+            </li>
+          )}
+
           {/* Settings */}
           <li className="mb-2">
             <NavLink
