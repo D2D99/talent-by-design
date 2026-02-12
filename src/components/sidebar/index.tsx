@@ -122,6 +122,29 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             </NavLink>
           </li>
 
+          {/* Assessment Button */}
+          {(user.role === "admin" || user.role === "leader" || user.role === "manager") && (
+            <li className="mb-2">
+              <NavLink
+                to="/dashboard/assessment-history"
+                onClick={handleLinkClick}
+                className={({ isActive }) =>
+                  `${base} ${isActive ? active : inactive}`
+                }
+                data-tooltip-id="menu-item-assessment"
+                data-tooltip-content="My Assessment"
+              >
+                <Icon icon="solar:checklist-minimalistic-linear" width="22" />
+                <span>My Assessment</span>
+                <Tooltip
+                  id="menu-item-assessment"
+                  className="md:hidden block"
+                  place="right"
+                />
+              </NavLink>
+            </li>
+          )}
+
           {/* Reports */}
           <li className="mb-2">
             <button

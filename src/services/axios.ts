@@ -17,8 +17,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const isLoginRequest = error.config?.url?.includes("auth/login");
+    const isLogoutRequest = error.config?.url?.includes("auth/logout");
 
-    if (error.response?.status === 401 && !isLoginRequest) {
+    if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest) {
       // Dispatch custom event for the UI to handle
       window.dispatchEvent(new CustomEvent("session-expired"));
     }

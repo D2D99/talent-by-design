@@ -111,8 +111,13 @@ const Login = () => {
         // Use the context login function which handles both token and user object
         login(res.data.accessToken, res.data.user);
 
-        // 3. Go to dashboard
-        navigate("/dashboard", { replace: true });
+        // 3. Check assessment status and redirect
+        const assessmentStatus = res.data.assessmentStatus;
+        if (assessmentStatus === "DUE" || assessmentStatus === "PENDING") {
+          navigate("/start-assessment", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
       }
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
@@ -171,11 +176,10 @@ const Login = () => {
                 type="email"
                 id="email"
                 autoComplete="email"
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
-                  errors.email
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.email
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                  }`}
                 placeholder="Enter your email"
                 {...register("email", {
                   required: "Email is required",
@@ -204,11 +208,10 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   autoComplete="current-password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
-                    errors.password
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.password
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   placeholder="Enter your password"
                   {...register("password", {
                     required: "Password is required",
@@ -249,20 +252,18 @@ const Login = () => {
             <button
               type="submit"
               disabled={isButtonDisabled}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
-                isButtonDisabled
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isButtonDisabled
                   ? "disabled:pointer-events-none disabled:opacity-40"
                   : "opacity-100 active:scale-95"
-              }`}
+                }`}
             >
               {loading ? "Logging in..." : "Log In"}
               {!loading && (
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
-                  className={`transition-transform duration-300 ${
-                    isButtonDisabled ? "-rotate-45" : "rotate-0"
-                  }`}
+                  className={`transition-transform duration-300 ${isButtonDisabled ? "-rotate-45" : "rotate-0"
+                    }`}
                 />
               )}
             </button>
