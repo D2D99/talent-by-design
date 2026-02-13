@@ -172,11 +172,19 @@ const TopBar = () => {
                     let displayValue = decodedValue;
 
                     // Handle special cases
+                    // Handle special cases
                     if (value.toLowerCase() === "organization") {
                       to = "/dashboard/invite";
                       displayValue = "Invite";
+                    } else if (value.toLowerCase() === "org-assessments") {
+                      to = "/dashboard/org-assessments";
+                      displayValue = "Assessments";
+                    } else if (value.toLowerCase() === "team-assessments") {
+                      displayValue = "Assessments";
                     } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "organization") {
-                      displayValue = "Organization Details";
+                      displayValue = "Invitation Details";
+                    } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "org-assessments") {
+                      displayValue = "Assessment Details";
                     } else if (value.toLowerCase() === "reports") {
                       displayValue = "Reports";
                     } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "reports") {

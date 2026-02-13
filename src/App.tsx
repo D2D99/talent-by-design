@@ -14,6 +14,8 @@ import PageNotFound from "./screens/pageNotFound";
 import { AuthProvider } from "./context/AuthProvider";
 import OrgInvitation from "./components/orgInvitation";
 import OrgUsers from "./components/orgUsers";
+import OrgInvitationDetails from "./components/orgInvitationDetails";
+import OrgAssessmentDetails from "./components/orgAssessmentDetails";
 import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
@@ -26,6 +28,8 @@ import SessionPopup from "./components/sessionPopup";
 import AccountSetting from "./components/accountSetting";
 import NotificationHistory from "./screens/notifications";
 import AssessmentHistory from "./screens/assessmentHistory";
+import SuperAdminStats from "./screens/superAdminStats";
+import AdminAssessments from "./screens/adminAssessments";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -66,11 +70,20 @@ function App() {
             <Route index element={<OverviewRoute />} />
             <Route path="questions" element={<CrudQuestion />} />
             <Route path="invite" element={<OrgInvitation />} />
-            <Route path="organization/:orgName" element={<OrgUsers />} />
+            <Route
+              path="organization/:orgName"
+              element={<OrgInvitationDetails />}
+            />
+            <Route
+              path="org-assessments/:orgName"
+              element={<OrgAssessmentDetails />}
+            />
             <Route path="users" element={<OrgUsers isAdminView={true} />} />
             <Route path="users" element={<OrgUsers isAdminView={true} />} />
             <Route path="notifications" element={<NotificationHistory />} />
             <Route path="assessment-history" element={<AssessmentHistory />} />
+            <Route path="team-assessments" element={<AdminAssessments />} />
+            <Route path="org-assessments" element={<SuperAdminStats />} />
             <Route path="user-profile" element={<UserProfile />} />
 
             <Route path="settings" element={<AccountSetting />} />

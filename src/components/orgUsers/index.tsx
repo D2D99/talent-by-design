@@ -14,6 +14,7 @@ interface UserMember {
   department?: string;
   createdAt: string;
   status: string;
+  assessmentStatus?: string;
 }
 
 interface OrgDetails {
@@ -23,9 +24,22 @@ interface OrgDetails {
   totalTeamMember: number;
 }
 
-const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
+interface OrgUsersProps {
+  isAdminView?: boolean;
+  isEmbedded?: boolean;
+  hideAdmin?: boolean;
+  showStatusSection?: boolean;
+}
+
+const OrgUsers = ({
+  isAdminView = false,
+  isEmbedded = false,
+  hideAdmin = false,
+  showStatusSection,
+}: OrgUsersProps) => {
   const { orgName: routeOrgName } = useParams();
   const navigate = useNavigate();
+
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,8 +57,6 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
   const fetchMembers = useCallback(async () => {
     setIsLoading(true);
     try {
-      // If admin view, we get current user's org info
-      // If superadmin view, we use orgName from route
       let targetOrg = routeOrgName;
       if (isAdminView) {
         const savedUser = localStorage.getItem("user");
@@ -53,7 +65,6 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
           targetOrg = parsed.orgName;
         }
 
-        // Fallback: if not in localStorage, fetch from /me
         if (!targetOrg) {
           const profileRes = await api.get("auth/me");
           targetOrg = profileRes.data.orgName;
@@ -61,7 +72,8 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
       }
 
       if (!targetOrg) {
-        toast.error("Organization not found");
+        // Only show error if we expected an org but didn't find one
+        if (!isAdminView) toast.error("Organization not found");
         return;
       }
 
@@ -71,6 +83,7 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
       setMembers(res.data.members);
       setDetails(res.data.details);
     } catch (err) {
+      console.error(err);
       toast.error("Failed to load members");
     } finally {
       setIsLoading(false);
@@ -103,95 +116,42 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
 
   const filteredMembers = sortedMembers.filter((m) => {
     const matchesSearch =
-      `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""}`
+      `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""} ${m.assessmentStatus || ""}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     const matchesRole =
       roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
-    const notAdmin = m.role.toLowerCase() !== "admin";
-    return matchesSearch && matchesRole && notAdmin;
+
+    if (hideAdmin && m.role.toLowerCase() === "admin") return false;
+
+    return matchesSearch && matchesRole;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = filteredMembers.slice(indexOfFirstItem, indexOfLastItem);
+  const showAssessmentColumn = false;
+  const showStatusColumn = showStatusSection ?? true;
+  const emptyColSpan = 6 + (showStatusColumn ? 1 : 0) + (showAssessmentColumn ? 1 : 0);
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
-      <div className="mb-8 bg-white relative overflow-hidden">
-        <div
-          className="flex items-center gap-1.5 text-xs font-bold mb-6 cursor-pointer text-[#448CD2] transition-colors w-fit"
-          onClick={() => navigate(-1)}
-        >
-          <Icon icon="material-symbols:arrow-back-rounded" width="16" />
-          <span className="uppercase tracking-wider">Back to Management</span>
-        </div>
-        <h2 className="md:text-3xl text-2xl font-bold text-gray-800 mb-6">
-          {details?.orgName || "Organization Details"}
-        </h2>
-
-        {details && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-blue-50 px-4 py-8 rounded-xl border border-[var(--light-primary-color)] flex flex-row-reverse justify-between items-start gap-5">
-              <Icon
-                icon="formkit:time"
-                width="60"
-                height="60"
-                className="text-[var(--primary-color)]"
-              />
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.1em] mb-1">
-                  Created On
-                </p>
-                <p className="text-xl font-bold text-gray-700">
-                  {new Date(details.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-            <div className="bg-blue-50 px-4 py-8 rounded-xl border border-[var(--light-primary-color)] flex flex-row-reverse justify-between items-start gap-5">
-              <Icon
-                icon="f7:status"
-                width="60"
-                height="60"
-                className="text-[var(--primary-color)]"
-              />
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.1em] mb-1">
-                  Status
-                </p>
-                <div className="mt-1">
-                  {details.status === "Accept" ? (
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold text-green-100 bg-green-500 border border-green-500 uppercase tracking-wider">
-                      Active
-                    </span>
-                  ) : (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-yellow-50 text-yellow-500 border border-yellow-200 uppercase tracking-wider">
-                      {details.status}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="bg-blue-50 px-4 py-8 rounded-xl border border-[var(--light-primary-color)] flex flex-row-reverse justify-between items-start gap-5">
-              <Icon
-                icon="solar:users-group-two-rounded-outline"
-                width="60"
-                height="60"
-                className="text-[var(--primary-color)]"
-              />
-
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.1em] mb-1">
-                  Total Team Members
-                </p>
-                <p className="text-[#448CD2] text-xl font-bold">
-                  {details.totalTeamMember}
-                </p>
-              </div>
-            </div>
+    <div className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]"}`}>
+      {!isEmbedded && (
+        <div className="mb-8 bg-white relative overflow-hidden">
+          <div
+            className="flex items-center gap-1.5 text-xs font-bold mb-6 cursor-pointer text-[#448CD2] transition-colors w-fit"
+            onClick={() => navigate(-1)}
+          >
+            <Icon icon="material-symbols:arrow-back-rounded" width="16" />
+            <span className="uppercase tracking-wider">Back to Management</span>
           </div>
-        )}
-      </div>
+          <h2 className="md:text-3xl text-2xl font-bold text-gray-800 mb-6">
+            {details?.orgName || "Organization Details"}
+          </h2>
+
+
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
@@ -211,11 +171,10 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${
-              showFilters || roleFilter.length > 0
-                ? "bg-blue-50 border-blue-200 text-blue-600 font-bold"
-                : "border-gray-200 text-gray-600 hover:bg-gray-50"
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters || roleFilter.length > 0
+              ? "bg-blue-50 border-blue-200 text-blue-600 font-bold"
+              : "border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}
           >
             <Icon icon="mi:filter" width="18" />
             <span>Filters</span>
@@ -258,7 +217,7 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
                 Role
               </label>
               <div className="space-y-2">
-                {["leader", "manager", "employee"].map((r) => (
+                {["leader", "manager", "employee", "admin"].filter(r => !(hideAdmin && r === "admin")).map((r) => (
                   <label
                     key={r}
                     className="flex items-center gap-3 cursor-pointer group"
@@ -367,9 +326,16 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
                   </div>
                 </div>
               </th>
-              <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest">
-                Status
-              </th>
+              {showStatusColumn && (
+                <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest">
+                  Status
+                </th>
+              )}
+              {showAssessmentColumn && (
+                <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest">
+                  Assessment
+                </th>
+              )}
               <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest text-center">
                 Action
               </th>
@@ -377,36 +343,35 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
           </thead>
           <tbody>
             {currentData.length > 0 ? (
-              filteredMembers
-                .slice(indexOfFirstItem, indexOfLastItem)
-                .map((member, index) => (
-                  <tr
-                    key={member._id}
-                    className="border-b border-gray-100 hover:bg-blue-50/20 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-sm font-bold text-gray-400">
-                      {indexOfFirstItem + index + 1}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-gray-800 tracking-tight">
-                        {member.firstName === "-" ? (
-                          <span className="text-gray-300 font-black">—</span>
-                        ) : (
-                          `${member.firstName} ${member.lastName}`
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                      {member.email}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                      {new Date(member.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-xs font-bold text-gray-400 capitalize">
-                        {member.role}
-                      </span>
-                    </td>
+              currentData.map((member, index) => (
+                <tr
+                  key={member._id}
+                  className="border-b border-gray-100 hover:bg-blue-50/20 transition-colors"
+                >
+                  <td className="px-6 py-4 text-sm font-bold text-gray-400">
+                    {indexOfFirstItem + index + 1}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-bold text-gray-800 tracking-tight">
+                      {member.firstName === "-" ? (
+                        <span className="text-gray-300 font-black">—</span>
+                      ) : (
+                        `${member.firstName} ${member.lastName}`
+                      )}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                    {member.email}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                    {new Date(member.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-xs font-bold text-gray-400 capitalize">
+                      {member.role}
+                    </span>
+                  </td>
+                  {showStatusColumn && (
                     <td className="px-6 py-4">
                       {member.status === "Accept" ? (
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-500 border border-green-200 uppercase tracking-wider">
@@ -422,16 +387,38 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <button className="text-gray-200 hover:text-red-500 transition-colors">
-                        <Icon icon="tabler:trash" width="18" />
-                      </button>
+                  )}
+                  {showAssessmentColumn && (
+                    <td className="px-6 py-4">
+                      {member.assessmentStatus === "Completed" ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 uppercase tracking-wider">
+                          Completed
+                        </span>
+                      ) : member.assessmentStatus === "In Progress" ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200 uppercase tracking-wider">
+                          In Progress
+                        </span>
+                      ) : member.assessmentStatus === "Due" ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 uppercase tracking-wider">
+                          Due
+                        </span>
+                      ) : (
+                        <span className="text-gray-300 text-[10px] font-bold uppercase tracking-wider">
+                          —
+                        </span>
+                      )}
                     </td>
-                  </tr>
-                ))
+                  )}
+                  <td className="px-6 py-4 text-center">
+                    <button className="text-gray-200 hover:text-red-500 transition-colors">
+                      <Icon icon="tabler:trash" width="18" />
+                    </button>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
-                <td colSpan={5} className="py-20 text-center text-gray-400">
+                <td colSpan={emptyColSpan} className="py-20 text-center text-gray-400">
                   {isLoading ? "Loading members..." : "No members found."}
                 </td>
               </tr>
@@ -451,4 +438,4 @@ const OrgUsers = ({ isAdminView = false }: { isAdminView?: boolean }) => {
   );
 };
 
-export default OrgUsers;
+export default OrgUsers

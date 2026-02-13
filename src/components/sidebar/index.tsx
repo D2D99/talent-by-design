@@ -122,20 +122,43 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             </NavLink>
           </li>
 
-          {/* Assessment Button */}
-          {(user.role === "admin" || user.role === "leader" || user.role === "manager") && (
+          {/* Org Assessments - Only for Super Admin
+          {user.role === "superAdmin" && (
             <li className="mb-2">
               <NavLink
-                to="/dashboard/assessment-history"
+                to="/dashboard/org-assessments"
+                onClick={handleLinkClick}
+                className={({ isActive }) =>
+                  `${base} ${isActive ? active : inactive}`
+                }
+                data-tooltip-id="menu-item-org-assessments"
+                data-tooltip-content="Assessments"
+              >
+                <Icon icon="solar:chart-square-linear" width="22" />
+                <span>Assessments</span>
+                <Tooltip
+                  id="menu-item-org-assessments"
+                  className="md:hidden block"
+                  place="right"
+                />
+              </NavLink>
+            </li>
+          )} */}
+
+          {/* Assessment Button - Only for Admin
+          {user.role === "admin" && (
+            <li className="mb-2">
+              <NavLink
+                to="/dashboard/team-assessments"
                 onClick={handleLinkClick}
                 className={({ isActive }) =>
                   `${base} ${isActive ? active : inactive}`
                 }
                 data-tooltip-id="menu-item-assessment"
-                data-tooltip-content="My Assessment"
+                data-tooltip-content="Assessments"
               >
-                <Icon icon="solar:checklist-minimalistic-linear" width="22" />
-                <span>My Assessment</span>
+                <Icon icon="solar:chart-square-linear" width="22" />
+                <span>Assessments</span>
                 <Tooltip
                   id="menu-item-assessment"
                   className="md:hidden block"
@@ -143,7 +166,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 />
               </NavLink>
             </li>
-          )}
+          )} */}
 
           {/* Reports */}
           <li className="mb-2">
@@ -245,7 +268,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `${base} ${isActive ? active : inactive}`
                 }
-                data-tooltip-id="menu-item1"
+                data-tooltip-id="menu-item4"
                 data-tooltip-content="Invite"
               >
                 <Icon icon="mingcute:invite-line" width="22" />
