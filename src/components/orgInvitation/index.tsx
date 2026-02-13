@@ -319,7 +319,7 @@ const OrgInvitation = () => {
                 type="button"
                 data-twe-toggle="modal"
                 data-twe-target="#inviteModal"
-                className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2]"
+                className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-[var(--primary-color)] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
                 <Icon icon="material-symbols:add-rounded" width="22" />
                 {isSuperAdmin ? "Add New Organization" : "Invite New User"}
@@ -705,99 +705,73 @@ const OrgInvitation = () => {
           className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
         >
           <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-[24px] border-none bg-white bg-clip-padding text-current shadow-2xl outline-none overflow-hidden">
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] p-6 text-white flex items-center justify-between">
-              <div>
-                <h5 className="text-xl font-bold flex items-center gap-2">
-                  <Icon icon={isSuperAdmin ? "material-symbols:business-center-rounded" : "material-symbols:person-add-rounded"} width="24" />
-                  {isSuperAdmin ? "Add New Organization" : "Invite New Member"}
-                </h5>
-                <p className="text-xs text-blue-100 mt-1 opacity-80">
-                  {isSuperAdmin ? "Create a new client organization profile" : "Invite a new member to join your team"}
-                </p>
-              </div>
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4">
+              <h5 className="text-xl font-bold leading-normal text-neutral-800" id="inviteModalTitle">
+                {isSuperAdmin ? "Add New Organization" : "Invite New Member"}
+              </h5>
               <button
                 type="button"
+                className="box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
                 data-twe-modal-dismiss
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+                aria-label="Close"
               >
-                <Icon icon="material-symbols:close-rounded" width="28" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="h-6 w-6"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
-            <div className="relative p-6 space-y-5">
-              {/* Email Input */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2 ml-1">
+            <div className="relative p-6">
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
                   Email Address
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                    <Icon icon="material-symbols:mail-outline-rounded" width="20" />
-                  </div>
-                  <input
-                    type="email"
-                    id="email"
-                    name="invitation-email-field"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onFocus={(e) => e.target.removeAttribute('readonly')}
-                    autoComplete="off"
-                    readOnly
-                    className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-[#448bd2] transition-all outline-none"
-                    placeholder="e.g. john.doe@example.com"
-                  />
-                </div>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  placeholder="e.g. john.doe@example.com"
+                />
               </div>
 
-              {/* Role Selection */}
-              <div>
-                <label htmlFor="role" className="block text-sm font-bold text-gray-700 mb-2 ml-1">
+              <div className="mb-4">
+                <label htmlFor="role" className="block text-sm font-bold text-gray-700 mb-2">
                   Assigned Role
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                    <Icon icon="material-symbols:shield-person-rounded" width="20" />
-                  </div>
-                  <select
-                    id="role"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="block w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-[#448bd2] transition-all outline-none appearance-none"
-                  >
-                    <option value="">Select a role...</option>
-                    {isSuperAdmin ? (
-                      <option value="admin">📚 Organization Admin</option>
-                    ) : (
-                      <>
-                        <option value="leader">⭐ Team Leader</option>
-                        <option value="manager">🛡️ Department Manager</option>
-                        <option value="employee">👥 Team Associate</option>
-                      </>
-                    )}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
-                    <Icon icon="material-symbols:keyboard-arrow-down-rounded" width="20" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Helpful Tip */}
-              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 flex gap-3">
-                <Icon icon="material-symbols:info-outline-rounded" width="18" className="text-amber-500 flex-shrink-0 mt-0.5" />
-                <p className="text-[11px] text-amber-700 leading-relaxed">
-                  The invited user will receive an email with a secure link to complete their profile registration.
-                  The link will expire in 48 hours for security purposes.
-                </p>
+                <select
+                  id="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                >
+                  <option value="">Select a role...</option>
+                  {isSuperAdmin ? (
+                    <option value="admin">Organization Admin</option>
+                  ) : (
+                    <>
+                      <option value="leader">Team Leader</option>
+                      <option value="manager">Department Manager</option>
+                      <option value="employee">Team Associate</option>
+                    </>
+                  )}
+                </select>
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 bg-gray-50 p-6 border-t border-gray-100">
+            <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2">
               <button
                 type="button"
                 data-twe-modal-dismiss
-                className="px-6 py-2.5 rounded-full border border-gray-300 text-gray-600 font-bold text-sm hover:bg-white hover:text-gray-800 hover:border-gray-400 transition-all uppercase"
+                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
                 Cancel
               </button>
@@ -805,19 +779,9 @@ const OrgInvitation = () => {
                 type="button"
                 onClick={handleSendInvite}
                 disabled={isLoading}
-                className="px-8 py-2.5 rounded-full bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white font-bold text-sm hover:shadow-lg hover:translate-y-[-1px] active:translate-y-[0px] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase flex items-center gap-2"
+                className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Icon icon="material-symbols:send-rounded" width="18" />
-                    Send Invitation
-                  </>
-                )}
+                {isLoading ? "Wait..." : "Send Invitation"}
               </button>
             </div>
           </div>
@@ -838,54 +802,51 @@ const OrgInvitation = () => {
             data-twe-modal-dialog-ref
             className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
           >
-            <div className="mx-3 pointer-events-auto relative flex max-w-md w-full flex-col rounded-[24px] border-none bg-white bg-clip-padding text-current shadow-2xl outline-none overflow-hidden">
-              {/* Modal Header */}
-              <div className="bg-gradient-to-r from-red-600 to-rose-400 p-6 text-white flex items-center justify-between">
-                <div>
-                  <h5 className="text-xl font-bold flex items-center gap-2">
-                    <Icon icon="material-symbols:delete-forever-rounded" width="24" />
-                    Confirm Deletion
-                  </h5>
-                </div>
-                <button
-                  type="button"
-                  data-twe-modal-dismiss
-                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4">
+              <h5 className="text-xl font-bold leading-normal text-neutral-800" id="deleteModalTitle">
+                Confirm Deletion
+              </h5>
+              <button
+                type="button"
+                className="box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
+                data-twe-modal-dismiss
+                aria-label="Close"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="h-6 w-6"
                 >
-                  <Icon icon="material-symbols:close-rounded" width="28" />
-                </button>
-              </div>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-              <div className="relative p-8 flex flex-col items-center text-center">
-                <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
-                  <Icon icon="material-symbols:warning-active-rounded" width="48" className="text-red-500" />
-                </div>
-                <h5 className="text-xl font-bold text-gray-900 mb-2">
-                  Are you sure?
-                </h5>
-                <p className="text-sm text-gray-500 max-w-[280px]">
-                  This action is <span className="text-red-600 font-bold uppercase underline">permanent</span> and the invitation record cannot be retrieved.
-                </p>
-              </div>
+            <div className="relative p-8 flex flex-col items-center text-center">
+              <Icon icon="material-symbols:warning-active-rounded" width="48" className="text-red-500 mb-4" />
+              <h5 className="text-xl font-bold text-gray-900 mb-2">Are you sure?</h5>
+              <p className="text-sm text-gray-500">This action is permanent and cannot be undone.</p>
+            </div>
 
-              {/* Modal Footer */}
-              <div className="flex items-center justify-center gap-3 bg-gray-50 p-6 border-t border-gray-100">
-                <button
-                  type="button"
-                  data-twe-modal-dismiss
-                  className="px-8 py-2.5 rounded-full border border-gray-300 text-gray-600 font-bold text-sm hover:bg-white hover:text-gray-800 hover:border-gray-400 transition-all uppercase"
-                >
-                  Go Back
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmDelete}
-                  disabled={isLoading}
-                  className="px-10 py-2.5 rounded-full bg-red-600 text-white font-bold text-sm hover:bg-red-700 hover:shadow-lg hover:translate-y-[-1px] active:translate-y-[0px] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase flex items-center gap-2"
-                >
-                  {isLoading ? "Deleting..." : "Permanently Delete"}
-                </button>
-              </div>
+            <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2">
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={isLoading}
+                className="px-6 py-2 h-10 rounded-full bg-red-600 text-white font-semibold text-base uppercase hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {isLoading ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         </div>
