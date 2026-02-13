@@ -78,8 +78,7 @@ function App() {
               path="org-assessments/:orgName"
               element={<OrgAssessmentDetails />}
             />
-            <Route path="users" element={<OrgUsers isAdminView={true} />} />
-            <Route path="users" element={<OrgUsers isAdminView={true} />} />
+            <Route path="users" element={<OrgUsers />} />
             <Route path="notifications" element={<NotificationHistory />} />
             <Route path="assessment-history" element={<AssessmentHistory />} />
             <Route path="team-assessments" element={<AdminAssessments />} />
