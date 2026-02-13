@@ -33,7 +33,7 @@ const OrgInvitation = () => {
 
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  const [csvFile, setCsvFile] = useState<File | null>(null);
+  // const [csvFile, setCsvFile] = useState<File | null>(null);
 
 
   // New state to track which item is being deleted
@@ -137,93 +137,95 @@ const OrgInvitation = () => {
   };
 
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.name.endsWith('.csv')) {
-      toast.error("Please upload a CSV file");
-      return;
-    }
-
-    setCsvFile(file);
-  };
-
-  const handleClearFile = () => {
-    setCsvFile(null);
-    // Reset the file input
-    const fileInput = document.getElementById("bulkCsvInput") as HTMLInputElement;
-    if (fileInput) fileInput.value = "";
-  };
-
-  const handleBulkInvite = async () => {
-    if (!csvFile) {
-      toast.warn("Please select a CSV file first.");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", csvFile);
-
-      const res = await api.post(
-        "auth/send-bulk-invitation",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      const { success, failedCount, failed } = res.data;
-
-      if (success > 0) {
-        toast.success(
-          `✅ Successfully invited ${success} user${success > 1 ? 's' : ''}!${failedCount > 0 ? ` (${failedCount} failed)` : ''}`
+  /* 
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+  
+      // Validate file type
+      if (!file.name.endsWith('.csv')) {
+        toast.error("Please upload a CSV file");
+        return;
+      }
+  
+      setCsvFile(file);
+    };
+  
+    const handleClearFile = () => {
+      setCsvFile(null);
+      // Reset the file input
+      const fileInput = document.getElementById("bulkCsvInput") as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+    };
+  
+    const handleBulkInvite = async () => {
+      if (!csvFile) {
+        toast.warn("Please select a CSV file first.");
+        return;
+      }
+  
+      setIsLoading(true);
+  
+      try {
+        const formData = new FormData();
+        formData.append("file", csvFile);
+  
+        const res = await api.post(
+          "auth/send-bulk-invitation",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
         );
-      }
-
-      if (failedCount > 0 && failed && failed.length > 0) {
-        // Show first few failures
-        const firstFailures = failed.slice(0, 3);
-        firstFailures.forEach((f: any) => {
-          toast.error(`${f.email}: ${f.reason}`, { autoClose: 5000 });
-        });
-
-        if (failed.length > 3) {
-          toast.info(`...and ${failed.length - 3} more failures. Check console for details.`);
-          console.log("All failed invitations:", failed);
+  
+        const { success, failedCount, failed } = res.data;
+  
+        if (success > 0) {
+          toast.success(
+            `✅ Successfully invited ${success} user${success > 1 ? 's' : ''}!${failedCount > 0 ? ` (${failedCount} failed)` : ''}`
+          );
         }
+  
+        if (failedCount > 0 && failed && failed.length > 0) {
+          // Show first few failures
+          const firstFailures = failed.slice(0, 3);
+          firstFailures.forEach((f: any) => {
+            toast.error(`${f.email}: ${f.reason}`, { autoClose: 5000 });
+          });
+  
+          if (failed.length > 3) {
+            toast.info(`...and ${failed.length - 3} more failures. Check console for details.`);
+            console.log("All failed invitations:", failed);
+          }
+        }
+  
+        handleClearFile();
+        fetchData();
+  
+      } catch (err: any) {
+        console.error("Bulk invite error:", err);
+  
+        // Handle different types of errors
+        if (err.response) {
+          // Server responded with error
+          const message = err.response.data?.message || "Bulk invite failed";
+          toast.error(`❌ ${message}`);
+  
+          // Log more details for debugging
+          console.error("Server error details:", {
+            status: err.response.status,
+            data: err.response.data
+          });
+        } else if (err.request) {
+          // Request made but no response
+          toast.error("❌ No response from server. Please check your connection.");
+        } else {
+          // Something else happened
+          toast.error(`❌ Error: ${err.message || "Bulk invite failed"}`);
+        }
+      } finally {
+        setIsLoading(false);
       }
-
-      handleClearFile();
-      fetchData();
-
-    } catch (err: any) {
-      console.error("Bulk invite error:", err);
-
-      // Handle different types of errors
-      if (err.response) {
-        // Server responded with error
-        const message = err.response.data?.message || "Bulk invite failed";
-        toast.error(`❌ ${message}`);
-
-        // Log more details for debugging
-        console.error("Server error details:", {
-          status: err.response.status,
-          data: err.response.data
-        });
-      } else if (err.request) {
-        // Request made but no response
-        toast.error("❌ No response from server. Please check your connection.");
-      } else {
-        // Something else happened
-        toast.error(`❌ Error: ${err.message || "Bulk invite failed"}`);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+  */
 
 
   // Triggered when clicking the trash icon in the table
