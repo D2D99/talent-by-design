@@ -43,50 +43,8 @@ const OrgInvitationDetails = () => {
         direction: "asc" | "desc";
     } | null>(null);
 
-    const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
-    useEffect(() => {
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-            try {
-                const parsedUser = JSON.parse(savedUser);
-                setCurrentUserRole(parsedUser.role?.toLowerCase());
-            } catch (err) {
-                console.error("Error parsing user data", err);
-            }
-        }
-    }, []);
 
-    const canDeleteInDetails = currentUserRole === "admin";
-
-    const openDeleteModal = (id: string, status: string) => {
-        if (!canDeleteInDetails || status !== "Expire") return;
-        setSelectedId(id);
-    };
-
-    const confirmDelete = async () => {
-        if (!selectedId) return;
-
-        setIsLoading(true);
-        try {
-            await api.delete(`auth/invitation/${selectedId}`);
-
-            const modalElem = document.getElementById("deleteMemberModal");
-            const modalInstance = Modal.getInstance(modalElem);
-            modalInstance?.hide();
-
-            toast.success("Invitation deleted successfully.");
-            fetchMembers();
-        } catch (err: any) {
-            toast.error(
-                err.response?.data?.message || "Failed to delete invitation.",
-            );
-        } finally {
-            setIsLoading(false);
-            setSelectedId(null);
-        }
-    };
 
     const fetchMembers = useCallback(async () => {
         setIsLoading(true);
@@ -135,8 +93,7 @@ const OrgInvitationDetails = () => {
     });
 
     const filteredMembers = sortedMembers.filter((m) => {
-        // Exclude admins from the list
-        if (m.role.toLowerCase() === "admin") return false;
+
 
         const matchesSearch =
             `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""} ${m.status || ""}`
@@ -185,12 +142,12 @@ const OrgInvitationDetails = () => {
         }
     };
 
-    // Calculate stats (excluding admins)
-    const nonAdminMembers = members.filter((m) => m.role.toLowerCase() !== "admin");
-    const totalMembers = nonAdminMembers.length;
-    const acceptedMembers = nonAdminMembers.filter((m) => m.status === "Accept").length;
-    const pendingMembers = nonAdminMembers.filter((m) => m.status === "Pending").length;
-    const expiredMembers = nonAdminMembers.filter((m) => m.status === "Expire").length;
+    // Calculate stats (including admins)
+    const membersList = members;
+    const totalMembers = membersList.length;
+    const acceptedMembers = membersList.filter((m) => m.status === "Accept").length;
+    const pendingMembers = membersList.filter((m) => m.status === "Pending").length;
+    const expiredMembers = membersList.filter((m) => m.status === "Expire").length;
 
     return (
         <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
@@ -550,14 +507,8 @@ const OrgInvitationDetails = () => {
                                     <td className="px-6 py-4">{renderStatusBadge(member.status)}</td>
                                     <td className="px-6 py-4 text-center">
                                         <button
-                                            data-twe-toggle="modal"
-                                            data-twe-target="#deleteMemberModal"
-                                            onClick={() => openDeleteModal(member._id, member.status)}
-                                            disabled={!canDeleteInDetails || member.status !== "Expire"}
-                                            className={`p-2 rounded-full transition-all ${(canDeleteInDetails && member.status === "Expire")
-                                                ? "text-red-600 hover:bg-red-50"
-                                                : "text-gray-200 cursor-not-allowed opacity-50"
-                                                }`}
+                                            disabled
+                                            className="p-2 rounded-full transition-all text-gray-200 cursor-not-allowed opacity-50"
                                         >
                                             <Icon icon="si:bin-line" width="16" height="16" />
                                         </button>
@@ -583,71 +534,7 @@ const OrgInvitationDetails = () => {
                 onItemsPerPageChange={setItemsPerPage}
             />
 
-            {/* --- Delete Modal --- */}
-            <div
-                data-twe-modal-init
-                className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-                id="deleteMemberModal"
-                tabIndex={-1}
-                aria-labelledby="deleteModalTitle"
-                aria-modal="true"
-                role="dialog"
-                data-twe-backdrop="static"
-            >
-                <div
-                    data-twe-modal-dialog-ref
-                    className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
-                >
-                    <div className="mx-3 pointer-events-auto relative flex w-full flex-col rounded-[24px] border-none bg-white bg-clip-padding text-current shadow-2xl outline-none overflow-hidden">
-                        <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4">
-                            <h5 className="text-xl font-bold leading-normal text-neutral-800" id="deleteModalTitle">
-                                Confirm Deletion
-                            </h5>
-                            <button
-                                type="button"
-                                className="box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
-                                data-twe-modal-dismiss
-                                aria-label="Close"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    stroke="currentColor"
-                                    className="h-6 w-6"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
 
-                        <div className="relative p-8 flex flex-col items-center text-center">
-                            <Icon icon="material-symbols:warning-active-rounded" width="48" className="text-red-500 mb-4" />
-                            <h5 className="text-xl font-bold text-gray-900 mb-2">Are you sure?</h5>
-                            <p className="text-sm text-gray-500">This action is permanent and cannot be undone.</p>
-                        </div>
-
-                        <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2">
-                            <button
-                                type="button"
-                                data-twe-modal-dismiss
-                                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                onClick={confirmDelete}
-                                disabled={isLoading}
-                                className="px-6 py-2 h-10 rounded-full bg-red-600 text-white font-semibold text-base uppercase hover:bg-red-700 transition-colors disabled:opacity-50"
-                            >
-                                {isLoading ? "Deleting..." : "Delete"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };
