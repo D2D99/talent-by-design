@@ -12,6 +12,18 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
+const THEME_STORAGE_KEY = "tbd-theme";
+
+const clearAuthStorage = () => {
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  localStorage.clear();
+  sessionStorage.clear();
+
+  if (savedTheme === "light" || savedTheme === "dark") {
+    localStorage.setItem(THEME_STORAGE_KEY, savedTheme);
+  }
+};
+
 const Sidebar = ({ onClose }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,7 +56,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
         })
         .catch((err) => {
           if (err.response?.status === 401) return;
-          localStorage.clear();
+          clearAuthStorage();
           navigate("/login");
         });
     };
@@ -61,8 +73,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     try {
       await api.post(`auth/logout`, {}, { withCredentials: true });
     } finally {
-      localStorage.clear();
-      sessionStorage.clear();
+      clearAuthStorage();
       navigate("/login");
       window.location.reload();
     }

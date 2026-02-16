@@ -186,7 +186,7 @@ const UserProfile = () => {
 
   return (
     <>
-      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
+      <div className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
         <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
           <h2 className="md:text-2xl text-xl font-bold">My Profile</h2>
 
@@ -232,7 +232,7 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className={`border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
+                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
                   isEditing
                     ? "cursor-pointer bg-white hover:bg-neutral-50"
                     : "bg-gray-100 cursor-not-allowed pointer-events-none"

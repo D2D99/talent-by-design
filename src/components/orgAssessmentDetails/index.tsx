@@ -112,25 +112,25 @@ const OrgAssessmentDetails = () => {
 
         if (status === "Completed") {
             return (
-                <span className={`${base} bg-emerald-50 text-emerald-600 border-emerald-200`}>
+                <span className={`${base} bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-[#1b3f33] dark:text-[#95e7ba] dark:border-[#3c8a71]`}>
                     Completed
                 </span>
             );
         } else if (status === "In Progress") {
             return (
-                <span className={`${base} bg-blue-50 text-blue-600 border-blue-200`}>
+                <span className={`${base} bg-blue-50 text-blue-600 border-blue-200 dark:bg-[#1b3650] dark:text-[#8cc3f6] dark:border-[#3f78ab]`}>
                     In Progress
                 </span>
             );
         } else if (status === "Due") {
             return (
-                <span className={`${base} bg-amber-50 text-amber-600 border-amber-200`}>
+                <span className={`${base} bg-amber-50 text-amber-600 border-amber-200 dark:bg-[#433718] dark:text-[#ffd27b] dark:border-[#8f7440]`}>
                     Due
                 </span>
             );
         } else {
             return (
-                <span className={`${base} bg-gray-50 text-gray-400 border-gray-200`}>
+                <span className={`${base} bg-gray-50 text-gray-400 border-gray-200 dark:bg-[#123049] dark:text-[#9cb8d2] dark:border-[var(--app-border-color)]`}>
                     Not Started
                 </span>
             );
@@ -145,9 +145,9 @@ const OrgAssessmentDetails = () => {
     const completionRate = totalMembers > 0 ? Math.round((completedMembers / totalMembers) * 100) : 0;
 
     return (
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
+        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
             {/* Header Section */}
-            <div className="mb-8 bg-white relative overflow-hidden">
+            <div className="mb-8 bg-white relative overflow-hidden dark:bg-transparent">
                 <div
                     className="flex items-center gap-1.5 text-xs font-bold mb-6 cursor-pointer text-[#448CD2] transition-colors w-fit"
                     onClick={() => navigate("/dashboard/org-assessments")}
@@ -155,10 +155,10 @@ const OrgAssessmentDetails = () => {
                     <Icon icon="material-symbols:arrow-back-rounded" width="16" />
                     <span className="uppercase tracking-wider">Back to Assessments</span>
                 </div>
-                <h2 className="md:text-3xl text-2xl font-bold text-gray-800 mb-2">
+                <h2 className="md:text-3xl text-2xl font-bold text-gray-800 mb-2 dark:text-[var(--app-heading-color)]">
                     {details?.orgName || "Organization Details"}
                 </h2>
-                <p className="text-sm text-gray-500 mb-6">
+                <p className="text-sm text-gray-500 mb-6 dark:text-[var(--app-text-muted)]">
                     Track assessment completion and participant progress
                 </p>
 
@@ -271,7 +271,7 @@ const OrgAssessmentDetails = () => {
                 <div className="relative flex-1 max-w-md">
                     <Icon
                         icon="tabler:search"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#88a7c4]"
                         width="20"
                     />
                     <input
@@ -279,15 +279,15 @@ const OrgAssessmentDetails = () => {
                         placeholder="Search by name, email, role..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all"
+                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
                     />
                 </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setShowFilters(!showFilters)}
                         className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters || roleFilter.length > 0 || assessmentFilter.length > 0
-                            ? "bg-blue-50 border-blue-200 text-blue-600 font-bold"
-                            : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                            ? "bg-blue-50 border-blue-200 text-blue-600 font-bold dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
+                            : "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-[var(--app-border-color)] dark:text-[var(--app-text-muted)] dark:hover:bg-[var(--app-surface-muted)]"
                             }`}
                     >
                         <Icon icon="mi:filter" width="18" />
@@ -303,17 +303,17 @@ const OrgAssessmentDetails = () => {
 
             {/* Filter Sidebar */}
             {showFilters && (
-                <div className="absolute right-6 top-[500px] w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300">
+                <div className="absolute right-6 top-[500px] w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300 dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-gray-800">Filters</h3>
+                            <h3 className="font-bold text-gray-800 dark:text-[var(--app-heading-color)]">Filters</h3>
                             {(roleFilter.length > 0 || assessmentFilter.length > 0) && (
                                 <button
                                     onClick={() => {
                                         setRoleFilter([]);
                                         setAssessmentFilter([]);
                                     }}
-                                    className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase"
+                                    className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase dark:bg-[rgba(226,104,122,0.18)] dark:text-[#ffafbc]"
                                 >
                                     Reset
                                 </button>
@@ -321,7 +321,7 @@ const OrgAssessmentDetails = () => {
                         </div>
                         <button
                             onClick={() => setShowFilters(false)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 hover:text-gray-600 dark:text-[#88a7c4] dark:hover:text-[#d6e8f8]"
                         >
                             <Icon icon="material-symbols:close" width="20" />
                         </button>
@@ -330,7 +330,7 @@ const OrgAssessmentDetails = () => {
                     <div className="space-y-6">
                         {/* Role Filter */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                                 Role
                             </label>
                             <div className="space-y-2">
@@ -349,10 +349,10 @@ const OrgAssessmentDetails = () => {
                                                         : [...prev, r],
                                                 );
                                             }}
-                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                                         />
                                         <span
-                                            className={`text-sm capitalize ${roleFilter.includes(r) ? "text-blue-600 font-bold" : "text-gray-600"}`}
+                                            className={`text-sm capitalize ${roleFilter.includes(r) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-600 dark:text-[var(--app-text-muted)]"}`}
                                         >
                                             {r}
                                         </span>
@@ -363,7 +363,7 @@ const OrgAssessmentDetails = () => {
 
                         {/* Assessment Status Filter */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                                 Assessment Status
                             </label>
                             <div className="space-y-2">
@@ -382,10 +382,10 @@ const OrgAssessmentDetails = () => {
                                                         : [...prev, s],
                                                 );
                                             }}
-                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                                         />
                                         <span
-                                            className={`text-sm ${assessmentFilter.includes(s) ? "text-blue-600 font-bold" : "text-gray-600"}`}
+                                            className={`text-sm ${assessmentFilter.includes(s) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-600 dark:text-[var(--app-text-muted)]"}`}
                                         >
                                             {s}
                                         </span>
@@ -398,15 +398,15 @@ const OrgAssessmentDetails = () => {
             )}
 
             {/* Table */}
-            <div className="overflow-x-auto rounded-xl border border-gray-100">
+            <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50/50 border-b border-gray-100">
-                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest w-16">
+                        <tr className="bg-gray-50/50 border-b border-gray-100 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)]">
+                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest w-16 dark:text-[#88a7c4]">
                                 #
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("firstName")}
                             >
                                 <div className="flex items-center justify-between">
@@ -424,7 +424,7 @@ const OrgAssessmentDetails = () => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("email")}
                             >
                                 <div className="flex items-center justify-between">
@@ -442,7 +442,7 @@ const OrgAssessmentDetails = () => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("createdAt")}
                             >
                                 <div className="flex items-center justify-between">
@@ -460,7 +460,7 @@ const OrgAssessmentDetails = () => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("role")}
                             >
                                 <div className="flex items-center justify-between">
@@ -477,10 +477,10 @@ const OrgAssessmentDetails = () => {
                                     </div>
                                 </div>
                             </th>
-                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest">
+                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest dark:text-[#88a7c4]">
                                 Assessment Status
                             </th>
-                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest text-center">
+                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest text-center dark:text-[#88a7c4]">
                                 Action
                             </th>
                         </tr>
@@ -490,13 +490,13 @@ const OrgAssessmentDetails = () => {
                             currentData.map((member, index) => (
                                 <tr
                                     key={member._id}
-                                    className="border-b border-gray-100 hover:bg-blue-50/20 transition-colors"
+                                    className="border-b border-gray-100 hover:bg-blue-50/20 transition-colors dark:border-[var(--app-border-color)] dark:hover:bg-[rgba(121,186,240,0.08)]"
                                 >
-                                    <td className="px-6 py-4 text-sm font-bold text-gray-400">
+                                    <td className="px-6 py-4 text-sm font-bold text-gray-400 dark:text-[#9cb8d2]">
                                         {indexOfFirstItem + index + 1}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="font-bold text-gray-800 tracking-tight">
+                                        <span className="font-bold text-gray-800 tracking-tight dark:text-[var(--app-text-color)]">
                                             {member.firstName === "-" ? (
                                                 <span className="text-gray-300 font-black">—</span>
                                             ) : (
@@ -504,14 +504,14 @@ const OrgAssessmentDetails = () => {
                                             )}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-500 dark:text-[var(--app-text-muted)]">
                                         {member.email}
                                     </td>
-                                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-500 dark:text-[var(--app-text-muted)]">
                                         {new Date(member.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="text-xs font-bold text-gray-400 capitalize">
+                                        <span className="text-xs font-bold text-gray-400 capitalize dark:text-[#9cb8d2]">
                                             {member.role}
                                         </span>
                                     </td>
@@ -519,7 +519,7 @@ const OrgAssessmentDetails = () => {
                                         {renderAssessmentBadge(member.assessmentStatus)}
                                     </td>
                                     <td className="px-6 py-4 text-center">
-                                        <button className="text-gray-400 hover:text-[#448CD2] transition-colors">
+                                        <button className="text-gray-400 hover:text-[#448CD2] transition-colors dark:text-[#88a7c4] dark:hover:text-[#cbe4fb]">
                                             <Icon icon="solar:eye-linear" width="20" />
                                         </button>
                                     </td>
@@ -527,7 +527,7 @@ const OrgAssessmentDetails = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={7} className="py-20 text-center text-gray-400">
+                                <td colSpan={7} className="py-20 text-center text-gray-400 dark:text-[#9cb8d2]">
                                     {isLoading ? "Loading members..." : "No members found."}
                                 </td>
                             </tr>

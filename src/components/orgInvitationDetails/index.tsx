@@ -118,7 +118,7 @@ const OrgInvitationDetails = () => {
             case "Accept":
                 return (
                     <span
-                        className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933]`}
+                        className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] dark:bg-[#163423] dark:text-[#8CDFAC] dark:border-[#2DA367]`}
                     >
                         Accepted
                     </span>
@@ -126,7 +126,7 @@ const OrgInvitationDetails = () => {
             case "Expire":
                 return (
                     <span
-                        className={`${base} bg-[#FFEEEE] text-[#D71818] border-[#D71818]`}
+                        className={`${base} bg-[#FFEEEE] text-[#D71818] border-[#D71818] dark:bg-[#411F26] dark:text-[#FF9BAA] dark:border-[#E2687A]`}
                     >
                         Expired
                     </span>
@@ -134,7 +134,7 @@ const OrgInvitationDetails = () => {
             default:
                 return (
                     <span
-                        className={`${base} bg-[#FFF8EE] text-[#E39631] border-[#E39631]`}
+                        className={`${base} bg-[#FFF8EE] text-[#E39631] border-[#E39631] dark:bg-[#43361F] dark:text-[#FFD38A] dark:border-[#E0A84D]`}
                     >
                         Pending
                     </span>
@@ -150,9 +150,9 @@ const OrgInvitationDetails = () => {
     const expiredMembers = membersList.filter((m) => m.status === "Expire").length;
 
     return (
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
+        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
             {/* Header Section */}
-            <div className="mb-8 bg-white relative overflow-hidden">
+            <div className="mb-8 bg-white relative overflow-hidden dark:bg-transparent">
                 <div
                     className="flex items-center gap-1.5 text-xs font-bold mb-6 cursor-pointer text-[#448CD2] transition-colors w-fit"
                     onClick={() => navigate("/dashboard/invite")}
@@ -160,89 +160,89 @@ const OrgInvitationDetails = () => {
                     <Icon icon="material-symbols:arrow-back-rounded" width="16" />
                     <span className="uppercase tracking-wider">Back to Invitations</span>
                 </div>
-                <h2 className="md:text-3xl text-2xl font-bold text-gray-800 mb-2">
+                <h2 className="md:text-3xl text-2xl font-bold text-gray-800 mb-2 dark:text-[var(--app-heading-color)]">
                     {details?.orgName || "Organization Details"}
                 </h2>
-                <p className="text-sm text-gray-500 mb-6">
+                <p className="text-sm text-gray-500 mb-6 dark:text-[var(--app-text-muted)]">
                     Manage invitation status and team members
                 </p>
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-xl p-4">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-xl p-4 dark:from-[#1b3650] dark:to-[#22486b] dark:border-[#3f78ab]">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                                <p className="text-xs font-bold text-blue-600 uppercase tracking-wider dark:text-[#8cc3f6]">
                                     Total Members
                                 </p>
-                                <p className="text-2xl font-bold text-blue-700 mt-1">
+                                <p className="text-2xl font-bold text-blue-700 mt-1 dark:text-[#d8ecff]">
                                     {totalMembers}
                                 </p>
                             </div>
-                            <div className="p-3 bg-blue-200 rounded-lg">
+                            <div className="p-3 bg-blue-200 rounded-lg dark:bg-[#2d5a7f]">
                                 <Icon
                                     icon="solar:users-group-rounded-bold"
-                                    className="text-blue-600"
+                                    className="text-blue-600 dark:text-[#d5ebff]"
                                     width="24"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4">
+                    <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4 dark:from-[#1b3f33] dark:to-[#1f4e3d] dark:border-[#3c8a71]">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
+                                <p className="text-xs font-bold text-green-600 uppercase tracking-wider dark:text-[#95e7ba]">
                                     Accepted
                                 </p>
-                                <p className="text-2xl font-bold text-green-700 mt-1">
+                                <p className="text-2xl font-bold text-green-700 mt-1 dark:text-[#dcffed]">
                                     {acceptedMembers}
                                 </p>
                             </div>
-                            <div className="p-3 bg-green-200 rounded-lg">
+                            <div className="p-3 bg-green-200 rounded-lg dark:bg-[#2d7058]">
                                 <Icon
                                     icon="solar:check-circle-bold"
-                                    className="text-green-600"
+                                    className="text-green-600 dark:text-[#defeee]"
                                     width="24"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border border-yellow-200 rounded-xl p-4">
+                    <div className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border border-yellow-200 rounded-xl p-4 dark:from-[#433718] dark:to-[#55441d] dark:border-[#8f7440]">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-xs font-bold text-yellow-600 uppercase tracking-wider">
+                                <p className="text-xs font-bold text-yellow-600 uppercase tracking-wider dark:text-[#ffd27b]">
                                     Pending
                                 </p>
-                                <p className="text-2xl font-bold text-yellow-700 mt-1">
+                                <p className="text-2xl font-bold text-yellow-700 mt-1 dark:text-[#fff0cf]">
                                     {pendingMembers}
                                 </p>
                             </div>
-                            <div className="p-3 bg-yellow-200 rounded-lg">
+                            <div className="p-3 bg-yellow-200 rounded-lg dark:bg-[#7f6b34]">
                                 <Icon
                                     icon="solar:clock-circle-bold"
-                                    className="text-yellow-600"
+                                    className="text-yellow-600 dark:text-[#fff1d4]"
                                     width="24"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4">
+                    <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4 dark:from-[#4a2228] dark:to-[#5b2930] dark:border-[#9f4d5b]">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-xs font-bold text-red-600 uppercase tracking-wider">
+                                <p className="text-xs font-bold text-red-600 uppercase tracking-wider dark:text-[#ffb2bd]">
                                     Expired
                                 </p>
-                                <p className="text-2xl font-bold text-red-700 mt-1">
+                                <p className="text-2xl font-bold text-red-700 mt-1 dark:text-[#ffe2e6]">
                                     {expiredMembers}
                                 </p>
                             </div>
-                            <div className="p-3 bg-red-200 rounded-lg">
+                            <div className="p-3 bg-red-200 rounded-lg dark:bg-[#7c3b46]">
                                 <Icon
                                     icon="solar:close-circle-bold"
-                                    className="text-red-600"
+                                    className="text-red-600 dark:text-[#ffe4ea]"
                                     width="24"
                                 />
                             </div>
@@ -256,7 +256,7 @@ const OrgInvitationDetails = () => {
                 <div className="relative flex-1 max-w-md">
                     <Icon
                         icon="tabler:search"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#88a7c4]"
                         width="20"
                     />
                     <input
@@ -264,15 +264,15 @@ const OrgInvitationDetails = () => {
                         placeholder="Search by name, email, role..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all"
+                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 placeholder:text-gray-400 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4] dark:focus:border-[var(--primary-color)]"
                     />
                 </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setShowFilters(!showFilters)}
                         className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters || roleFilter.length > 0 || statusFilter.length > 0
-                            ? "bg-blue-50 border-blue-200 text-blue-600 font-bold"
-                            : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                            ? "bg-blue-50 border-blue-200 text-blue-600 font-bold dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
+                            : "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-[var(--app-border-color)] dark:text-[var(--app-text-muted)] dark:hover:bg-[var(--app-surface-muted)]"
                             }`}
                     >
                         <Icon icon="mi:filter" width="18" />
@@ -288,17 +288,17 @@ const OrgInvitationDetails = () => {
 
             {/* Filter Sidebar */}
             {showFilters && (
-                <div className="absolute right-6 top-[500px] w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300">
+                <div className="absolute right-6 top-[500px] w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300 dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-gray-800">Filters</h3>
+                            <h3 className="font-bold text-gray-800 dark:text-[var(--app-heading-color)]">Filters</h3>
                             {(roleFilter.length > 0 || statusFilter.length > 0) && (
                                 <button
                                     onClick={() => {
                                         setRoleFilter([]);
                                         setStatusFilter([]);
                                     }}
-                                    className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase"
+                                    className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase dark:bg-[rgba(226,104,122,0.18)] dark:text-[#ffafbc]"
                                 >
                                     Reset
                                 </button>
@@ -306,7 +306,7 @@ const OrgInvitationDetails = () => {
                         </div>
                         <button
                             onClick={() => setShowFilters(false)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 hover:text-gray-600 dark:text-[#88a7c4] dark:hover:text-[#d6e8f8]"
                         >
                             <Icon icon="material-symbols:close" width="20" />
                         </button>
@@ -315,7 +315,7 @@ const OrgInvitationDetails = () => {
                     <div className="space-y-6">
                         {/* Role Filter */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                                 Role
                             </label>
                             <div className="space-y-2">
@@ -334,10 +334,10 @@ const OrgInvitationDetails = () => {
                                                         : [...prev, r],
                                                 );
                                             }}
-                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                                         />
                                         <span
-                                            className={`text-sm capitalize ${roleFilter.includes(r) ? "text-blue-600 font-bold" : "text-gray-600"}`}
+                                            className={`text-sm capitalize ${roleFilter.includes(r) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-600 dark:text-[var(--app-text-muted)]"}`}
                                         >
                                             {r}
                                         </span>
@@ -348,7 +348,7 @@ const OrgInvitationDetails = () => {
 
                         {/* Status Filter */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                                 Invitation Status
                             </label>
                             <div className="space-y-2">
@@ -367,10 +367,10 @@ const OrgInvitationDetails = () => {
                                                         : [...prev, s],
                                                 );
                                             }}
-                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                                         />
                                         <span
-                                            className={`text-sm ${statusFilter.includes(s) ? "text-blue-600 font-bold" : "text-gray-600"}`}
+                                            className={`text-sm ${statusFilter.includes(s) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-600 dark:text-[var(--app-text-muted)]"}`}
                                         >
                                             {s === "Accept"
                                                 ? "Accepted"
@@ -387,15 +387,15 @@ const OrgInvitationDetails = () => {
             )}
 
             {/* Table */}
-            <div className="overflow-x-auto rounded-xl border border-gray-100">
+            <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50/50 border-b border-gray-100">
-                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest w-16">
+                        <tr className="bg-gray-50/50 border-b border-gray-100 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)]">
+                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest w-16 dark:text-[#88a7c4]">
                                 #
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("firstName")}
                             >
                                 <div className="flex items-center justify-between">
@@ -413,7 +413,7 @@ const OrgInvitationDetails = () => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("email")}
                             >
                                 <div className="flex items-center justify-between">
@@ -431,7 +431,7 @@ const OrgInvitationDetails = () => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("createdAt")}
                             >
                                 <div className="flex items-center justify-between">
@@ -449,7 +449,7 @@ const OrgInvitationDetails = () => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors dark:text-[#88a7c4] dark:hover:bg-[var(--app-surface-soft)]"
                                 onClick={() => handleSort("role")}
                             >
                                 <div className="flex items-center justify-between">
@@ -466,10 +466,10 @@ const OrgInvitationDetails = () => {
                                     </div>
                                 </div>
                             </th>
-                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest">
+                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest dark:text-[#88a7c4]">
                                 Invitation Status
                             </th>
-                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest text-center">
+                            <th className="px-6 py-4 font-black text-[10px] text-gray-400 uppercase tracking-widest text-center dark:text-[#88a7c4]">
                                 Action
                             </th>
                         </tr>

@@ -62,7 +62,7 @@ const Home = () => {
   return (
     <>
       {/* Announcement Bar Start */}
-      <div className="bg-[var(--primary-color)] py-3 ">
+      <div className="bg-[var(--primary-color)] py-3">
         <div className="max-w-screen-2xl mx-auto xl:px-10 px-4  ">
           <div className="flex items-center justify-self-end gap-5">
             <div className="flex items-center gap-1">
@@ -101,17 +101,31 @@ const Home = () => {
       <Header />
 
       {/* Hero Section Start */}
-      <div className="relative pt-10 overflow-x-hidden " id="hero-bg">
-        <div className="bg-svg !w-full absolute left-1/2 -translate-x-1/2 -z-10 pt-4">
+      <div className="relative isolate pt-10 overflow-x-hidden " id="hero-bg">
+        <div className="bg-svg pointer-events-none !w-full absolute left-1/2 -translate-x-1/2 z-0 pt-4">
           <svg
             width="2025"
             height="591"
             viewBox="0 0 2025 591"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
-            <path
+            <use
+              href="#ribbon-path"
+              className="hero-ribbon-base"
+              stroke="url(#grad)"
+            />
+            <use
+              href="#ribbon-path"
               id="smoothPath"
-              d="M45.0029 507.481C74.1029 504.764 125.503 505.412 190.503 493.894
+              className="hero-ribbon-flow"
+              stroke="url(#grad)"
+            />
+
+            <defs>
+              <path
+                id="ribbon-path"
+                d="M45.0029 507.481C74.1029 504.764 125.503 505.412 190.503 493.894
     C255.503 482.377 290.203 476.494 370.003 449.894
     C449.803 423.294 515.403 393.577 589.503 360.894
     C663.603 328.212 693.203 321.981 740.503 286.481
@@ -139,10 +153,7 @@ const Home = () => {
     C1505.3 470.294 1559.9 487.564 1632.5 478.981
     C1705.1 470.398 1745 454.381 1814.5 414.481
     C1884 374.581 1946.9 306.481 1980 279.481"
-              stroke="url(#grad)"
-            />
-
-            <defs>
+              />
               <linearGradient
                 id="grad"
                 x1="0"
@@ -151,13 +162,13 @@ const Home = () => {
                 y2="0"
                 gradientUnits="userSpaceOnUse"
               >
-                <stop stopColor="#E4F0FC" />
-                <stop offset="1" stopColor="#C7E0F8" />
+                <stop className="hero-stop-start" stopColor="var(--hero-curve-start)" />
+                <stop className="hero-stop-end" offset="1" stopColor="var(--hero-curve-end)" />
               </linearGradient>
             </defs>
           </svg>
         </div>
-        <div className="max-w-5xl mx-auto text-center px-4">
+        <div className="relative z-10 max-w-5xl mx-auto text-center px-4">
           <h4 className="badge">
             TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
           </h4>
@@ -388,13 +399,13 @@ const Home = () => {
             </div>
             <div>
               <div className="grid md:grid-cols-2 grid-cols-1 md:gap-x-6 md:gap-y-0 gap-y-5 lg:mt-0 mt-7 ">
-                <div className="grid-rows-1 relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mb-8">
+                <div className="home-step-card grid-rows-1 relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mb-8">
                   <img
                     src={Number1}
                     className="mb-4 text-right ml-auto"
                     alt="Number"
                   />
-                  <h3 className="sm:text-2xl text-xl font-medium text-[var(--secondary-color) ">
+                  <h3 className="home-step-title sm:text-2xl text-xl font-medium">
                     We Measure What Matters
                   </h3>
                   <p className="text-base font-normal mt-1">
@@ -409,13 +420,13 @@ const Home = () => {
                   </p>
                 </div>
 
-                <div className="grid-rows-2 relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mt-8">
+                <div className="home-step-card grid-rows-2 relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mt-8">
                   <img
                     src={Number2}
                     className="mb-4 text-right ml-auto"
                     alt="Number"
                   />
-                  <h3 className="sm:text-2xl text-xl font-medium text-[var(--secondary-color) ">
+                  <h3 className="home-step-title sm:text-2xl text-xl font-medium">
                     We Turn Insight Into Action
                   </h3>
                   <p className="text-base font-normal mt-1">
@@ -429,7 +440,7 @@ const Home = () => {
                   </p>
                 </div>
 
-                <div className="grid-rows-2  relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mb-8">
+                <div className="home-step-card grid-rows-2  relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mb-8">
                   {/* <h2 className="mb-4 text-7xl font-bold text-transparent [-webkit-text-stroke:3px_#3b73b9] text-right">
                     03
                   </h2> */}
@@ -438,7 +449,7 @@ const Home = () => {
                     className="mb-4 text-right ml-auto"
                     alt="Number"
                   />
-                  <h3 className="sm:text-2xl text-xl font-medium text-[var(--secondary-color) ">
+                  <h3 className="home-step-title sm:text-2xl text-xl font-medium">
                     We Partner for Long-Term Capability Building
                   </h3>
                   <p className="text-base font-normal mt-1">
@@ -450,7 +461,7 @@ const Home = () => {
                   </p>
                 </div>
 
-                <div className="grid-rows-4 md:sticky relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mt-8">
+                <div className="home-step-card grid-rows-4 md:sticky relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mt-8">
                   {/* <h2 className="mb-4 text-7xl font-bold text-transparent [-webkit-text-stroke:3px_#3b73b9] text-right">
                     04
                   </h2> */}
@@ -459,7 +470,7 @@ const Home = () => {
                     className="mb-4 text-right ml-auto"
                     alt="Number"
                   />
-                  <h3 className="sm:text-2xl text-xl font-medium text-[var(--secondary-color) ">
+                  <h3 className="home-step-title sm:text-2xl text-xl font-medium">
                     We Facilitate Smarter Decisions
                   </h3>
                   <p className="text-base font-normal mt-1">
@@ -494,7 +505,7 @@ const Home = () => {
       {/* Leadership And Digital Section End */}
 
       {/* POD-360™ Assessment Section Start */}
-      <div className="md:py-20 py-12 bg-[linear-gradient(53deg,rgba(237,245,253,0)_75%,#e4f0fc_100%)] ">
+      <div className="md:py-20 py-12 bg-[linear-gradient(53deg,rgba(237,245,253,0)_75%,#e4f0fc_100%)] dark:bg-[linear-gradient(53deg,rgba(6,23,37,0)_75%,#123049_100%)]">
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4">
           <h4 className="badge">OUR PROPRIETARY ASSESSMENT</h4>
           <h2 className="sub-heading">
@@ -535,7 +546,7 @@ const Home = () => {
           </div>
 
           <div className="grid lg:grid-cols-3 sm:grid-cols-2 xl:gap-8 gap-4 sm:mt-12 mt-8">
-            <div className="shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white  rounded-xl ">
+            <div className="pod-domain-card shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white rounded-xl">
               <div className="relative">
                 <img src={Post1} className="w-full rounded-xl" alt="post" />
 
@@ -552,13 +563,13 @@ const Home = () => {
                 <div className="flex gap-1.5 center absolute top-2 right-2">
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     Leadership
                   </button>
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     Engagement
                   </button>
@@ -574,25 +585,25 @@ const Home = () => {
                 </p>
               </div>
             </div>
-            <div className="shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white  rounded-xl ">
+            <div className="pod-domain-card shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white rounded-xl">
               <div className="relative">
                 <img src={Post2} className="w-full rounded-xl" alt="post" />
                 <div className="flex gap-1.5 center absolute top-2 right-2">
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     Workflow
                   </button>
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     Process
                   </button>
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     Automation
                   </button>
@@ -608,25 +619,25 @@ const Home = () => {
                 </p>
               </div>
             </div>
-            <div className="shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white  rounded-xl ">
+            <div className="pod-domain-card shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] md:p-5 p-3 bg-white rounded-xl">
               <div className="relative">
                 <img src={Post3} className="w-full rounded-xl" alt="post" />
                 <div className="flex gap-1.5 center absolute top-2 right-2">
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     Technology
                   </button>
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     Data
                   </button>
                   <button
                     type="button"
-                    className="bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
+                    className="pod-domain-chip bg-[var(--white-color)] py-1 px-2 uppercase text-xs text-[var(--dark-primary-color)] font-medium rounded-full"
                   >
                     AI
                   </button>
@@ -648,7 +659,7 @@ const Home = () => {
       {/* POD-360™ Assessment Section End */}
 
       {/* How it works Section Start */}
-      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] md:py-20 py-12">
+      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] dark:bg-[linear-gradient(to_top,rgba(6,23,37,0)_50%,rgba(26,63,95,0.35))] md:py-20 py-12">
         <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
           <h4 className="badge">How it works</h4>
           <h2 className="sub-heading">
@@ -913,13 +924,13 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="relative z-10 bg-white max-w-screen-2xl mx-auto xl:px-10 px-4">
+        <div className="pod-result-panel relative z-10 bg-white max-w-screen-2xl mx-auto xl:px-10 px-5 sm:mt-12 mt-8 md:pb-10 pb-8 rounded-[20px]">
           <img
             src={POD360}
             alt="Pod-360™"
-            className="sm:mt-16 mt-8 w-fit mx-auto"
+            className="sm:mt-10 mt-8 w-fit mx-auto"
           />
-          <h2 className="sm:mt-16 mt-8 md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
+          <h2 className="sm:mt-10 mt-7 md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
             The Result: A high-performance, and change ready organization.
           </h2>
           <ul className="mt-2 space-y-1">
@@ -952,7 +963,7 @@ const Home = () => {
       {/* Measurable Performance Section End */}
 
       {/* POD Insights™ AI-Powered Organizational Intelligence Start */}
-      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))]">
+      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] dark:bg-[linear-gradient(to_top,rgba(6,23,37,0)_50%,rgba(26,63,95,0.35))]">
         <div className="md:py-20 py-12">
           <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
             <h4 className="badge">
@@ -1123,7 +1134,7 @@ const Home = () => {
       {/* POD Insights™ AI-Powered Organizational Intelligence End */}
 
       {/* Leadership Section Start */}
-      <div className="lg:bg-[linear-gradient(117deg,rgba(237,245,253,0)_50%,#e4f0fc_100%)] bg-[linear-gradient(0deg,rgba(237,245,253,0)_50%,#e4f0fc4f_100%)]">
+      <div className="lg:bg-[linear-gradient(117deg,rgba(237,245,253,0)_50%,#e4f0fc_100%)] bg-[linear-gradient(0deg,rgba(237,245,253,0)_50%,#e4f0fc4f_100%)] dark:lg:bg-[linear-gradient(117deg,rgba(6,23,37,0)_50%,#123049_100%)] dark:bg-[linear-gradient(0deg,rgba(6,23,37,0)_50%,rgba(26,63,95,0.45)_100%)]">
         <div
           className="md:py-20 pt-12 !bg-no-repeat !bg-contain"
           id="leader-bg-effect"
@@ -1211,7 +1222,7 @@ const Home = () => {
       {/* Cta Section Start */}
       <div className="md:my-24 my-10 px-5">
         <div
-          className="text-center mx-auto max-w-screen-xl sm:py-32 py-20  !bg-cover !bg-center !bg-no-repeat rounded-3xl"
+          className="text-center mx-auto max-w-screen-xl sm:py-32 py-20 rounded-3xl"
           id="cta-bg"
         >
           <p className="text-base font-bold text-[var(--white-color)] mb-5 uppercase">

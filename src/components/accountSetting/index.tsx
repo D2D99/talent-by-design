@@ -7,14 +7,16 @@ import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import api from "../../services/axios";
 import { toast } from "react-toastify";
+import { useTheme } from "../../context/useTheme";
 
 const AccountSetting = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    "info" | "password" | "notification"
+    "info" | "password" | "notification" | "appearance"
   >("info");
+  const { theme, setTheme } = useTheme();
 
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
@@ -179,6 +181,20 @@ const AccountSetting = () => {
                 aria-selected="false"
               >
                 Notification
+              </a>
+            </li>
+            <li role="presentation">
+              <a
+                href="#tabs-appearance"
+                onClick={() => setActiveTab("appearance")}
+                className="block border-x-0 border-b-2 border-t-0 border-transparent p-3 text-sm font-semibold capitalize  leading-tight text-neutral-400 hover:isolate hover:border-transparent focus:isolate focus:border-transparent data-[twe-nav-active]:border-[var(--primary-color)] data-[twe-nav-active]:text-[var(--primary-color)]"
+                data-twe-toggle="pill"
+                data-twe-target="#tabs-appearance"
+                role="tab"
+                aria-controls="tabs-appearance"
+                aria-selected="false"
+              >
+                Appearance
               </a>
             </li>
           </ul>
@@ -586,6 +602,108 @@ const AccountSetting = () => {
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#448CD2]"></div>
                   </label>
+                </div>
+              </div>
+            </div>
+            <div
+              className="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
+              id="tabs-appearance"
+              role="tabpanel"
+              aria-labelledby="tabs-appearance-tab"
+            >
+              <div className="space-y-6 max-w-3xl">
+                <div className="bg-blue-50/50 p-4 rounded-lg flex items-start gap-3 border border-blue-100">
+                  <Icon
+                    icon="solar:pallete-2-bold"
+                    className="text-[#448CD2] w-6 h-6 flex-shrink-0 mt-0.5"
+                  />
+                  <div>
+                    <h5 className="font-bold text-[#1a3652] text-sm">
+                      Choose your theme
+                    </h5>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Pick a mode for your full experience. Dark mode uses a
+                      navy palette matched to your current brand colors.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setTheme("light")}
+                    className={`w-full text-left p-5 rounded-xl border transition-all ${
+                      theme === "light"
+                        ? "border-[#448CD2] bg-[#E4F0FC] shadow-sm"
+                        : "border-gray-200 bg-white hover:border-[#448CD2]/40"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <Icon
+                          icon="solar:sun-bold-duotone"
+                          width="22"
+                          className="text-[#448CD2]"
+                        />
+                        <h6 className="font-bold text-sm text-gray-800">
+                          Light Theme
+                        </h6>
+                      </div>
+                      {theme === "light" && (
+                        <Icon
+                          icon="material-symbols:check-circle-rounded"
+                          className="text-[#448CD2]"
+                          width="20"
+                        />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Bright interface with high contrast for daytime use.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setTheme("dark")}
+                    className={`w-full text-left p-5 rounded-xl border transition-all ${
+                      theme === "dark"
+                        ? "border-[#448CD2] bg-[#1A3652] shadow-sm"
+                        : "border-gray-200 bg-white hover:border-[#448CD2]/40"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <Icon
+                          icon="solar:moon-stars-bold-duotone"
+                          width="22"
+                          className={`${
+                            theme === "dark" ? "text-[#9DC9F5]" : "text-[#448CD2]"
+                          }`}
+                        />
+                        <h6
+                          className={`font-bold text-sm ${
+                            theme === "dark" ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          Dark Theme
+                        </h6>
+                      </div>
+                      {theme === "dark" && (
+                        <Icon
+                          icon="material-symbols:check-circle-rounded"
+                          className="text-[#9DC9F5]"
+                          width="20"
+                        />
+                      )}
+                    </div>
+                    <p
+                      className={`text-xs mt-2 ${
+                        theme === "dark" ? "text-[#C8DBEE]" : "text-gray-500"
+                      }`}
+                    >
+                      Deep navy surfaces inspired by your existing site palette.
+                    </p>
+                  </button>
                 </div>
               </div>
             </div>

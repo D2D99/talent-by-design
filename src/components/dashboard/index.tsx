@@ -14,11 +14,12 @@ const Dashboard = () => {
 
   return (
     <div
-      className={`main-wrapper flex gap-6 min-h-screen relative bg-[#EDF5FD] md:p-6 p-3 ${isActive ? "active" : ""
-        }`}
+      className={`main-wrapper flex gap-6 min-h-screen relative bg-[var(--app-surface-muted)] md:p-6 p-3 ${
+        isActive ? "active" : ""
+      }`}
     >
       {/* Sidebar */}
-      <div className="md:block hidden fixed h-[-webkit-fill-available] mb-6 xl:max-w-80 max-w-64 w-full bg-white border border-[#448CD2] border-opacity-20 shadow rounded-[12px] pt-8 pr-6 pb-6 pl-6 sidebar">
+      <div className="md:block hidden fixed h-[-webkit-fill-available] mb-6 xl:max-w-80 max-w-64 w-full bg-white border border-[#448CD2] border-opacity-20 shadow rounded-[12px] pt-8 pr-6 pb-6 pl-6 sidebar dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_10px_24px_rgba(0,0,0,0.28)]">
         <Sidebar />
 
         <div
@@ -33,7 +34,7 @@ const Dashboard = () => {
       <div className="xl:ml-[343px] md:ml-[278px] w-full right-content">
         {/* Mobile Sidebar Offcanvas */}
         <div
-          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none md:hidden sidebar-offcanvas"
+          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none md:hidden sidebar-offcanvas dark:bg-[var(--app-surface)] dark:text-[var(--app-text-color)]"
           tabIndex={-1}
           id="offcanvasExample"
           aria-labelledby="offcanvasExampleLabel"
