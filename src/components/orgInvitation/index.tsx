@@ -33,7 +33,7 @@ const OrgInvitation = () => {
 
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  // const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
 
 
   // New state to track which item is being deleted
@@ -137,7 +137,7 @@ const OrgInvitation = () => {
   };
 
 
-  /* 
+   
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -225,7 +225,6 @@ const OrgInvitation = () => {
         setIsLoading(false);
       }
     };
-  */
 
 
   // Triggered when clicking the trash icon in the table
@@ -328,7 +327,7 @@ const OrgInvitation = () => {
           </div>
 
           {/* Bulk Upload Section - Ultra-Compact High-End Layout */}
-          {/* <div className="mb-6 bg-white border border-gray-100 rounded-[20px] p-4 shadow-[0_8px_30px_rgba(0,0,0,0.015)] relative overflow-hidden group">
+          <div className="mb-6 bg-white border border-gray-100 rounded-[20px] p-4 shadow-[0_8px_30px_rgba(0,0,0,0.015)] relative overflow-hidden group">
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-50/40 rounded-full blur-3xl opacity-50"></div>
 
             <div className="flex flex-col xl:flex-row items-stretch gap-5 relative z-10">
@@ -458,7 +457,7 @@ const OrgInvitation = () => {
                 Supports {isSuperAdmin ? "admin" : "leader, manager, employee"} roles
               </span>
             </div>
-          </div> */}
+          </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div className="relative flex-1 max-w-md">
