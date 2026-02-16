@@ -22,6 +22,8 @@ const clearAuthStorage = () => {
   if (savedTheme === "light" || savedTheme === "dark") {
     localStorage.setItem(THEME_STORAGE_KEY, savedTheme);
   }
+
+  window.dispatchEvent(new Event("auth-changed"));
 };
 
 const Sidebar = ({ onClose }: SidebarProps) => {
