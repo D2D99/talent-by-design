@@ -135,7 +135,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             </NavLink>
           </li>
 
-          {/* Org Assessments - Only for Super Admin
+        
           {user.role === "superAdmin" && (
             <li className="mb-2">
               <NavLink
@@ -156,9 +156,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 />
               </NavLink>
             </li>
-          )} */}
+          )} 
 
-          {/* Assessment Button - Only for Admin
+        
           {user.role === "admin" && (
             <li className="mb-2">
               <NavLink
@@ -179,7 +179,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 />
               </NavLink>
             </li>
-          )} */}
+          )} 
 
           {/* Reports */}
           <li className="mb-2">
