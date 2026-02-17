@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-
+import ManagerReport from "../managerReport";
 const ManagerOverview = () => {
   return (
     <>
@@ -23,7 +23,7 @@ const ManagerOverview = () => {
           </div>
 
           <p className="text-base text-gray-500 md:mt-1 text-center">
-            No Data Yet!!!
+            <ManagerReport />
           </p>
         </div>
       </div>
