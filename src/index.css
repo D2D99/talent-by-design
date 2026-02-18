@@ -80,8 +80,7 @@ body {
   position: absolute;
   inset: 14px;
   border-radius: 22px;
-  background: url("/public/static/img/home/ctn-bg.png") center/116% 116%
-    no-repeat;
+  background: url("/public/static/img/home/ctn-bg.png") center/116% 116% no-repeat;
   animation: ctaInnerFlow 20s ease-in-out infinite alternate;
   will-change: transform, background-position, background-size, opacity;
   transform-origin: center;
@@ -94,8 +93,7 @@ body {
   position: absolute;
   inset: 14px;
   border-radius: 22px;
-  background: url("/public/static/img/home/ctn-bg.png") center/128% 128%
-    no-repeat;
+  background: url("/public/static/img/home/ctn-bg.png") center/128% 128% no-repeat;
   animation: ctaInnerFlowReverse 26s linear infinite;
   will-change: transform, background-position, opacity;
   opacity: 0.24;
@@ -103,7 +101,7 @@ body {
   z-index: -1;
 }
 
-#cta-bg > * {
+#cta-bg>* {
   position: relative;
   z-index: 1;
 }
@@ -127,12 +125,14 @@ body {
     transform: scale(1);
     opacity: 0.92;
   }
+
   50% {
     background-position: 52% 52%;
     background-size: 121% 121%;
     transform: scale(1.015);
     opacity: 1;
   }
+
   100% {
     background-position: 58% 54%;
     background-size: 124% 124%;
@@ -146,6 +146,7 @@ body {
     background-position: 55% 54%;
     transform: scale(1.035) rotate(0deg);
   }
+
   100% {
     background-position: 45% 47%;
     transform: scale(1.01) rotate(0.001deg);
@@ -153,6 +154,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   #cta-bg::before,
   #cta-bg::after {
     animation: none;
@@ -266,8 +268,7 @@ input:-webkit-autofill:active {
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
 }
 
-:root.dark
-  .bg-white.border-\[\#448CD2\].border-opacity-20.shadow-\[4px_4px_4px_0px_\#448CD21A\] {
+:root.dark .bg-white.border-\[\#448CD2\].border-opacity-20.shadow-\[4px_4px_4px_0px_\#448CD21A\] {
   background-color: var(--app-surface) !important;
   border-color: var(--app-border-color) !important;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26) !important;
@@ -276,8 +277,7 @@ input:-webkit-autofill:active {
 
 :root.dark .rounded-xl.shadow-md.border.bg-white,
 :root.dark .rounded-xl.shadow-md.bg-white,
-:root.dark
-  .rounded-xl.shadow-md.border.border-\[rgba\(68\,140\,210\,0\.2\)\].bg-white {
+:root.dark .rounded-xl.shadow-md.border.border-\[rgba\(68\,140\,210\,0\.2\)\].bg-white {
   background-color: var(--app-surface) !important;
   border-color: var(--app-border-color) !important;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28) !important;
@@ -484,10 +484,12 @@ input:-webkit-autofill:active {
 }
 
 @keyframes ribbonPulse {
+
   0%,
   100% {
     opacity: 0.76;
   }
+
   50% {
     opacity: 0.97;
   }
@@ -497,26 +499,31 @@ input:-webkit-autofill:active {
   0% {
     stroke-dashoffset: 0;
   }
+
   100% {
     stroke-dashoffset: -8100;
   }
 }
 
 @keyframes heroStopStart {
+
   0%,
   100% {
     stop-color: var(--hero-curve-start);
   }
+
   50% {
     stop-color: var(--primary-color);
   }
 }
 
 @keyframes heroStopEnd {
+
   0%,
   100% {
     stop-color: var(--hero-curve-end);
   }
+
   50% {
     stop-color: var(--dark-primary-color);
   }
@@ -553,10 +560,11 @@ input:-webkit-autofill:active {
   0% {
     transform: translateX(-1.8%) translateY(0) scale(var(--hero-svg-scale));
   }
+
   50% {
-    transform: translateX(0.6%) translateY(-0.8%)
-      scale(var(--hero-svg-scale));
+    transform: translateX(0.6%) translateY(-0.8%) scale(var(--hero-svg-scale));
   }
+
   100% {
     transform: translateX(1.6%) translateY(0.6%) scale(var(--hero-svg-scale));
   }
@@ -576,6 +584,7 @@ a {
 .custom-inset {
   inset: 0 0 auto auto !important;
 }
+
 /* a.active {
   @apply bg-[--light-primary-color] text-[var(--primary-color)];
 } */
@@ -602,6 +611,7 @@ a {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -645,11 +655,15 @@ a {
 :root.dark .text-\[\#000000\],
 :root.dark .text-\[\#1a3652\],
 :root.dark .text-\[\#1A3652\],
+:root.dark .text-gray-700,
 :root.dark .text-gray-800,
 :root.dark .text-gray-900,
 :root.dark .text-neutral-700,
 :root.dark .text-neutral-800,
-:root.dark .text-neutral-900 {
+:root.dark .text-neutral-900,
+:root.dark .text-slate-700,
+:root.dark .text-slate-800,
+:root.dark .text-slate-900 {
   color: var(--app-text-color) !important;
 }
 
@@ -659,7 +673,9 @@ a {
 :root.dark .text-gray-400,
 :root.dark .text-gray-500,
 :root.dark .text-gray-600,
-:root.dark .text-gray-700,
+:root.dark .text-slate-400,
+:root.dark .text-slate-500,
+:root.dark .text-slate-600,
 :root.dark .text-\[\#5D5D5D\],
 :root.dark .text-\[\#474747\],
 :root.dark .text-\[\#676767\] {
@@ -673,11 +689,15 @@ a {
   color: var(--app-text-color) !important;
 }
 
+:root.dark .border-gray-50,
 :root.dark .border-gray-100,
 :root.dark .border-gray-200,
 :root.dark .border-gray-300,
 :root.dark .border-neutral-100,
 :root.dark .border-neutral-200,
+:root.dark .border-blue-50,
+:root.dark .border-blue-100,
+:root.dark .border-blue-200,
 :root.dark .border-\[\#E8E8E8\],
 :root.dark .border-\[\#448CD2\],
 :root.dark .border-\[\#448CD233\],
@@ -685,8 +705,8 @@ a {
   border-color: var(--app-border-color) !important;
 }
 
-:root.dark .divide-gray-50 > :not([hidden]) ~ :not([hidden]),
-:root.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+:root.dark .divide-gray-50> :not([hidden])~ :not([hidden]),
+:root.dark .divide-gray-100> :not([hidden])~ :not([hidden]) {
   border-color: rgba(183, 202, 220, 0.16) !important;
 }
 
@@ -710,6 +730,79 @@ a {
 :root.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #366289;
 }
+
+/* DEEP DARK MODE OVERRIDES FOR GLOBAL CONSISTENCY */
+:root.dark .bg-white {
+  background-color: var(--app-surface) !important;
+}
+
+:root.dark .bg-gray-50,
+:root.dark .bg-slate-50,
+:root.dark .bg-neutral-50,
+:root.dark .bg-blue-50,
+:root.dark .bg-primary-500\/5 {
+  background-color: var(--app-surface-muted) !important;
+}
+
+:root.dark .shadow-\[4px_4px_4px_0px_\#448CD21A\],
+:root.dark .shadow-\[0px_4px_15px_rgba\(68\,140\,210\,0\.06\)\],
+:root.dark .shadow-\[0px_10px_30px_rgba\(68\,140\,210\,0\.05\)\],
+:root.dark .shadow-sm,
+:root.dark .shadow-md,
+:root.dark .shadow,
+:root.dark .shadow-lg,
+:root.dark .shadow-xl,
+:root.dark .shadow-2xl {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+:root.dark hr,
+:root.dark .divide-y>*,
+:root.dark .border-gray-100,
+:root.dark .border-gray-200 {
+  border-color: var(--app-border-color) !important;
+}
+
+:root.dark .hover\:bg-gray-50:hover,
+:root.dark .hover\:bg-slate-50:hover,
+:root.dark .hover\:bg-blue-50:hover {
+  background-color: var(--app-surface-soft) !important;
+}
+
+:root.dark .text-gray-400,
+:root.dark .text-gray-500,
+:root.dark .text-slate-400,
+:root.dark .text-slate-500 {
+  color: var(--app-text-muted) !important;
+}
+
+:root.dark .text-gray-900,
+:root.dark .text-gray-800,
+:root.dark .text-slate-900,
+:root.dark .text-slate-800 {
+  color: var(--app-text-color) !important;
+}
+
+/* Ensure sticky headers in dash don't stay white */
+:root.dark [class*="sticky"] {
+  background-color: var(--app-surface) !important;
+}
+
+:root.dark .bg-\[var\(--light-primary-color\)\] {
+  background-color: var(--app-surface-soft) !important;
+  color: var(--primary-color) !important;
+}
+
+:root.dark .hover\:bg-\[\#edf5fd\]:hover,
+:root.dark .hover\:bg-\[\#E4F0FC\]:hover {
+  background-color: var(--app-surface-soft) !important;
+}
+
+:root.dark select option {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text-color) !important;
+}
+
 
 /* User profile dark mode surface/text harmonization */
 :root.dark .user-profile-screen {

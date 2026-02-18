@@ -36,17 +36,14 @@ const Register = () => {
     const params = new URLSearchParams(window.location.search);
     const authToken = params.get("authToken");
     const token1 = params.get("token1");
+    const token = params.get("token"); // Functional fix: Capture the standard 'token' redirect
 
-    if (authToken && token1) {
+    if (authToken || token1 || token) {
       console.log("Tokens found in URL, storing in localStorage...");
       // Store in localStorage for reliable access
-      localStorage.setItem("tempAuthToken", authToken);
-      localStorage.setItem("tempToken1", token1);
-
-      // Also try to set cookies as backup
-      const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
-      document.cookie = `authToken=${authToken}; path=/; expires=${expires}; SameSite=Lax`;
-      document.cookie = `token1=${token1}; path=/; expires=${expires}; SameSite=Lax`;
+      if (authToken) localStorage.setItem("tempAuthToken", authToken);
+      if (token1) localStorage.setItem("tempToken1", token1);
+      if (token) localStorage.setItem("tempInvitationToken", token);
 
       // Clean URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -102,101 +99,35 @@ const Register = () => {
   const isButtonActive =
     emailValue && allCriteriaMet && passwordsMatch && !loading;
 
-  //   const decodeToken = (token: string) => {
-  //   try {
-  //     const parts = token.split('.');
-
-  //     if (parts.length !== 3) {
-  //       throw new Error('Invalid token format');
-  //     }
-
-  //     const base64Url = parts[1];
-  //     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  //     const decoded = JSON.parse(atob(base64));
-
-  //     console.log("Decoded Token:", decoded); // Log decoded token (for debugging)
-
-  //     return decoded;
-  //   } catch (error) {
-  //     console.error("Error decoding token:", error);
-  //     return null;
-  //   }
-  // };
-
-  // const checkTokenExpiry = (token: string): boolean => {
-  //   try {
-  //     const decodedToken = decodeToken(token);
-  //     const currentTimestamp = Math.floor(Date.now() / 1000); // Get current time in seconds
-
-  //     // Compare the expiration timestamp with the current time
-  //     if (decodedToken.exp < currentTimestamp) {
-  //       return true; // Token is expired
-  //     }
-  //     return false; // Token is still valid
-  //   } catch (error) {
-  //     console.error('Error decoding token:', error);
-  //     return true; // Return true if token decoding fails (indicating expired or invalid token)
-  //   }
-  // };
-
-  // function getCookie(name: string): string | null {
-  //   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  //   return match ? match[2] : null; // Return null if not found
-  // }
-
   const onSubmit: SubmitHandler<RegisterFields> = async (data) => {
     try {
       setLoading(true);
       clearErrors("root");
 
-      // Retrieve both tokens from cookies
-      // const accessToken = getCookie("authToken");
-      // const invitationToken = getCookie("token1");
+      // Functional fix: Check all possible token storage keys
+      const authToken = localStorage.getItem("tempAuthToken");
+      const token1 = localStorage.getItem("tempToken1");
+      const invitationToken = localStorage.getItem("tempInvitationToken");
 
-      // console.log(accessToken)
-      // console.log(invitationToken)
+      const finalToken = invitationToken || token1 || authToken;
 
-      // if (!accessToken || !invitationToken) {
-      //   setError("root", { type: "manual", message: "Both tokens are required." });
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // // Check if the tokens are expired
-      // const isAccessTokenExpired = checkTokenExpiry(accessToken);
-      // const isInvitationTokenExpired = checkTokenExpiry(invitationToken);
-
-      // if (isAccessTokenExpired || isInvitationTokenExpired) {
-      //   setError("root", { type: "manual", message: "Your token has expired. Please log in again." });
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // Get tokens from localStorage (most reliable) or fallback to URL params
-      const authToken = localStorage.getItem("tempAuthToken") || "";
-      const token1 = localStorage.getItem("tempToken1") || "";
-
-      if (!authToken || !token1) {
+      if (!finalToken) {
         setError("root", { type: "manual", message: "You are not invited yet so you cannot register." });
         setLoading(false);
         return;
       }
 
-      // Proceed with registration
-      await api.post("auth/register", {
+      // Proceed with registration - Passing token in query as per backend requirement
+      await api.post(`auth/register?token=${finalToken}`, {
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
-      }, {
-        headers: {
-          "x-auth-token": authToken,
-          "x-invitation-token": token1
-        }
       });
 
       // Clear temporary tokens after successful registration
       localStorage.removeItem("tempAuthToken");
       localStorage.removeItem("tempToken1");
+      localStorage.removeItem("tempInvitationToken");
 
       localStorage.setItem("registeredEmail", data.email);
       toast.success("Registration successful! Please check your email for verification.");

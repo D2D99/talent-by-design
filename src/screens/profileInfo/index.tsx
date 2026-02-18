@@ -19,7 +19,7 @@ type ProfileFields = {
   role: string;
   department: string;
   titles: string;
-  orgName?: string; // New field
+  orgName?: string;
   root?: string;
 };
 
@@ -27,7 +27,6 @@ const ProfileInfo = () => {
   const navigate = useNavigate();
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [inheritedOrg, setInheritedOrg] = useState(""); // State for non-admins
 
   const {
     register,
@@ -50,12 +49,11 @@ const ProfileInfo = () => {
   });
 
   useEffect(() => {
-    // Capture verifyToken from URL if it exists (Fallback for local dev or cross-domain cookie issues)
+    // Capture verifyToken from URL if it exists
     const params = new URLSearchParams(window.location.search);
     const verifyToken = params.get("verifyToken");
 
     if (verifyToken) {
-      console.log("Verify token found in URL, setting cookie manually...");
       const isProduction = window.location.hostname !== "localhost";
       const expires = new Date(Date.now() + 15 * 60 * 1000).toUTCString();
       document.cookie = `verifyToken=${verifyToken}; path=/; expires=${expires}; ${isProduction ? "SameSite=None; Secure" : "SameSite=Lax"}`;
@@ -73,9 +71,6 @@ const ProfileInfo = () => {
 
         if (response.data.role) {
           setValue("role", response.data.role);
-          if (response.data.inheritedOrgName) {
-            setInheritedOrg(response.data.inheritedOrgName);
-          }
         }
       } catch (err) {
         console.error("Could not fetch role", err);
@@ -112,12 +107,11 @@ const ProfileInfo = () => {
         }
       });
 
+      toast.success("Profile completed! Please log in to continue.");
       navigate("/login");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
 
-      // If session expired, the popup handles it, so we don't show 
-      // the redundant "token expired" message in the form.
       if (axiosError.response?.status === 401) return;
 
       const message =
@@ -130,7 +124,6 @@ const ProfileInfo = () => {
       } else {
         toast.error(message);
       }
-
 
       setError("root", {
         type: "manual",
@@ -166,28 +159,7 @@ const ProfileInfo = () => {
               Fill In Profile Info
             </h2>
 
-            {/* NEW: Organization Info for non-admins */}
-            {inheritedOrg && (
-              <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-100 flex items-center gap-2">
-                <Icon
-                  icon="solar:buildings-bold"
-                  className="text-blue-500"
-                  width="20"
-                />
-                <div className="flex flex-col">
-                  <span className="text-[10px] text-blue-400 font-bold uppercase">
-                    Joining Organization
-                  </span>
-                  <span className="text-sm font-bold text-blue-700">
-                    {inheritedOrg}
-                  </span>
-                </div>
-              </div>
-            )}
-
-
-
-            {/* NEW: Organization Name Input - Only for Admins */}
+            {/* Organization Name Input - Only for Admins */}
             {formValues.role === "admin" && (
               <div className="sm:mb-4 mb-2">
                 <label
@@ -269,17 +241,7 @@ const ProfileInfo = () => {
                   className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg bg-gray-100 cursor-not-allowed border-[#E8E8E8] outline-none"
                   {...register("role", { required: "Role is required" })}
                 />
-                {/* <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                  <Icon
-                    icon="solar:lock-password-bold"
-                    className="text-gray-400"
-                    width="18"
-                  />
-                </div> */}
               </div>
-              <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">
-                Role assigned by administrator
-              </p>
             </div>
 
             {/* Department */}

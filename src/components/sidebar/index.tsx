@@ -100,9 +100,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
   };
 
   const base =
-    "flex items-center gap-2 py-2 px-3 rounded text-base font-semibold";
-  const active = "bg-[#E4F0FC] text-[var(--primary-color)]";
-  const inactive = "text-[var(--secondary-color)] hover:bg-[#E4F0FC]";
+    "flex items-center gap-2 py-2 px-3 rounded text-base font-semibold transition-all duration-300";
+  const active = "bg-[var(--app-surface-soft)] text-[var(--primary-color)] shadow-sm";
+  const inactive = "text-[var(--app-text-color)] hover:bg-[var(--app-surface-soft)]";
   // useEffect(() => {
   //   initTWE({ Tooltip });
   // }, []);
@@ -135,7 +135,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             </NavLink>
           </li>
 
-        
+
           {user.role === "superAdmin" && (
             <li className="mb-2">
               <NavLink
@@ -156,9 +156,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 />
               </NavLink>
             </li>
-          )} 
+          )}
 
-        
+
           {user.role === "admin" && (
             <li className="mb-2">
               <NavLink
@@ -179,7 +179,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 />
               </NavLink>
             </li>
-          )} 
+          )}
 
           {/* Reports */}
           <li className="mb-2">
@@ -349,13 +349,13 @@ const Sidebar = ({ onClose }: SidebarProps) => {
           id="dropdownMenuButton1"
           data-twe-dropdown-toggle-ref
         >
-          <div className="md:mx-0 manager-popup flex items-center justify-between bg-[#4B9BE91A] md:p-4 !p-3 rounded-[12px] text-left">
+          <div className="md:mx-0 manager-popup flex items-center justify-between bg-[var(--app-surface-soft)] md:p-4 !p-3 rounded-[12px] text-left border border-[var(--app-border-color)]/10 shadow-sm transition-all duration-300">
             <div className="flex items-center gap-2 w-full">
               <img
                 key={user.profileImage || "placeholder"}
                 src={user.profileImage || ProfilePlaceholderImg}
                 alt={`${user.firstName || "User"}'s profile`}
-                className="md:w-14 md:h-14 w-12 h-12 rounded-full object-cover shrink-0 border border-[#448CD2]/10 bg-white"
+                className="md:w-14 md:h-14 w-12 h-12 rounded-full object-cover shrink-0 border border-[var(--app-border-color)]/20 bg-[var(--app-surface)]"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = ProfilePlaceholderImg;
                 }}
@@ -380,7 +380,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
           </div>
         </button>
         <ul
-          className="absolute z-[1000] float-left m-0 hidden min-w-32 list-none overflow-hidden rounded-lg border-none bg-white shadow data-[twe-dropdown-show]:block custom-inset"
+          className="absolute z-[1000] float-left m-0 hidden min-w-32 list-none overflow-hidden rounded-lg border-none bg-[var(--app-surface)] shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] data-[twe-dropdown-show]:block custom-inset ring-1 ring-black/5"
           aria-labelledby="dropdownMenuButton1"
           data-twe-dropdown-menu-ref
         >
@@ -449,9 +449,9 @@ const ReportLink = ({
         to={`/dashboard/reports/${to}`}
         onClick={() => onClose && onClose()}
         className={({ isActive }) =>
-          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold ${isActive
-            ? "bg-[#E4F0FC] text-[var(--primary-color)]"
-            : "text-[var(--secondary-color)] hover:bg-[#E4F0FC]"
+          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold transition-all duration-300 ${isActive
+            ? "bg-[var(--app-surface-soft)] text-[var(--primary-color)]"
+            : "text-[var(--app-text-muted)] hover:bg-[var(--app-surface-soft)]"
           }`
         }
         data-tooltip-id="menu-item6"
