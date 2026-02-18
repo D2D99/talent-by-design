@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react";
-import { useState, useEffect } from "react";
-import api from "../../services/axios";
+import { useState } from "react";
+// import { useEffect } from "react";
+// import api from "../../services/axios";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import PieChart from "../../charts/pieChart";
@@ -8,7 +9,7 @@ import PieChart from "../../charts/pieChart";
 const SuperAdminOverview = () => {
   const navigate = useNavigate();
   const [selectedQuarter, setSelectedQuarter] = useState(Math.floor(new Date().getMonth() / 3) + 1);
-  const [selectedYear] = useState(new Date().getFullYear());
+  // const [selectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("visual");
   const [selectedRole, setSelectedRole] = useState<string>("Administrators");
 

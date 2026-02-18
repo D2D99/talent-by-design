@@ -5,7 +5,7 @@ import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
 import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
-import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
+// import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
