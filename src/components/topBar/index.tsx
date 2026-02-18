@@ -98,6 +98,34 @@ const TopBar = () => {
   // derived state
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  const [user, setUser] = useState({
+    firstName: "",
+    middleInitial: "",
+    lastName: "",
+    role: "",
+    profileImage: "",
+  });
+
+  useEffect(() => {
+    const fetchUser = () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      api
+        .get(`auth/me?t=${new Date().getTime()}`)
+        .then((res: any) => {
+          setUser(res.data);
+        })
+        .catch((err) => {
+          console.error("TopBar fetch user error:", err);
+        });
+    };
+
+    fetchUser();
+    window.addEventListener("profile-updated", fetchUser);
+    return () => window.removeEventListener("profile-updated", fetchUser);
+  }, []);
+
   const filteredNotifications = notifications.filter((n) => {
     if (activeTab === "All") return true;
     if (activeTab === "Invites")
@@ -115,7 +143,7 @@ const TopBar = () => {
 
   return (
     <>
-      <div className="sticky top-6 z-30 flex items-center gap-4 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 rounded-[12px] py-3 px-3 mb-6">
+      <div className="sticky top-6 z-30 flex items-center gap-4 justify-between bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] sm:p-6 rounded-[12px] py-3 px-3 mb-6 items-center transition-all duration-300">
         {/* Mobile Sidebar Toggle */}
         <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-6 transform left-[-12px] cursor-pointer">
           <button
@@ -130,10 +158,12 @@ const TopBar = () => {
         {isOverviewPage ? (
           <div className="flex-1">
             <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
-              Welcome back!
+              Welcome back, {user.firstName || "User"}!
             </h3>
             <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1 max-w-2xl">
-              Complete platform oversight with real-time performance insights.
+              {user.role === "superAdmin"
+                ? "Global system intelligence and organizational performance oversight."
+                : "Complete platform oversight with real-time performance insights."}
             </p>
           </div>
         ) : (
@@ -141,7 +171,7 @@ const TopBar = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="md:hidden flex items-center justify-center p-2 rounded-full hover:bg-gray-100 transition-colors border border-gray-200"
+              className="md:hidden flex items-center justify-center p-2 rounded-full hover:bg-[var(--app-surface-muted)] transition-colors border border-[var(--app-border-color)]/30"
               title="Go Back"
             >
               <Icon
@@ -245,9 +275,9 @@ const TopBar = () => {
 
           {/* Dropdown Menu */}
           {isOpen && (
-            <div className="absolute right-[-10px] sm:right-0 top-16 w-[92vw] sm:w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-[9999] overflow-hidden transform transition-all duration-200 origin-top-right ring-1 ring-black/5">
+            <div className="absolute right-[-10px] sm:right-0 top-16 w-[92vw] sm:w-[420px] bg-[var(--app-surface)] rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-[var(--app-border-color)]/30 z-[9999] overflow-hidden transform transition-all duration-200 origin-top-right ring-1 ring-black/5">
               {/* Header */}
-              <div className="px-6 py-5 bg-white flex items-center justify-between sticky top-0 z-20">
+              <div className="px-6 py-5 bg-[var(--app-surface)] flex items-center justify-between sticky top-0 z-20 border-b border-[var(--app-border-color)]/20">
                 <div>
                   <h4 className="text-xl font-bold text-gray-900 tracking-tight">
                     Notification
@@ -282,7 +312,7 @@ const TopBar = () => {
               </div>
 
               {/* Filter Tabs */}
-              <div className="px-6 py-3 flex items-center gap-6 border-b border-gray-100 bg-white sticky top-[85px] z-10">
+              <div className="px-6 py-3 flex items-center gap-6 border-b border-[var(--app-border-color)]/20 bg-[var(--app-surface)] sticky top-[85px] z-10">
                 {(["All", "Invites", "Activity"] as const).map((tab) => (
                   <button
                     key={tab}
@@ -306,13 +336,13 @@ const TopBar = () => {
               </div>
 
               {/* Notification List */}
-              <div className="max-h-[450px] overflow-y-auto custom-scrollbar bg-white">
+              <div className="max-h-[450px] overflow-y-auto custom-scrollbar bg-[var(--app-surface)]">
                 {filteredNotifications.length > 0 ? (
-                  <div className="divide-y divide-gray-50">
+                  <div className="divide-y divide-[var(--app-border-color)]/10">
                     {filteredNotifications.map((notif) => (
                       <div
                         key={notif._id}
-                        className={`flex gap-4 p-5 hover:bg-gray-50/80 transition-all duration-300 group cursor-pointer relative overflow-hidden ${!notif.isRead ? "bg-blue-50/30" : ""}`}
+                        className={`flex gap-4 p-5 hover:bg-[var(--app-surface-muted)] transition-all duration-300 group cursor-pointer relative overflow-hidden ${!notif.isRead ? "bg-[var(--app-surface-soft)]/40" : ""}`}
                         onClick={() =>
                           !notif.isRead && handleMarkRead(notif._id)
                         }
@@ -409,7 +439,7 @@ const TopBar = () => {
 
               {/* Footer */}
               {notifications.length > 0 && (
-                <div className="bg-primary-500/5 p-3 border-t border-gray-100 flex justify-center sticky bottom-0 z-20 backdrop-blur-sm">
+                <div className="bg-[var(--app-surface-muted)] p-3 border-t border-[var(--app-border-color)]/20 flex justify-center sticky bottom-0 z-20 backdrop-blur-sm">
                   <button
                     onClick={() => {
                       setIsOpen(false);
