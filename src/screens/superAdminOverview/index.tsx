@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 import { useState } from "react";
-// import { useEffect } from "react";
-// import api from "../../services/axios";
+import { useEffect } from "react";
+import api from "../../services/axios";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import PieChart from "../../charts/pieChart";
@@ -9,48 +9,14 @@ import PieChart from "../../charts/pieChart";
 const SuperAdminOverview = () => {
   const navigate = useNavigate();
   const [selectedQuarter, setSelectedQuarter] = useState(Math.floor(new Date().getMonth() / 3) + 1);
-  // const [selectedYear] = useState(new Date().getFullYear());
+  const [selectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("visual");
   const [selectedRole, setSelectedRole] = useState<string>("Administrators");
 
   // STATIC MOCK DATA FOR DEMONSTRATION
-  const [intelData] = useState<any>({
-    stats: [
-      { value: "42" }, // Onboarded Organizations
-      { value: "1,280" }, // Client Base Users
-      { value: "850" }, // Verified Assessments
-      { value: "94%" }, // Client Success Rate
-    ],
-    participation: {
-      completed: 850,
-      rate: 94,
-      pending: 54,
-      assigned: 904
-    },
-    userBreakdown: {
-      admin: 42,
-      manager: 156,
-      leader: 88,
-      employee: 994
-    },
-    completionByRole: {
-      "Administrators": 98,
-      "Managers": 92,
-      "Strategic Leaders": 95,
-      "Employees": 89
-    },
-    currentCycle: {
-      daysLeft: 12
-    },
-    recentActivities: [
-      { id: 1, org: "Global Tech Corp", action: "Completed Quarterly Assessment", type: "submission", time: new Date().toISOString() },
-      { id: 2, org: "Visionary Systems", action: "New Manager Onboarded", type: "onboarding", time: new Date(Date.now() - 3600000).toISOString() },
-      { id: 3, org: "Nexus Solutions", action: "Data Integrity Verified", type: "submission", time: new Date(Date.now() - 7200000).toISOString() },
-      { id: 4, org: "Stellar Dynamics", action: "Initialized New Assessment Cycle", type: "onboarding", time: new Date(Date.now() - 10800000).toISOString() },
-    ]
-  });
+  const [intelData, setIntelData] = useState<any>(null);
 
-  /* 
+
   // DYNAMIC FETCHING (Commented out as per request)
   useEffect(() => {
     const fetchIntel = async () => {
@@ -63,7 +29,7 @@ const SuperAdminOverview = () => {
     };
     fetchIntel();
   }, [selectedQuarter, selectedYear]);
-  */
+
 
   const stats = [
     { label: "Onboarded Organizations", detail: "Active corporate entities", longDesc: "Unique legal entities managed under your platform umbrella.", value: intelData?.stats?.[0]?.value || "0", icon: "solar:buildings-2-bold-duotone", color: "var(--primary-color)" },
