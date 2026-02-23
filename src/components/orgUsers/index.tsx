@@ -268,6 +268,7 @@ const OrgUsers = ({
             type="text"
             placeholder="Search by name, email, role..."
             value={searchTerm}
+            autoComplete="off"
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
           />
@@ -275,7 +276,7 @@ const OrgUsers = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${showFilters || roleFilter.length > 0
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${showFilters
               ? "bg-[var(--primary-color)] text-white"
               : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
               }`}
@@ -283,7 +284,10 @@ const OrgUsers = ({
             <Icon icon="hugeicons:filter" width="16" height="16" />
             <span>Filters</span>
             {roleFilter.length > 0 && (
-              <span className="bg-blue-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full ml-1">
+              <span
+                className={`flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold transition-colors ml-1
+                ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
+              >
                 {roleFilter.length}
               </span>
             )}
@@ -423,6 +427,7 @@ const OrgUsers = ({
                 <input
                   type="email"
                   value={email}
+                  autoComplete="off"
                   onChange={(e) => setEmail(e.target.value)}
                   className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
                   placeholder="e.g. user@example.com"
@@ -432,6 +437,7 @@ const OrgUsers = ({
                 <label className="block text-sm font-bold text-gray-700 mb-2 dark:text-[var(--app-text-muted)]">Assigned Role</label>
                 <select
                   value={role}
+                  autoComplete="off"
                   onChange={(e) => setRole(e.target.value)}
                   className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
                 >

@@ -29,6 +29,7 @@ const OrgInvitation = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [roleFilter, setRoleFilter] = useState<string>("");
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -52,7 +53,10 @@ const OrgInvitation = () => {
     const matchesStatus =
       statusFilter.length === 0 || statusFilter.includes(item.status);
 
-    return matchesSearch && matchesStatus;
+    const matchesRole =
+      !roleFilter || item.role?.toLowerCase() === roleFilter.toLowerCase();
+
+    return matchesSearch && matchesStatus && matchesRole;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -543,6 +547,7 @@ const OrgInvitation = () => {
                       : "Search members, emails..."
                   }
                   value={searchTerm}
+                  autoComplete="off"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
                 />
@@ -552,18 +557,20 @@ const OrgInvitation = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${
-                      showFilters || statusFilter.length > 0
-                        ? "bg-[var(--primary-color)] text-white"
-                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-                    }`}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${showFilters
+                      ? "bg-[var(--primary-color)] text-white"
+                      : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+                      }`}
                   >
                     {/* <Icon icon="mi:filter" width="18" /> */}
                     <Icon icon="hugeicons:filter" width="16" height="16" />
                     <span>Filters</span>
-                    {statusFilter.length > 0 && (
-                      <span className="bg-white text-[var(--primary-color)] text-[10px] w-4 h-4 flex items-center justify-center rounded-full ml-1">
-                        {statusFilter.length}
+                    {(statusFilter.length > 0 || roleFilter) && (
+                      <span
+                        className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors ml-1
+                        ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
+                      >
+                        {statusFilter.length + (roleFilter ? 1 : 0)}
                       </span>
                     )}
                   </button>
@@ -571,15 +578,18 @@ const OrgInvitation = () => {
 
                 {/* --- FILTER SIDEBAR --- */}
                 {showFilters && (
-                  <div className="w-full md:w-72 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl p-5 flex-shrink-0 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
-                    <div className="flex justify-between items-center mb-6">
+                  <div className="w-full md:w-80 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+                    <div className="flex justify-between items-center mb-6 px-5">
                       <div className="flex items-center gap-2">
                         <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
                           Filters
                         </h3>
-                        {statusFilter.length > 0 && (
+                        {(statusFilter.length > 0 || roleFilter) && (
                           <button
-                            onClick={() => setStatusFilter([])}
+                            onClick={() => {
+                              setStatusFilter([]);
+                              setRoleFilter("");
+                            }}
                             className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                           >
                             Reset
@@ -594,12 +604,42 @@ const OrgInvitation = () => {
                       </button>
                     </div>
 
-                    <div className="space-y-6">
-                      {/* Status Filter Component */}
-                      <div>
-                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
-                          Status
+                    <div className="px-5 space-y-6">
+                      {/* Role Filter (Dropdown like Question filter) */}
+                      <div className="mb-4">
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 dark:text-[#88a7c4]">
+                          Role
                         </label>
+                        <div className="relative w-full">
+                          <div className="absolute inset-y-0 right-0 top-0 flex items-center pr-3 pointer-events-none">
+                            <Icon
+                              icon="solar:alt-arrow-down-bold"
+                              className="text-gray-400"
+                              width="12"
+                            />
+                          </div>
+                          <select
+                            className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
+                            value={roleFilter}
+                            autoComplete="off"
+                            onChange={(e) => setRoleFilter(e.target.value)}
+                          >
+                            <option value="">All Roles</option>
+                            {isSuperAdmin ? (
+                              <option value="admin">Admin</option>
+                            ) : (
+                              <>
+                                <option value="leader">Leader</option>
+                                <option value="manager">Manager</option>
+                                <option value="employee">Employee</option>
+                              </>
+                            )}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Status Filter (Checkboxes) */}
+                      <FilterSection title="Status" open>
                         <div className="space-y-2">
                           {["Accept", "Pending", "Expire"].map((s) => (
                             <label
@@ -630,7 +670,7 @@ const OrgInvitation = () => {
                             </label>
                           ))}
                         </div>
-                      </div>
+                      </FilterSection>
                     </div>
                   </div>
                 )}
@@ -724,11 +764,10 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${
-                                canDelete
-                                  ? "text-red-600 hover:bg-red-50"
-                                  : "text-gray-300 cursor-not-allowed opacity-50"
-                              }`}
+                              className={`p-2 rounded-full transition-all ${canDelete
+                                ? "text-red-600 hover:bg-red-50"
+                                : "text-gray-300 cursor-not-allowed opacity-50"
+                                }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -811,7 +850,11 @@ const OrgInvitation = () => {
                     type="email"
                     id="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="off"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setSearchTerm(e.target.value);
+                    }}
                     className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     placeholder="Enter email"
                   />
@@ -843,6 +886,7 @@ const OrgInvitation = () => {
                     <select
                       id="role"
                       value={role}
+                      autoComplete="off"
                       onChange={(e) => setRole(e.target.value)}
                       className="font-medium text-sm appearance-none text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     >
@@ -965,3 +1009,30 @@ const OrgInvitation = () => {
 };
 
 export default OrgInvitation;
+
+const FilterSection = ({
+  title,
+  children,
+  open = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  open?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(open);
+  return (
+    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100 dark:border-[var(--app-border-color)]">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full font-semibold text-gray-700 text-sm mb-2 dark:text-[var(--app-text-muted)]"
+      >
+        {title}
+        <Icon
+          icon="mdi:chevron-down"
+          className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      {isOpen && <div className="pl-1 space-y-1">{children}</div>}
+    </div>
+  );
+};
