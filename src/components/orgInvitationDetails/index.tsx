@@ -34,7 +34,7 @@ const OrgInvitationDetails = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [roleFilter, setRoleFilter] = useState<string[]>([]);
+  const [roleFilter, setRoleFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
@@ -95,7 +95,7 @@ const OrgInvitationDetails = () => {
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     const matchesRole =
-      roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
+      !roleFilter || m.role.toLowerCase() === roleFilter.toLowerCase();
     const matchesStatus =
       statusFilter.length === 0 || statusFilter.includes(m.status);
 
@@ -264,6 +264,7 @@ const OrgInvitationDetails = () => {
             type="text"
             placeholder="Search by name, email, role..."
             value={searchTerm}
+            autoComplete="off"
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 placeholder:text-gray-400 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4] dark:focus:border-[var(--primary-color)]"
           />
@@ -271,17 +272,19 @@ const OrgInvitationDetails = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${
-              showFilters || roleFilter.length > 0 || statusFilter.length > 0
-                ? "bg-blue-50 border-blue-200 text-blue-600 font-bold dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
-                : "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-[var(--app-border-color)] dark:text-[var(--app-text-muted)] dark:hover:bg-[var(--app-surface-muted)]"
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all border font-medium text-sm uppercase tracking-wider md:w-auto w-full ${showFilters
+              ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+              : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+              }`}
           >
-            <Icon icon="mi:filter" width="18" />
+            <Icon icon="hugeicons:filter" width="16" height="16" />
             <span>Filters</span>
-            {(roleFilter.length > 0 || statusFilter.length > 0) && (
-              <span className="bg-blue-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full ml-1">
-                {roleFilter.length + statusFilter.length}
+            {(roleFilter || statusFilter.length > 0) && (
+              <span
+                className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors ml-1
+                ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
+              >
+                {statusFilter.length + (roleFilter ? 1 : 0)}
               </span>
             )}
           </button>
@@ -290,19 +293,19 @@ const OrgInvitationDetails = () => {
 
       {/* Filter Sidebar */}
       {showFilters && (
-        <div className="absolute right-6 top-[500px] w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300 dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
-          <div className="flex justify-between items-center mb-6">
+        <div className="w-full md:w-80 bg-white shadow-[0_0_10px_rgba(68,140,210,0.4)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition-all animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="flex justify-between items-center mb-6 px-5 border-b pb-4 border-gray-100 dark:border-[var(--app-border-color)]/30">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-gray-800 dark:text-[var(--app-heading-color)]">
+              <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
                 Filters
               </h3>
-              {(roleFilter.length > 0 || statusFilter.length > 0) && (
+              {(roleFilter || statusFilter.length > 0) && (
                 <button
                   onClick={() => {
-                    setRoleFilter([]);
+                    setRoleFilter("");
                     setStatusFilter([]);
                   }}
-                  className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase dark:bg-[rgba(226,104,122,0.18)] dark:text-[#ffafbc]"
+                  className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                 >
                   Reset
                 </button>
@@ -310,71 +313,60 @@ const OrgInvitationDetails = () => {
             </div>
             <button
               onClick={() => setShowFilters(false)}
-              className="text-gray-400 hover:text-gray-600 dark:text-[#88a7c4] dark:hover:text-[#d6e8f8]"
+              className="p-1 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-[var(--app-surface-soft)]"
             >
               <Icon icon="material-symbols:close" width="20" />
             </button>
           </div>
 
-          <div className="space-y-6">
-            {/* Role Filter */}
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
-                Role
+          <div className="px-5 space-y-6">
+            {/* Role Filter (Dropdown) */}
+            <div className="mb-4">
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2.5 dark:text-[#88a7c4]">
+                Staff Role
               </label>
-              <div className="space-y-2">
-                {["leader", "manager", "employee"].map((r) => (
-                  <label
-                    key={r}
-                    className="flex items-center gap-3 cursor-pointer group"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={roleFilter.includes(r)}
-                      onChange={() => {
-                        setRoleFilter((prev) =>
-                          prev.includes(r)
-                            ? prev.filter((x) => x !== r)
-                            : [...prev, r],
-                        );
-                      }}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
-                    />
-                    <span
-                      className={`text-sm capitalize ${roleFilter.includes(r) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-600 dark:text-[var(--app-text-muted)]"}`}
-                    >
-                      {r}
-                    </span>
-                  </label>
-                ))}
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 right-0 top-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                  <Icon icon="solar:alt-arrow-down-bold" width="12" />
+                </div>
+                <select
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none w-full p-2.5 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] bg-gray-50 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
+                  value={roleFilter}
+                  autoComplete="off"
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                >
+                  <option value="">All Roles</option>
+                  <option value="leader">Leader</option>
+                  <option value="manager">Manager</option>
+                  <option value="employee">Employee</option>
+                </select>
               </div>
             </div>
 
-            {/* Status Filter */}
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
-                Invitation Status
-              </label>
-              <div className="space-y-2">
+            {/* Status Filter (Checkboxes) */}
+            <FilterSection title="Invitation Status" open>
+              <div className="space-y-2.5 mt-2">
                 {["Accept", "Pending", "Expire"].map((s) => (
                   <label
                     key={s}
                     className="flex items-center gap-3 cursor-pointer group"
                   >
-                    <input
-                      type="checkbox"
-                      checked={statusFilter.includes(s)}
-                      onChange={() => {
-                        setStatusFilter((prev) =>
-                          prev.includes(s)
-                            ? prev.filter((x) => x !== s)
-                            : [...prev, s],
-                        );
-                      }}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
-                    />
+                    <div className="relative flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={statusFilter.includes(s)}
+                        onChange={() => {
+                          setStatusFilter((prev) =>
+                            prev.includes(s)
+                              ? prev.filter((x) => x !== s)
+                              : [...prev, s],
+                          );
+                        }}
+                        className="w-4.5 h-4.5 rounded border-gray-200 text-blue-600 focus:ring-blue-500/20 accent-blue-600 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
+                      />
+                    </div>
                     <span
-                      className={`text-sm ${statusFilter.includes(s) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-600 dark:text-[var(--app-text-muted)]"}`}
+                      className={`text-sm transition-colors ${statusFilter.includes(s) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-500 dark:text-[var(--app-text-muted)]"}`}
                     >
                       {s === "Accept"
                         ? "Accepted"
@@ -385,7 +377,7 @@ const OrgInvitationDetails = () => {
                   </label>
                 ))}
               </div>
-            </div>
+            </FilterSection>
           </div>
         </div>
       )}
@@ -542,3 +534,30 @@ const OrgInvitationDetails = () => {
 };
 
 export default OrgInvitationDetails;
+
+const FilterSection = ({
+  title,
+  children,
+  open = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  open?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(open);
+  return (
+    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100 dark:border-[var(--app-border-color)]/20">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full font-bold text-gray-400 text-[10px] uppercase tracking-widest mb-1 shadow-none outline-none dark:text-[#88a7c4]"
+      >
+        {title}
+        <Icon
+          icon="mdi:chevron-down"
+          className={`transition-transform duration-200 text-gray-400 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      {isOpen && <div className="pl-1">{children}</div>}
+    </div>
+  );
+};
