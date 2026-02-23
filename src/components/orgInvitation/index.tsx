@@ -675,7 +675,7 @@ const OrgInvitation = () => {
                           <td className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-[var(--app-text-color)]">
                             {indexOfFirstItem + index + 1}
                           </td>
-                          <td className="px-6 py-4 text-sm text-[var(--app-text-color)] hover:underline font-bold">
+                          <td className="px-6 py-4 text-sm text-[var(--app-text-color)] font-bold">
                             {isSuperAdmin ? (
                               <Link
                                 to={`/dashboard/organization/${item.orgName}`}
