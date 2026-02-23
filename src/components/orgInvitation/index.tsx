@@ -101,7 +101,9 @@ const OrgInvitation = () => {
       const error = err as AxiosError<{ message: string }>;
       // Only set error message if it's not a 401 (handled globally usually)
       if (error.response?.status !== 401) {
-        setErrorMessage(error.response?.data?.message || "Failed to load data.");
+        setErrorMessage(
+          error.response?.data?.message || "Failed to load data.",
+        );
       }
     } finally {
       setIsLoading(false);
@@ -134,7 +136,11 @@ const OrgInvitation = () => {
         modalInstance?.hide();
       }
 
-      toast.success(isSuperAdmin ? "Organization added successfully!" : "Invitation sent successfully!");
+      toast.success(
+        isSuperAdmin
+          ? "Organization added successfully!"
+          : "Invitation sent successfully!",
+      );
       fetchData();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
@@ -149,7 +155,7 @@ const OrgInvitation = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.name.endsWith('.csv')) {
+    if (!file.name.endsWith(".csv")) {
       toast.error("Please upload a CSV file");
       return;
     }
@@ -160,7 +166,9 @@ const OrgInvitation = () => {
   const handleClearFile = () => {
     setCsvFile(null);
     // Reset the file input
-    const fileInput = document.getElementById("bulkCsvInput") as HTMLInputElement;
+    const fileInput = document.getElementById(
+      "bulkCsvInput",
+    ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
 
@@ -176,17 +184,15 @@ const OrgInvitation = () => {
       const formData = new FormData();
       formData.append("file", csvFile);
 
-      const res = await api.post(
-        "auth/send-bulk-invitation",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const res = await api.post("auth/send-bulk-invitation", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       const { success, failedCount, failed } = res.data;
 
       if (success > 0) {
         toast.success(
-          `✅ Successfully invited ${success} user${success > 1 ? 's' : ''}!${failedCount > 0 ? ` (${failedCount} failed)` : ''}`
+          `✅ Successfully invited ${success} user${success > 1 ? "s" : ""}!${failedCount > 0 ? ` (${failedCount} failed)` : ""}`,
         );
       }
 
@@ -198,14 +204,15 @@ const OrgInvitation = () => {
         });
 
         if (failed.length > 3) {
-          toast.info(`...and ${failed.length - 3} more failures. Check console for details.`);
+          toast.info(
+            `...and ${failed.length - 3} more failures. Check console for details.`,
+          );
           console.log("All failed invitations:", failed);
         }
       }
 
       handleClearFile();
       fetchData();
-
     } catch (err: any) {
       console.error("Bulk invite error:", err);
 
@@ -218,11 +225,13 @@ const OrgInvitation = () => {
         // Log more details for debugging
         console.error("Server error details:", {
           status: err.response.status,
-          data: err.response.data
+          data: err.response.data,
         });
       } else if (err.request) {
         // Request made but no response
-        toast.error("❌ No response from server. Please check your connection.");
+        toast.error(
+          "❌ No response from server. Please check your connection.",
+        );
       } else {
         // Something else happened
         toast.error(`❌ Error: ${err.message || "Bulk invite failed"}`);
@@ -347,39 +356,62 @@ const OrgInvitation = () => {
 
                   <div className="flex items-center gap-2.5 mb-4">
                     <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 border border-blue-100/50">
-                      <Icon icon="material-symbols:info-outline-rounded" width="18" />
+                      <Icon
+                        icon="material-symbols:info-outline-rounded"
+                        width="18"
+                      />
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#1a3652] text-sm tracking-tight">Setup Guide</h3>
-                      <p className="text-[9px] text-gray-400 font-medium">Follow these requirements</p>
+                      <h3 className="font-bold text-[#1a3652] text-sm tracking-tight">
+                        Setup Guide
+                      </h3>
+                      <p className="text-[9px] text-gray-400 font-medium">
+                        Follow these requirements
+                      </p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <div className="bg-white rounded-xl border border-gray-100 p-3 shadow-sm">
-                      <span className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-0.5">Required Headers</span>
+                      <span className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-0.5">
+                        Required Headers
+                      </span>
                       <div className="flex gap-2">
                         <div className="flex-1 bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
-                          <code className="text-[10px] font-mono text-blue-600 font-bold">email</code>
+                          <code className="text-[10px] font-mono text-blue-600 font-bold">
+                            email
+                          </code>
                         </div>
                         <div className="flex-1 bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
-                          <code className="text-[10px] font-mono text-blue-600 font-bold">role</code>
+                          <code className="text-[10px] font-mono text-blue-600 font-bold">
+                            role
+                          </code>
                         </div>
                       </div>
                     </div>
 
                     <div className="bg-white rounded-xl border border-gray-100 p-3 shadow-sm">
-                      <span className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-0.5">Example Format</span>
+                      <span className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-0.5">
+                        Example Format
+                      </span>
                       <div className="overflow-hidden rounded-lg border border-gray-50 bg-[#fcfdfe]">
                         <table className="w-full text-left text-[9px]">
                           <tbody className="divide-y divide-gray-50 text-gray-500 font-medium italic">
                             <tr>
-                              <td className="px-2.5 py-1.5">alex@company.com</td>
-                              <td className="px-2.5 py-1.5 font-bold text-gray-400">{isSuperAdmin ? "admin" : "leader"}</td>
+                              <td className="px-2.5 py-1.5">
+                                alex@company.com
+                              </td>
+                              <td className="px-2.5 py-1.5 font-bold text-gray-400">
+                                {isSuperAdmin ? "admin" : "leader"}
+                              </td>
                             </tr>
                             <tr>
-                              <td className="px-2.5 py-1.5">sarah@company.com</td>
-                              <td className="px-2.5 py-1.5 font-bold text-gray-400">{isSuperAdmin ? "admin" : "manager"}</td>
+                              <td className="px-2.5 py-1.5">
+                                sarah@company.com
+                              </td>
+                              <td className="px-2.5 py-1.5 font-bold text-gray-400">
+                                {isSuperAdmin ? "admin" : "manager"}
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -399,16 +431,26 @@ const OrgInvitation = () => {
 
                   {!csvFile ? (
                     <div
-                      onClick={() => document.getElementById("bulkCsvInput")?.click()}
-                      className="h-full min-h-[160px] border-2 border-dashed border-gray-100 rounded-[20px] flex flex-col items-center justify-center p-4 text-center hover:border-blue-400 hover:bg-blue-50/10 transition-all duration-300 cursor-pointer group/upload"
+                      onClick={() =>
+                        document.getElementById("bulkCsvInput")?.click()
+                      }
+                      className="h-full min-h-[160px] border border-dashed border-gray-100 rounded-[20px] flex flex-col items-center justify-center p-4 text-center hover:border-blue-400 hover:bg-blue-50/10 transition-all duration-300 cursor-pointer group/upload"
                     >
                       <div className="relative mb-3 flex flex-col items-center">
                         <div className="absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 opacity-0 group-hover/upload:opacity-100 transition-opacity"></div>
-                        <Icon icon="logos:csv" width="36" className="relative z-10 drop-shadow-sm group-hover/upload:scale-110 transition-transform duration-300" />
+                        <Icon
+                          icon="logos:csv"
+                          width="36"
+                          className="relative z-10 drop-shadow-sm group-hover/upload:scale-110 transition-transform duration-300"
+                        />
                       </div>
 
-                      <h4 className="text-sm font-bold text-[#1a3652] mb-0.5">Add CSV file</h4>
-                      <p className="text-[10px] text-gray-400 mb-3">Browse or drag and drop</p>
+                      <h4 className="text-base font-bold text-[#1a3652] mb-0.5">
+                        Add CSV file
+                      </h4>
+                      <p className="text-xs text-gray-400 mb-3">
+                        Browse or drag and drop
+                      </p>
 
                       <button
                         onClick={(e) => {
@@ -416,16 +458,23 @@ const OrgInvitation = () => {
                           const content = isSuperAdmin
                             ? "email,role\nadmin1@company.com,admin\nadmin2@company.com,admin\nadmin3@company.com,admin"
                             : "email,role\nleader@company.com,leader\nmanager@company.com,manager\nemployee@company.com,employee";
-                          const blob = new Blob([content], { type: 'text/csv' });
+                          const blob = new Blob([content], {
+                            type: "text/csv",
+                          });
                           const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement('a');
+                          const a = document.createElement("a");
                           a.href = url;
-                          a.download = isSuperAdmin ? 'superadmin-template.csv' : 'admin-template.csv';
+                          a.download = isSuperAdmin
+                            ? "superadmin-template.csv"
+                            : "admin-template.csv";
                           a.click();
                         }}
-                        className="flex items-center gap-1 text-[9px] font-bold text-blue-500 hover:text-blue-600 transition-colors bg-blue-50/50 px-2 py-1 rounded-full border border-blue-100/50"
+                        className="flex items-center gap-1 text-[10px] font-bold text-blue-500 hover:text-blue-600 transition-colors bg-blue-50/50 px-2 py-1 rounded-full border border-blue-100/50 tracking-wider"
                       >
-                        <Icon icon="material-symbols:download-rounded" width="12" />
+                        <Icon
+                          icon="material-symbols:download-rounded"
+                          width="12"
+                        />
                         Get Template
                       </button>
                     </div>
@@ -437,8 +486,12 @@ const OrgInvitation = () => {
                         </div>
 
                         <div className="w-full">
-                          <h4 className="text-xs font-bold text-gray-900 mb-0.5 truncate px-2">{csvFile.name}</h4>
-                          <p className="text-[8px] text-emerald-600 font-bold uppercase tracking-widest mb-4">Ready to go</p>
+                          <h4 className="text-xs font-bold text-gray-900 mb-0.5 truncate px-2">
+                            {csvFile.name}
+                          </h4>
+                          <p className="text-[8px] text-emerald-600 font-bold uppercase tracking-widest mb-4">
+                            Ready to go
+                          </p>
 
                           <div className="flex gap-2.5 max-w-[240px] mx-auto">
                             <button
@@ -463,9 +516,14 @@ const OrgInvitation = () => {
               </div>
 
               <div className="mt-3 pt-3 border-t border-gray-50 flex items-center gap-2 text-[8px] text-gray-400 font-medium">
-                <Icon icon="material-symbols:verified-user-outline-rounded" width="12" className="text-blue-400/50" />
+                <Icon
+                  icon="material-symbols:verified-user-outline-rounded"
+                  width="12"
+                  className="text-blue-400/50"
+                />
                 <span className="uppercase tracking-widest">
-                  Supports {isSuperAdmin ? "admin" : "leader, manager, employee"} roles
+                  Supports{" "}
+                  {isSuperAdmin ? "admin" : "leader, manager, employee"} roles
                 </span>
               </div>
             </div>
@@ -494,10 +552,11 @@ const OrgInvitation = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${showFilters || statusFilter.length > 0
-                      ? "bg-[var(--primary-color)] text-white"
-                      : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-                      }`}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${
+                      showFilters || statusFilter.length > 0
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+                    }`}
                   >
                     {/* <Icon icon="mi:filter" width="18" /> */}
                     <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -582,16 +641,24 @@ const OrgInvitation = () => {
               <table className="w-full whitespace-nowrap border-collapse">
                 <thead>
                   <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]">
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">#</th>
+                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+                      #
+                    </th>
                     <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                       {isSuperAdmin ? "Organization" : "Name"}
                     </th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">Email</th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">Created Date</th>
+                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+                      Email
+                    </th>
+                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+                      Created Date
+                    </th>
                     <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                       {isSuperAdmin ? "Total Users" : "Role"}
                     </th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">Status</th>
+                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+                      Status
+                    </th>
                     <th className="px-6 py-4 font-semibold text-center dark:text-[#88a7c4]">
                       Action
                     </th>
@@ -657,10 +724,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
                                   ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
