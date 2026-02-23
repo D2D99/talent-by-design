@@ -148,8 +148,13 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 data-tooltip-id="menu-item-org-assessments"
                 data-tooltip-content="Assessments"
               >
-                <Icon icon="solar:chart-square-linear" width="22" />
-                <span>Assessments</span>
+                {/* <Icon icon="solar:chart-square-linear" width="22" /> */}
+                <Icon
+                  icon="fluent:organization-28-regular"
+                  width="22"
+                  height="22"
+                />
+                <span>Organizations</span>
                 <Tooltip
                   id="menu-item-org-assessments"
                   className="md:hidden block"
@@ -170,7 +175,11 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 data-tooltip-id="menu-item-assessment"
                 data-tooltip-content="Assessments"
               >
-                <Icon icon="solar:chart-square-linear" width="22" />
+                <Icon
+                  icon="fluent:organization-28-regular"
+                  width="22"
+                  height="22"
+                />
                 <span>Assessments</span>
                 <Tooltip
                   id="menu-item-assessment"

@@ -195,7 +195,10 @@ const TopBar = () => {
                   .filter((value) => value.toLowerCase() !== "dashboard")
                   .map((value, index, filteredArray) => {
                     const last = index === filteredArray.length - 1;
-                    const decodedValue = decodeURIComponent(value).replace(/-/g, " ");
+                    const decodedValue = decodeURIComponent(value).replace(
+                      /-/g,
+                      " ",
+                    );
 
                     // Logic to handle special route mapping for breadcrumbs
                     let to = `/dashboard/${filteredArray.slice(0, index + 1).join("/")}`;
@@ -208,16 +211,26 @@ const TopBar = () => {
                       displayValue = "Invite";
                     } else if (value.toLowerCase() === "org-assessments") {
                       to = "/dashboard/org-assessments";
-                      displayValue = "Assessments";
+                      displayValue = "Organizations";
                     } else if (value.toLowerCase() === "team-assessments") {
                       displayValue = "Assessments";
-                    } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "organization") {
+                    } else if (
+                      index > 0 &&
+                      filteredArray[index - 1].toLowerCase() === "organization"
+                    ) {
                       displayValue = "Invitation Details";
-                    } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "org-assessments") {
+                    } else if (
+                      index > 0 &&
+                      filteredArray[index - 1].toLowerCase() ===
+                        "org-assessments"
+                    ) {
                       displayValue = "Assessment Details";
                     } else if (value.toLowerCase() === "reports") {
                       displayValue = "Reports";
-                    } else if (index > 0 && filteredArray[index - 1].toLowerCase() === "reports") {
+                    } else if (
+                      index > 0 &&
+                      filteredArray[index - 1].toLowerCase() === "reports"
+                    ) {
                       // Handle report sub-routes
                       if (value === "org-head") {
                         displayValue = "Org Head / Coach";
@@ -317,10 +330,11 @@ const TopBar = () => {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${activeTab === tab
-                      ? "text-gray-900"
-                      : "text-gray-400 hover:text-gray-600"
-                      }`}
+                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${
+                      activeTab === tab
+                        ? "text-gray-900"
+                        : "text-gray-400 hover:text-gray-600"
+                    }`}
                   >
                     {tab}
                     {tab === "All" && unreadCount > 0 && (
@@ -354,12 +368,13 @@ const TopBar = () => {
 
                         {/* Icon Avatar */}
                         <div
-                          className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${notif.type === "success"
-                            ? "bg-green-50 text-green-600"
-                            : notif.type === "error"
-                              ? "bg-red-50 text-red-600"
-                              : "bg-blue-50 text-[#448CD2]"
-                            }`}
+                          className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${
+                            notif.type === "success"
+                              ? "bg-green-50 text-green-600"
+                              : notif.type === "error"
+                                ? "bg-red-50 text-red-600"
+                                : "bg-blue-50 text-[#448CD2]"
+                          }`}
                         >
                           <Icon
                             icon={
