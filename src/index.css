@@ -78,9 +78,10 @@ body {
 #cta-bg::before {
   content: "";
   position: absolute;
-  inset: 14px;
+  inset: 0;
   border-radius: 22px;
-  background: url("/public/static/img/home/ctn-bg.png") center/116% 116% no-repeat;
+  background: url("/public/static/img/home/ctn-bg.png") center/116% 116%
+    no-repeat;
   animation: ctaInnerFlow 20s ease-in-out infinite alternate;
   will-change: transform, background-position, background-size, opacity;
   transform-origin: center;
@@ -91,9 +92,10 @@ body {
 #cta-bg::after {
   content: "";
   position: absolute;
-  inset: 14px;
+  inset: 0;
   border-radius: 22px;
-  background: url("/public/static/img/home/ctn-bg.png") center/128% 128% no-repeat;
+  background: url("/public/static/img/home/ctn-bg.png") center/128% 128%
+    no-repeat;
   animation: ctaInnerFlowReverse 26s linear infinite;
   will-change: transform, background-position, opacity;
   opacity: 0.24;
@@ -101,7 +103,7 @@ body {
   z-index: -1;
 }
 
-#cta-bg>* {
+#cta-bg > * {
   position: relative;
   z-index: 1;
 }
@@ -154,7 +156,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   #cta-bg::before,
   #cta-bg::after {
     animation: none;
@@ -268,7 +269,8 @@ input:-webkit-autofill:active {
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
 }
 
-:root.dark .bg-white.border-\[\#448CD2\].border-opacity-20.shadow-\[4px_4px_4px_0px_\#448CD21A\] {
+:root.dark
+  .bg-white.border-\[\#448CD2\].border-opacity-20.shadow-\[4px_4px_4px_0px_\#448CD21A\] {
   background-color: var(--app-surface) !important;
   border-color: var(--app-border-color) !important;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26) !important;
@@ -277,7 +279,8 @@ input:-webkit-autofill:active {
 
 :root.dark .rounded-xl.shadow-md.border.bg-white,
 :root.dark .rounded-xl.shadow-md.bg-white,
-:root.dark .rounded-xl.shadow-md.border.border-\[rgba\(68\,140\,210\,0\.2\)\].bg-white {
+:root.dark
+  .rounded-xl.shadow-md.border.border-\[rgba\(68\,140\,210\,0\.2\)\].bg-white {
   background-color: var(--app-surface) !important;
   border-color: var(--app-border-color) !important;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28) !important;
@@ -484,7 +487,6 @@ input:-webkit-autofill:active {
 }
 
 @keyframes ribbonPulse {
-
   0%,
   100% {
     opacity: 0.76;
@@ -506,7 +508,6 @@ input:-webkit-autofill:active {
 }
 
 @keyframes heroStopStart {
-
   0%,
   100% {
     stop-color: var(--hero-curve-start);
@@ -518,7 +519,6 @@ input:-webkit-autofill:active {
 }
 
 @keyframes heroStopEnd {
-
   0%,
   100% {
     stop-color: var(--hero-curve-end);
@@ -599,12 +599,12 @@ a {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #E5E7EB;
+  background: #e5e7eb;
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #D1D5DB;
+  background: #d1d5db;
 }
 
 /* Hide scrollbar for cleaner look in specific containers */
@@ -705,8 +705,8 @@ a {
   border-color: var(--app-border-color) !important;
 }
 
-:root.dark .divide-gray-50> :not([hidden])~ :not([hidden]),
-:root.dark .divide-gray-100> :not([hidden])~ :not([hidden]) {
+:root.dark .divide-gray-50 > :not([hidden]) ~ :not([hidden]),
+:root.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
   border-color: rgba(183, 202, 220, 0.16) !important;
 }
 
@@ -757,7 +757,7 @@ a {
 }
 
 :root.dark hr,
-:root.dark .divide-y>*,
+:root.dark .divide-y > *,
 :root.dark .border-gray-100,
 :root.dark .border-gray-200 {
   border-color: var(--app-border-color) !important;
@@ -803,7 +803,6 @@ a {
   color: var(--app-text-color) !important;
 }
 
-
 /* User profile dark mode surface/text harmonization */
 :root.dark .user-profile-screen {
   background-color: var(--app-surface) !important;
@@ -848,4 +847,8 @@ a {
 :root.dark .user-profile-screen .profile-upload-chip {
   background-color: var(--app-surface-muted) !important;
   border-color: var(--app-border-color) !important;
+}
+
+#text-white {
+  color: #fff !important;
 }

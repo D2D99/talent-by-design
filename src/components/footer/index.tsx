@@ -203,7 +203,8 @@ const Footer = () => {
                     border border-white
                     bg-gradient-to-r
   from-[rgba(68,140,210,0.12)]
-  to-[rgba(68,140,210,0.02)] text-white rounded-full bg-transparent max-w-80 outline-0"
+  to-[rgba(68,140,210,0.02)] rounded-full bg-transparent max-w-80 outline-0"
+                  id="text-white"
                   placeholder="email@yourmail.com"
                 />
               </form>
