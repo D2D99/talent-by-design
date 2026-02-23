@@ -34,7 +34,7 @@ const OrgInvitationDetails = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
@@ -95,7 +95,7 @@ const OrgInvitationDetails = () => {
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     const matchesRole =
-      !roleFilter || m.role.toLowerCase() === roleFilter.toLowerCase();
+      roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
     const matchesStatus =
       statusFilter.length === 0 || statusFilter.includes(m.status);
 
@@ -279,12 +279,12 @@ const OrgInvitationDetails = () => {
           >
             <Icon icon="hugeicons:filter" width="16" height="16" />
             <span>Filters</span>
-            {(roleFilter || statusFilter.length > 0) && (
+            {(statusFilter.length > 0 || roleFilter.length > 0) && (
               <span
                 className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors ml-1
                 ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
               >
-                {statusFilter.length + (roleFilter ? 1 : 0)}
+                {statusFilter.length + roleFilter.length}
               </span>
             )}
           </button>
@@ -299,10 +299,10 @@ const OrgInvitationDetails = () => {
               <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
                 Filters
               </h3>
-              {(roleFilter || statusFilter.length > 0) && (
+              {(roleFilter.length > 0 || statusFilter.length > 0) && (
                 <button
                   onClick={() => {
-                    setRoleFilter("");
+                    setRoleFilter([]);
                     setStatusFilter([]);
                   }}
                   className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
@@ -320,26 +320,38 @@ const OrgInvitationDetails = () => {
           </div>
 
           <div className="px-5 space-y-6">
-            {/* Role Filter (Dropdown) */}
-            <div className="mb-4">
-              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2.5 dark:text-[#88a7c4]">
+            {/* Role Filter (Checkboxes) */}
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 dark:text-[#88a7c4]">
                 Staff Role
               </label>
-              <div className="relative w-full">
-                <div className="absolute inset-y-0 right-0 top-0 flex items-center pr-3 pointer-events-none text-gray-400">
-                  <Icon icon="solar:alt-arrow-down-bold" width="12" />
-                </div>
-                <select
-                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none w-full p-2.5 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] bg-gray-50 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
-                  value={roleFilter}
-                  autoComplete="off"
-                  onChange={(e) => setRoleFilter(e.target.value)}
-                >
-                  <option value="">All Roles</option>
-                  <option value="leader">Leader</option>
-                  <option value="manager">Manager</option>
-                  <option value="employee">Employee</option>
-                </select>
+              <div className="space-y-2.5 mt-2">
+                {["leader", "manager", "employee", "admin"].map((r) => (
+                  <label
+                    key={r}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
+                    <div className="relative flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={roleFilter.includes(r)}
+                        onChange={() => {
+                          setRoleFilter((prev) =>
+                            prev.includes(r)
+                              ? prev.filter((x) => x !== r)
+                              : [...prev, r],
+                          );
+                        }}
+                        className="w-4.5 h-4.5 rounded border-gray-200 text-blue-600 focus:ring-blue-500/20 accent-blue-600 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
+                      />
+                    </div>
+                    <span
+                      className={`text-sm capitalize transition-colors ${roleFilter.includes(r) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-500 dark:text-[var(--app-text-muted)]"}`}
+                    >
+                      {r}
+                    </span>
+                  </label>
+                ))}
               </div>
             </div>
 
@@ -397,11 +409,11 @@ const OrgInvitationDetails = () => {
                   <div className="flex flex-col opacity-75 cursor-pointer size-5">
                     <Icon
                       icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "firstName" && sortConfig.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`-mb-1.5 ${sortConfig?.key === "firstName" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                     <Icon
                       icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "firstName" && sortConfig.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`${sortConfig?.key === "firstName" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                   </div>
                 </div>
@@ -415,11 +427,11 @@ const OrgInvitationDetails = () => {
                   <div className="flex flex-col opacity-75 size-5">
                     <Icon
                       icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "email" && sortConfig.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`-mb-1.5 ${sortConfig?.key === "email" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                     <Icon
                       icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "email" && sortConfig.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`${sortConfig?.key === "email" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                   </div>
                 </div>
@@ -433,11 +445,11 @@ const OrgInvitationDetails = () => {
                   <div className="flex flex-col opacity-75 size-5">
                     <Icon
                       icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "createdAt" && sortConfig.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`-mb-1.5 ${sortConfig?.key === "createdAt" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                     <Icon
                       icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "createdAt" && sortConfig.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`${sortConfig?.key === "createdAt" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                   </div>
                 </div>
@@ -451,11 +463,11 @@ const OrgInvitationDetails = () => {
                   <div className="flex flex-col opacity-75 size-5">
                     <Icon
                       icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "role" && sortConfig.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`-mb-1.5 ${sortConfig?.key === "role" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                     <Icon
                       icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "role" && sortConfig.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      className={`${sortConfig?.key === "role" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
                     />
                   </div>
                 </div>
@@ -529,7 +541,7 @@ const OrgInvitationDetails = () => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
-    </div>
+    </div >
   );
 };
 

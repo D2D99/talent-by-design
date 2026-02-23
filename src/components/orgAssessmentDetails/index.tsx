@@ -298,13 +298,12 @@ const OrgAssessmentDetails = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${
-              showFilters ||
-              roleFilter.length > 0 ||
-              assessmentFilter.length > 0
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters ||
+                roleFilter.length > 0 ||
+                assessmentFilter.length > 0
                 ? "bg-blue-50 border-blue-200 text-blue-600 font-bold dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                 : "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-[var(--app-border-color)] dark:text-[var(--app-text-muted)] dark:hover:bg-[var(--app-surface-muted)]"
-            }`}
+              }`}
           >
             <Icon icon="mi:filter" width="18" />
             <span>Filters</span>
@@ -331,7 +330,7 @@ const OrgAssessmentDetails = () => {
                     setRoleFilter([]);
                     setAssessmentFilter([]);
                   }}
-                  className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase dark:bg-[rgba(226,104,122,0.18)] dark:text-[#ffafbc]"
+                  className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                 >
                   Reset
                 </button>

@@ -29,7 +29,6 @@ const OrgInvitation = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [roleFilter, setRoleFilter] = useState<string>("");
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -53,10 +52,7 @@ const OrgInvitation = () => {
     const matchesStatus =
       statusFilter.length === 0 || statusFilter.includes(item.status);
 
-    const matchesRole =
-      !roleFilter || item.role?.toLowerCase() === roleFilter.toLowerCase();
-
-    return matchesSearch && matchesStatus && matchesRole;
+    return matchesSearch && matchesStatus;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -565,12 +561,12 @@ const OrgInvitation = () => {
                     {/* <Icon icon="mi:filter" width="18" /> */}
                     <Icon icon="hugeicons:filter" width="16" height="16" />
                     <span>Filters</span>
-                    {(statusFilter.length > 0 || roleFilter) && (
+                    {statusFilter.length > 0 && (
                       <span
                         className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors ml-1
                         ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
                       >
-                        {statusFilter.length + (roleFilter ? 1 : 0)}
+                        {statusFilter.length}
                       </span>
                     )}
                   </button>
@@ -584,11 +580,10 @@ const OrgInvitation = () => {
                         <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
                           Filters
                         </h3>
-                        {(statusFilter.length > 0 || roleFilter) && (
+                        {statusFilter.length > 0 && (
                           <button
                             onClick={() => {
                               setStatusFilter([]);
-                              setRoleFilter("");
                             }}
                             className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                           >
@@ -605,41 +600,8 @@ const OrgInvitation = () => {
                     </div>
 
                     <div className="px-5 space-y-6">
-                      {/* Role Filter (Dropdown like Question filter) */}
-                      <div className="mb-4">
-                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 dark:text-[#88a7c4]">
-                          Role
-                        </label>
-                        <div className="relative w-full">
-                          <div className="absolute inset-y-0 right-0 top-0 flex items-center pr-3 pointer-events-none">
-                            <Icon
-                              icon="solar:alt-arrow-down-bold"
-                              className="text-gray-400"
-                              width="12"
-                            />
-                          </div>
-                          <select
-                            className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
-                            value={roleFilter}
-                            autoComplete="off"
-                            onChange={(e) => setRoleFilter(e.target.value)}
-                          >
-                            <option value="">All Roles</option>
-                            {isSuperAdmin ? (
-                              <option value="admin">Admin</option>
-                            ) : (
-                              <>
-                                <option value="leader">Leader</option>
-                                <option value="manager">Manager</option>
-                                <option value="employee">Employee</option>
-                              </>
-                            )}
-                          </select>
-                        </div>
-                      </div>
-
                       {/* Status Filter (Checkboxes) */}
-                      <FilterSection title="Status" open>
+                      <FilterSection title="Invitation Status" open>
                         <div className="space-y-2">
                           {["Accept", "Pending", "Expire"].map((s) => (
                             <label
