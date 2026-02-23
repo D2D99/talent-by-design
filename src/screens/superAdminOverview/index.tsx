@@ -372,7 +372,7 @@ const SuperAdminOverview = () => {
           </div>
         </div>
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-10">
-          {aiInsights.map((insight, idx) => (
+          {aiInsights.map((insight, idx) =>  (
             <div key={idx} className="flex gap-5 items-start group">
               <div className={`w-12 h-12 rounded-[12px] shrink-0 flex items-center justify-center transition-all group-hover:scale-110 ${insight.type === 'positive' ? 'bg-[#10b981]/10 text-[#10b981]' : 'bg-[var(--primary-color)]/10 text-[var(--primary-color)]'}`}>
                 <Icon icon={insight.type === 'positive' ? 'solar:graph-up-bold' : 'solar:notification-lines-bold'} width="24" />

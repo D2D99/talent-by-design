@@ -7,16 +7,16 @@ import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import api from "../../services/axios";
 import { toast } from "react-toastify";
-import { useTheme } from "../../context/useTheme";
+// import { useTheme } from "../../context/useTheme";
 
 const AccountSetting = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    "info" | "password" | "notification" | "appearance"
+    "info" | "password" | "notification"
   >("info");
-  const { theme, setTheme } = useTheme();
+  // const { theme, setTheme } = useTheme();
 
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
@@ -183,7 +183,7 @@ const AccountSetting = () => {
                 Notification
               </a>
             </li>
-            <li role="presentation">
+            {/* <li role="presentation">
               <a
                 href="#tabs-appearance"
                 onClick={() => setActiveTab("appearance")}
@@ -196,7 +196,7 @@ const AccountSetting = () => {
               >
                 Appearance
               </a>
-            </li>
+            </li> */}
           </ul>
 
           <div className="mt-7">
@@ -605,7 +605,7 @@ const AccountSetting = () => {
                 </div>
               </div>
             </div>
-            <div
+            {/* <div
               className="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
               id="tabs-appearance"
               role="tabpanel"
@@ -677,7 +677,9 @@ const AccountSetting = () => {
                           icon="solar:moon-stars-bold-duotone"
                           width="22"
                           className={`${
-                            theme === "dark" ? "text-[#9DC9F5]" : "text-[#448CD2]"
+                            theme === "dark"
+                              ? "text-[#9DC9F5]"
+                              : "text-[#448CD2]"
                           }`}
                         />
                         <h6
@@ -706,7 +708,7 @@ const AccountSetting = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

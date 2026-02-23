@@ -32,11 +32,10 @@ import SuperAdminStats from "./screens/superAdminStats";
 import AdminAssessments from "./screens/adminAssessments";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useTheme } from "./context/useTheme";
-
+// import { useTheme } from "./context/useTheme";
 
 function App() {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   return (
     <AuthProvider>
@@ -50,7 +49,7 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme={theme}
+        // theme={theme}
       />
       <SessionPopup />
 
