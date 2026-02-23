@@ -298,12 +298,13 @@ const OrgAssessmentDetails = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters ||
-                roleFilter.length > 0 ||
-                assessmentFilter.length > 0
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${
+              showFilters ||
+              roleFilter.length > 0 ||
+              assessmentFilter.length > 0
                 ? "bg-blue-50 border-blue-200 text-blue-600 font-bold dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                 : "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-[var(--app-border-color)] dark:text-[var(--app-text-muted)] dark:hover:bg-[var(--app-surface-muted)]"
-              }`}
+            }`}
           >
             <Icon icon="mi:filter" width="18" />
             <span>Filters</span>

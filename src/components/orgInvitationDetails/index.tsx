@@ -272,10 +272,11 @@ const OrgInvitationDetails = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all border font-medium text-sm uppercase tracking-wider md:w-auto w-full ${showFilters
-              ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
-              : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-              }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all border font-medium text-sm uppercase tracking-wider md:w-auto w-full ${
+              showFilters
+                ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+            }`}
           >
             <Icon icon="hugeicons:filter" width="16" height="16" />
             <span>Filters</span>
@@ -541,7 +542,7 @@ const OrgInvitationDetails = () => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
-    </div >
+    </div>
   );
 };
 

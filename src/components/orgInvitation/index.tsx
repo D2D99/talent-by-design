@@ -528,7 +528,7 @@ const OrgInvitation = () => {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 my-6">
               <div className="relative flex-1 max-w-md">
                 <Icon
                   icon="tabler:search"
@@ -549,16 +549,16 @@ const OrgInvitation = () => {
                 />
               </div>
 
-              <div className="relative">
+              {/* <div className="relative">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${showFilters
-                      ? "bg-[var(--primary-color)] text-white"
-                      : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-                      }`}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${
+                      showFilters
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+                    }`}
                   >
-                    {/* <Icon icon="mi:filter" width="18" /> */}
                     <Icon icon="hugeicons:filter" width="16" height="16" />
                     <span>Filters</span>
                     {statusFilter.length > 0 && (
@@ -572,7 +572,6 @@ const OrgInvitation = () => {
                   </button>
                 </div>
 
-                {/* --- FILTER SIDEBAR --- */}
                 {showFilters && (
                   <div className="w-full md:w-80 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
                     <div className="flex justify-between items-center mb-6 px-5">
@@ -600,7 +599,6 @@ const OrgInvitation = () => {
                     </div>
 
                     <div className="px-5 space-y-6">
-                      {/* Status Filter (Checkboxes) */}
                       <FilterSection title="Invitation Status" open>
                         <div className="space-y-2">
                           {["Accept", "Pending", "Expire"].map((s) => (
@@ -636,7 +634,7 @@ const OrgInvitation = () => {
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">
@@ -726,10 +724,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
+                                  ? "text-red-600 hover:bg-red-50"
+                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
