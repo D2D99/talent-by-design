@@ -280,7 +280,7 @@ const OrgAssessmentDetails = () => {
       </div>
 
       {/* Search and Filter Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"
@@ -295,7 +295,7 @@ const OrgAssessmentDetails = () => {
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
           />
         </div>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${
@@ -314,11 +314,11 @@ const OrgAssessmentDetails = () => {
               </span>
             )}
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Filter Sidebar */}
-      {showFilters && (
+      {/* {showFilters && (
         <div className="absolute right-6 top-[500px] w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300 dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
@@ -346,7 +346,6 @@ const OrgAssessmentDetails = () => {
           </div>
 
           <div className="space-y-6">
-            {/* Role Filter */}
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                 Role
@@ -379,7 +378,6 @@ const OrgAssessmentDetails = () => {
               </div>
             </div>
 
-            {/* Assessment Status Filter */}
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                 Assessment Status
@@ -413,7 +411,7 @@ const OrgAssessmentDetails = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">

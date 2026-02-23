@@ -675,7 +675,7 @@ const OrgInvitation = () => {
                           <td className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-[var(--app-text-color)]">
                             {indexOfFirstItem + index + 1}
                           </td>
-                          <td className="px-6 py-4 text-sm font-medium dark:text-[var(--app-text-color)]">
+                          <td className="px-6 py-4 text-sm text-[var(--app-text-color)] hover:underline font-bold">
                             {isSuperAdmin ? (
                               <Link
                                 to={`/dashboard/organization/${item.orgName}`}
@@ -707,7 +707,7 @@ const OrgInvitation = () => {
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-sm text-gray-500 capitalize dark:text-[var(--app-text-muted)]">
+                              <span className="uppercase text-xs font-bold dark:text-[var(--app-text-color)]">
                                 {item.role}
                               </span>
                             )}
@@ -723,10 +723,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
                                   ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -968,4 +969,3 @@ const OrgInvitation = () => {
 };
 
 export default OrgInvitation;
-
