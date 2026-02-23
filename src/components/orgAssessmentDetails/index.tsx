@@ -34,9 +34,8 @@ const OrgAssessmentDetails = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [roleFilter, setRoleFilter] = useState<string[]>([]);
-  const [assessmentFilter, setAssessmentFilter] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [roleFilter] = useState<string[]>([]);
+  const [assessmentFilter] = useState<string[]>([]);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;

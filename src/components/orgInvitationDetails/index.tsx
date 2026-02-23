@@ -34,9 +34,8 @@ const OrgInvitationDetails = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [roleFilter, setRoleFilter] = useState<string[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [roleFilter] = useState<string[]>([]);
+  const [statusFilter] = useState<string[]>([]);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;
@@ -545,29 +544,3 @@ const OrgInvitationDetails = () => {
 
 export default OrgInvitationDetails;
 
-const FilterSection = ({
-  title,
-  children,
-  open = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  open?: boolean;
-}) => {
-  const [isOpen, setIsOpen] = useState(open);
-  return (
-    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100 dark:border-[var(--app-border-color)]/20">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full font-bold text-gray-400 text-[10px] uppercase tracking-widest mb-1 shadow-none outline-none dark:text-[#88a7c4]"
-      >
-        {title}
-        <Icon
-          icon="mdi:chevron-down"
-          className={`transition-transform duration-200 text-gray-400 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      {isOpen && <div className="pl-1">{children}</div>}
-    </div>
-  );
-};
