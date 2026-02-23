@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import api from "../../services/axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, Ripple, initTWE } from "tw-elements";
 
@@ -38,7 +38,6 @@ const OrgUsers = ({
   hideAdmin = true,
 }: OrgUsersProps) => {
   const { orgName: routeOrgName } = useParams();
-  const navigate = useNavigate();
 
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
@@ -46,8 +45,7 @@ const OrgUsers = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [roleFilter, setRoleFilter] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [roleFilter] = useState<string[]>([]);
 
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");

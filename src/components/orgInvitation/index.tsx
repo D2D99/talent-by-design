@@ -28,8 +28,7 @@ const OrgInvitation = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [statusFilter] = useState<string[]>([]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -724,11 +723,10 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${
-                                canDelete
+                              className={`p-2 rounded-full transition-all ${canDelete
                                   ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
-                              }`}
+                                }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -971,29 +969,3 @@ const OrgInvitation = () => {
 
 export default OrgInvitation;
 
-const FilterSection = ({
-  title,
-  children,
-  open = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  open?: boolean;
-}) => {
-  const [isOpen, setIsOpen] = useState(open);
-  return (
-    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100 dark:border-[var(--app-border-color)]">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full font-semibold text-gray-700 text-sm mb-2 dark:text-[var(--app-text-muted)]"
-      >
-        {title}
-        <Icon
-          icon="mdi:chevron-down"
-          className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      {isOpen && <div className="pl-1 space-y-1">{children}</div>}
-    </div>
-  );
-};
