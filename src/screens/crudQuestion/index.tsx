@@ -660,7 +660,9 @@ const CrudQuestion = () => {
         <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-[55] md:absolute fixed md:top-44 md:right-7 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
           <div className="flex justify-between items-center mb-6 px-5">
             <div className="flex items-center gap-3">
-              <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">Filters</h3>
+              <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
+                Filters
+              </h3>
               <button
                 onClick={resetFilters}
                 className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
@@ -732,7 +734,9 @@ const CrudQuestion = () => {
                     }}
                     className="accent-blue-500 text-blue-600 focus:ring-blue-500 rounded-full dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                   />
-                  <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)]">{d}</span>
+                  <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)]">
+                    {d}
+                  </span>
                 </label>
               ))}
             </FilterSection>
@@ -751,7 +755,10 @@ const CrudQuestion = () => {
                       onChange={() => toggleFilter(setFilterSubdomains, sd)}
                       className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                     />
-                    <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)] truncate" title={sd}>
+                    <span
+                      className="text-sm text-gray-700 dark:text-[var(--app-text-muted)] truncate"
+                      title={sd}
+                    >
                       {sd}
                     </span>
                   </label>
@@ -776,7 +783,9 @@ const CrudQuestion = () => {
                     onChange={() => toggleFilter(setFilterTypes, t)}
                     className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                   />
-                  <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)]">{t}</span>
+                  <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)]">
+                    {t}
+                  </span>
                 </label>
               ))}
             </FilterSection>
@@ -804,7 +813,7 @@ const CrudQuestion = () => {
       )}
 
       {/* --- MAIN CONTENT AREA --- */}
-      <div className="flex-1 w-full bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] min-h-[calc(100vh-152px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
+      <div className="flex-1 w-full bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
         {/* HEADER: Title left, Add Button right */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <h2 className="md:text-2xl text-xl font-bold text-gray-800 dark:text-[var(--app-heading-color)]">
