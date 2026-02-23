@@ -154,10 +154,10 @@ const SuperAdminStats = () => {
                     <span className="flex items-center gap-2 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100 font-bold">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
                         aria-hidden="true"
                         role="img"
-                        class="iconify iconify--solar"
+                        className="iconify iconify--solar"
                         width="12"
                         height="12"
                         viewBox="0 0 24 24"
