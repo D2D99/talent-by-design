@@ -121,7 +121,8 @@ const Login = () => {
 
         // 3. Check assessment status and redirect
         const assessmentStatus = res.data.assessmentStatus;
-        if (assessmentStatus === "DUE" || assessmentStatus === "PENDING") {
+
+        if (assessmentStatus === "PENDING" || assessmentStatus === "DUE") {
           navigate("/start-assessment", { replace: true });
         } else {
           navigate("/dashboard", { replace: true });

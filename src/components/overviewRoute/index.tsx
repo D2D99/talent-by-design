@@ -5,6 +5,7 @@ import PageNotFound from "../../screens/pageNotFound";
 import SuperAdminOverview from "../../screens/superAdminOverview";
 
 import { useAuth } from "../../context/useAuth";
+import { Navigate } from "react-router-dom";
 
 const OverviewRoute = () => {
   const { user } = useAuth();
@@ -19,6 +20,9 @@ const OverviewRoute = () => {
       return <ManagerOverview />;
     case "leader":
       return <LeaderOverview />;
+    case "employee":
+      // Employees don't have a dashboard — send them straight to assessment
+      return <Navigate to="/start-assessment" replace />;
     default:
       return <PageNotFound />;
   }
