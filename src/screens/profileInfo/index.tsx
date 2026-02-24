@@ -8,7 +8,6 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 
-
 interface ApiError {
   message: string;
 }
@@ -61,12 +60,14 @@ const ProfileInfo = () => {
 
     const fetchAssignedRole = async () => {
       try {
-        const verifyTokenFromUrl = new URLSearchParams(window.location.search).get("verifyToken");
+        const verifyTokenFromUrl = new URLSearchParams(
+          window.location.search,
+        ).get("verifyToken");
 
         const response = await api.get("auth/current-user-session", {
           headers: {
-            "x-verify-token": verifyTokenFromUrl || ""
-          }
+            "x-verify-token": verifyTokenFromUrl || "",
+          },
         });
 
         if (response.data.role) {
@@ -99,12 +100,14 @@ const ProfileInfo = () => {
       setLoading(true);
       clearErrors("root");
 
-      const verifyTokenFromUrl = new URLSearchParams(window.location.search).get("verifyToken");
+      const verifyTokenFromUrl = new URLSearchParams(
+        window.location.search,
+      ).get("verifyToken");
 
       await api.post("auth/complete-profile", data, {
         headers: {
-          "x-verify-token": verifyTokenFromUrl || ""
-        }
+          "x-verify-token": verifyTokenFromUrl || "",
+        },
       });
 
       toast.success("Profile completed! Please log in to continue.");
@@ -129,7 +132,6 @@ const ProfileInfo = () => {
         type: "manual",
         message: message,
       });
-
     } finally {
       setLoading(false);
     }
@@ -148,7 +150,7 @@ const ProfileInfo = () => {
         <div className="flex justify-center items-center h-full bg-black bg-opacity-50" />
       </div>
 
-      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
+      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 pb-10 px-3">
         <div className="text-center mb-8 mx-auto">
           <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
         </div>
@@ -172,10 +174,11 @@ const ProfileInfo = () => {
                   type="text"
                   id="orgName"
                   placeholder="Enter organization name"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.orgName
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                    errors.orgName
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("orgName", {
                     required: "Organization name is required",
                   })}
@@ -195,10 +198,11 @@ const ProfileInfo = () => {
                 type="text"
                 id="firstName"
                 placeholder="Enter your first name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.firstName
-                  ? "border-red-500"
-                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.firstName
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
                 {...register("firstName", {
                   required: "First name is required",
                 })}
@@ -217,10 +221,11 @@ const ProfileInfo = () => {
                 type="text"
                 id="lastName"
                 placeholder="Enter your last name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.lastName
-                  ? "border-red-500"
-                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.lastName
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
                 {...register("lastName", { required: "Last name is required" })}
               />
             </div>
@@ -270,10 +275,11 @@ const ProfileInfo = () => {
                 </div>
                 <select
                   id="department"
-                  className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.department
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                    errors.department
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("department", {
                     required: "Department is required",
                   })}
@@ -312,10 +318,11 @@ const ProfileInfo = () => {
                 </div>
                 <select
                   id="titles"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${errors.titles
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${
+                    errors.titles
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("titles", { required: "Required" })}
                 >
                   <option value="">Select</option>
@@ -333,10 +340,11 @@ const ProfileInfo = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
-                ? "opacity-100 cursor-pointer shadow-md"
-                : "opacity-40 cursor-not-allowed pointer-events-none"
-                }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
+                isButtonActive
+                  ? "opacity-100 cursor-pointer shadow-md"
+                  : "opacity-40 cursor-not-allowed pointer-events-none"
+              }`}
             >
               {loading ? "Saving..." : "Get Started"}
               <Icon
