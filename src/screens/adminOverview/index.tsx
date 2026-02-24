@@ -14,7 +14,7 @@ const AdminOverview = () => {
   useEffect(() => {
     const fetchIntelligence = async () => {
       try {
-        const res = await api.get("assessment/admin/intelligence");
+        const res = await api.get(`assessment/admin/intelligence?range=${timeRange}`);
         setIntelData(res.data);
       } catch (error) {
         console.error("Dashboard intel fetch error:", error);
@@ -23,7 +23,7 @@ const AdminOverview = () => {
       }
     };
     fetchIntelligence();
-  }, []);
+  }, [timeRange]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -133,12 +133,9 @@ const AdminOverview = () => {
               <h3 className="text-xl font-black text-[var(--app-heading-color)] tracking-tight">Assessment Lifecycle</h3>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time Participation Stream</p>
             </div>
-            <button
-              onClick={() => navigate("/dashboard/org-invitation")}
-              className="px-4 py-2 bg-[var(--primary-color)] text-white text-[10px] font-black uppercase rounded-[10px] shadow-lg shadow-[var(--primary-color)]/20 hover:scale-105 transition-transform"
-            >
-              Send Reminders
-            </button>
+            <div className="w-10 h-10 bg-[var(--app-surface-soft)] rounded-full flex items-center justify-center text-[var(--app-text-muted)] border border-[var(--app-border-color)]">
+              <Icon icon="solar:notification-status-bold-duotone" width="20" />
+            </div>
           </div>
 
           <div className="flex-1 space-y-8 relative z-10">
@@ -224,7 +221,7 @@ const AdminOverview = () => {
           </div>
 
           <button
-            onClick={() => navigate("/dashboard/team")}
+            onClick={() => navigate("/dashboard/users")}
             className="w-full mt-10 py-4 bg-[var(--app-surface-soft)] border border-[var(--app-border-color)] rounded-[14px] text-[10px] font-black uppercase tracking-[0.25em] text-[var(--app-text-muted)] hover:bg-[#448CD2] hover:text-white transition-all duration-300"
           >
             View Team Directory
@@ -241,7 +238,7 @@ const AdminOverview = () => {
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Direct Assessment Data Feed</p>
           </div>
           <button
-            onClick={() => navigate("/dashboard/team")}
+            onClick={() => navigate("/dashboard/users")}
             className="text-[10px] font-black uppercase text-[var(--primary-color)] tracking-widest hover:underline"
           >
             View Entire Directory
@@ -286,7 +283,7 @@ const AdminOverview = () => {
                   </td>
                   <td className="px-8 py-5">
                     <span className="text-[11px] font-semibold text-slate-400">
-                      {person.status === 'Registered' ? 'Profile Verified' : 'External Access'}
+                      {person.lastActivity ? new Date(person.lastActivity).toLocaleDateString() : (person.status === 'Registered' ? 'Profile Verified' : 'Invited')}
                     </span>
                   </td>
                 </tr>
@@ -311,7 +308,9 @@ const AdminOverview = () => {
             </div>
             <div>
               <h2 className="text-2xl font-black tracking-tight leading-none mb-2">Team Insight</h2>
-              <p className="text-sm text-blue-100/80 font-medium max-w-md leading-relaxed">Assessments indicate a collective strength in <span className="text-white font-bold">Strategic Vision</span>. Consider focusing the next sprint on clarity protocols to maintain this momentum.</p>
+              <p className="text-sm text-blue-100/80 font-medium max-w-md leading-relaxed">
+                {intelData?.strategicInsight || "Assessments indicate a collective strength in Strategic Vision. Consider focusing the next sprint on clarity protocols to maintain this momentum."}
+              </p>
             </div>
           </div>
           <button

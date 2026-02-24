@@ -22,7 +22,7 @@ const StartAssessment = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // 🔹 Invite token → employee
+  // 🔹 Invite token → anonymous employee (direct link, not logged in)
   const inviteToken = searchParams.get("token") || searchParams.get("token1");
 
   const [pageLoading, setPageLoading] = useState(true);
@@ -30,31 +30,47 @@ const StartAssessment = () => {
   const [data, setData] = useState<AssessmentStartData | null>(null);
   const [stakeholder, setStakeholder] = useState<Stakeholder | null>(null);
 
+  // Whether this user is a logged-in registered employee (uses standard flow)
+  const [isLoggedInEmployee, setIsLoggedInEmployee] = useState(false);
+
   // =====================================================
   // 🔐 DETERMINE STAKEHOLDER (EMPLOYEE OR /ME ROLE)
   // =====================================================
   useEffect(() => {
     const determineStakeholder = async () => {
-      // 🔹 Employee via invite link
+      const accessToken = localStorage.getItem("accessToken");
+
+      // 🔹 If user is logged in, use /me to get role (handles registered employees too)
+      if (accessToken) {
+        try {
+          const res = await api.get("auth/me");
+          const role = res.data.role?.toLowerCase() as Stakeholder;
+          setStakeholder(role);
+          if (role === "employee") {
+            setIsLoggedInEmployee(true);
+          }
+          setPageLoading(false);
+          return;
+        } catch (error) {
+          console.error("Failed to fetch /me, falling back to invite token", error);
+        }
+      }
+
+      // 🔹 Anonymous employee via invite link (not logged in)
       if (inviteToken) {
         setStakeholder("employee");
+        setIsLoggedInEmployee(false);
         setPageLoading(false);
         return;
       }
 
-      // 🔹 Admin / Leader / Manager via /me
-      try {
-        const res = await api.get("auth/me");
-        setStakeholder(res.data.role);
-      } catch (error) {
-        console.error("Failed to determine user role", error);
-      } finally {
-        setPageLoading(false);
-      }
+      // 🔹 No token and not logged in — redirect to login
+      toast.error("Please log in to access the assessment.");
+      navigate("/login", { replace: true });
     };
 
     determineStakeholder();
-  }, [inviteToken]);
+  }, [inviteToken, navigate]);
 
   // =====================================================
   // 📥 FETCH START PAGE DATA (AFTER ROLE IS KNOWN)
@@ -67,7 +83,7 @@ const StartAssessment = () => {
         const res = await api.get("assessment/start", {
           params: { stakeholder },
           headers:
-            stakeholder === "employee" && inviteToken
+            stakeholder === "employee" && inviteToken && !isLoggedInEmployee
               ? { "x-invite-token": inviteToken }
               : {},
         });
@@ -78,7 +94,7 @@ const StartAssessment = () => {
     };
 
     fetchStartData();
-  }, [stakeholder, inviteToken]);
+  }, [stakeholder, inviteToken, isLoggedInEmployee]);
 
   const handleClick = async () => {
     if (!stakeholder) return;
@@ -86,8 +102,8 @@ const StartAssessment = () => {
     setLoading(true);
 
     try {
-      // 🔹 EMPLOYEE FLOW
-      if (stakeholder === "employee" && inviteToken) {
+      // 🔹 ANONYMOUS EMPLOYEE FLOW (via invite link, no login)
+      if (stakeholder === "employee" && inviteToken && !isLoggedInEmployee) {
         const res = await api.post("employee-assessment/start", {}, {
           headers: { "x-invite-token": inviteToken },
         });
@@ -96,7 +112,7 @@ const StartAssessment = () => {
         return;
       }
 
-      // 🔹 ADMIN / LEADER / MANAGER FLOW
+      // 🔹 ALL LOGGED-IN USERS (including registered employees)
       const res = await api.post("assessment/start", { stakeholder });
       navigate(`/assessment-question?assessmentId=${res.data.assessmentId}`);
     } catch (error: unknown) {
