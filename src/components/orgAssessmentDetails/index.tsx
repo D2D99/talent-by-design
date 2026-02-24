@@ -34,9 +34,8 @@ const OrgAssessmentDetails = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [roleFilter, setRoleFilter] = useState<string[]>([]);
-  const [assessmentFilter, setAssessmentFilter] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [roleFilter] = useState<string[]>([]);
+  const [assessmentFilter] = useState<string[]>([]);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;
@@ -158,7 +157,7 @@ const OrgAssessmentDetails = () => {
     totalMembers > 0 ? Math.round((completedMembers / totalMembers) * 100) : 0;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
       {/* Header Section */}
       <div className="mb-8 bg-white relative overflow-hidden dark:bg-transparent">
         <div
@@ -280,7 +279,7 @@ const OrgAssessmentDetails = () => {
       </div>
 
       {/* Search and Filter Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"
@@ -295,15 +294,16 @@ const OrgAssessmentDetails = () => {
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
           />
         </div>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${showFilters ||
-                roleFilter.length > 0 ||
-                assessmentFilter.length > 0
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${
+              showFilters ||
+              roleFilter.length > 0 ||
+              assessmentFilter.length > 0
                 ? "bg-blue-50 border-blue-200 text-blue-600 font-bold dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                 : "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-[var(--app-border-color)] dark:text-[var(--app-text-muted)] dark:hover:bg-[var(--app-surface-muted)]"
-              }`}
+            }`}
           >
             <Icon icon="mi:filter" width="18" />
             <span>Filters</span>
@@ -313,11 +313,11 @@ const OrgAssessmentDetails = () => {
               </span>
             )}
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Filter Sidebar */}
-      {showFilters && (
+      {/* {showFilters && (
         <div className="absolute right-6 top-[500px] w-72 bg-white shadow-2xl rounded-xl border border-gray-100 z-50 p-5 transform transition-all duration-300 dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
@@ -345,7 +345,6 @@ const OrgAssessmentDetails = () => {
           </div>
 
           <div className="space-y-6">
-            {/* Role Filter */}
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                 Role
@@ -378,7 +377,6 @@ const OrgAssessmentDetails = () => {
               </div>
             </div>
 
-            {/* Assessment Status Filter */}
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 dark:text-[#88a7c4]">
                 Assessment Status
@@ -412,7 +410,7 @@ const OrgAssessmentDetails = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">

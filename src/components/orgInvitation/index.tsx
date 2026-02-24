@@ -28,8 +28,7 @@ const OrgInvitation = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [statusFilter] = useState<string[]>([]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -320,7 +319,7 @@ const OrgInvitation = () => {
   return (
     <>
       <div>
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-180px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
+        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
           <div className="grid">
             <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
               <div>
@@ -528,7 +527,7 @@ const OrgInvitation = () => {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 my-6">
               <div className="relative flex-1 max-w-md">
                 <Icon
                   icon="tabler:search"
@@ -549,16 +548,16 @@ const OrgInvitation = () => {
                 />
               </div>
 
-              <div className="relative">
+              {/* <div className="relative">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${showFilters
-                      ? "bg-[var(--primary-color)] text-white"
-                      : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-                      }`}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${
+                      showFilters
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+                    }`}
                   >
-                    {/* <Icon icon="mi:filter" width="18" /> */}
                     <Icon icon="hugeicons:filter" width="16" height="16" />
                     <span>Filters</span>
                     {statusFilter.length > 0 && (
@@ -572,7 +571,6 @@ const OrgInvitation = () => {
                   </button>
                 </div>
 
-                {/* --- FILTER SIDEBAR --- */}
                 {showFilters && (
                   <div className="w-full md:w-80 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
                     <div className="flex justify-between items-center mb-6 px-5">
@@ -600,7 +598,6 @@ const OrgInvitation = () => {
                     </div>
 
                     <div className="px-5 space-y-6">
-                      {/* Status Filter (Checkboxes) */}
                       <FilterSection title="Invitation Status" open>
                         <div className="space-y-2">
                           {["Accept", "Pending", "Expire"].map((s) => (
@@ -636,7 +633,7 @@ const OrgInvitation = () => {
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">
@@ -678,7 +675,7 @@ const OrgInvitation = () => {
                           <td className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-[var(--app-text-color)]">
                             {indexOfFirstItem + index + 1}
                           </td>
-                          <td className="px-6 py-4 text-sm font-medium dark:text-[var(--app-text-color)]">
+                          <td className="px-6 py-4 text-sm text-[var(--app-text-color)] font-bold">
                             {isSuperAdmin ? (
                               <Link
                                 to={`/dashboard/organization/${item.orgName}`}
@@ -710,7 +707,7 @@ const OrgInvitation = () => {
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-sm text-gray-500 capitalize dark:text-[var(--app-text-muted)]">
+                              <span className="uppercase text-xs font-bold dark:text-[var(--app-text-color)]">
                                 {item.role}
                               </span>
                             )}
@@ -726,10 +723,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
+                                  ? "text-red-600 hover:bg-red-50"
+                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -971,30 +969,3 @@ const OrgInvitation = () => {
 };
 
 export default OrgInvitation;
-
-const FilterSection = ({
-  title,
-  children,
-  open = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  open?: boolean;
-}) => {
-  const [isOpen, setIsOpen] = useState(open);
-  return (
-    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100 dark:border-[var(--app-border-color)]">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full font-semibold text-gray-700 text-sm mb-2 dark:text-[var(--app-text-muted)]"
-      >
-        {title}
-        <Icon
-          icon="mdi:chevron-down"
-          className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      {isOpen && <div className="pl-1 space-y-1">{children}</div>}
-    </div>
-  );
-};

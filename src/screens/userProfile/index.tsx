@@ -186,7 +186,7 @@ const UserProfile = () => {
 
   return (
     <>
-      <div className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
+      <div className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
         <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
           <h2 className="md:text-2xl text-xl font-bold">My Profile</h2>
 

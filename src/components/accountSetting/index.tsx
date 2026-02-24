@@ -118,7 +118,7 @@ const AccountSetting = () => {
   return (
     <>
       {/* Account Setting Section Start */}
-      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)]">
+      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
         <div className="flex sm:items-center items-start justify-between gap-4 flex-wrap mb-8 sm:min-h-10 sm:flex-row flex-col">
           <h2 className="md:text-2xl text-xl font-bold">Account Setting</h2>
 

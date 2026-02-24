@@ -34,9 +34,8 @@ const OrgInvitationDetails = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [roleFilter, setRoleFilter] = useState<string[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [roleFilter] = useState<string[]>([]);
+  const [statusFilter] = useState<string[]>([]);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;
@@ -151,7 +150,7 @@ const OrgInvitationDetails = () => {
   ).length;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
       {/* Header Section */}
       <div className="mb-8 bg-white relative overflow-hidden dark:bg-transparent">
         <div
@@ -253,7 +252,7 @@ const OrgInvitationDetails = () => {
       </div>
 
       {/* Search and Filter Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"
@@ -269,13 +268,14 @@ const OrgInvitationDetails = () => {
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 placeholder:text-gray-400 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4] dark:focus:border-[var(--primary-color)]"
           />
         </div>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all border font-medium text-sm uppercase tracking-wider md:w-auto w-full ${showFilters
-              ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
-              : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-              }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all border font-medium text-sm uppercase tracking-wider md:w-auto w-full ${
+              showFilters
+                ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+            }`}
           >
             <Icon icon="hugeicons:filter" width="16" height="16" />
             <span>Filters</span>
@@ -288,11 +288,10 @@ const OrgInvitationDetails = () => {
               </span>
             )}
           </button>
-        </div>
+        </div> */}
       </div>
 
-      {/* Filter Sidebar */}
-      {showFilters && (
+      {/* {showFilters && (
         <div className="w-full md:w-80 bg-white shadow-[0_0_10px_rgba(68,140,210,0.4)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition-all animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="flex justify-between items-center mb-6 px-5 border-b pb-4 border-gray-100 dark:border-[var(--app-border-color)]/30">
             <div className="flex items-center gap-2">
@@ -320,7 +319,6 @@ const OrgInvitationDetails = () => {
           </div>
 
           <div className="px-5 space-y-6">
-            {/* Role Filter (Checkboxes) */}
             <div>
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 dark:text-[#88a7c4]">
                 Staff Role
@@ -355,7 +353,6 @@ const OrgInvitationDetails = () => {
               </div>
             </div>
 
-            {/* Status Filter (Checkboxes) */}
             <FilterSection title="Invitation Status" open>
               <div className="space-y-2.5 mt-2">
                 {["Accept", "Pending", "Expire"].map((s) => (
@@ -392,7 +389,7 @@ const OrgInvitationDetails = () => {
             </FilterSection>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">
@@ -475,7 +472,7 @@ const OrgInvitationDetails = () => {
               <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Invitation Status
               </th>
-              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+              <th className="px-6 text-center py-4 font-semibold dark:text-[#88a7c4]">
                 Action
               </th>
             </tr>
@@ -516,7 +513,7 @@ const OrgInvitationDetails = () => {
                   <td className="px-6 py-4 text-center">
                     <button
                       disabled
-                      className="p-2 rounded-full transition-all text-gray-200 cursor-not-allowed opacity-50"
+                      className="p-2 rounded-full transition-all text-gray-300 cursor-not-allowed opacity-50"
                     >
                       <Icon icon="si:bin-line" width="16" height="16" />
                     </button>
@@ -541,35 +538,8 @@ const OrgInvitationDetails = () => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
-    </div >
+    </div>
   );
 };
 
 export default OrgInvitationDetails;
-
-const FilterSection = ({
-  title,
-  children,
-  open = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  open?: boolean;
-}) => {
-  const [isOpen, setIsOpen] = useState(open);
-  return (
-    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100 dark:border-[var(--app-border-color)]/20">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full font-bold text-gray-400 text-[10px] uppercase tracking-widest mb-1 shadow-none outline-none dark:text-[#88a7c4]"
-      >
-        {title}
-        <Icon
-          icon="mdi:chevron-down"
-          className={`transition-transform duration-200 text-gray-400 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      {isOpen && <div className="pl-1">{children}</div>}
-    </div>
-  );
-};

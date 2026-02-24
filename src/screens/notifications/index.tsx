@@ -70,7 +70,7 @@ const NotificationHistory = () => {
   });
 
   return (
-    <div className="bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-152px)] transition-all duration-300">
+    <div className="bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] transition-all duration-300">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>
@@ -100,19 +100,20 @@ const NotificationHistory = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-6 overflow-x-auto pb-1 no-scrollbar sticky top-[80px] z-10 bg-[var(--app-surface)] pt-2 border-b border-[var(--app-border-color)]/10">
+      <div className="flex gap-4 mb-6 overflow-x-auto no-scrollbar sticky top-[80px] z-10 bg-[var(--app-surface)]">
         {(["All", "Unread", "Read"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`text-sm font-semibold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${activeTab === tab
+            className={`text-sm font-semibold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+              activeTab === tab
                 ? "bg-[var(--primary-color)] text-white shadow-md shadow-[var(--primary-color)]/20"
                 : "text-[var(--app-text-muted)] hover:bg-[var(--app-surface-muted)]"
-              }`}
+            }`}
           >
             {tab}
             {tab === "All" && notifications.length > 0 && (
-              <span className="ml-2 bg-white/20 text-white text-xs px-1.5 py-0.5 rounded-full backdrop-blur-sm">
+              <span className="ml-2 bg-white text-[var(--primary-color)] text-xs py-0.5 px-[7px] rounded-full backdrop-blur-sm">
                 {notifications.length}
               </span>
             )}
@@ -132,10 +133,11 @@ const NotificationHistory = () => {
           filteredNotifications.map((notif) => (
             <div
               key={notif._id}
-              className={`flex sm:flex-row flex-col gap-4 p-5 rounded-xl border transition-all duration-300 group ${!notif.isRead
+              className={`flex sm:flex-row flex-col gap-4 p-5 rounded-xl border transition-all duration-300 group ${
+                !notif.isRead
                   ? "bg-[var(--app-surface-soft)]/40 border-[var(--primary-color)]/20 shadow-[0_4px_12px_-4px_rgba(68,140,210,0.15)] relative overflow-hidden"
                   : "bg-[var(--app-surface)] border-[var(--app-border-color)]/20"
-                }`}
+              }`}
               onClick={() => !notif.isRead && handleMarkRead(notif._id)}
             >
               {/* Unread Indicator Pill */}
@@ -145,12 +147,13 @@ const NotificationHistory = () => {
 
               <div className="flex-shrink-0">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${notif.type === "success"
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${
+                    notif.type === "success"
                       ? "bg-green-50/10 text-green-500"
                       : notif.type === "error"
                         ? "bg-red-50/10 text-red-500"
                         : "bg-[var(--primary-color)]/10 text-[var(--primary-color)]"
-                    }`}
+                  }`}
                 >
                   <Icon
                     icon={
