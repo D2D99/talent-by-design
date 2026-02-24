@@ -543,6 +543,7 @@ const OrgInvitation = () => {
                   }
                   value={searchTerm}
                   autoComplete="off"
+                  name="searchTerm"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
                 />
@@ -806,18 +807,20 @@ const OrgInvitation = () => {
                   >
                     Email
                   </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    autoComplete="off"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setSearchTerm(e.target.value);
-                    }}
-                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    placeholder="Enter email"
-                  />
+                  <form autoComplete="off">
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      name="modalEmail"
+                      autoComplete="off"
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                      }}
+                      className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                      placeholder="Enter email"
+                    />
+                  </form>
                 </div>
 
                 <div className="sm:mb-4 mb-2">
