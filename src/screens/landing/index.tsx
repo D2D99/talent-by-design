@@ -102,30 +102,16 @@ const Home = () => {
 
       {/* Hero Section Start */}
       <div className="relative isolate pt-10 overflow-x-hidden " id="hero-bg">
-        <div className="bg-svg pointer-events-none !w-full absolute left-1/2 -translate-x-1/2 z-0 pt-4">
+        <div className="bg-svg !w-full absolute left-1/2 -translate-x-1/2 -z-10 pt-4">
           <svg
             width="2025"
             height="591"
             viewBox="0 0 2025 591"
             xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
           >
-            <use
-              href="#ribbon-path"
-              className="hero-ribbon-base"
-              stroke="url(#grad)"
-            />
-            <use
-              href="#ribbon-path"
+            <path
               id="smoothPath"
-              className="hero-ribbon-flow"
-              stroke="url(#grad)"
-            />
-
-            <defs>
-              <path
-                id="ribbon-path"
-                d="M45.0029 507.481C74.1029 504.764 125.503 505.412 190.503 493.894
+              d="M45.0029 507.481C74.1029 504.764 125.503 505.412 190.503 493.894
     C255.503 482.377 290.203 476.494 370.003 449.894
     C449.803 423.294 515.403 393.577 589.503 360.894
     C663.603 328.212 693.203 321.981 740.503 286.481
@@ -153,7 +139,10 @@ const Home = () => {
     C1505.3 470.294 1559.9 487.564 1632.5 478.981
     C1705.1 470.398 1745 454.381 1814.5 414.481
     C1884 374.581 1946.9 306.481 1980 279.481"
-              />
+              stroke="url(#grad)"
+            />
+
+            <defs>
               <linearGradient
                 id="grad"
                 x1="0"
@@ -162,8 +151,8 @@ const Home = () => {
                 y2="0"
                 gradientUnits="userSpaceOnUse"
               >
-                <stop className="hero-stop-start" stopColor="var(--hero-curve-start)" />
-                <stop className="hero-stop-end" offset="1" stopColor="var(--hero-curve-end)" />
+                <stop stopColor="#E4F0FC" />
+                <stop offset="1" stopColor="#C7E0F8" />
               </linearGradient>
             </defs>
           </svg>

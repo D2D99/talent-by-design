@@ -442,137 +442,44 @@ input:-webkit-autofill:active {
 }
 
 .bg-svg svg {
-  --hero-svg-scale: 1.1;
   width: 100%;
   height: auto;
   display: block;
-  transform: scale(var(--hero-svg-scale));
-  animation: ribbonDrift 26s ease-in-out infinite alternate;
+  transform: scale(1.1);
 }
-
-.bg-svg {
-  filter: drop-shadow(0 0 18px rgba(68, 140, 210, 0.2));
-}
-
-:root.dark .bg-svg {
-  filter: drop-shadow(0 0 22px rgba(121, 186, 240, 0.18));
-}
-
-.bg-svg .hero-ribbon-base {
-  fill: none;
-  stroke-width: 90;
-  stroke-linecap: round;
-  opacity: 0.52;
-}
-
-:root.dark .bg-svg .hero-ribbon-base {
-  opacity: 0.45;
-}
-
-.bg-svg #smoothPath,
-.bg-svg .hero-ribbon-flow {
+.bg-svg #smoothPath {
   fill: none;
   stroke-width: 90;
   stroke-linecap: round;
 
-  /* Continuous moving segment over persistent ribbon */
-  stroke-dasharray: 1900 6200;
-  stroke-dashoffset: 0;
-  opacity: 0.96;
+  /* Path drawing */
+  stroke-dasharray: 6200;
+  stroke-dashoffset: 6200;
 
-  /* Continuous start-to-flow animation */
+  /* Smooth premium animation */
   animation:
-    ribbonFlowLoop 12.5s linear infinite,
-    ribbonPulse 6.8s ease-in-out infinite;
+    drawLine 6s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+    fadeIn 1.2s ease-out forwards;
 }
 
-@keyframes ribbonPulse {
-  0%,
-  100% {
-    opacity: 0.76;
-  }
-
-  50% {
-    opacity: 0.97;
-  }
-}
-
-@keyframes ribbonFlowLoop {
-  0% {
+@keyframes drawLine {
+  to {
     stroke-dashoffset: 0;
   }
-
-  100% {
-    stroke-dashoffset: -8100;
-  }
 }
 
-@keyframes heroStopStart {
-  0%,
-  100% {
-    stop-color: var(--hero-curve-start);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-
-  50% {
-    stop-color: var(--primary-color);
-  }
-}
-
-@keyframes heroStopEnd {
-  0%,
-  100% {
-    stop-color: var(--hero-curve-end);
-  }
-
-  50% {
-    stop-color: var(--dark-primary-color);
-  }
-}
-
-.bg-svg .hero-stop-start {
-  animation: heroStopStart 7.5s ease-in-out infinite;
-}
-
-.bg-svg .hero-stop-end {
-  animation: heroStopEnd 8.5s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bg-svg svg {
-    animation: none;
-  }
-
-  .bg-svg #smoothPath,
-  .bg-svg .hero-ribbon-flow {
-    animation: none;
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-    opacity: 0.86;
-  }
-
-  .bg-svg .hero-stop-start,
-  .bg-svg .hero-stop-end {
-    animation: none;
-  }
-}
-
-@keyframes ribbonDrift {
-  0% {
-    transform: translateX(-1.8%) translateY(0) scale(var(--hero-svg-scale));
-  }
-
-  50% {
-    transform: translateX(0.6%) translateY(-0.8%) scale(var(--hero-svg-scale));
-  }
-
-  100% {
-    transform: translateX(1.6%) translateY(0.6%) scale(var(--hero-svg-scale));
+  to {
+    opacity: 1;
   }
 }
 
 @media (max-width: 767px) {
   .bg-svg svg {
-    --hero-svg-scale: 1.6;
+    transform: scale(1.6);
   }
 }
 
