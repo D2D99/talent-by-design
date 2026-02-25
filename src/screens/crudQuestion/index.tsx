@@ -18,83 +18,85 @@ import type {
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
   admin: {
     "People Potential": [
-      "Psychological Safety Leadership",
-      "Talent, Learning & Workforce Strategy",
-      "Engagement & Culture Stewardship",
-      "Leadership Communication & Visibility",
+      "Mindset & Adaptability",
+      "Psychological Health & Safety",
+      "Relational & Emotional Intelligence Adaptability"
     ],
     "Operational Steadiness": [
-      "Operating Model Clarity",
-      "Cross-Functional Governance",
-      "Decision Rights & Accountability",
-      "Risk, Resilience & Change Readiness",
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management"
     ],
     "Digital Fluency": [
-      "Digital Modernization Leadership",
-      "Strategic Collaboration Architecture",
-      "Operational Governance & Risk",
-      "AI Strategy & Data Fluency",
-    ],
+      "Data",
+      "AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset",
+      "Confidence and Change Readiness",
+      "Tool & System Proficiency"
+    ]
   },
   leader: {
     "People Potential": [
-      "Psychological Safety Leadership",
-      "Talent, Learning & Workforce Strategy",
-      "Engagement & Culture Stewardship",
-      "Leadership Communication & Visibility",
+      "Mindset & Adaptability",
+      "Psychological Health & Safety",
+      "Relational & Emotional Intelligence Adaptability"
     ],
     "Operational Steadiness": [
-      "Operating Model Clarity",
-      "Cross-Functional Governance",
-      "Decision Rights & Accountability",
-      "Risk, Resilience & Change Readiness",
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management"
     ],
     "Digital Fluency": [
-      "Digital Modernization Leadership",
-      "Strategic Collaboration Architecture",
-      "Operational Governance & Risk",
-      "AI Strategy & Data Fluency",
-    ],
+      "Data",
+      "AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset",
+      "Confidence and Change Readiness",
+      "Tool & System Proficiency"
+    ]
   },
+
   manager: {
     "People Potential": [
-      "Psychological Safety Enablement",
-      "Coaching & Development Support",
-      "Fairness, Inclusion & Trust",
-      "Managerial Communication Quality",
+      "Mindset & Adaptability",
+      "Psychological Health & Safety",
+      "Relational & Emotional Intelligence Adaptability"
     ],
     "Operational Steadiness": [
-      "Workflow Oversight & Issue Resolution",
-      "Consistency & Reinforcement",
-      "Prioritization & Capacity Management",
-      "Escalation & Risk Awareness",
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management"
     ],
     "Digital Fluency": [
-      "Team Digital Enablement",
-      "Communication & Coordination Oversight",
-      "Workflow Governance & Efficiency",
-      "Digital Tool Adoption",
-    ],
+      "Data",
+      "AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset",
+      "Confidence and Change Readiness",
+      "Tool & System Proficiency"
+    ]
   },
+
   employee: {
     "People Potential": [
-      "Psychological Safety",
-      "Trust & Communication",
-      "Learning Agility",
-      "Leadership Support",
+      "Mindset & Adaptability",
+      "Psychological Health & Safety",
+      "Relational & Emotional Intelligence Adaptability"
     ],
     "Operational Steadiness": [
-      "Clarity of Roles & Expectations",
-      "Consistency of Processes",
-      "Decision-Making Flow",
-      "Workload & Capacity",
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management"
     ],
     "Digital Fluency": [
-      "Tool & System Proficiency",
-      "Collaboration & Coordination",
-      "Workflow Efficiency",
-      "AI Readiness",
-    ],
+      "Data",
+      "AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset",
+      "Confidence and Change Readiness",
+      "Tool & System Proficiency"
+    ]
   },
 };
 
@@ -133,7 +135,7 @@ const INITIAL_FORM_DATA: QuestionFormData = {
   domain: "",
   subDomain: "",
   type: "",
-  code: "",
+  code: "Auto-generated",
   question: "",
   scale: "",
   prompt: "",
@@ -142,6 +144,60 @@ const INITIAL_FORM_DATA: QuestionFormData = {
   optionBLabel: "",
   optionBPrompt: "",
   higherValueOption: "A",
+};
+
+const domainAbbr: Record<string, string> = {
+  "People Potential": "PP",
+  "Operational Steadiness": "OS",
+  "Digital Fluency": "DF"
+};
+
+const stakeholderPrefix: Record<string, string> = {
+  "admin": "A",
+  "leader": "L",
+  "manager": "M",
+  "employee": "E"
+};
+
+const typeSuffix: Record<string, string> = {
+  "Calibration": "CAL",
+  "Behavioural": "B",
+  "Forced-Choice": "FC",
+  "Self-Rating": ""
+};
+
+const getAbbreviation = (text: string) => {
+  if (!text) return "";
+  return text
+    .split(/[\s&/-]+/)
+    .filter(word => word.length > 0 && !["and", "the", "with", "or"].includes(word.toLowerCase()))
+    .map(word => word[0].toUpperCase())
+    .join("");
+};
+
+const getGeneratedCodePreview = (data: QuestionFormData, allQuestions: Question[]) => {
+  if (!data.role || !data.domain || !data.subDomain || !data.type) return "Auto-generated";
+  const dAbbr = domainAbbr[data.domain] || getAbbreviation(data.domain);
+  const sAbbr = getAbbreviation(data.subDomain);
+  const rolePref = stakeholderPrefix[data.role.toLowerCase()] || data.role[0].toUpperCase();
+  const tSuff = typeSuffix[data.type] || "";
+
+  const prefix = `${dAbbr}-${sAbbr}-${rolePref}${tSuff}`;
+
+  // Find questions with this prefix in the local state to determine the next number
+  // This matches the regex logic in the backend
+  const regex = new RegExp(`^${prefix}(\\d+)$`);
+  let maxNum = 0;
+
+  allQuestions.forEach(q => {
+    const match = q.questionCode?.match(regex);
+    if (match) {
+      const num = parseInt(match[1]);
+      if (num > maxNum) maxNum = num;
+    }
+  });
+
+  return `${prefix}${maxNum + 1}`;
 };
 
 const CrudQuestion = () => {
@@ -369,6 +425,7 @@ const CrudQuestion = () => {
       role: filterRole || "",
       domain: activeTabDomain,
     };
+    initialData.code = getGeneratedCodePreview(initialData, allQuestions);
     setAddForms([initialData]);
 
     const modal = Modal.getOrCreateInstance(
@@ -419,12 +476,21 @@ const CrudQuestion = () => {
       const newList = [...prev];
       newList[index] = { ...newList[index], [field]: value };
 
+      // Re-calculate code preview if relevant fields change
+      if (["role", "domain", "subDomain", "type"].includes(field)) {
+        newList[index].code = getGeneratedCodePreview(newList[index], allQuestions);
+      }
+
       // Cascading Logic: Use Requirement "if role is select then it will be fix in the next queeiotsn also"
       // AND Backend Requirement: "All questions must belong to the same stakeholder"
       // Implementation: If we change the Role of the FIRST question (index 0), we update ALL questions.
       if (index === 0 && field === "role") {
         for (let i = 1; i < newList.length; i++) {
-          newList[i] = { ...newList[i], role: value };
+          newList[i] = {
+            ...newList[i],
+            role: value,
+            code: getGeneratedCodePreview({ ...newList[i], role: value }, allQuestions)
+          };
         }
       }
 
@@ -445,6 +511,7 @@ const CrudQuestion = () => {
         scale: lastItem.scale,
         // Resetting code, question, prompt etc.
       };
+      newItem.code = getGeneratedCodePreview(newItem, allQuestions);
       return [...prev, newItem];
     });
   };
@@ -467,8 +534,17 @@ const CrudQuestion = () => {
       key = id.replace("add", "");
       key = key.charAt(0).toLowerCase() + key.slice(1);
     }
-    // If using cleaner IDs in Edit Modal:
-    setEditFormData((prev) => ({ ...prev, [key]: value }));
+
+    setEditFormData((prev) => {
+      const newData = { ...prev, [key]: value };
+      // If type, domain, or subdomain changed (internal logic check, though backend restricts edit)
+      if (["type", "domain", "subDomain", "role"].includes(key)) {
+        // Only preview if it's already an auto-generated style or if we want to force re-gen
+        // For now, let's just update the preview if they change the type
+        newData.code = getGeneratedCodePreview(newData, allQuestions);
+      }
+      return newData;
+    });
   };
 
   // 4. API ACTIONS
@@ -497,16 +573,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                  optionA: {
-                    label: form.optionALabel,
-                    insightPrompt: form.optionAPrompt,
-                  },
-                  optionB: {
-                    label: form.optionBLabel,
-                    insightPrompt: form.optionBPrompt,
-                  },
-                  higherValueOption: form.higherValueOption as "A" | "B",
-                }
+                optionA: {
+                  label: form.optionALabel,
+                  insightPrompt: form.optionAPrompt,
+                },
+                optionB: {
+                  label: form.optionBLabel,
+                  insightPrompt: form.optionBPrompt,
+                },
+                higherValueOption: form.higherValueOption as "A" | "B",
+              }
               : undefined,
         };
       });
@@ -545,16 +621,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-                optionA: {
-                  label: editFormData.optionALabel,
-                  insightPrompt: editFormData.optionAPrompt,
-                },
-                optionB: {
-                  label: editFormData.optionBLabel,
-                  insightPrompt: editFormData.optionBPrompt,
-                },
-                higherValueOption: editFormData.higherValueOption as "A" | "B",
-              }
+              optionA: {
+                label: editFormData.optionALabel,
+                insightPrompt: editFormData.optionAPrompt,
+              },
+              optionB: {
+                label: editFormData.optionBLabel,
+                insightPrompt: editFormData.optionBPrompt,
+              },
+              higherValueOption: editFormData.higherValueOption as "A" | "B",
+            }
             : undefined,
       });
       await fetchQuestions();
@@ -845,11 +921,10 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain to ensure immediate updates
                     }}
                     className={`px-6 py-2.5 text-sm  uppercase rounded-full transition-all whitespace-nowrap
-                            ${
-                              filterDomains.includes(domain)
-                                ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]"
-                                : "text-neutral-500 font-semibold dark:text-[#9bb8d3]"
-                            }`}
+                            ${filterDomains.includes(domain)
+                        ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]"
+                        : "text-neutral-500 font-semibold dark:text-[#9bb8d3]"
+                      }`}
                   >
                     {domain}
                   </button>
@@ -863,11 +938,10 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${
-                      showFilters
-                        ? "bg-[var(--primary-color)] text-white"
-                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-                    }`}
+                    ${showFilters
+                ? "bg-[var(--primary-color)] text-white"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+              }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -971,11 +1045,10 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
-                              openSubdomains.includes(subdomainTitle)
-                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
-                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                            }`}
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
+                              ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                              : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
+                              }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -983,11 +1056,10 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${
-                          openSubdomains.includes(subdomainTitle)
-                            ? ""
-                            : "hidden"
-                        }`}
+                        className={`!visible ${openSubdomains.includes(subdomainTitle)
+                          ? ""
+                          : "hidden"
+                          }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
                         <Droppable droppableId={subdomainTitle}>
@@ -1322,10 +1394,10 @@ const CrudModals = (props: CrudModalsProps) => {
           <label className="block font-bold text-sm text-gray-700">Code</label>
           <input
             type="text"
-            value={data.code}
-            onChange={(e) => onFieldChange("code", e.target.value)}
-            placeholder="Ex: PS-01"
-            className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+            value={isAddMode ? data.code : data.code}
+            readOnly
+            placeholder="Auto-generated"
+            className="font-bold text-sm appearance-none text-[#1A3652] bg-gray-50 outline-none w-full p-3 mt-2 border rounded-lg border-[#E8E8E8] cursor-not-allowed dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
           />
         </div>
         {/* Scale */}
