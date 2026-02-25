@@ -175,7 +175,7 @@ const getAbbreviation = (text: string) => {
     .join("");
 };
 
-const getGeneratedCodePreview = (data: QuestionFormData, allQuestions: Question[]) => {
+const getGeneratedCodePreview = (data: QuestionFormData, allQuestions: Question[], currentBatch: QuestionFormData[] = [], currentIndex: number = -1) => {
   if (!data.role || !data.domain || !data.subDomain || !data.type) return "Auto-generated";
   const dAbbr = domainAbbr[data.domain] || getAbbreviation(data.domain);
   const sAbbr = getAbbreviation(data.subDomain);
@@ -184,8 +184,7 @@ const getGeneratedCodePreview = (data: QuestionFormData, allQuestions: Question[
 
   const prefix = `${dAbbr}-${sAbbr}-${rolePref}${tSuff}`;
 
-  // Find questions with this prefix in the local state to determine the next number
-  // This matches the regex logic in the backend
+  // 1. Find max number in already existing questions (DB)
   const regex = new RegExp(`^${prefix}(\\d+)$`);
   let maxNum = 0;
 
@@ -197,7 +196,23 @@ const getGeneratedCodePreview = (data: QuestionFormData, allQuestions: Question[
     }
   });
 
-  return `${prefix}${maxNum + 1}`;
+  // 2. Account for questions in the current "Add" list that come BEFORE this one
+  let batchIncrement = 0;
+  if (currentBatch.length > 0 && currentIndex !== -1) {
+    for (let i = 0; i < currentIndex; i++) {
+      const other = currentBatch[i];
+      if (
+        other.role === data.role &&
+        other.domain === data.domain &&
+        other.subDomain === data.subDomain &&
+        other.type === data.type
+      ) {
+        batchIncrement++;
+      }
+    }
+  }
+
+  return `${prefix}${maxNum + batchIncrement + 1}`;
 };
 
 const CrudQuestion = () => {
@@ -425,7 +440,7 @@ const CrudQuestion = () => {
       role: filterRole || "",
       domain: activeTabDomain,
     };
-    initialData.code = getGeneratedCodePreview(initialData, allQuestions);
+    initialData.code = getGeneratedCodePreview(initialData, allQuestions, [initialData], 0);
     setAddForms([initialData]);
 
     const modal = Modal.getOrCreateInstance(
@@ -478,7 +493,10 @@ const CrudQuestion = () => {
 
       // Re-calculate code preview if relevant fields change
       if (["role", "domain", "subDomain", "type"].includes(field)) {
-        newList[index].code = getGeneratedCodePreview(newList[index], allQuestions);
+        // Update previews for EVERYTHING because changing one index can shift numbers for all subsequent ones
+        for (let i = 0; i < newList.length; i++) {
+          newList[i].code = getGeneratedCodePreview(newList[i], allQuestions, newList, i);
+        }
       }
 
       // Cascading Logic: Use Requirement "if role is select then it will be fix in the next queeiotsn also"
@@ -489,7 +507,7 @@ const CrudQuestion = () => {
           newList[i] = {
             ...newList[i],
             role: value,
-            code: getGeneratedCodePreview({ ...newList[i], role: value }, allQuestions)
+            code: getGeneratedCodePreview({ ...newList[i], role: value }, allQuestions, newList, i)
           };
         }
       }
@@ -511,16 +529,26 @@ const CrudQuestion = () => {
         scale: lastItem.scale,
         // Resetting code, question, prompt etc.
       };
-      newItem.code = getGeneratedCodePreview(newItem, allQuestions);
-      return [...prev, newItem];
+
+      const newList = [...prev, newItem];
+      // Re-calculate ALL codes in the batch to be safe
+      for (let i = 0; i < newList.length; i++) {
+        newList[i].code = getGeneratedCodePreview(newList[i], allQuestions, newList, i);
+      }
+      return newList;
     });
   };
 
   const removeAddForm = (index: number) => {
-    if (addForms.length <= 1) return; // Don't delete the last one
-    setAddForms((prev: QuestionFormData[]) =>
-      prev.filter((_, i) => i !== index),
-    );
+    if (addForms.length <= 1) return;
+    setAddForms((prev: QuestionFormData[]) => {
+      const filtered = prev.filter((_, i) => i !== index);
+      // Re-calculate codes for the remaining items
+      for (let i = 0; i < filtered.length; i++) {
+        filtered[i].code = getGeneratedCodePreview(filtered[i], allQuestions, filtered, i);
+      }
+      return filtered;
+    });
   };
 
   // Handler for EDIT Modal Inputs (Single)
