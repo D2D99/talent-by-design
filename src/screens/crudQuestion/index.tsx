@@ -295,6 +295,41 @@ const CrudQuestion = () => {
       ? filterDomains[0]
       : filterDomains[0] || "People Potential";
 
+  // -- Validation Logic --
+  const isFormValid = (form: QuestionFormData) => {
+    // Common required fields
+    if (
+      !form.role ||
+      !form.domain ||
+      !form.subDomain ||
+      !form.type ||
+      !form.question ||
+      !form.scale
+    )
+      return false;
+
+    // Scale specific validation
+    if (form.scale === "FORCED_CHOICE") {
+      return (
+        !!form.optionALabel &&
+        !!form.optionAPrompt &&
+        !!form.optionBLabel &&
+        !!form.optionBPrompt &&
+        !!form.higherValueOption
+      );
+    } else {
+      return !!form.prompt;
+    }
+  };
+
+  const isAddBatchValid = useMemo(() => {
+    return addForms.every(isFormValid);
+  }, [addForms]);
+
+  const isEditValid = useMemo(() => {
+    return isFormValid(editFormData);
+  }, [editFormData]);
+
   // 2. FILTER LOGIC
   const toggleFilter = (
     setter: React.Dispatch<React.SetStateAction<string[]>>,
@@ -683,6 +718,7 @@ const CrudQuestion = () => {
     if (!selectedQuestion) return;
     setLoading(true);
     try {
+      await questionService.deleteQuestion(selectedQuestion._id);
       setAllQuestions((prev: Question[]) =>
         prev.filter((q: Question) => q._id !== selectedQuestion._id),
       );
@@ -1193,6 +1229,8 @@ const CrudQuestion = () => {
         confirmDelete={handleConfirmDelete}
         loading={loading}
         subdomainsGetter={getSubdomainsForForm}
+        isAddBatchValid={isAddBatchValid}
+        isEditValid={isEditValid}
       />
     </div>
   );
@@ -1242,6 +1280,8 @@ interface CrudModalsProps {
   confirmDelete: () => Promise<void>;
   loading: boolean;
   subdomainsGetter: (role: string, domain: string) => string[];
+  isAddBatchValid: boolean;
+  isEditValid: boolean;
 }
 
 const CrudModals = (props: CrudModalsProps) => {
@@ -1257,6 +1297,8 @@ const CrudModals = (props: CrudModalsProps) => {
     confirmDelete,
     loading,
     subdomainsGetter,
+    isAddBatchValid,
+    isEditValid,
   } = props;
 
   // Helper to render a SINGLE form (reusable for Add list)
@@ -1632,7 +1674,7 @@ const CrudModals = (props: CrudModalsProps) => {
               <button
                 type="button"
                 onClick={handleCreate}
-                disabled={loading}
+                disabled={loading || !isAddBatchValid}
                 className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
                 {loading ? "Creating..." : "Create"}
@@ -1748,7 +1790,7 @@ const CrudModals = (props: CrudModalsProps) => {
               <button
                 type="button"
                 onClick={handleUpdate}
-                disabled={loading}
+                disabled={loading || !isEditValid}
                 className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
                 {loading ? "Updating..." : "Update"}
