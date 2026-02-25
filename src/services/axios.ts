@@ -20,8 +20,13 @@ api.interceptors.response.use(
     const isLogoutRequest = error.config?.url?.includes("auth/logout");
 
     if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest) {
-      // Dispatch custom event for the UI to handle
-      window.dispatchEvent(new CustomEvent("session-expired"));
+      // Check if we are intentionally logging out
+      const isLoggingOut = localStorage.getItem("isLoggingOut") === "true";
+
+      if (!isLoggingOut) {
+        // Dispatch custom event for the UI to handle
+        window.dispatchEvent(new CustomEvent("session-expired"));
+      }
     }
     return Promise.reject(error);
   }
