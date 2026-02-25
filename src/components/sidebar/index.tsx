@@ -16,11 +16,20 @@ const THEME_STORAGE_KEY = "tbd-theme";
 
 const clearAuthStorage = () => {
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  const isLoggingOut = localStorage.getItem("isLoggingOut");
   localStorage.clear();
   sessionStorage.clear();
 
   if (savedTheme === "light" || savedTheme === "dark") {
     localStorage.setItem(THEME_STORAGE_KEY, savedTheme);
+  }
+
+  if (isLoggingOut === "true") {
+    localStorage.setItem("isLoggingOut", "true");
+    // Remove it after a short delay so it doesn't stay forever
+    setTimeout(() => {
+      localStorage.removeItem("isLoggingOut");
+    }, 1000);
   }
 
   window.dispatchEvent(new Event("auth-changed"));

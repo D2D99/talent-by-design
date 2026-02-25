@@ -40,6 +40,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     setUser(null);
     window.dispatchEvent(new Event("auth-changed"));
+
+    // Clear the flag after a short delay
+    setTimeout(() => {
+      localStorage.removeItem("isLoggingOut");
+    }, 1000);
   };
 
   return (

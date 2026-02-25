@@ -39,6 +39,7 @@ const OrgInvitation = () => {
 
   // New state to track which item is being deleted
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const isSuperAdmin = currentUserRole === "superadmin";
 
@@ -169,6 +170,32 @@ const OrgInvitation = () => {
       "bulkCsvInput",
     ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.name.endsWith(".csv")) {
+      toast.error("Please upload a CSV file");
+      return;
+    }
+
+    setCsvFile(file);
   };
 
   const handleBulkInvite = async () => {
@@ -433,14 +460,24 @@ const OrgInvitation = () => {
                       onClick={() =>
                         document.getElementById("bulkCsvInput")?.click()
                       }
-                      className="h-full min-h-[160px] border border-dashed border-gray-100 rounded-[20px] flex flex-col items-center justify-center p-4 text-center hover:border-blue-400 hover:bg-blue-50/10 transition-all duration-300 cursor-pointer group/upload"
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
+                          ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
+                          : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
+                        }`}
                     >
-                      <div className="relative mb-3 flex flex-col items-center">
-                        <div className="absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 opacity-0 group-hover/upload:opacity-100 transition-opacity"></div>
+                      <div className="relative mb-3 flex flex-col items-center pointer-events-none">
+                        <div
+                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${isDragging ? "opacity-100" : "opacity-0 group-hover/upload:opacity-100"
+                            }`}
+                        ></div>
                         <Icon
                           icon="logos:csv"
                           width="36"
-                          className="relative z-10 drop-shadow-sm group-hover/upload:scale-110 transition-transform duration-300"
+                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${isDragging ? "scale-110" : "group-hover/upload:scale-110"
+                            }`}
                         />
                       </div>
 
@@ -724,11 +761,10 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${
-                                canDelete
+                              className={`p-2 rounded-full transition-all ${canDelete
                                   ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
-                              }`}
+                                }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
