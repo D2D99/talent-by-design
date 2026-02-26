@@ -352,6 +352,64 @@ const CrudQuestion = () => {
     );
   };
 
+  const handleTypeFilterChange = (type: string) => {
+    const isCurrentlySelected = filterTypes.includes(type);
+    const targetScale = TYPE_TO_SCALE[type];
+
+    // Update Types
+    setFilterTypes((prev) =>
+      isCurrentlySelected ? prev.filter((t) => t !== type) : [...prev, type],
+    );
+
+    // Update Scales
+    if (targetScale) {
+      if (isCurrentlySelected) {
+        // If deselecting, only remove scale filter if no OTHER selected types use it
+        const otherTypesUsingScale = filterTypes.some(
+          (t) => t !== type && TYPE_TO_SCALE[t] === targetScale,
+        );
+        if (!otherTypesUsingScale) {
+          setFilterScales((prev) => prev.filter((s) => s !== targetScale));
+        }
+      } else {
+        // If selecting, add scale filter if not already there
+        setFilterScales((prev) =>
+          prev.includes(targetScale) ? prev : [...prev, targetScale],
+        );
+      }
+    }
+  };
+
+  const handleScaleFilterChange = (scale: string) => {
+    const isCurrentlySelected = filterScales.includes(scale);
+
+    // Update Scales
+    setFilterScales((prev) =>
+      isCurrentlySelected ? prev.filter((s) => s !== scale) : [...prev, scale],
+    );
+
+    // Update Types
+    const associatedTypes = QUESTION_TYPES.filter(
+      (t) => TYPE_TO_SCALE[t] === scale,
+    );
+
+    if (isCurrentlySelected) {
+      // If deselecting scale, remove all its associated types
+      setFilterTypes((prev) =>
+        prev.filter((t) => !associatedTypes.includes(t)),
+      );
+    } else {
+      // If selecting scale, add its associated types
+      setFilterTypes((prev) => {
+        const nextTypes = [...prev];
+        associatedTypes.forEach((t) => {
+          if (!nextTypes.includes(t)) nextTypes.push(t);
+        });
+        return nextTypes;
+      });
+    }
+  };
+
   const availableSubdomains = useMemo(() => {
     const subdomainsSet = new Set<string>();
     const rolesToCheck = filterRole
@@ -980,7 +1038,7 @@ const CrudQuestion = () => {
                   <input
                     type="checkbox"
                     checked={filterTypes.includes(t)}
-                    onChange={() => toggleFilter(setFilterTypes, t)}
+                    onChange={() => handleTypeFilterChange(t)}
                     className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                   />
                   <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)]">
@@ -999,7 +1057,7 @@ const CrudQuestion = () => {
                   <input
                     type="checkbox"
                     checked={filterScales.includes(s)}
-                    onChange={() => toggleFilter(setFilterScales, s)}
+                    onChange={() => handleScaleFilterChange(s)}
                     className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                   />
                   <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)] lowercase">
@@ -1170,8 +1228,8 @@ const CrudQuestion = () => {
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
                             className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
-                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
-                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
+                              ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                              : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
                               }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
@@ -1181,8 +1239,8 @@ const CrudQuestion = () => {
                       <div
                         id={`collapse-${safeId}`}
                         className={`!visible ${openSubdomains.includes(subdomainTitle)
-                            ? ""
-                            : "hidden"
+                          ? ""
+                          : "hidden"
                           }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
