@@ -85,6 +85,11 @@ class QuestionService {
   async deleteQuestion(id: string): Promise<void> {
     await api.delete(`${this.endpoint}/${id}`);
   }
+
+  // Batch reorder questions after drag and drop
+  async reorderQuestions(updates: { id: string; order: number; subdomain?: string }[]): Promise<void> {
+    await api.put(`${this.endpoint}/reorder`, updates);
+  }
 }
 
 export const questionService = new QuestionService();
