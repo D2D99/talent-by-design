@@ -3,13 +3,12 @@ import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
-import Logo from "../../../public/static/img/home/logo.svg";
+import Logo from "../../../public/static/img/POD-logo.svg";
 import ResendMail from "../../../public/static/img/icons/resend-email-icon.svg";
 import { Icon } from "@iconify/react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import SpinnerLoader from "../spinnerLoader";
 import { toast } from "react-toastify";
-
 
 interface ForcedChoiceOption {
   label: string;
@@ -51,7 +50,11 @@ const AssessmentQuestion = () => {
   const { token: routeToken } = useParams();
   const [searchParams] = useSearchParams();
 
-  const token = searchParams.get("token") || routeToken || localStorage.getItem("accessToken") || localStorage.getItem("token");
+  const token =
+    searchParams.get("token") ||
+    routeToken ||
+    localStorage.getItem("accessToken") ||
+    localStorage.getItem("token");
   const assessmentIdFromUrl = searchParams.get("assessmentId");
 
   const [pageLoading, setPageLoading] = useState(true);
@@ -120,7 +123,7 @@ const AssessmentQuestion = () => {
     try {
       const decoded: DecodedToken = jwtDecode(token);
       let role = decoded.role?.toLowerCase() || "employee";
-      if (role === 'superadmin') role = 'admin'; // Mapping superAdmin to admin questions
+      if (role === "superadmin") role = "admin"; // Mapping superAdmin to admin questions
       setUserRole(role);
 
       setFinalForm((prev) => ({
@@ -191,7 +194,6 @@ const AssessmentQuestion = () => {
         const message = axiosError.response?.data?.message || "Check fields";
         toast.error(`Server error: ${message}`);
       } finally {
-
         setIsSubmitting(false);
       }
     }
@@ -210,23 +212,19 @@ const AssessmentQuestion = () => {
       return;
     }
 
-
     setIsSubmitting(true);
     try {
-      const submissionUrl = userRole === 'employee'
-        ? `employee-assessment/${assessmentId}/submit/${token}`
-        : `assessment/${assessmentId}/submit`;
+      const submissionUrl =
+        userRole === "employee"
+          ? `employee-assessment/${assessmentId}/submit/${token}`
+          : `assessment/${assessmentId}/submit`;
 
-      const response = await api.post(
-        submissionUrl,
-        finalForm,
-        {
-          headers: {
-            "x-invite-token": token,
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await api.post(submissionUrl, finalForm, {
+        headers: {
+          "x-invite-token": token,
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (response.status === 200) {
         localStorage.removeItem(`ans_${token}`);
@@ -237,10 +235,10 @@ const AssessmentQuestion = () => {
       const axiosError = error as AxiosError<{ message: string }>;
       if (axiosError.response?.status === 401) return;
 
-      const message = axiosError.response?.data?.message || "Submission failed.";
+      const message =
+        axiosError.response?.data?.message || "Submission failed.";
       toast.error(message);
     } finally {
-
       setIsSubmitting(false);
     }
   };
@@ -250,8 +248,8 @@ const AssessmentQuestion = () => {
   const progressPercentage =
     questions.length > 0
       ? ((currentIndex + (showFinalForm || userRole !== "employee" ? 1 : 0)) /
-        questions.length) *
-      100
+          questions.length) *
+        100
       : 0;
 
   const isContinueDisabled =
@@ -276,21 +274,26 @@ const AssessmentQuestion = () => {
 
         {questions.length === 0 && !pageLoading ? (
           <div className="text-center p-10 bg-white rounded-xl shadow-md">
-            <h2 className="text-xl font-bold text-gray-700">No Questions Found</h2>
-            <p className="text-gray-500 mt-2">There are no assessment questions available for your role ({userRole}).</p>
-            <div className="mt-6">
+            <h2 className="sm:text-2xl text-xl text-center font-bold text-[var(--secondary-color)]">
+              No Questions Found
+            </h2>
+            <p className="text-gray-500 mt-2">
+              There are no assessment questions available for your role (
+              {userRole}).
+            </p>
+            <div className="mt-10 flex justify-center items-center">
               <button
                 onClick={() => navigate("/")}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-full transition-colors"
+                className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200"
               >
-                Go Home
+                Back To Home
               </button>
             </div>
           </div>
         ) : (
           <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
             {isSubmitted ? (
-              <div className="py-10">
+              <div>
                 <img
                   src={ResendMail}
                   className="mx-auto w-auto mb-6"
@@ -303,7 +306,7 @@ const AssessmentQuestion = () => {
                   </span>
                 </h2>
                 <p className="text-sm font-normal sm:mb-6 mb-3 text-center text-gray-600">
-                  Your inputs have been securely recorded...
+                  Your inputs have been securely recorded.
                 </p>
                 <div className="flex justify-center mt-8">
                   <button
@@ -346,10 +349,11 @@ const AssessmentQuestion = () => {
                         {[1, 2, 3, 4, 5].map((num) => (
                           <div key={num} className="flex flex-col items-center">
                             <label
-                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
-                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                                : "text-[var(--secondary-color)] hover:bg-blue-50"
-                                }`}
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
+                                selectedValue === num
+                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
+                              }`}
                             >
                               {num}
                               <input
@@ -376,10 +380,11 @@ const AssessmentQuestion = () => {
                         {(["A", "B"] as const).map((opt) => (
                           <label
                             key={opt}
-                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${selectedValue === opt
-                              ? "border-[var(--primary-color)] bg-blue-50"
-                              : ""
-                              }`}
+                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${
+                              selectedValue === opt
+                                ? "border-[var(--primary-color)] bg-blue-50"
+                                : ""
+                            }`}
                           >
                             <input
                               className="w-4 h-4 accent-blue-500"
@@ -398,21 +403,24 @@ const AssessmentQuestion = () => {
                     )}
 
                     <div
-                      className={`transition-all duration-300 ${(!isForcedChoice &&
-                        typeof selectedValue === "number" &&
-                        selectedValue <= 3) ||
+                      className={`transition-all duration-300 ${
+                        (!isForcedChoice &&
+                          typeof selectedValue === "number" &&
+                          selectedValue <= 3) ||
                         (isForcedChoice && selectedValue === higherValueOption)
-                        ? "opacity-100 h-auto"
-                        : "opacity-0 h-0 overflow-hidden"
-                        }`}
+                          ? "opacity-100 h-auto"
+                          : "opacity-0 h-0 overflow-hidden"
+                      }`}
                     >
                       <label className="text-sm font-bold block mb-2">
                         {isForcedChoice
                           ? selectedValue === "A"
-                            ? currentQuestion?.forcedChoice?.optionA.insightPrompt
-                            : currentQuestion?.forcedChoice?.optionB.insightPrompt
+                            ? currentQuestion?.forcedChoice?.optionA
+                                .insightPrompt
+                            : currentQuestion?.forcedChoice?.optionB
+                                .insightPrompt
                           : currentQuestion?.insightPrompt ||
-                          "Why did you choose this score?"}
+                            "Why did you choose this score?"}
                         <span className="text-black"> *</span>
                       </label>
                       <textarea
@@ -446,7 +454,10 @@ const AssessmentQuestion = () => {
                       <input
                         value={finalForm.lastName}
                         onChange={(e) =>
-                          setFinalForm({ ...finalForm, lastName: e.target.value })
+                          setFinalForm({
+                            ...finalForm,
+                            lastName: e.target.value,
+                          })
                         }
                         className="w-full p-3 mt-2 border rounded-lg"
                       />
@@ -503,14 +514,19 @@ const AssessmentQuestion = () => {
                   <button
                     type="button"
                     disabled={isContinueDisabled || isSubmitting}
-                    onClick={showFinalForm ? () => handleFinalSubmit() : () => handleNext()}
+                    onClick={
+                      showFinalForm
+                        ? () => handleFinalSubmit()
+                        : () => handleNext()
+                    }
                     className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white ps-3 pe-5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
                   >
                     {isSubmitting
                       ? "Processing..."
                       : showFinalForm
                         ? "Finish Assessment"
-                        : (currentIndex === questions.length - 1 && userRole !== 'employee')
+                        : currentIndex === questions.length - 1 &&
+                            userRole !== "employee"
                           ? "Finish Assessment"
                           : "Continue"}
                     {!isSubmitting && (

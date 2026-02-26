@@ -18,85 +18,77 @@ import type {
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
   admin: {
     "People Potential": [
-      "Mindset & Adaptability",
       "Psychological Health & Safety",
-      "Relational & Emotional Intelligence Adaptability"
+      "Mindset & Adaptability",
+      "Relational & Emotional Intelligence",
     ],
     "Operational Steadiness": [
       "Prioritization",
       "Workflow Clarity",
-      "Effective Resource Management"
+      "Effective Resource Management",
     ],
     "Digital Fluency": [
-      "Data",
-      "AI & Automation Readiness",
+      "Data, AI & Automation Readiness",
       "Digital Communication & Collaboration",
-      "Mindset",
-      "Confidence and Change Readiness",
-      "Tool & System Proficiency"
-    ]
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
   },
   leader: {
     "People Potential": [
-      "Mindset & Adaptability",
       "Psychological Health & Safety",
-      "Relational & Emotional Intelligence Adaptability"
+      "Mindset & Adaptability",
+      "Relational & Emotional Intelligence",
     ],
     "Operational Steadiness": [
       "Prioritization",
       "Workflow Clarity",
-      "Effective Resource Management"
+      "Effective Resource Management",
     ],
     "Digital Fluency": [
-      "Data",
-      "AI & Automation Readiness",
+      "Data, AI & Automation Readiness",
       "Digital Communication & Collaboration",
-      "Mindset",
-      "Confidence and Change Readiness",
-      "Tool & System Proficiency"
-    ]
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
   },
 
   manager: {
     "People Potential": [
       "Mindset & Adaptability",
       "Psychological Health & Safety",
-      "Relational & Emotional Intelligence Adaptability"
+      "Relational & Emotional Intelligence",
     ],
     "Operational Steadiness": [
       "Prioritization",
       "Workflow Clarity",
-      "Effective Resource Management"
+      "Effective Resource Management",
     ],
     "Digital Fluency": [
-      "Data",
-      "AI & Automation Readiness",
+      "Data, AI & Automation Readiness",
       "Digital Communication & Collaboration",
-      "Mindset",
-      "Confidence and Change Readiness",
-      "Tool & System Proficiency"
-    ]
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
   },
 
   employee: {
     "People Potential": [
       "Mindset & Adaptability",
       "Psychological Health & Safety",
-      "Relational & Emotional Intelligence Adaptability"
+      "Relational & Emotional Intelligence",
     ],
     "Operational Steadiness": [
       "Prioritization",
       "Workflow Clarity",
-      "Effective Resource Management"
+      "Effective Resource Management",
     ],
     "Digital Fluency": [
-      "Data",
-      "AI & Automation Readiness",
+      "Data, AI & Automation Readiness",
       "Digital Communication & Collaboration",
-      "Mindset",
-      "Confidence and Change Readiness",
-      "Tool & System Proficiency"
-    ]
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
   },
 };
 
@@ -149,37 +141,48 @@ const INITIAL_FORM_DATA: QuestionFormData = {
 const domainAbbr: Record<string, string> = {
   "People Potential": "PP",
   "Operational Steadiness": "OS",
-  "Digital Fluency": "DF"
+  "Digital Fluency": "DF",
 };
 
 const stakeholderPrefix: Record<string, string> = {
-  "admin": "A",
-  "leader": "L",
-  "manager": "M",
-  "employee": "E"
+  admin: "A",
+  leader: "L",
+  manager: "M",
+  employee: "E",
 };
 
 const typeSuffix: Record<string, string> = {
-  "Calibration": "CAL",
-  "Behavioural": "B",
+  Calibration: "CAL",
+  Behavioural: "B",
   "Forced-Choice": "FC",
-  "Self-Rating": ""
+  "Self-Rating": "",
 };
 
 const getAbbreviation = (text: string) => {
   if (!text) return "";
   return text
     .split(/[\s&/-]+/)
-    .filter(word => word.length > 0 && !["and", "the", "with", "or"].includes(word.toLowerCase()))
-    .map(word => word[0].toUpperCase())
+    .filter(
+      (word) =>
+        word.length > 0 &&
+        !["and", "the", "with", "or"].includes(word.toLowerCase()),
+    )
+    .map((word) => word[0].toUpperCase())
     .join("");
 };
 
-const getGeneratedCodePreview = (data: QuestionFormData, allQuestions: Question[], currentBatch: QuestionFormData[] = [], currentIndex: number = -1) => {
-  if (!data.role || !data.domain || !data.subDomain || !data.type) return "Auto-generated";
+const getGeneratedCodePreview = (
+  data: QuestionFormData,
+  allQuestions: Question[],
+  currentBatch: QuestionFormData[] = [],
+  currentIndex: number = -1,
+) => {
+  if (!data.role || !data.domain || !data.subDomain || !data.type)
+    return "Auto-generated";
   const dAbbr = domainAbbr[data.domain] || getAbbreviation(data.domain);
   const sAbbr = getAbbreviation(data.subDomain);
-  const rolePref = stakeholderPrefix[data.role.toLowerCase()] || data.role[0].toUpperCase();
+  const rolePref =
+    stakeholderPrefix[data.role.toLowerCase()] || data.role[0].toUpperCase();
   const tSuff = typeSuffix[data.type] || "";
 
   const prefix = `${dAbbr}-${sAbbr}-${rolePref}${tSuff}`;
@@ -188,7 +191,7 @@ const getGeneratedCodePreview = (data: QuestionFormData, allQuestions: Question[
   const regex = new RegExp(`^${prefix}(\\d+)$`);
   let maxNum = 0;
 
-  allQuestions.forEach(q => {
+  allQuestions.forEach((q) => {
     const match = q.questionCode?.match(regex);
     if (match) {
       const num = parseInt(match[1]);
@@ -475,7 +478,12 @@ const CrudQuestion = () => {
       role: filterRole || "",
       domain: activeTabDomain,
     };
-    initialData.code = getGeneratedCodePreview(initialData, allQuestions, [initialData], 0);
+    initialData.code = getGeneratedCodePreview(
+      initialData,
+      allQuestions,
+      [initialData],
+      0,
+    );
     setAddForms([initialData]);
 
     const modal = Modal.getOrCreateInstance(
@@ -530,7 +538,12 @@ const CrudQuestion = () => {
       if (["role", "domain", "subDomain", "type"].includes(field)) {
         // Update previews for EVERYTHING because changing one index can shift numbers for all subsequent ones
         for (let i = 0; i < newList.length; i++) {
-          newList[i].code = getGeneratedCodePreview(newList[i], allQuestions, newList, i);
+          newList[i].code = getGeneratedCodePreview(
+            newList[i],
+            allQuestions,
+            newList,
+            i,
+          );
         }
       }
 
@@ -542,7 +555,12 @@ const CrudQuestion = () => {
           newList[i] = {
             ...newList[i],
             role: value,
-            code: getGeneratedCodePreview({ ...newList[i], role: value }, allQuestions, newList, i)
+            code: getGeneratedCodePreview(
+              { ...newList[i], role: value },
+              allQuestions,
+              newList,
+              i,
+            ),
           };
         }
       }
@@ -568,7 +586,12 @@ const CrudQuestion = () => {
       const newList = [...prev, newItem];
       // Re-calculate ALL codes in the batch to be safe
       for (let i = 0; i < newList.length; i++) {
-        newList[i].code = getGeneratedCodePreview(newList[i], allQuestions, newList, i);
+        newList[i].code = getGeneratedCodePreview(
+          newList[i],
+          allQuestions,
+          newList,
+          i,
+        );
       }
       return newList;
     });
@@ -580,7 +603,12 @@ const CrudQuestion = () => {
       const filtered = prev.filter((_, i) => i !== index);
       // Re-calculate codes for the remaining items
       for (let i = 0; i < filtered.length; i++) {
-        filtered[i].code = getGeneratedCodePreview(filtered[i], allQuestions, filtered, i);
+        filtered[i].code = getGeneratedCodePreview(
+          filtered[i],
+          allQuestions,
+          filtered,
+          i,
+        );
       }
       return filtered;
     });
@@ -636,16 +664,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                optionA: {
-                  label: form.optionALabel,
-                  insightPrompt: form.optionAPrompt,
-                },
-                optionB: {
-                  label: form.optionBLabel,
-                  insightPrompt: form.optionBPrompt,
-                },
-                higherValueOption: form.higherValueOption as "A" | "B",
-              }
+                  optionA: {
+                    label: form.optionALabel,
+                    insightPrompt: form.optionAPrompt,
+                  },
+                  optionB: {
+                    label: form.optionBLabel,
+                    insightPrompt: form.optionBPrompt,
+                  },
+                  higherValueOption: form.higherValueOption as "A" | "B",
+                }
               : undefined,
         };
       });
@@ -684,16 +712,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-              optionA: {
-                label: editFormData.optionALabel,
-                insightPrompt: editFormData.optionAPrompt,
-              },
-              optionB: {
-                label: editFormData.optionBLabel,
-                insightPrompt: editFormData.optionBPrompt,
-              },
-              higherValueOption: editFormData.higherValueOption as "A" | "B",
-            }
+                optionA: {
+                  label: editFormData.optionALabel,
+                  insightPrompt: editFormData.optionAPrompt,
+                },
+                optionB: {
+                  label: editFormData.optionBLabel,
+                  insightPrompt: editFormData.optionBPrompt,
+                },
+                higherValueOption: editFormData.higherValueOption as "A" | "B",
+              }
             : undefined,
       });
       await fetchQuestions();
@@ -797,7 +825,7 @@ const CrudQuestion = () => {
     <div className="crud-question-screen relative flex flex-col lg:flex-row gap-4 items-start">
       {/* --- FILTER SIDEBAR --- */}
       {showFilters && (
-        <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-[55] md:absolute fixed md:top-44 md:right-7 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+        <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-[55] md:absolute fixed md:top-40 md:right-7 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
           <div className="flex justify-between items-center mb-6 px-5">
             <div className="flex items-center gap-3">
               <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
@@ -985,10 +1013,11 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain to ensure immediate updates
                     }}
                     className={`px-6 py-2.5 text-sm  uppercase rounded-full transition-all whitespace-nowrap
-                            ${filterDomains.includes(domain)
-                        ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]"
-                        : "text-neutral-500 font-semibold dark:text-[#9bb8d3]"
-                      }`}
+                            ${
+                              filterDomains.includes(domain)
+                                ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]"
+                                : "text-neutral-500 font-semibold dark:text-[#9bb8d3]"
+                            }`}
                   >
                     {domain}
                   </button>
@@ -1002,10 +1031,11 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${showFilters
-                ? "bg-[var(--primary-color)] text-white"
-                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-              }`}
+                    ${
+                      showFilters
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
+                    }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -1109,10 +1139,11 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
-                              ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
-                              : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                              }`}
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
+                              openSubdomains.includes(subdomainTitle)
+                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
+                            }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -1120,10 +1151,11 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${openSubdomains.includes(subdomainTitle)
-                          ? ""
-                          : "hidden"
-                          }`}
+                        className={`!visible ${
+                          openSubdomains.includes(subdomainTitle)
+                            ? ""
+                            : "hidden"
+                        }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
                         <Droppable droppableId={subdomainTitle}>
@@ -1194,7 +1226,7 @@ const CrudQuestion = () => {
                                   {provided.placeholder}
                                 </div>
                               ) : (
-                                <div className="text-gray-400 text-sm italic py-2 pl-9 dark:text-[#88a7c4]">
+                                <div className="text-gray-400 text-sm italic py-2 dark:text-[#88a7c4]">
                                   {filterRole
                                     ? "No questions added yet."
                                     : "Select a filter to view questions."}
@@ -1344,7 +1376,8 @@ const CrudModals = (props: CrudModalsProps) => {
             <select
               value={data.role}
               onChange={(e) => onFieldChange("role", e.target.value)}
-              className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+              className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-100 disabled:pointer-events-none
+              "
               disabled={isAddMode && index > 0} // Disable role for subsequent questions to enforce same stakeholder
             >
               <option value="">Select Role</option>
@@ -1467,7 +1500,7 @@ const CrudModals = (props: CrudModalsProps) => {
             value={isAddMode ? data.code : data.code}
             readOnly
             placeholder="Auto-generated"
-            className="font-bold text-sm appearance-none text-[#1A3652] bg-gray-50 outline-none w-full p-3 mt-2 border rounded-lg border-[#E8E8E8] cursor-not-allowed dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
+            className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg bg-gray-100 cursor-not-allowed border-[#E8E8E8] outline-none"
           />
         </div>
         {/* Scale */}
@@ -1675,7 +1708,7 @@ const CrudModals = (props: CrudModalsProps) => {
                 type="button"
                 onClick={handleCreate}
                 disabled={loading || !isAddBatchValid}
-                className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 disabled:pointer-events-none"
               >
                 {loading ? "Creating..." : "Create"}
               </button>

@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-const Logo = "/static/img/home/logo.svg";
+const Logo = "/static/img/POD-logo.svg";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import api from "../../services/axios";
@@ -7,7 +7,6 @@ import SpinnerLoader from "../spinnerLoader";
 const IconStar = "/static/img/icons/ic-star.svg";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-
 
 interface AssessmentStartData {
   title: string;
@@ -52,7 +51,10 @@ const StartAssessment = () => {
           setPageLoading(false);
           return;
         } catch (error) {
-          console.error("Failed to fetch /me, falling back to invite token", error);
+          console.error(
+            "Failed to fetch /me, falling back to invite token",
+            error,
+          );
         }
       }
 
@@ -104,11 +106,17 @@ const StartAssessment = () => {
     try {
       // 🔹 ANONYMOUS EMPLOYEE FLOW (via invite link, no login)
       if (stakeholder === "employee" && inviteToken && !isLoggedInEmployee) {
-        const res = await api.post("employee-assessment/start", {}, {
-          headers: { "x-invite-token": inviteToken },
-        });
+        const res = await api.post(
+          "employee-assessment/start",
+          {},
+          {
+            headers: { "x-invite-token": inviteToken },
+          },
+        );
 
-        navigate(`/assessment-question?assessmentId=${res.data.assessmentId}&token=${inviteToken}`);
+        navigate(
+          `/assessment-question?assessmentId=${res.data.assessmentId}&token=${inviteToken}`,
+        );
         return;
       }
 
@@ -122,7 +130,6 @@ const StartAssessment = () => {
       console.error("Error starting assessment:", error);
       toast.error(axiosError.response?.data?.message || "Something went wrong");
     } finally {
-
       setLoading(false);
     }
   };
@@ -139,7 +146,7 @@ const StartAssessment = () => {
         </div>
 
         <div className="w-full mx-auto sm:max-w-3xl rounded-xl shadow-md border bg-white sm:py-10 py-6 sm:px-10 px-4">
-          <h2 className="sm:text-2xl text-xl font-medium mb-1">
+          <h2 className="sm:text-2xl text-xl font-medium mb-2">
             {data?.title}
           </h2>
 
@@ -148,7 +155,7 @@ const StartAssessment = () => {
             <strong>POD-360™</strong> {data?.description_two}
           </p>
 
-          <div className="mt-5">
+          <div className="mt-10">
             <h6 className="mb-2 text-xl font-medium">Test Guidelines</h6>
             <ul className="space-y-2">
               <li className="flex gap-2">
