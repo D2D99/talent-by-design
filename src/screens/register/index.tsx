@@ -10,7 +10,6 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 
-
 interface ApiError {
   message: string;
 }
@@ -112,7 +111,10 @@ const Register = () => {
       const finalToken = invitationToken || token1 || authToken;
 
       if (!finalToken) {
-        setError("root", { type: "manual", message: "You are not invited yet so you cannot register." });
+        setError("root", {
+          type: "manual",
+          message: "You are not invited yet so you cannot register.",
+        });
         setLoading(false);
         return;
       }
@@ -130,7 +132,9 @@ const Register = () => {
       localStorage.removeItem("tempInvitationToken");
 
       localStorage.setItem("registeredEmail", data.email);
-      toast.success("Registration successful! Please check your email for verification.");
+      toast.success(
+        "Registration successful! Please check your email for verification.",
+      );
       navigate("/after-register");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiError>;
@@ -149,13 +153,10 @@ const Register = () => {
         toast.error(message);
       }
 
-
       setError("root", {
         type: "manual",
         message: message,
       });
-
-
 
       console.error("Error during registration:", message);
     } finally {
@@ -188,8 +189,6 @@ const Register = () => {
               Welcome!
             </h2>
 
-
-
             <div className="sm:mb-4 mb-2">
               <label
                 htmlFor="email"
@@ -201,10 +200,11 @@ const Register = () => {
                 type="email"
                 id="email"
                 placeholder="Enter your email"
-                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
-                  ? "border-red-500"
-                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                }`}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -232,10 +232,11 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter your password"
-                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.password
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
+                    errors.password
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("password", {
                     required: "Password is required",
                   })}
@@ -260,14 +261,16 @@ const Register = () => {
                   {[...Array(5)].map((_, i) => (
                     <div
                       key={i}
-                      className={`h-full flex-1 transition-all duration-500 ${i < strengthCount ? strengthColor : "bg-transparent"
-                        }`}
+                      className={`h-full flex-1 transition-all duration-500 ${
+                        i < strengthCount ? strengthColor : "bg-transparent"
+                      }`}
                     />
                   ))}
                 </div>
                 <p
-                  className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5 ? "text-green-600" : "text-gray-400"
-                    }`}
+                  className={`text-[10px] mt-1 font-bold uppercase ${
+                    strengthCount === 5 ? "text-green-600" : "text-gray-400"
+                  }`}
                 >
                   Strength:{" "}
                   {strengthCount === 5
@@ -304,8 +307,9 @@ const Register = () => {
                     <Icon
                       icon="material-symbols-light:check"
                       width="16"
-                      className={`rounded-full p-px transition-all ${item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
-                        }`}
+                      className={`rounded-full p-px transition-all ${
+                        item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
+                      }`}
                     />
                     <span className={item.met ? "text-black" : "text-gray-400"}>
                       {item.label}
@@ -327,10 +331,11 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   placeholder="Confirm your password"
-                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.confirmPassword
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                    }`}
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
+                    errors.confirmPassword
+                      ? "border-red-500"
+                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
                     validate: (val: string) =>
@@ -359,21 +364,23 @@ const Register = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
-                ? "opacity-100 cursor-pointer"
-                : "opacity-40 cursor-not-allowed pointer-events-none"
-                }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
+                isButtonActive
+                  ? "opacity-100 cursor-pointer"
+                  : "opacity-40 cursor-not-allowed pointer-events-none"
+              }`}
             >
               {loading ? "Registering..." : "Register"}
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="25"
-                className={`transition-transform duration-300 ${isButtonActive ? "rotate-0" : "-rotate-45"
-                  }`}
+                className={`transition-transform duration-300 ${
+                  isButtonActive ? "rotate-0" : "-rotate-45"
+                }`}
               />
             </button>
 
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center hidden">
               <p className="text-sm font-medium text-[var(--secondary-color)]">
                 Already have an account?{" "}
                 <Link
