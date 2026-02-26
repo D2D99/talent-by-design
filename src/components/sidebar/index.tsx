@@ -2,7 +2,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import api from "../../services/axios";
-const DashboardLogo = "/static/img/home/logo.svg";
+const DashboardLogo = "/static/img/POD-logo.svg";
 const ProfilePlaceholderImg = "/static/img/ic-profile-ph.svg";
 import { Tooltip } from "react-tooltip";
 
@@ -122,7 +122,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
   return (
     <div className="flex flex-col justify-between h-full md:p-0 p-4">
       <div>
-        <img src={DashboardLogo} className="mx-auto mb-12 max-w-[135px] logo" />
+        <img src={DashboardLogo} className="mx-auto mb-12 max-w-28 logo" />
 
         <ul>
           {/* Overview */}
@@ -206,8 +206,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                   navigate(getFirstReportRoute());
                 }
               }}
-              className={`${base} w-full justify-between ${isReportsRoute ? active : inactive
-                }`}
+              className={`${base} w-full justify-between ${
+                isReportsRoute ? active : inactive
+              }`}
               data-tooltip-id="menu-item2"
               data-tooltip-content="Reports"
             >
@@ -223,8 +224,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
               <Icon
                 icon="weui:arrow-filled"
                 width="10"
-                className={`transition-transform ${openReports ? "rotate-90" : ""
-                  }`}
+                className={`transition-transform ${
+                  openReports ? "rotate-90" : ""
+                }`}
               />
             </button>
 
@@ -241,24 +243,24 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                 {(user.role === "superAdmin" ||
                   user.role === "admin" ||
                   user.role === "leader") && (
-                    <ReportLink
-                      to="senior-leader"
-                      label="Senior Leader"
-                      icon="solar:user-rounded-outline"
-                      onClose={onClose}
-                    />
-                  )}
+                  <ReportLink
+                    to="senior-leader"
+                    label="Senior Leader"
+                    icon="solar:user-rounded-outline"
+                    onClose={onClose}
+                  />
+                )}
                 {(user.role === "superAdmin" ||
                   user.role === "admin" ||
                   user.role === "leader" ||
                   user.role === "manager") && (
-                    <ReportLink
-                      to="manager"
-                      label="Manager"
-                      icon="solar:users-group-rounded-outline"
-                      onClose={onClose}
-                    />
-                  )}
+                  <ReportLink
+                    to="manager"
+                    label="Manager"
+                    icon="solar:users-group-rounded-outline"
+                    onClose={onClose}
+                  />
+                )}
                 <ReportLink
                   to="employee"
                   label="Employee"
@@ -469,9 +471,10 @@ const ReportLink = ({
         to={`/dashboard/reports/${to}`}
         onClick={() => onClose && onClose()}
         className={({ isActive }) =>
-          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold transition-all duration-300 ${isActive
-            ? "bg-[var(--app-surface-soft)] text-[var(--primary-color)]"
-            : "text-[var(--app-text-muted)] hover:bg-[var(--app-surface-soft)]"
+          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold transition-all duration-300 ${
+            isActive
+              ? "bg-[var(--app-surface-soft)] text-[var(--primary-color)]"
+              : "text-[var(--app-text-muted)] hover:bg-[var(--app-surface-soft)]"
           }`
         }
         data-tooltip-id="menu-item6"

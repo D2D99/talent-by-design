@@ -345,7 +345,7 @@ const AssessmentQuestion = () => {
                     </div>
 
                     {!isForcedChoice ? (
-                      <div className="grid grid-cols-5 max-w-96 mx-auto mb-8">
+                      <div className="grid grid-cols-5 max-w-96 mx-auto my-8">
                         {[1, 2, 3, 4, 5].map((num) => (
                           <div key={num} className="flex flex-col items-center">
                             <label
@@ -363,7 +363,7 @@ const AssessmentQuestion = () => {
                                 onChange={() => setSelectedValue(num)}
                               />
                             </label>
-                            <span className="text-[10px] mt-2 text-center leading-tight">
+                            <span className="text-xs sm:text-nowrap mt-2 text-center leading-tight">
                               {num === 1
                                 ? "Strongly Disagree"
                                 : num === 3
@@ -504,7 +504,7 @@ const AssessmentQuestion = () => {
                         ? setShowFinalForm(false)
                         : setCurrentIndex((p) => p - 1)
                     }
-                    className={`group text-[var(--primary-color)] rounded-full ps-3 pe-5 h-10 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase 
+                    className={`group text-[var(--primary-color)] rounded-full ps-2.5 pe-3.5 h-10 flex items-center gap-1.5 font-semibold  text-base uppercase 
                bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] border ${currentIndex === 0 && !showFinalForm ? "invisible" : "visible"}`}
                   >
                     <Icon icon="mynaui:arrow-left-circle-solid" width="22" />
@@ -519,7 +519,7 @@ const AssessmentQuestion = () => {
                         ? () => handleFinalSubmit()
                         : () => handleNext()
                     }
-                    className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white ps-3 pe-5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
+                    className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white pe-2.5 ps-3.5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
                   >
                     {isSubmitting
                       ? "Processing..."
