@@ -32,7 +32,9 @@ const LeaderReport = () => {
   const location = useLocation();
 
   const userRole = user?.role?.toLowerCase();
-  const isLeaderView = userRole === "leader";
+  const isSuperAdmin = userRole === "superadmin";
+  const isAdmin = userRole === "admin";
+  // const isLeaderView = userRole === "leader";
   const isReportPage = location.pathname.includes("reports");
 
   const data = useDynamicTriangleData();
@@ -142,7 +144,7 @@ const LeaderReport = () => {
         <div className="mt-4 grid xl:grid-cols-2 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full">
             <div className="flex justify-end gap-2 flex-wrap ">
-              {!isLeaderView && (
+              {isSuperAdmin && (
                 <div className="relative" data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -203,7 +205,7 @@ const LeaderReport = () => {
                   </ul>
                 </div>
               )}
-              {!isLeaderView && (
+              {(isSuperAdmin || isAdmin) && (
                 <div className="relative" data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -264,7 +266,7 @@ const LeaderReport = () => {
                   </ul>
                 </div>
               )}
-              {(!isLeaderView || isReportPage) && (
+              {(isSuperAdmin || isAdmin || isReportPage) && (
                 <div className="relative " data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
