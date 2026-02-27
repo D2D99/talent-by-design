@@ -614,7 +614,7 @@ const LeaderReport = () => {
                 </div>
               </div>
             </div>
-            <div className="pb-6">
+            <div className="p-10">
               <SpeedMeter />
             </div>
           </div>
@@ -707,7 +707,7 @@ const LeaderReport = () => {
                 </div>
               </div>
             </div>
-            <div className="pb-6">
+            <div className="p-10">
               <SpeedMeter />
             </div>
           </div>
