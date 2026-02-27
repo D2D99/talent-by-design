@@ -46,12 +46,9 @@ const SpeedMeter = () => {
           },
 
           plotBands: [
-            { from: 0, to: 16.6, color: "#ff5c5c", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
-            { from: 16.6, to: 33.3, color: "#ff8c8c", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
-            { from: 33.3, to: 50, color: "#ffd400", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
-            { from: 50, to: 66.6, color: "#cddc39", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
-            { from: 66.6, to: 83.3, color: "#8bc34a", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
-            { from: 83.3, to: 100, color: "#4caf50", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
+            { from: 0, to: 50, color: "#ff5c5c", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
+            { from: 50, to: 75, color: "#ffd400", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
+            { from: 75, to: 100, color: "#4caf50", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
           ],
 
           title: {
