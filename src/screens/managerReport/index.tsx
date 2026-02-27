@@ -216,7 +216,7 @@ const ManagerReport = () => {
                   <p className="w-6 h-2 bg-[#FEE114]"></p>
                 </div>
                 <div>
-                  <p className="text-sm font-normal text-[#474747]">Neutral</p>
+                  <p className="text-sm font-normal text-[#474747]">Medium</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -309,7 +309,7 @@ const ManagerReport = () => {
                   <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
                 </div>
                 <div>
-                  <p className="text-sm font-normal text-[#474747]">Neutral</p>
+                  <p className="text-sm font-normal text-[#474747]">Medium</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">

@@ -307,7 +307,7 @@ const LeaderReport = () => {
                     </div>
                     <div>
                       <p className="text-sm font-normal text-[#474747]">
-                        Needs Attention
+                        Low (&lt;50)
                       </p>
                     </div>
                   </div>
@@ -317,7 +317,7 @@ const LeaderReport = () => {
                     </div>
                     <div>
                       <p className="text-sm font-normal text-[#474747]">
-                        At Risk
+                        Medium (50-74)
                       </p>
                     </div>
                   </div>
@@ -327,7 +327,7 @@ const LeaderReport = () => {
                     </div>
                     <div>
                       <p className="text-sm font-normal text-[#474747]">
-                        On Track
+                        High (&ge;75)
                       </p>
                     </div>
                   </div>
@@ -602,7 +602,7 @@ const LeaderReport = () => {
                   <p className="w-6 h-2 bg-[#FEE114]"></p>
                 </div>
                 <div>
-                  <p className="text-sm font-normal text-[#474747]">Neutral</p>
+                  <p className="text-sm font-normal text-[#474747]">Medium</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -695,7 +695,7 @@ const LeaderReport = () => {
                   <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
                 </div>
                 <div>
-                  <p className="text-sm font-normal text-[#474747]">Neutral</p>
+                  <p className="text-sm font-normal text-[#474747]">Medium</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
