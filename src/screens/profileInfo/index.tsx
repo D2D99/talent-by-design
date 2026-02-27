@@ -89,9 +89,10 @@ const ProfileInfo = () => {
     formValues.firstName?.trim() !== "" &&
     formValues.lastName?.trim() !== "" &&
     formValues.role !== "" &&
-    formValues.department !== "" &&
     formValues.titles !== "" &&
-    (formValues.role === "admin" ? formValues.orgName?.trim() !== "" : true);
+    (formValues.role === "admin"
+      ? formValues.orgName?.trim() !== ""
+      : formValues.department !== "");
 
   const isButtonActive = isFormValid && !loading;
 
@@ -174,11 +175,10 @@ const ProfileInfo = () => {
                   type="text"
                   id="orgName"
                   placeholder="Enter organization name"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                    errors.orgName
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.orgName
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   {...register("orgName", {
                     required: "Organization name is required",
                   })}
@@ -198,11 +198,10 @@ const ProfileInfo = () => {
                 type="text"
                 id="firstName"
                 placeholder="Enter your first name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.firstName
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.firstName
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                  }`}
                 {...register("firstName", {
                   required: "First name is required",
                 })}
@@ -221,11 +220,10 @@ const ProfileInfo = () => {
                 type="text"
                 id="lastName"
                 placeholder="Enter your last name"
-                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.lastName
+                className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.lastName
                     ? "border-red-500"
                     : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                  }`}
                 {...register("lastName", { required: "Last name is required" })}
               />
             </div>
@@ -250,47 +248,48 @@ const ProfileInfo = () => {
             </div>
 
             {/* Department */}
-            <div className="sm:mb-4 mb-2">
-              <label
-                htmlFor="department"
-                className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
-              >
-                Department
-              </label>
-              <div className="relative w-full">
-                <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                  <svg
-                    className="h-4 w-4 text-[#5D5D5D]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-                <select
-                  id="department"
-                  className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                    errors.department
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
-                  {...register("department", {
-                    required: "Department is required",
-                  })}
+            {formValues.role !== "admin" && (
+              <div className="sm:mb-4 mb-2">
+                <label
+                  htmlFor="department"
+                  className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
                 >
-                  <option value="">Select your department</option>
-                  <option value="hr">HR</option>
-                  <option value="engineering">Engineering</option>
-                  <option value="marketing">Marketing</option>
-                </select>
+                  Department
+                </label>
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                    <svg
+                      className="h-4 w-4 text-[#5D5D5D]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  <select
+                    id="department"
+                    className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.department
+                        ? "border-red-500"
+                        : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                      }`}
+                    {...register("department", {
+                      required: "Department is required",
+                    })}
+                  >
+                    <option value="">Select your department</option>
+                    <option value="hr">HR</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="marketing">Marketing</option>
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Titles */}
             <div className="sm:mb-6 mb-4 max-w-28">
@@ -318,11 +317,10 @@ const ProfileInfo = () => {
                 </div>
                 <select
                   id="titles"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${
-                    errors.titles
+                  className={`font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all ${errors.titles
                       ? "border-red-500"
                       : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                    }`}
                   {...register("titles", { required: "Required" })}
                 >
                   <option value="">Select</option>
@@ -340,11 +338,10 @@ const ProfileInfo = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
-                isButtonActive
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
                   ? "opacity-100 cursor-pointer shadow-md"
                   : "opacity-40 cursor-not-allowed pointer-events-none"
-              }`}
+                }`}
             >
               {loading ? "Saving..." : "Get Started"}
               <Icon
