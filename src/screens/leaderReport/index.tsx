@@ -11,6 +11,8 @@ import OuiSecurity from "../../../public/static/img/home/oui_security-signal-det
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
 import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
+import { useAuth } from "../../context/useAuth";
+import { useLocation } from "react-router-dom";
 // import Loader from "../../../public/static/img/home/loader.png";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
@@ -26,6 +28,13 @@ import RoleProgressChart from "../../components/alignmentStatus/index.tsx";
 // import ScoreBar from "../../components/scoreBar/index.tsx";
 
 const LeaderReport = () => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  const userRole = user?.role?.toLowerCase();
+  const isLeaderView = userRole === "leader";
+  const isReportPage = location.pathname.includes("reports");
+
   const data = useDynamicTriangleData();
 
   useEffect(() => {
@@ -43,6 +52,30 @@ const LeaderReport = () => {
     { label: "MANAGER", value: 72, color: "#FEE114" },
     { label: "SENIOR LEADER", value: 78, color: "#30AD43" },
   ];
+
+  const scoreValue = 55;
+
+  const getStatus = (val: number) => {
+    if (val < 50)
+      return {
+        label: "Needs Attention",
+        color: "#FF5656",
+        trail: "#FF56564b",
+      };
+    if (val < 75)
+      return {
+        label: "At Risk",
+        color: "#FEE114",
+        trail: "#FEE1144b",
+      };
+    return {
+      label: "On Track",
+      color: "#30AD43",
+      trail: "#30AD434b",
+    };
+  };
+
+  const currentStatus = getStatus(scoreValue);
 
   return (
     <div>
@@ -105,186 +138,193 @@ const LeaderReport = () => {
           </div>
         </div>
 
-        <div className="mt-6 grid xl:grid-cols-2 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+        <div className="flex flex-wrap gap-4 mb-2 items-center"></div>
+        <div className="mt-4 grid xl:grid-cols-2 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full">
             <div className="flex justify-end gap-2 flex-wrap ">
-              <div className="relative" data-twe-dropdown-ref>
-                <button
-                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                  type="button"
-                  id="dropdownMenuButton1"
-                  data-twe-dropdown-toggle-ref
-                  aria-expanded="false"
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
-                >
-                  Organization
-                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <ul
-                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
-                  aria-labelledby="dropdownMenuButton1"
-                  data-twe-dropdown-menu-ref
-                >
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Something else here
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div className="relative" data-twe-dropdown-ref>
-                <button
-                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                  type="button"
-                  id="dropdownMenuButton1"
-                  data-twe-dropdown-toggle-ref
-                  aria-expanded="false"
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
-                >
-                  Business Unit | Department
-                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <ul
-                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
-                  aria-labelledby="dropdownMenuButton1"
-                  data-twe-dropdown-menu-ref
-                >
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Something else here
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div className="relative " data-twe-dropdown-ref>
-                <button
-                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                  type="button"
-                  id="dropdownMenuButton1"
-                  data-twe-dropdown-toggle-ref
-                  aria-expanded="false"
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
-                >
-                  Role
-                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <ul
-                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
-                  aria-labelledby="dropdownMenuButton1"
-                  data-twe-dropdown-menu-ref
-                >
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Something else here
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              {!isLeaderView && (
+                <div className="relative" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    Organization
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                    aria-labelledby="dropdownMenuButton1"
+                    data-twe-dropdown-menu-ref
+                  >
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Another action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Something else here
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
+              {!isLeaderView && (
+                <div className="relative" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    Business Unit | Department
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                    aria-labelledby="dropdownMenuButton1"
+                    data-twe-dropdown-menu-ref
+                  >
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Another action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Something else here
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
+              {(!isLeaderView || isReportPage) && (
+                <div className="relative " data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    Role
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                    aria-labelledby="dropdownMenuButton1"
+                    data-twe-dropdown-menu-ref
+                  >
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Another action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Something else here
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
             <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
               <div
@@ -296,38 +336,44 @@ const LeaderReport = () => {
                   gap: "40px",
                 }}
               >
-                <CircularProgress value={55} width={180} />
+                <CircularProgress
+                  value={scoreValue}
+                  width={180}
+                  pathColor={currentStatus.color}
+                  trailColor={currentStatus.trail}
+                  textColor={currentStatus.color}
+                />
               </div>
               <div>
                 {" "}
                 <div className="flex justify-center flex-col gap-1 ">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <div>
                       <p className="w-6 h-2 bg-[#FF5656]"></p>
                     </div>
                     <div>
                       <p className="text-sm font-normal text-[#474747]">
-                        Low (&lt;50)
+                        Needs Attention
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <div>
                       <p className="w-6 h-2 bg-[#FEE114]"></p>
                     </div>
                     <div>
                       <p className="text-sm font-normal text-[#474747]">
-                        Medium (50-74)
+                        At Risk
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <div>
                       <p className="w-6 h-2 bg-[#30AD43]"></p>
                     </div>
                     <div>
                       <p className="text-sm font-normal text-[#474747]">
-                        High (&ge;75)
+                        On Track
                       </p>
                     </div>
                   </div>
