@@ -232,11 +232,10 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
-                  isEditing
+                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${isEditing
                     ? "cursor-pointer bg-white hover:bg-neutral-50"
                     : "bg-gray-100 cursor-not-allowed pointer-events-none"
-                }`}
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -480,22 +479,24 @@ const UserProfile = () => {
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="orgName"
-                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-              >
-                Organization
-              </label>
-              <input
-                type="text"
-                id="orgName"
-                value={formData.orgName}
-                readOnly
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
-                placeholder="Organization name"
-              />
-            </div>
+            {formData.role !== "superadmin" && (
+              <div>
+                <label
+                  htmlFor="orgName"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                >
+                  Organization
+                </label>
+                <input
+                  type="text"
+                  id="orgName"
+                  value={formData.orgName}
+                  readOnly
+                  className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
+                  placeholder="Organization name"
+                />
+              </div>
+            )}
           </div>
         </div>
 
