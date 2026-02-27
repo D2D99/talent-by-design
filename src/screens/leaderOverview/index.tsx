@@ -1,15 +1,17 @@
 import { Icon } from "@iconify/react";
+import LeaderReport from "../leaderReport";
 
 const LeaderOverview = () => {
   return (
     <>
       {/* Leader Overview Screen Start */}
-      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-178px)]">
+      {/* <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-178px)]">
         <div className="grid">
           <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
             <div>
-              <h2 className="md:text-2xl text-xl font-bold">Senior Leader Report</h2>
-              {/* <p className="text-sm text-gray-500 md:mt-1">isSuperAdmin</p> */}
+              <h2 className="md:text-2xl text-xl font-bold">
+                Senior Leader Report
+              </h2>
             </div>
             <button
               type="button"
@@ -26,7 +28,8 @@ const LeaderOverview = () => {
             No Data Yet!!!
           </p>
         </div>
-      </div>
+      </div> */}
+      <LeaderReport />
       {/* Leader Overview Screen Start */}
     </>
   );
