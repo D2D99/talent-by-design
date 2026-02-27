@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
@@ -10,32 +10,20 @@ import Healthicons from "../../../public/static/img/home/healthicons_i-certifica
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import { useEffect } from "react";
 import Sidebar from "../../components/sidebar";
-import ScoreBar from "../../components/scoreBar";
+// import ScoreBar from "../../components/scoreBar";
 import SpeedMeter from "../../components/speedMeter";
-import MultiLineChart from "../../charts/multiLineChart";
+// import MultiLineChart from "../../charts/multiLineChart";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
 import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData";
-import RadarChart from "../../charts/radarChart";
-import GapBarChart from "../../charts/gapBarChart";
-import { useState } from "react";
+// import RadarChart from "../../charts/radarChart";
+// import GapBarChart from "../../charts/gapBarChart";
+// import { useState } from "react";
 
-const ManagerReport = () => {
-  // setChartData
-  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+const EmployeeReport = () => {
+ 
 
-  // Handle label selection from Radar Chart
-  const handleRadarChartSelection = (label: string) => {
-    setSelectedLabel(label);
-  };
 
-  const trendData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-    manager: [8.5, 0.1, 6.8, 0.1, 9.3],
-    team: [5.8, 0.2, 5.5, 0.0, 5.4],
-  };
-
-  // Optional: Dynamic triangle data (example)
   const data = useDynamicTriangleData();
 
   useEffect(() => {
@@ -325,36 +313,23 @@ const ManagerReport = () => {
               <SpeedMeter />
             </div>
           </div>
-          <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Performance Analysis
-            </h2>
-            <div className="flex justify-center gap-4 mt-6">
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">
-                    Previous Test
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">
-                    Current Test
-                  </p>
-                </div>
+          <div className="">
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+            <div className="flex items-center justify-between ">
+              <div>
+                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  POD-360™ Model
+                </h3>
               </div>
             </div>
-            <div className="mt-10">
-              <MultiLineChart data={trendData} />
+            <div></div>
+            <div style={{ width: 400 }}>
+              <Triangle data={data} />
             </div>
           </div>
+    
+        </div>
+         
         </div>
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
@@ -490,75 +465,7 @@ const ManagerReport = () => {
           </div>
         </div>
         {/*  */}
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  POD-360™ Model
-                </h3>
-              </div>
-            </div>
-            <div></div>
-            <div style={{ width: 400 }}>
-              <Triangle data={data} />
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Manager Coaching Tips
-                </h3>
-              </div>
-              <div>
-                <img src={StreamlinePlump} alt="images" />
-              </div>
-            </div>
-            <ul className="mt-4 space-y-2">
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
-                </span>
-              </li>
-            </ul>
-            <div></div>
-          </div>
-        </div>
+        
         {/*  */}
         <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
           <div className="flex items-center justify-between ">
@@ -615,52 +522,12 @@ const ManagerReport = () => {
           </ul>
           <div></div>
         </div>
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-            <div className="flex items-center justify-between  ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Manager VS Team Gap
-                </h3>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-1 mt-6">
-              <div>
-                <p className="w-9 h-4 bg-[#448bd26c]"></p>
-              </div>
-              <div>
-                <p className="text-sm font-normal text-[#474747]">
-                  Manager Self Assessment
-                </p>
-              </div>
-            </div>
-            <div>
-              <RadarChart
-                selectedLabel={selectedLabel}
-                onLabelSelect={handleRadarChartSelection}
-              />
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Delta Breakdown
-                </h3>
-              </div>
-            </div>
-            <div>
-              <GapBarChart selectedLabel={selectedLabel} />
-            </div>
-          </div>
-        </div>
+        
 
-        <div className="last-graph mt-8">
-          <ScoreBar score={50} label="hello world" />
-        </div>
+        
       </div>
     </div>
   );
 };
 
-export default ManagerReport;
+export default EmployeeReport;

@@ -32,6 +32,7 @@ import SuperAdminStats from "./screens/superAdminStats";
 import AdminAssessments from "./screens/adminAssessments";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EmployeeReport from "./screens/employeeReport";
 // import { useTheme } from "./context/useTheme";
 
 function App() {
@@ -93,6 +94,7 @@ function App() {
             <Route path="reports/org-head" element={<SuperAdminOverview />} />
             <Route path="reports/senior-leader" element={<LeaderOverview />} />
             <Route path="reports/manager" element={<ManagerOverview />} />
+            <Route path="reports/employee" element={<EmployeeReport />} />
             {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
           </Route>
         </Route>
