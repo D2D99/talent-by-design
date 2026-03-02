@@ -5,6 +5,7 @@ const Number1 = "/static/img/home/number-img-01.png";
 const Number2 = "/static/img/home/number-img-02.png";
 const Number3 = "/static/img/home/number-img-03.png";
 const Number4 = "/static/img/home/number-img-04.png";
+const Number5 = "/static/img/home/number-img-05.png";
 const Post1 = "/static/img/home/post-1.png";
 const Post2 = "/static/img/home/post-2.png";
 const Post3 = "/static/img/home/post-3.png";
@@ -17,6 +18,9 @@ const Access1 = "/static/img/icons/access1.svg";
 const Access2 = "/static/img/icons/access2.svg";
 const Access3 = "/static/img/icons/access3.svg";
 const Access4 = "/static/img/icons/access4.svg";
+const PodLogo = "/static/img/POD-logo.svg";
+const PodInsightLogo = "/static/img/POD-insight.svg";
+
 const CapabilityPerformance = "/static/img/home/capability-performance.png";
 const POD360 = "/static/img/home/pod-360.svg";
 import Footer from "../../components/footer";
@@ -360,7 +364,7 @@ const Home = () => {
       <div className="md:py-20 py-12">
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4">
           <div className="lg:grid lg:grid-cols-2 grid-cols-2 lg:justify-between lg:gap-3">
-            <div className="">
+            <div>
               <h4 className="badge">HOW WE SUPPORT OUR CLIENTS</h4>
               <h2 className="sub-heading">
                 Leadership and Digital Capability Building for the{" "}
@@ -387,49 +391,58 @@ const Home = () => {
               />
             </div>
             <div>
-              <div className="grid md:grid-cols-2 grid-cols-1 md:gap-x-6 md:gap-y-0 gap-y-5 lg:mt-0 mt-7 ">
-                <div className="home-step-card grid-rows-1 relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mb-8">
+              <div className="grid grid-cols-1 gap-y-5 lg:mt-0 mt-7 ">
+                <div className="home-step-card grid-rows-1 shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:sticky md:top-32 static">
                   <img
                     src={Number1}
                     className="mb-4 text-right ml-auto"
                     alt="Number"
                   />
-                  <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We Measure What Matters
+                  <h3 className="home-step-title sm:text-2xl text-xl font-medium pe-3">
+                    We Align on What Matters Most
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    We begin with a comprehensive organizational assessment that
-                    reveals the barriers, patterns, and capability gaps that
-                    slow teams down.
+                    Every engagement begins with a strategic kick-off session.
                   </p>
                   <p className="text-base font-normal mt-2">
-                    We begin with a comprehensive organizational assessment that
-                    reveals the barriers, patterns, and capability gaps that
-                    slow teams down.
+                    Together, we clarify your most important organizational
+                    priorities and establish inspirational yet measurable OKRs.
+                    We refine the POD-360™ assessment to reflect your unique
+                    context, ensuring the right questions are asked before
+                    measurement begins.
+                  </p>
+                  <p className="text-base font-normal mt-2">
+                    This ensures the diagnostic is not generic it is
+                    purpose-built around what matters most to your organization
+                    right now and into the future.
                   </p>
                 </div>
 
-                <div className="home-step-card grid-rows-2 relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mt-8">
+                <div className="home-step-card grid-rows-2 shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:sticky md:top-36 static">
                   <img
                     src={Number2}
                     className="mb-4 text-right ml-auto"
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We Turn Insight Into Action
+                    We Diagnose with Precision
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    Using your data, we identify the programs and resources that
-                    will have the greatest impact on improving performance.
+                    We deploy the customized POD-360™ assessment to capture
+                    insights across People, Operations, and Digital performance.
+                    The data reveals friction points, capability gaps, and
+                    systemic patterns that impact execution. Results are
+                    structured into sub-domain and domain scores, providing
+                    clarity at both a detailed and strategic level.
                   </p>
                   <p className="text-base font-normal mt-2">
-                    We map these recommendations directly to your strategic
-                    goals and OKRs, enabling your organization to move forward
-                    with focus, alignment, and speed.
+                    You gain visibility into where you are strong, where you are
+                    vulnerable, and where intervention will have the greatest
+                    impact.
                   </p>
                 </div>
 
-                <div className="home-step-card grid-rows-2  relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mb-8">
+                <div className="home-step-card grid-rows-2 shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:sticky md:top-40 static">
                   {/* <h2 className="mb-4 text-7xl font-bold text-transparent [-webkit-text-stroke:3px_#3b73b9] text-right">
                     03
                   </h2> */}
@@ -439,18 +452,23 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We Partner for Long-Term Capability Building
+                    We integrate proven model - Prosci’s ADKAR framework
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    This is not a one-and-done engagement. We work alongside
-                    your leaders and teams to strengthen capability over time,
-                    reassessing at predefined intervals to ensure progress is
-                    measurable, goals are met, and momentum continues in all the
-                    right areas.
+                    Insights alone don’t drive transformation structured change
+                    does.
+                  </p>
+                  <p className="text-base font-normal mt-2">
+                    All recommendations and coaching points are mapped to
+                    Prosci’s ADKAR® model (Awareness, Desire, Knowledge,
+                    Ability, Reinforcement) to ensure initiatives support your
+                    organization through each stage of change adoption.
+                    Standarded language and Change Leadership training will
+                    support your Community of Practice.
                   </p>
                 </div>
 
-                <div className="home-step-card grid-rows-4 md:sticky relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:mt-8">
+                <div className="home-step-card grid-rows-4 shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:sticky md:top-44 static">
                   {/* <h2 className="mb-4 text-7xl font-bold text-transparent [-webkit-text-stroke:3px_#3b73b9] text-right">
                     04
                   </h2> */}
@@ -460,23 +478,64 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We Facilitate Smarter Decisions
+                    We Optimize for High Performance
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    Our secure AI-enabled module supports scenario planning,
-                    prioritization, and strategic decision-making by analyzing
-                    assessment results alongside the documents you upload to the
-                    encrypted LLM hosted in Canada.
+                    Transformation is not a one-time event it’s a maturity
+                    journey. Through quarterly reassessment and progress
+                    tracking, we measure movement against your OKRs and ADKAR
+                    adoption stages. Leaders gain clear visibility into what to
+                    accelerate, where to stabilize, and how to sequence
+                    initiatives for maximum impact.
                   </p>
-                  <p className="text-base font-normal mt-1">
-                    It gives leaders a clear view of what to address first,
-                    where to invest, and how to sequence improvement initiatives
-                    for maximum impact.
+                  <p className="text-base font-normal mt-2">
+                    The result: a high-functioning, aligned organization
+                    optimized for sustainable performance and full
+                    transformation potential.
                   </p>
                 </div>
+
+                <div className="home-step-card grid-rows-4 shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:sticky md:top-48 static">
+                  {/* <h2 className="mb-4 text-7xl font-bold text-transparent [-webkit-text-stroke:3px_#3b73b9] text-right">
+                    04
+                  </h2> */}
+                  <img
+                    src={Number5}
+                    className="mb-4 text-right ml-auto"
+                    alt="Number"
+                  />
+                  <h3 className="home-step-title sm:text-2xl text-xl font-medium">
+                    We Optimize for High Performance
+                  </h3>
+                  <p className="text-base font-normal mt-1">
+                    Transformation is not a one-time event it’s a maturity
+                    journey. Through quarterly reassessment and progress
+                    tracking, we measure movement against your OKRs and ADKAR
+                    adoption stages. Leaders gain clear visibility into what to
+                    accelerate, where to stabilize, and how to sequence
+                    initiatives for maximum impact.
+                  </p>
+                  <p className="text-base font-normal mt-2">
+                    The result: a high-functioning, aligned organization
+                    optimized for sustainable performance and full
+                    transformation potential.
+                  </p>
+                </div>
+
+                {/* <div className="home-step-card grid-rows-4 md:sticky relative shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 rounded-xl md:mt-8 !bg-[var(--primary-color)]">
+                  <h2 className="md:text-2xl text-xl font-medium text-[var(--white-color)]">
+                    The Result
+                  </h2>
+                  <p className="text-base font-normal text-[var(--white-color)]">
+                    A modern, integrated system that equips leaders and teams to
+                    adapt faster, work better, and accelerate organizational
+                    progress with measurable improvements in performance,
+                    alignment, and capability.
+                  </p>
+                </div> */}
               </div>
 
-              <div className="bg-[var(--primary-color)] p-5 rounded-xl mt-8 ">
+              <div className="bg-[var(--primary-color)] p-5 rounded-xl mt-8">
                 <h2 className="md:text-2xl text-xl font-medium text-[var(--white-color)]">
                   The Result
                 </h2>
@@ -495,16 +554,29 @@ const Home = () => {
 
       {/* POD-360™ Assessment Section Start */}
       <div className="md:py-20 py-12 bg-[linear-gradient(53deg,rgba(237,245,253,0)_75%,#e4f0fc_100%)] dark:bg-[linear-gradient(53deg,rgba(6,23,37,0)_75%,#123049_100%)]">
-        <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4">
-          <h4 className="badge">OUR PROPRIETARY ASSESSMENT</h4>
-          <h2 className="sub-heading">
-            Behavioural
-            <span className="sub-heading-highlight"> Science </span> and{" "}
-            <span className="sub-heading-highlight"> Smart </span>
-            Questioning That Cuts Straight to{" "}
-            <span className="sub-heading-highlight"> The Truth </span>
-          </h2>
-          <div className="max-w-6xl">
+        <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
+          <div className="flex sm:items-center gap-x-10 gap-y-5 justify-between sm:flex-row flex-col-reverse">
+            <div>
+              <h4 className="badge">OUR PROPRIETARY ASSESSMENT</h4>
+              <h2 className="sub-heading">
+                Behavioural
+                <span className="sub-heading-highlight">
+                  {" "}
+                  Science{" "}
+                </span> and{" "}
+                <span className="sub-heading-highlight"> Smart </span>
+                Questioning That Cuts Straight to{" "}
+                <span className="sub-heading-highlight"> The Truth </span>
+              </h2>
+            </div>
+            <img
+              src={PodLogo}
+              alt="POD Logo"
+              className="sm:w-40 sm:!ml-auto sm:mr-0 mx-auto w-32"
+            />
+          </div>
+
+          <div className="max-w-6xl sm:mt-0 mt-5">
             <p className="text-base font-normal mt-2 text-[var(--secondary-color)] ">
               The POD-360™ Assessment is intentionally designed to produce
               accurate, not skewed, results so recommendations can be shared
@@ -955,18 +1027,29 @@ const Home = () => {
       <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] dark:bg-[linear-gradient(to_top,rgba(6,23,37,0)_50%,rgba(26,63,95,0.35))]">
         <div className="md:py-20 py-12">
           <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
-            <h4 className="badge">
-              POD Insights™ AI-Powered Organizational Intelligence
-            </h4>
-            <h2 className="sub-heading !max-w-xl">
-              The Secure
-              <span className="sub-heading-highlight">
-                {" "}
-                AI Intelligence
-              </span>{" "}
-              Layer of the
-              <span className="sub-heading-highlight"> POD-360™</span> Platform
-            </h2>
+            <div className="flex sm:items-center gap-x-10 gap-y-5 justify-between sm:flex-row flex-col-reverse">
+              <div>
+                <h4 className="badge">
+                  POD Insights™ AI-Powered Organizational Intelligence
+                </h4>
+                <h2 className="sub-heading !max-w-xl">
+                  The Secure
+                  <span className="sub-heading-highlight">
+                    {" "}
+                    AI Intelligence
+                  </span>{" "}
+                  Layer of the
+                  <span className="sub-heading-highlight"> POD-360™</span>{" "}
+                  Platform
+                </h2>
+              </div>
+              <img
+                src={PodInsightLogo}
+                alt="POD Insight Logo"
+                className="sm:w-64 sm:!ml-auto sm:mr-0 mx-auto w-56"
+              />
+            </div>
+
             <div className="max-w-6xl">
               <p className="text-base font-normal mt-2 text-[var(--secondary-color)] ">
                 It enables leaders to upload strategic documents and use AI to
