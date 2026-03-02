@@ -75,7 +75,7 @@ const SuperAdminOverview = () => {
         : "recently",
     })) || [];
 
-  const aiInsights = [
+  const aiInsights = intelData?.aiInsights || [
     {
       title: "Market Growth",
       desc: "Enterprise organization onboarding is trending 14% higher than initial projections.",
@@ -575,7 +575,7 @@ const SuperAdminOverview = () => {
           </div>
         </div>
         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {aiInsights.map((insight, idx) => (
+          {aiInsights.map((insight: any, idx: number) => (
             <div
               key={idx}
               className="flex gap-3 items-start p-3 rounded-lg border border-[rgba(68,140,210,0.1)] hover:border-[rgba(68,140,210,0.25)] hover:bg-[#fafcff] transition-all group"

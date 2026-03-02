@@ -55,6 +55,13 @@ const OrgUsers = ({
     direction: "asc" | "desc";
   } | null>(null);
 
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) setCurrentUser(JSON.parse(savedUser));
+  }, []);
+
   const fetchMembers = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -119,6 +126,12 @@ const OrgUsers = ({
     // Exclude admins and only show accepted members
     if (hideAdmin && m.role.toLowerCase() === "admin") return false;
     if (m.status !== "Accept") return false;
+
+    // 🚀 ROLE-BASED FILTERING FOR LEADERS/MANAGERS
+    if (currentUser && (currentUser.role === "leader" || currentUser.role === "manager")) {
+      // Only show members from the SAME department
+      if (m.department !== currentUser.department) return false;
+    }
 
     const matchesSearch =
       `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""} ${m.assessmentStatus || ""}`
@@ -195,7 +208,9 @@ const OrgUsers = ({
                 {details?.orgName || "Organization Users"}
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6 dark:text-[var(--app-text-muted)]">
-                Manage and monitor all users in your organization
+                {currentUser?.role === "leader" || currentUser?.role === "manager"
+                  ? `Department: ${currentUser?.department || "N/A"}`
+                  : "Manage and monitor all users in your organization"}
               </p>
             </div>
 
@@ -429,11 +444,12 @@ const OrgUsers = ({
               <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Role
               </th>
-              {showStatusColumn && (
-                <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
-                  Status
-                </th>
-              )}
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+                Status
+              </th>
+              <th className="px-6 py-4 text-center font-semibold dark:text-[#88a7c4]">
+                Report
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -483,6 +499,44 @@ const OrgUsers = ({
                       )}
                     </td>
                   )}
+                  <td className="px-6 py-4 text-center">
+                    {member.assessmentStatus === "Completed" ? (
+                      <button
+                        onClick={() => {
+                          const roleMapping: Record<string, string> = {
+                            superAdmin: "org-head",
+                            admin: "org-head",
+                            leader: "senior-leader",
+                            manager: "manager",
+                            employee: "employee",
+                          };
+                          const reportType =
+                            roleMapping[member.role.toLowerCase()] ||
+                            "employee";
+                          window.location.href = `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`;
+                        }}
+                        className="text-gray-400 hover:text-[#448CD2] transition-colors dark:text-[#88a7c4] dark:hover:text-[#cbe4fb]"
+                        title="View Report"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (

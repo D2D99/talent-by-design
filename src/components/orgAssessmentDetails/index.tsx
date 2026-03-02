@@ -532,9 +532,33 @@ const OrgAssessmentDetails = () => {
                     {renderAssessmentBadge(member.assessmentStatus)}
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <button className="text-gray-400 hover:text-[#448CD2] transition-colors dark:text-[#88a7c4] dark:hover:text-[#cbe4fb]">
-                      <Icon icon="solar:eye-linear" width="16" />
-                    </button>
+                    {member.assessmentStatus === "Completed" ? (
+                      <button
+                        onClick={() => {
+                          const roleMapping: Record<string, string> = {
+                            superAdmin: "org-head",
+                            admin: "org-head",
+                            leader: "senior-leader",
+                            manager: "manager",
+                            employee: "employee",
+                          };
+                          const reportType =
+                            roleMapping[member.role.toLowerCase()] ||
+                            "employee";
+                          navigate(
+                            `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`,
+                          );
+                        }}
+                        className="text-gray-400 hover:text-[#448CD2] transition-colors dark:text-[#88a7c4] dark:hover:text-[#cbe4fb]"
+                        title="View Report"
+                      >
+                        <Icon icon="solar:eye-linear" width="18" />
+                      </button>
+                    ) : (
+                      <span className="text-gray-300 dark:text-[#314a61]">
+                        —
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))

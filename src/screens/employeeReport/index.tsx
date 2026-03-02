@@ -2,36 +2,223 @@ import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import api from "../../services/axios";
+import SpinnerLoader from "../../components/spinnerLoader";
 import Sidebar from "../../components/sidebar";
-// import ScoreBar from "../../components/scoreBar";
 import SpeedMeter from "../../components/speedMeter";
-// import MultiLineChart from "../../charts/multiLineChart";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
-import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData";
-// import RadarChart from "../../charts/radarChart";
-// import GapBarChart from "../../charts/gapBarChart";
-// import { useState } from "react";
+
+// ------ CONSTANTS ------
+const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
+  admin: {
+    "People Potential": [
+      "Psychological Health & Safety",
+      "Mindset & Adaptability",
+      "Relational & Emotional Intelligence",
+    ],
+    "Operational Steadiness": [
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management",
+    ],
+    "Digital Fluency": [
+      "Data, AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
+  },
+  leader: {
+    "People Potential": [
+      "Psychological Health & Safety",
+      "Mindset & Adaptability",
+      "Relational & Emotional Intelligence",
+    ],
+    "Operational Steadiness": [
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management",
+    ],
+    "Digital Fluency": [
+      "Data, AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
+  },
+  manager: {
+    "People Potential": [
+      "Mindset & Adaptability",
+      "Psychological Health & Safety",
+      "Relational & Emotional Intelligence",
+    ],
+    "Operational Steadiness": [
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management",
+    ],
+    "Digital Fluency": [
+      "Data, AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
+  },
+  employee: {
+    "People Potential": [
+      "Mindset & Adaptability",
+      "Psychological Health & Safety",
+      "Relational & Emotional Intelligence",
+    ],
+    "Operational Steadiness": [
+      "Prioritization",
+      "Workflow Clarity",
+      "Effective Resource Management",
+    ],
+    "Digital Fluency": [
+      "Data, AI & Automation Readiness",
+      "Digital Communication & Collaboration",
+      "Mindset, Confidence and Change Readiness",
+      "Tool & System Proficiency",
+    ],
+  },
+};
 
 const EmployeeReport = () => {
- 
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("userId");
+
+  const [reportData, setReportData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
 
-  const data = useDynamicTriangleData();
+  // Dynamic selection states
+  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("Mindset & Adaptability");
+  const [aiInsight, setAiInsight] = useState<any>(null);
 
   useEffect(() => {
-    initTWE({ Ripple, Offcanvas, Dropdown });
-  }, []);
+    const fetchReport = async () => {
+      try {
+        const url = userId ? `dashboard/employee?userId=${userId}` : `dashboard/employee`;
+        const res = await api.get(url);
+        const data = res.data.report;
+        setReportData(data);
+        setUserData(res.data.user);
+        setAiInsight(res.data.aiInsight);
+
+        // Dynamic domain/subdomain selection from organizational framework
+        const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
+        const defaultDomain = domainKeys.find(k => k.toLowerCase().includes("people")) || domainKeys[0];
+        setSelectedDomain(defaultDomain);
+
+        const possibleSubs = ROLE_DOMAIN_SUBDOMAINS.employee[defaultDomain] || [];
+        if (possibleSubs.length > 0) setSelectedSubdomain(possibleSubs[0]);
+      } catch (error) {
+        console.error("Failed to fetch report:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReport();
+  }, [userId]);
+
+  // Re-initialize TW-Elements after data is loaded and components are rendered
+  useEffect(() => {
+    if (!loading) {
+      setTimeout(() => {
+        initTWE({ Ripple, Offcanvas, Dropdown });
+      }, 0);
+    }
+  }, [loading]);
+
+  const handleDomainChange = (domain: string) => {
+    setSelectedDomain(domain);
+    const possibleSubs = ROLE_DOMAIN_SUBDOMAINS.employee[domain] || [];
+    if (possibleSubs.length > 0) {
+      setSelectedSubdomain(possibleSubs[0]);
+    } else {
+      setSelectedSubdomain("");
+    }
+  };
+
+  if (loading) return <SpinnerLoader />;
+
+  // Robust triangle data mapping
+  const findDomainScore = (pattern: string) => {
+    const key = Object.keys(reportData?.scores?.domains || {}).find(k => k.toLowerCase().includes(pattern.toLowerCase()));
+    return key ? reportData.scores.domains[key].score : 0;
+  };
+
+  const triangleData = {
+    peoplePotential: findDomainScore("people"),
+    operationalSteadiness: findDomainScore("operational"),
+    digitalFluency: findDomainScore("digital"),
+  };
+
+  const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
+  const subdomainScore = reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain] || 0;
+
+  // Get highlights/insights for the selected domain
+  const domainFeedback = reportData?.scores?.domains[selectedDomain]?.feedback;
+
+  const domainInsights = domainFeedback?.insight
+    ? domainFeedback.insight.split(". ").filter((s: string) => s.trim().length > 0)
+    : ["No specific insights available for this domain yet."];
+
+  const recommendations = domainFeedback?.recommendedPrograms
+    ? domainFeedback.recommendedPrograms.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    : ["No specific recommendations available for this domain yet."];
+
+  const domainOkrs: any = {
+    "People Potential": {
+      objective: "Develop essential people leadership and EI skills",
+      krs: [
+        { label: "KR1", text: "Complete 100% of assigned EI and communication modules", value: 100 },
+        { label: "KR2", text: "Participate in monthly peer-to-peer feedback circles", value: 100 },
+        { label: "KR3", text: "Achieve 85% positive rating in team-readiness surveys", value: 85 },
+      ]
+    },
+    "Operational Steadiness": {
+      objective: "Improve personal execution discipline and workflow clarity",
+      krs: [
+        { label: "KR1", text: "Reduce personal backlog tasks by 20% through better planning", value: 65 },
+        { label: "KR2", text: "Maintain 100% adherence to team operating rhythms", value: 100 },
+        { label: "KR3", text: "Achieve 90% accuracy in task estimation and completion", value: 90 },
+      ]
+    },
+    "Digital Fluency": {
+      objective: "Boost personal digital proficiency and tool adoption",
+      krs: [
+        { label: "KR1", text: "Complete advanced training for core collaboration tools", value: 80 },
+        { label: "KR2", text: "Implement at least 2 automation workflows in daily tasks", value: 50 },
+        { label: "KR3", text: "Maintain 100% digital hygiene standards across platforms", value: 100 },
+      ]
+    }
+  };
+
+  const currentOkr = domainOkrs[selectedDomain] || {
+    objective: "Enhance personal performance in this domain",
+    krs: [
+      { label: "KR1", text: "Identify 3 key areas for skill improvement", value: 50 },
+      { label: "KR2", text: "Schedule and complete monthly development reviews", value: 50 },
+      { label: "KR3", text: "Apply new learnings to at least 2 active projects", value: 50 },
+    ]
+  };
 
   return (
-    <div>
+    <div className="max-w-[1400px] mx-auto p-4 sm:p-8">
       <div>
         <div
           className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none dark:bg-body-dark dark:text-white"
@@ -68,63 +255,58 @@ const EmployeeReport = () => {
         </div>
       </div>
 
-      {/* <div className="sticky top-6 z-10 flex items-center gap-2 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 rounded-[12px] py-3 px-3">
+      <div className="sticky top-6 z-10 flex items-center gap-2 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_10px_30px_-10px_rgba(75,155,233,0.15)] sm:p-6 rounded-[16px] py-4 px-5 mb-8 backdrop-blur-md bg-white/90">
         <div>
-          <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-1/2 transform -translate-y-1/2 left-[-12px] cursor-pointer">
-            <button
-              type="button"
-              data-twe-offcanvas-toggle
-              data-twe-target="#offcanvasExample"
-              aria-controls="offcanvasExample"
-              data-twe-ripple-init
-              data-twe-ripple-color="light"
-            >
-              <img src={IconamoonArrow} alt="arrow" className="w-5 h-5" />
-            </button>
-          </div>
-          <h3 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] ">
-            Welcome back, Suzanna De S!
+          <h3 className="sm:text-3xl text-2xl font-black text-[var(--secondary-color)] uppercase tracking-tight">
+            Human-Centric Insights™
           </h3>
-          <p className="sm:text-sm text-xs font-normal text-[var(--secondary-color)] mt-1 ">
-            Complete platform oversight with real-time performance insights,
-            user activity, and priority actions requiring your attention.
+          <p className="sm:text-sm text-xs font-bold text-[#64748B] mt-1 ">
+            Welcome back, <span className="text-[var(--primary-color)] font-black uppercase">{userData?.firstName || "Professional"}</span>! Here is your latest performance snapshot.
           </p>
         </div>
 
-        <div className="relative">
-          <button type="button">
-            <Icon
-              icon="tabler:bell"
-              width="28"
-              height="28"
-              className="sm:w-7 sm:h-7 w-5 h-5"
-            />
+        <div className="flex items-center gap-4">
+          <button className="hidden sm:flex items-center gap-2 px-6 py-2.5 bg-[var(--primary-color)] text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all active:scale-95">
+            <Icon icon="tabler:download" width="20" />
+            Export Report
           </button>
-          <p className="w-[6px] h-[6px] bg-[#FF0000] rounded-full absolute top-0 right-[8px] border border-white"></p>
-        </div>
-      </div> */}
-
-      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
-              Overview
-            </h3>
-          </div>
-          <div>
-            <button
-              type="button"
-              className="group text-white rounded-full py-2.5 sm:scale-100 scale-75 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
-            >
-              Export report
-              <Icon
-                icon="mynaui:arrow-right-circle-solid"
-                width="24"
-                height="24"
-                className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-              />
+          <div className="relative">
+            <button type="button" className="p-3 rounded-full bg-[#EDF5FD] text-[var(--primary-color)] transition-all hover:bg-[var(--primary-color)] hover:text-white group">
+              <Icon icon="tabler:bell" width="26" height="26" className="group-hover:rotate-12 transition-transform" />
             </button>
+            <p className="w-[10px] h-[10px] bg-[#FF0000] rounded-full absolute top-1 right-1 border-2 border-white animate-pulse"></p>
           </div>
+        </div>
+      </div>
+
+
+
+      {aiInsight && (
+        <div className="bg-gradient-to-r from-[#1E293B] to-[#334155] p-6 rounded-[16px] shadow-xl mb-8 text-white flex items-center gap-8 border border-white/10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+          <div className="relative bg-white/10 p-5 rounded-2xl backdrop-blur-md border border-white/20">
+            <img src={StreamlinePlump} alt="ai-icon" className="w-12 h-12" />
+          </div>
+          <div className="relative flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">POD Insights™ AI</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${aiInsight.type === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : aiInsight.type === 'warning' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}>
+                {aiInsight.type}
+              </span>
+            </div>
+            <h4 className="text-2xl font-black mb-2 text-white">{aiInsight.title}</h4>
+            <p className="text-sm font-medium text-slate-300 leading-relaxed max-w-3xl">{aiInsight.description}</p>
+          </div>
+        </div>
+      )}
+
+
+
+      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_4px_20px_-5px_rgba(75,155,233,0.15)] sm:p-6 p-3 rounded-[12px]">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xl font-extrabold text-[var(--secondary-color)]">
+            Core Assessment Metrics
+          </h3>
         </div>
         <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
@@ -135,13 +317,13 @@ const EmployeeReport = () => {
               <button
                 className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
                 type="button"
-                id="dropdownMenuButton1"
+                id="dropdownMenuButtonDomain"
                 data-twe-dropdown-toggle-ref
                 aria-expanded="false"
                 data-twe-ripple-init
                 data-twe-ripple-color="light"
               >
-                People Potential
+                {selectedDomain}
                 <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -158,36 +340,20 @@ const EmployeeReport = () => {
               </button>
               <ul
                 className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
-                aria-labelledby="dropdownMenuButton1"
+                aria-labelledby="dropdownMenuButtonDomain"
                 data-twe-dropdown-menu-ref
               >
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Something else here
-                  </a>
-                </li>
+                {Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee).map((d) => (
+                  <li key={d}>
+                    <button
+                      onClick={() => handleDomainChange(d)}
+                      className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-black text-neutral-700 hover:bg-[#EDF5FD]"
+                      data-twe-dropdown-item-ref
+                    >
+                      {d}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="flex justify-center gap-4 mt-6">
@@ -217,7 +383,7 @@ const EmployeeReport = () => {
               </div>
             </div>
             <div className="p-10">
-              <SpeedMeter />
+              <SpeedMeter value={domainScore} />
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
@@ -228,13 +394,13 @@ const EmployeeReport = () => {
               <button
                 className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
                 type="button"
-                id="dropdownMenuButton1"
+                id="dropdownMenuButtonSub"
                 data-twe-dropdown-toggle-ref
                 aria-expanded="false"
                 data-twe-ripple-init
                 data-twe-ripple-color="light"
               >
-                Psychological Safety
+                {selectedSubdomain}
                 <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -251,36 +417,20 @@ const EmployeeReport = () => {
               </button>
               <ul
                 className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
-                aria-labelledby="dropdownMenuButton1"
+                aria-labelledby="dropdownMenuButtonSub"
                 data-twe-dropdown-menu-ref
               >
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Something else here
-                  </a>
-                </li>
+                {(ROLE_DOMAIN_SUBDOMAINS.employee[selectedDomain] || []).map((s) => (
+                  <li key={s}>
+                    <button
+                      onClick={() => setSelectedSubdomain(s)}
+                      className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      data-twe-dropdown-item-ref
+                    >
+                      {s}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="flex justify-center gap-4 mt-6">
@@ -310,36 +460,58 @@ const EmployeeReport = () => {
               </div>
             </div>
             <div className="p-10">
-              <SpeedMeter />
+              <SpeedMeter value={subdomainScore} />
             </div>
           </div>
-          <div className="">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  POD-360™ Model
-                </h3>
+          <div className="xl:col-span-1 lg:col-span-2">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
+              <div className="flex items-center justify-between w-full mb-2">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    POD-360™ Model
+                  </h3>
+                  <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
+                </div>
+                <div className="p-2 bg-[#F1F5F9] rounded-lg">
+                  <Icon icon="lucide:triangle" className="text-[var(--primary-color)]" width="20" />
+                </div>
+              </div>
+              <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
+                <Triangle data={triangleData} />
+              </div>
+              <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">People</p>
+                  <p className="text-sm font-black text-[var(--secondary-color)]">
+                    {Math.round(findDomainScore("people"))}%
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Operational</p>
+                  <p className="text-sm font-black text-[var(--secondary-color)]">
+                    {Math.round(findDomainScore("operational"))}%
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Digital</p>
+                  <p className="text-sm font-black text-[var(--secondary-color)]">
+                    {Math.round(findDomainScore("digital"))}%
+                  </p>
+                </div>
               </div>
             </div>
-            <div></div>
-            <div style={{ width: 400 }}>
-              <Triangle data={data} />
-            </div>
           </div>
-    
-        </div>
-         
+
         </div>
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
             <div className="flex items-center justify-between ">
               <div>
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Insight for psychological safety
+                  Insight for {selectedDomain}
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  Lorem ipsum dolor sit
+                  Overall analysis based on your responses
                 </p>
               </div>
               <div>
@@ -348,45 +520,14 @@ const EmployeeReport = () => {
             </div>
             <div>
               <ul className="mt-4 space-y-2">
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
-                  </span>
-                </li>
+                {domainInsights.map((insight: string, idx: number) => (
+                  <li key={idx} className="feature-list">
+                    <img src={IconStar} alt="icon" className="mt-1" />
+                    <span className="text-sm text-[var(--secondary-color)] font-normal">
+                      {insight}
+                    </span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -397,75 +538,41 @@ const EmployeeReport = () => {
                   Objectives and Key Results
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  Improve analytical problem solving skills
+                  {currentOkr.objective}
                 </p>
               </div>
               <div>
                 <img src={Hugeicons} alt="images" />
               </div>
             </div>
-            <div className="flex items-center gap-3 mt-4">
-              <div className="text-lg-progress">
-                <CircularProgress
-                  value={75}
-                  width={60}
-                  textColor="#36454F"
-                  pathColor="#1A3652"
-                  trailColor="#D9D9D9"
-                />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                  KR1
-                </h2>
-                <p className="text-sm font-normal text-[var(--secondary-color)]">
-                  80% of learners score ≥70% on analytical reasoning assessments
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 mt-6">
-              <div className="text-lg-progress">
-                <CircularProgress
-                  value={75}
-                  width={60}
-                  textColor="#36454F"
-                  pathColor="#1A3652"
-                  trailColor="#D9D9D9"
-                />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                  KR2
-                </h2>
-                <p className="text-sm font-normal text-[var(--secondary-color)]">
-                  Average problem-solving score increases by 15% over baseline
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 mt-6">
-              <div className="text-lg-progress">
-                <CircularProgress
-                  value={75}
-                  width={60}
-                  textColor="#36454F"
-                  pathColor="#1A3652"
-                  trailColor="#D9D9D9"
-                />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                  KR3
-                </h2>
-                <p className="text-sm font-normal text-[var(--secondary-color)]">
-                  90% completion rate for advanced problem-solving tasks
-                </p>
-              </div>
+            <div className="space-y-6">
+              {currentOkr.krs.map((kr: any, idx: number) => (
+                <div key={idx} className="flex items-center gap-3 mt-4">
+                  <div className="text-lg-progress">
+                    <CircularProgress
+                      value={kr.value}
+                      width={60}
+                      textColor="#36454F"
+                      pathColor="#1A3652"
+                      trailColor="#D9D9D9"
+                    />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                      {kr.label}
+                    </h2>
+                    <p className="text-sm font-normal text-[var(--secondary-color)]">
+                      {kr.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
             <div></div>
           </div>
         </div>
         {/*  */}
-        
+
         {/*  */}
         <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
           <div className="flex items-center justify-between ">
@@ -480,51 +587,20 @@ const EmployeeReport = () => {
             </div>
           </div>
           <ul className="mt-4 space-y-2">
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
+            {recommendations.map((rec: string, idx: number) => (
+              <li key={idx} className="feature-list flex gap-2">
+                <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  {rec}
+                </span>
+              </li>
+            ))}
           </ul>
           <div></div>
         </div>
-        
 
-        
+
+
       </div>
     </div>
   );

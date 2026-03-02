@@ -8,21 +8,50 @@ import Healthicons from "../../../public/static/img/home/healthicons_i-certifica
 // import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import api from "../../services/axios";
+import SpinnerLoader from "../../components/spinnerLoader";
 import Sidebar from "../../components/sidebar";
 import ScoreBar from "../../components/scoreBar";
 import SpeedMeter from "../../components/speedMeter";
 import MultiLineChart from "../../charts/multiLineChart";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
-import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData";
+// // import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData";
 import RadarChart from "../../charts/radarChart";
+import type { RadarData } from "../../charts/radarChart";
 import GapBarChart from "../../charts/gapBarChart";
-import { useState } from "react";
 
 const ManagerReport = () => {
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("userId");
+
+  const [reportData, setReportData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   // setChartData
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+
+  useEffect(() => {
+    initTWE({ Ripple, Offcanvas, Dropdown });
+
+    const fetchReport = async () => {
+      try {
+        const url = userId ? `dashboard/manager?userId=${userId}` : `dashboard/manager`;
+        const res = await api.get(url);
+        setReportData(res.data.report);
+        setUserData(res.data.user);
+      } catch (error) {
+        console.error("Failed to fetch report:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReport();
+  }, [userId]);
 
   // Handle label selection from Radar Chart
   const handleRadarChartSelection = (label: string) => {
@@ -35,12 +64,127 @@ const ManagerReport = () => {
     team: [5.8, 0.2, 5.5, 0.0, 5.4],
   };
 
-  // Optional: Dynamic triangle data (example)
-  const data = useDynamicTriangleData();
+  if (loading) return <SpinnerLoader />;
+
+  const triangleData = {
+    peoplePotential: reportData?.scores?.domains["People Potential"]?.score || 0,
+    operationalSteadiness: reportData?.scores?.domains["Operational Steadiness"]?.score || 0,
+    digitalFluency: reportData?.scores?.domains["Digital Fluency"]?.score || 0,
+  };
+
+  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
   useEffect(() => {
-    initTWE({ Ripple, Offcanvas, Dropdown });
-  }, []);
+    if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
+      const firstSub = Object.keys(reportData.scores.domains[selectedDomain].subdomains)[0];
+      setSelectedSubdomain(firstSub);
+    }
+  }, [reportData, selectedDomain]);
+
+  const handleDomainChange = (domain: string) => {
+    setSelectedDomain(domain);
+  };
+
+  const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
+  const subdomainScore = reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain]?.score || 0;
+  const domainFeedback = reportData?.scores?.domains[selectedDomain]?.feedback;
+
+  const domainInsights = domainFeedback?.insight
+    ? domainFeedback.insight.split(". ").filter((s: string) => s.trim().length > 0)
+    : ["No specific insights available for this domain yet."];
+
+  const coachingTips = domainFeedback?.coachingTips
+    ? domainFeedback.coachingTips.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    : ["No specific coaching tips available for this domain yet."];
+
+  const recommendations = domainFeedback?.recommendedPrograms
+    ? domainFeedback.recommendedPrograms.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    : ["No specific recommendations available for this domain yet."];
+
+  const domainOkrs: any = {
+    "People Potential": {
+      objective: "Build high-performing, emotionally intelligent teams",
+      krs: [
+        { label: "KR1", text: "100% of team members complete role-specific EI training", value: 80 },
+        { label: "KR2", text: "Achieve 90% positive team climate scores in feedback rounds", value: 90 },
+        { label: "KR3", text: "Identify and mentor 2 high-potential leaders within the team", value: 100 },
+      ]
+    },
+    "Operational Steadiness": {
+      objective: "Standardize team execution discipline and workflow efficiency",
+      krs: [
+        { label: "KR1", text: "Achieve 100% adherence to weekly team operating rhythms", value: 95 },
+        { label: "KR2", text: "Reduce project delivery friction metrics by 25%", value: 70 },
+        { label: "KR3", text: "Implement verified accountability frameworks for all members", value: 100 },
+      ]
+    },
+    "Digital Fluency": {
+      objective: "Enable team digital transformation and AI workflow integration",
+      krs: [
+        { label: "KR1", text: "Transition 100% of team collaboration to digital-first norms", value: 85 },
+        { label: "KR2", text: "Achieve 70% team proficiency in AI-assisted project management", value: 70 },
+        { label: "KR3", text: "Audit and optimize 100% of team digital tool utilization", value: 100 },
+      ]
+    }
+  };
+
+  const currentOkr = domainOkrs[selectedDomain] || {
+    objective: "Lead team improvements in this domain area",
+    krs: [
+      { label: "KR1", text: "Establish baseline performance metrics for the team", value: 50 },
+      { label: "KR2", text: "Deliver monthly team development coaching sessions", value: 50 },
+      { label: "KR3", text: "Report 15% growth in domain-specific team metrics", value: 50 },
+    ]
+  };
+
+  // Calculate radar data dynamically from responses
+  const getNumericScore = (res: any) => {
+    if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
+      return (Number(res.value) || 1) * 20;
+    }
+    if (res.scale === "FORCED_CHOICE") {
+      return res.selectedOption === res.higherValueOption ? 100 : 20;
+    }
+    return 20;
+  };
+
+  const radarData: RadarData = (() => {
+    const subdomains = Object.keys(reportData?.scores?.domains[selectedDomain]?.subdomains || {});
+    const labels = subdomains;
+    const mScores: number[] = [];
+    const tScores: number[] = [];
+    const pScores: number[] = [];
+
+    labels.forEach((sub) => {
+      const subRes = reportData?.responses?.filter(
+        (r: any) => r.domain === selectedDomain && r.subdomain === sub
+      );
+
+      const mResponses = subRes?.filter((r: any) => r.stakeholder === "manager") || [];
+      const mAvg = mResponses.length > 0
+        ? mResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / mResponses.length
+        : 0;
+
+      const tResponses = subRes?.filter((r: any) => r.stakeholder === "employee") || [];
+      const tAvg = tResponses.length > 0
+        ? tResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / tResponses.length
+        : 0;
+
+      const pResponses = subRes?.filter((r: any) => r.stakeholder === "leader") || [];
+      const pAvg = pResponses.length > 0
+        ? pResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / pResponses.length
+        : 0;
+
+      mScores.push(Number((mAvg / 10).toFixed(1)));
+      tScores.push(Number((tAvg / 10).toFixed(1)));
+      pScores.push(Number((pAvg / 10).toFixed(1)));
+    });
+
+    return { labels, manager: mScores, team: tScores, peer: pScores };
+  })();
+
+  const deltaScores = radarData.team.map((t, i) => Number((t - radarData.manager[i]).toFixed(1)));
 
   return (
     <div>
@@ -120,7 +264,7 @@ const ManagerReport = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
-              Overview
+              {userData?.firstName}'s Insights (Manager View)
             </h3>
           </div>
           <div>
@@ -153,7 +297,7 @@ const ManagerReport = () => {
                 data-twe-ripple-init
                 data-twe-ripple-color="light"
               >
-                People Potential
+                {selectedDomain}
                 <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -173,33 +317,17 @@ const ManagerReport = () => {
                 aria-labelledby="dropdownMenuButton1"
                 data-twe-dropdown-menu-ref
               >
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Something else here
-                  </a>
-                </li>
+                {Object.keys(reportData?.scores?.domains || {}).map((d) => (
+                  <li key={d}>
+                    <button
+                      onClick={() => handleDomainChange(d)}
+                      className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      data-twe-dropdown-item-ref
+                    >
+                      {d}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="flex justify-center gap-4 mt-6">
@@ -229,7 +357,7 @@ const ManagerReport = () => {
               </div>
             </div>
             <div className="p-10">
-              <SpeedMeter />
+              <SpeedMeter value={domainScore} />
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
@@ -246,7 +374,7 @@ const ManagerReport = () => {
                 data-twe-ripple-init
                 data-twe-ripple-color="light"
               >
-                Psychological Safety
+                {selectedSubdomain || "Select Sub-domain"}
                 <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -266,33 +394,17 @@ const ManagerReport = () => {
                 aria-labelledby="dropdownMenuButton1"
                 data-twe-dropdown-menu-ref
               >
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    href="#"
-                    data-twe-dropdown-item-ref
-                  >
-                    Something else here
-                  </a>
-                </li>
+                {Object.keys(reportData?.scores?.domains[selectedDomain]?.subdomains || {}).map((s) => (
+                  <li key={s}>
+                    <button
+                      onClick={() => setSelectedSubdomain(s)}
+                      className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      data-twe-dropdown-item-ref
+                    >
+                      {s}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="flex justify-center gap-4 mt-6">
@@ -322,7 +434,7 @@ const ManagerReport = () => {
               </div>
             </div>
             <div className="p-10">
-              <SpeedMeter />
+              <SpeedMeter value={subdomainScore} />
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
@@ -361,10 +473,10 @@ const ManagerReport = () => {
             <div className="flex items-center justify-between ">
               <div>
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Insight for psychological safety
+                  Insight for {selectedDomain}
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  Lorem ipsum dolor sit
+                  Overall analysis for this domain
                 </p>
               </div>
               <div>
@@ -373,45 +485,14 @@ const ManagerReport = () => {
             </div>
             <div>
               <ul className="mt-4 space-y-2">
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    Lorem Ipsum is simply dummy text
-                  </span>
-                </li>
+                {domainInsights.map((insight: string, idx: number) => (
+                  <li key={idx} className="feature-list flex gap-2">
+                    <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                    <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                      {insight}
+                    </span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -422,69 +503,35 @@ const ManagerReport = () => {
                   Objectives and Key Results
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  Improve analytical problem solving skills
+                  {currentOkr.objective}
                 </p>
               </div>
               <div>
                 <img src={Hugeicons} alt="images" />
               </div>
             </div>
-            <div className="flex items-center gap-3 mt-4">
-              <div className="text-lg-progress">
-                <CircularProgress
-                  value={75}
-                  width={60}
-                  textColor="#36454F"
-                  pathColor="#1A3652"
-                  trailColor="#D9D9D9"
-                />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                  KR1
-                </h2>
-                <p className="text-sm font-normal text-[var(--secondary-color)]">
-                  80% of learners score ≥70% on analytical reasoning assessments
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 mt-6">
-              <div className="text-lg-progress">
-                <CircularProgress
-                  value={75}
-                  width={60}
-                  textColor="#36454F"
-                  pathColor="#1A3652"
-                  trailColor="#D9D9D9"
-                />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                  KR2
-                </h2>
-                <p className="text-sm font-normal text-[var(--secondary-color)]">
-                  Average problem-solving score increases by 15% over baseline
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 mt-6">
-              <div className="text-lg-progress">
-                <CircularProgress
-                  value={75}
-                  width={60}
-                  textColor="#36454F"
-                  pathColor="#1A3652"
-                  trailColor="#D9D9D9"
-                />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                  KR3
-                </h2>
-                <p className="text-sm font-normal text-[var(--secondary-color)]">
-                  90% completion rate for advanced problem-solving tasks
-                </p>
-              </div>
+            <div className="space-y-6">
+              {currentOkr.krs.map((kr: any, idx: number) => (
+                <div key={idx} className="flex items-center gap-3 mt-4">
+                  <div className="text-lg-progress">
+                    <CircularProgress
+                      value={kr.value}
+                      width={60}
+                      textColor="#36454F"
+                      pathColor="#1A3652"
+                      trailColor="#D9D9D9"
+                    />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                      {kr.label}
+                    </h2>
+                    <p className="text-sm font-normal text-[var(--secondary-color)]">
+                      {kr.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
             <div></div>
           </div>
@@ -501,7 +548,7 @@ const ManagerReport = () => {
             </div>
             <div></div>
             <div style={{ width: 400 }}>
-              <Triangle data={data} />
+              <Triangle data={triangleData} />
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
@@ -516,45 +563,14 @@ const ManagerReport = () => {
               </div>
             </div>
             <ul className="mt-4 space-y-2">
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
-              </li>
-              <li className="feature-list">
-                <img src={IconStar} alt="icon" className="mt-1" />{" "}
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  Lorem Ipsum is simply dummy text
-                </span>
-              </li>
+              {coachingTips.map((tip: string, idx: number) => (
+                <li key={idx} className="feature-list flex gap-2">
+                  <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                  <span className="text-sm text-[var(--secondary-color)] font-normal">
+                    {tip}
+                  </span>
+                </li>
+              ))}
             </ul>
             <div></div>
           </div>
@@ -573,45 +589,14 @@ const ManagerReport = () => {
             </div>
           </div>
           <ul className="mt-4 space-y-2">
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span className="text-sm text-[var(--secondary-color)] font-normal">
-                Lorem Ipsum is simply dummy text
-              </span>
-            </li>
+            {recommendations.map((rec: string, idx: number) => (
+              <li key={idx} className="feature-list flex gap-2">
+                <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                <span className="text-sm text-[var(--secondary-color)] font-normal">
+                  {rec}
+                </span>
+              </li>
+            ))}
           </ul>
           <div></div>
         </div>
@@ -636,6 +621,7 @@ const ManagerReport = () => {
             </div>
             <div>
               <RadarChart
+                data={radarData}
                 selectedLabel={selectedLabel}
                 onLabelSelect={handleRadarChartSelection}
               />
@@ -650,7 +636,11 @@ const ManagerReport = () => {
               </div>
             </div>
             <div>
-              <GapBarChart selectedLabel={selectedLabel} />
+              <GapBarChart
+                labels={radarData.labels}
+                deltaScores={deltaScores}
+                selectedLabel={selectedLabel}
+              />
             </div>
           </div>
         </div>

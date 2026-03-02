@@ -9,7 +9,11 @@ declare global {
 }
 
 
-const SpeedMeter = () => {
+interface SpeedMeterProps {
+  value?: number;
+}
+
+const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,7 +63,7 @@ const SpeedMeter = () => {
         series: [
           {
             type: "gauge",
-            data: [75], // You can adjust the value between 0 and 100
+            data: [value], // Dynamically set value
             dial: {
               radius: "60%", // Control the size of the dial within the arc
               backgroundColor: "#222", // Dial color
@@ -101,7 +105,7 @@ const SpeedMeter = () => {
         new Highcharts.Chart(chartRef.current, options);
       }
     }
-  }, []);
+  }, [value]);
 
   return (
     <div

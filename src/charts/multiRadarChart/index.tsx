@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Chart } from "chart.js";
-import { radarLabels, managerScores, teamScores, peerScores } from "../data";
+// import { radarLabels, managerScores, teamScores, peerScores } from "../data";
+import type { RadarData } from "../radarChart";
 
 // Register necessary Chart.js components
 import {
@@ -24,7 +25,11 @@ Chart.register(
   Filler
 );
 
-const MultiRadarChart: React.FC = () => {
+interface MultiRadarChartProps {
+  data: RadarData;
+}
+
+const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
 
@@ -39,11 +44,11 @@ const MultiRadarChart: React.FC = () => {
       chartRef.current = new Chart(canvasRef.current, {
         type: "radar",
         data: {
-          labels: radarLabels,
+          labels: data.labels,
           datasets: [
             {
               label: "Manager",
-              data: managerScores,
+              data: data.manager,
               backgroundColor: "rgba(74, 144, 226, 0.3)",
               borderColor: "#4A90E2",
               pointBackgroundColor: "#4A90E2",
@@ -54,7 +59,7 @@ const MultiRadarChart: React.FC = () => {
             },
             {
               label: "Team",
-              data: teamScores,
+              data: data.team,
               backgroundColor: "rgba(46, 204, 113, 0.3)",
               borderColor: "#2ECC71",
               pointBackgroundColor: "#2ECC71",
@@ -65,7 +70,7 @@ const MultiRadarChart: React.FC = () => {
             },
             {
               label: "Peer",
-              data: peerScores,
+              data: data.peer,
               backgroundColor: "rgba(231, 76, 60, 0.3)",
               borderColor: "#E74C3C",
               pointBackgroundColor: "#E74C3C",
@@ -116,7 +121,7 @@ const MultiRadarChart: React.FC = () => {
         chartRef.current.destroy();
       }
     };
-  }, []); // Only run on mount and unmount
+  }, [data]); // Re-run when data changes
 
   return <canvas ref={canvasRef} />;
 };

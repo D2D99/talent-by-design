@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Chart } from "chart.js";
-import { radarLabels, managerScores, teamScores, peerScores } from "../data";
+// import { radarLabels, managerScores, teamScores, peerScores } from "../data";
 
 import {
   RadarController,
@@ -23,14 +23,22 @@ Chart.register(
   Filler
 );
 
+export interface RadarData {
+  labels: string[];
+  manager: number[];
+  team: number[];
+  peer: number[];
+}
+
 interface RadarChartProps {
+  data: RadarData;
   selectedLabel: string | null;
   onLabelSelect: (label: string) => void;
 }
 
 //selectedLabel,    can use this below if needed 
 
-const RadarChart: React.FC<RadarChartProps> = ({  onLabelSelect }) => {
+const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
 
@@ -43,11 +51,11 @@ const RadarChart: React.FC<RadarChartProps> = ({  onLabelSelect }) => {
       chartRef.current = new Chart(canvasRef.current, {
         type: "radar",
         data: {
-          labels: radarLabels,
+          labels: data.labels,
           datasets: [
             {
               label: "Manager",
-              data: managerScores,
+              data: data.manager,
               backgroundColor: "rgba(74, 144, 226, 0.3)",
               borderColor: "#4A90E2",
               pointBackgroundColor: "#4A90E2",
@@ -58,7 +66,7 @@ const RadarChart: React.FC<RadarChartProps> = ({  onLabelSelect }) => {
             },
             {
               label: "Team",
-              data: teamScores,
+              data: data.team,
               backgroundColor: "rgba(46, 204, 113, 0.3)",
               borderColor: "#2ECC71",
               pointBackgroundColor: "#2ECC71",
@@ -69,7 +77,7 @@ const RadarChart: React.FC<RadarChartProps> = ({  onLabelSelect }) => {
             },
             {
               label: "Peer",
-              data: peerScores,
+              data: data.peer,
               backgroundColor: "rgba(231, 76, 60, 0.3)",
               borderColor: "#E74C3C",
               pointBackgroundColor: "#E74C3C",
@@ -140,7 +148,7 @@ const RadarChart: React.FC<RadarChartProps> = ({  onLabelSelect }) => {
         chartRef.current.destroy(); // Clean up the chart instance
       }
     };
-  }, [onLabelSelect]); // Only re-run when `onLabelSelect` changes
+  }, [onLabelSelect, data]); // Only re-run when `onLabelSelect` or `data` changes
 
   return <canvas ref={canvasRef} />;
 };

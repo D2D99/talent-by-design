@@ -41,8 +41,8 @@ function roundedTrianglePath(
 export default function Triangle({ data }: Props) {
 
   // ===== EQUILATERAL BIG TRIANGLE =====
-  const center = { x: 150, y: 160 };
-  const radius = 100;
+  const center = { x: 150, y: 150 };
+  const radius = 120;
 
   const P = { x: center.x, y: center.y - radius };
   const O = {
@@ -54,95 +54,115 @@ export default function Triangle({ data }: Props) {
     y: center.y + radius * Math.cos(Math.PI / 3),
   };
 
-  // Normalize values
+  // Midpoints of sides
+  const Mpo = { x: (P.x + O.x) / 2, y: (P.y + O.y) / 2 };
+  const Mod = { x: (O.x + D.x) / 2, y: (O.y + D.y) / 2 };
+  const Mdp = { x: (D.x + P.x) / 2, y: (D.y + P.y) / 2 };
+
+  // Normalize values (0 to 1)
   const p = clamp(data.peoplePotential);
   const o = clamp(data.operationalSteadiness);
   const d = clamp(data.digitalFluency);
 
-  // Dynamic inner joint (only moving point)
-  const joint = {
-    x: (P.x * p + O.x * o + D.x * d) / (p + o + d),
-    y: (P.y * p + O.y * o + D.y * d) / (p + o + d),
-  };
+  // Growth helper: lerps a point V toward the center based on score s
+  const grow = (V: any, s: number) => ({
+    x: V.x + (center.x - V.x) * s,
+    y: V.y + (center.y - V.y) * s,
+  });
 
-  // Colors
+  const edgeGrow = (V: any, M: any, s: number) => ({
+    x: V.x + (M.x - V.x) * s,
+    y: V.y + (M.y - V.y) * s,
+  });
+
+  // Colors based on user preference
   const colors = {
-    P: "#EDF5FD",
-    O: "#3C7CBA",
-    D: "#C7E0F8",
+    P: "#EDF5FD", // Top (People) - Light
+    O: "#93C5FD", // Left (Operational) - Medium
+    D: "#2563EB", // Right (Digital) - Dark
   };
 
   return (
     <svg viewBox="0 0 300 300" width="100%">
-
-      {/* ===== BIG ROUNDED TRIANGLE ===== */}
+      {/* ===== BIG ROUNDED TRIANGLE BACKGROUND ===== */}
       <path
         d={roundedTrianglePath(P, O, D, 0.12)}
-        fill="none"
-        // stroke="#565875"
-        strokeWidth={2}
+        fill="#FFFFFF"
+        stroke="#E2E8F0"
+        strokeWidth={1}
       />
 
-      {/* ===== CLIP FOR SMALL ROUNDED TRIANGLE ===== */}
       <defs>
-        <clipPath id="smallTriangleClip">
+        <clipPath id="triangleClip">
           <path d={roundedTrianglePath(P, O, D, 0.12)} />
         </clipPath>
       </defs>
 
-      {/* ===== SMALL TRIANGLE (DYNAMIC SHAPE) ===== */}
-      <g clipPath="url(#smallTriangleClip)">
-        <polygon
-          points={`${P.x},${P.y} ${joint.x},${joint.y} ${O.x},${O.y}`}
-          fill={colors.P}
-        />
-        <polygon
-          points={`${O.x},${O.y} ${joint.x},${joint.y} ${D.x},${D.y}`}
-          fill={colors.O}
-        />
-        <polygon
-          points={`${D.x},${D.y} ${joint.x},${joint.y} ${P.x},${P.y}`}
-          fill={colors.D}
-        />
+      <g clipPath="url(#triangleClip)">
+        {/* PEOPPLE SECTOR: Vertex P -> Midpoints -> Center */}
+        {p > 0 && (
+          <polygon
+            points={`${P.x},${P.y} ${edgeGrow(P, Mpo, p).x},${edgeGrow(P, Mpo, p).y} ${grow(P, p).x},${grow(P, p).y} ${edgeGrow(P, Mdp, p).x},${edgeGrow(P, Mdp, p).y}`}
+            fill={colors.P}
+          />
+        )}
+
+        {/* OPERATIONAL SECTOR: Vertex O -> Midpoints -> Center */}
+        {o > 0 && (
+          <polygon
+            points={`${O.x},${O.y} ${edgeGrow(O, Mod, o).x},${edgeGrow(O, Mod, o).y} ${grow(O, o).x},${grow(O, o).y} ${edgeGrow(O, Mpo, o).x},${edgeGrow(O, Mpo, o).y}`}
+            fill={colors.O}
+          />
+        )}
+
+        {/* DIGITAL SECTOR: Vertex D -> Midpoints -> Center */}
+        {d > 0 && (
+          <polygon
+            points={`${D.x},${D.y} ${edgeGrow(D, Mdp, d).x},${edgeGrow(D, Mdp, d).y} ${grow(D, d).x},${grow(D, d).y} ${edgeGrow(D, Mod, d).x},${edgeGrow(D, Mod, d).y}`}
+            fill={colors.D}
+          />
+        )}
       </g>
 
-      {/* ===== SINGLE-LINE LABELS ===== */}
+      {/* ===== BOLD LABELS ===== */}
       <text
         x={P.x}
-        y={P.y - 20}
+        y={P.y - 25}
         textAnchor="middle"
-        fontWeight="bold"
-        fill="#242424"
-        fontSize={10}
+        fontWeight="800"
+        fill="#1E293B"
+        fontSize={12}
+        className="uppercase tracking-tighter"
       >
-        <tspan x={P.x} dy="0">{`People `}</tspan>  
-        <tspan x={P.x} dy="1.2em">{`Potential`}</tspan> 
+        <tspan x={P.x} dy="0">People</tspan>
+        <tspan x={P.x} dy="1.1em">Potential</tspan>
       </text>
 
       <text
-        x={O.x + 30}
-        y={O.y + 30}
+        x={O.x}
+        y={O.y + 40}
         textAnchor="middle"
-        fontWeight="bold"
-        fill="#242424"
-        fontSize={10}
+        fontWeight="800"
+        fill="#1E293B"
+        fontSize={12}
+        className="uppercase tracking-tighter"
       >
-        <tspan x={O.x + 10} dy="0">{`Operational`}</tspan>  
-        <tspan x={O.x + 10} dy="1.2em">{`Steadiness`}</tspan>  
+        <tspan x={O.x} dy="0">Operational</tspan>
+        <tspan x={O.x} dy="1.1em">Steadiness</tspan>
       </text>
 
       <text
-        x={D.x - 30}
-        y={D.y + 30}
+        x={D.x}
+        y={D.y + 40}
         textAnchor="middle"
-        fontWeight="bold"
-        fill="#242424"
-        fontSize={10}
+        fontWeight="800"
+        fill="#1E293B"
+        fontSize={12}
+        className="uppercase tracking-tighter"
       >
-        <tspan x={D.x} dy="0">{`Digital`}</tspan>  
-        <tspan x={D.x} dy="1.2em">{`Fluency`}</tspan> 
+        <tspan x={D.x} dy="0">Digital</tspan>
+        <tspan x={D.x} dy="1.1em">Fluency</tspan>
       </text>
-
     </svg>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { Chart} from "chart.js"; // Ensure Chart is imported properly
-import { radarLabels, deltaScores } from "../data"; // Assuming data is imported
+import { Chart } from "chart.js"; // Ensure Chart is imported properly
+// import { radarLabels, deltaScores } from "../data"; 
 // import type { ChartOptions } from "chart.js";
 
 import {
@@ -21,10 +21,12 @@ Chart.register(
 );
 
 interface GapBarChartProps {
+  labels: string[];
+  deltaScores: number[];
   selectedLabel: string | null;
 }
 
-const GapBarChart: React.FC<GapBarChartProps> = ({ selectedLabel }) => {
+const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selectedLabel }) => {
   const chartRef = useRef<Chart | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -68,7 +70,7 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ selectedLabel }) => {
       chartRef.current = new Chart(canvasRef.current, {
         type: "bar", // Define the chart type
         data: {
-          labels: radarLabels,
+          labels: labels,
           datasets: [
             {
               label: "Points Difference",
@@ -115,13 +117,13 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ selectedLabel }) => {
         chartRef.current.destroy(); // Clean up chart on component unmount
       }
     };
-  }, []); // Empty dependency array ensures the chart is created only once
+  }, [labels, deltaScores]); // Re-run when labels or deltaScores change
 
   // Highlight the selected label in the GapBarChart
   useEffect(() => {
     if (selectedLabel && chartRef.current) {
       const chart = chartRef.current;
-      const labelIndex = radarLabels.indexOf(selectedLabel);
+      const labelIndex = labels.indexOf(selectedLabel);
       if (labelIndex >= 0) {
         chart.data.datasets[0].backgroundColor = (ctx: any) => {
           const value = ctx.raw as number;

@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import { useEffect, useState, useMemo } from "react";
 import { Icon } from "@iconify/react";
-import { Collapse, Tab, Modal, initTWE, Ripple } from "tw-elements";
+import { Collapse, Tab, Modal, Ripple, initTWE } from "tw-elements";
 import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { questionService } from "../../services/questionService";
