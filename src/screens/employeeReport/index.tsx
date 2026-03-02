@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+// import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
