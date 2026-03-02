@@ -218,7 +218,7 @@ const EmployeeReport = () => {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto p-4 sm:p-8">
+    <div>
       <div>
         <div
           className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none dark:bg-body-dark dark:text-white"
@@ -255,32 +255,7 @@ const EmployeeReport = () => {
         </div>
       </div>
 
-      <div className="sticky top-6 z-10 flex items-center gap-2 justify-between bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_10px_30px_-10px_rgba(75,155,233,0.15)] sm:p-6 rounded-[16px] py-4 px-5 mb-8 backdrop-blur-md bg-white/90">
-        <div>
-          <h3 className="sm:text-3xl text-2xl font-black text-[var(--secondary-color)] uppercase tracking-tight">
-            Human-Centric Insights™
-          </h3>
-          <p className="sm:text-sm text-xs font-bold text-[#64748B] mt-1 ">
-            Welcome back, <span className="text-[var(--primary-color)] font-black uppercase">{userData?.firstName || "Professional"}</span>! Here is your latest performance snapshot.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button className="hidden sm:flex items-center gap-2 px-6 py-2.5 bg-[var(--primary-color)] text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all active:scale-95">
-            <Icon icon="tabler:download" width="20" />
-            Export Report
-          </button>
-          <div className="relative">
-            <button type="button" className="p-3 rounded-full bg-[#EDF5FD] text-[var(--primary-color)] transition-all hover:bg-[var(--primary-color)] hover:text-white group">
-              <Icon icon="tabler:bell" width="26" height="26" className="group-hover:rotate-12 transition-transform" />
-            </button>
-            <p className="w-[10px] h-[10px] bg-[#FF0000] rounded-full absolute top-1 right-1 border-2 border-white animate-pulse"></p>
-          </div>
-        </div>
-      </div>
-
-
-
+     
       {aiInsight && (
         <div className="bg-gradient-to-r from-[#1E293B] to-[#334155] p-6 rounded-[16px] shadow-xl mb-8 text-white flex items-center gap-8 border border-white/10 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
