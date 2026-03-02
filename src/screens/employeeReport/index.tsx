@@ -447,9 +447,7 @@ const EmployeeReport = () => {
                   </h3>
                   <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
                 </div>
-                <div className="p-2 bg-[#F1F5F9] rounded-lg">
-                  <Icon icon="lucide:triangle" className="text-[var(--primary-color)]" width="20" />
-                </div>
+                
               </div>
               <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
                 <Triangle data={triangleData} />
