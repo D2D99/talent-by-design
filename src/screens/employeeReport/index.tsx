@@ -98,7 +98,7 @@ const EmployeeReport = () => {
   const userId = searchParams.get("userId");
 
   const [reportData, setReportData] = useState<any>(null);
-  const [userData, setUserData] = useState<any>(null);
+  // const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
 
@@ -114,7 +114,7 @@ const EmployeeReport = () => {
         const res = await api.get(url);
         const data = res.data.report;
         setReportData(data);
-        setUserData(res.data.user);
+        // setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
 
         // Dynamic domain/subdomain selection from organizational framework
