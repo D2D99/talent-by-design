@@ -16,7 +16,8 @@ const Footer = () => {
           <div className="">
             <img src={FooterLogo} alt="logo" />
             <p className="text-xs font-normal text-[var(--white-color)] mt-3 lg:max-w-xs">
-              ©2025 <strong>TALENT BY DESIGN COLLECTIVE Inc.</strong> All rights
+              ©{new Date().getFullYear()}{" "}
+              <strong>TALENT BY DESIGN COLLECTIVE Inc.</strong> All rights
               reserved.
             </p>
             <h3 className="uppercase font-bold text-lg text-[var(--white-color)] mt-4">
