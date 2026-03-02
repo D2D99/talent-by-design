@@ -127,7 +127,7 @@ export default function Triangle({ data }: Props) {
       {/* ===== BOLD LABELS ===== */}
       <text
         x={P.x}
-        y={P.y - 25}
+        y={P.y - 15}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
@@ -140,7 +140,7 @@ export default function Triangle({ data }: Props) {
 
       <text
         x={O.x}
-        y={O.y + 40}
+        y={O.y + 30}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
@@ -153,7 +153,7 @@ export default function Triangle({ data }: Props) {
 
       <text
         x={D.x}
-        y={D.y + 40}
+        y={D.y + 30}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
