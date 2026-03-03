@@ -22,6 +22,7 @@ interface ProfileFormData {
   profileImage: string;
   orgName: string;
   orgLogo: string;
+  department: string;
 }
 
 const OrgLogoPlaceholder = "/static/img/POD-logo.svg";
@@ -42,6 +43,7 @@ const UserProfile = () => {
     profileImage: "",
     orgName: "",
     orgLogo: "",
+    department: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -82,6 +84,7 @@ const UserProfile = () => {
         profileImage: data.profileImage || "",
         orgName: data.orgName || "",
         orgLogo: data.orgLogo || "",
+        department: data.department || "",
       });
       setPreviewUrl(data.profileImage || "");
       setOrgLogoPreviewUrl(data.orgLogo || "");
@@ -517,6 +520,25 @@ const UserProfile = () => {
                   readOnly
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
                   placeholder="Organization name"
+                />
+              </div>
+            )}
+
+            {formData.department && (
+              <div>
+                <label
+                  htmlFor="userDept"
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                >
+                  Department
+                </label>
+                <input
+                  type="text"
+                  id="userDept"
+                  value={formData.department}
+                  readOnly
+                  className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
+                  placeholder="Department"
                 />
               </div>
             )}

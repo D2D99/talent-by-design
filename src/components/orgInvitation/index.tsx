@@ -464,8 +464,8 @@ const OrgInvitation = () => {
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
                       className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
-                          ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
-                          : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
+                        ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
+                        : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
                         }`}
                     >
                       <div className="relative mb-3 flex flex-col items-center pointer-events-none">
@@ -762,8 +762,8 @@ const OrgInvitation = () => {
                               }
                               disabled={!canDelete}
                               className={`p-2 rounded-full transition-all ${canDelete
-                                  ? "text-red-600 hover:bg-red-50"
-                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                                ? "text-red-600 hover:bg-red-50"
+                                : "text-gray-300 cursor-not-allowed opacity-50"
                                 }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
@@ -894,9 +894,18 @@ const OrgInvitation = () => {
                         <option value="admin">Admin</option>
                       ) : (
                         <>
-                          <option value="leader">Leader</option>
-                          <option value="manager">Manager</option>
-                          <option value="employee">Employee</option>
+                          {currentUserRole === "admin" && (
+                            <option value="leader">Leader</option>
+                          )}
+                          {(currentUserRole === "admin" ||
+                            currentUserRole === "leader") && (
+                              <option value="manager">Manager</option>
+                            )}
+                          {(currentUserRole === "admin" ||
+                            currentUserRole === "leader" ||
+                            currentUserRole === "manager") && (
+                              <option value="employee">Employee</option>
+                            )}
                         </>
                       )}
                     </select>

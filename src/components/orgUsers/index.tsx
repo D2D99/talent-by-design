@@ -128,9 +128,26 @@ const OrgUsers = ({
     if (m.status !== "Accept") return false;
 
     // 🚀 ROLE-BASED FILTERING FOR LEADERS/MANAGERS
-    if (currentUser && (currentUser.role === "leader" || currentUser.role === "manager")) {
-      // Only show members from the SAME department
-      if (m.department !== currentUser.department) return false;
+    if (currentUser) {
+      const cRole = currentUser.role?.toLowerCase();
+      const mRole = m.role?.toLowerCase();
+
+      // Hierarchy filtering
+      if (cRole === "leader") {
+        // Leaders see only Managers and Employees
+        if (!["manager", "employee"].includes(mRole)) return false;
+      } else if (cRole === "manager") {
+        // Managers see only Employees
+        if (mRole !== "employee") return false;
+      } else if (cRole === "employee") {
+        // Employees usually don't see the team list, but if they do, hide everyone else
+        return false;
+      }
+
+      // Department filtering for leaders and managers
+      if (cRole === "leader" || cRole === "manager") {
+        if (currentUser.department && m.department !== currentUser.department) return false;
+      }
     }
 
     const matchesSearch =
@@ -627,9 +644,15 @@ const OrgUsers = ({
                   className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
                 >
                   <option value="">Select a role...</option>
-                  <option value="leader">Team Leader</option>
-                  <option value="manager">Department Manager</option>
-                  <option value="employee">Team Associate</option>
+                  {currentUser?.role?.toLowerCase() === "admin" && (
+                    <option value="leader">Team Leader</option>
+                  )}
+                  {["admin", "leader"].includes(
+                    currentUser?.role?.toLowerCase() || "",
+                  ) && <option value="manager">Department Manager</option>}
+                  {["admin", "leader", "manager"].includes(
+                    currentUser?.role?.toLowerCase() || "",
+                  ) && <option value="employee">Team Associate</option>}
                 </select>
               </div>
             </div>
