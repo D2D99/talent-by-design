@@ -2,7 +2,7 @@
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
@@ -105,8 +105,6 @@ const EmployeeReport = () => {
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("Mindset & Adaptability");
-  const [aiInsight, setAiInsight] = useState<any>(null);
-
   useEffect(() => {
     const fetchReport = async () => {
       try {
@@ -114,9 +112,6 @@ const EmployeeReport = () => {
         const res = await api.get(url);
         const data = res.data.report;
         setReportData(data);
-        // setUserData(res.data.user);
-        setAiInsight(res.data.aiInsight);
-
         // Dynamic domain/subdomain selection from organizational framework
         const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
         const defaultDomain = domainKeys.find(k => k.toLowerCase().includes("people")) || domainKeys[0];
