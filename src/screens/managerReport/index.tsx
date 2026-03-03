@@ -39,7 +39,9 @@ const ManagerReport = () => {
 
     const fetchReport = async () => {
       try {
-        const url = userId ? `dashboard/manager?userId=${userId}` : `dashboard/manager`;
+        const url = userId
+          ? `dashboard/manager?userId=${userId}`
+          : `dashboard/manager`;
         const res = await api.get(url);
         setReportData(res.data.report);
         setUserData(res.data.user);
@@ -64,12 +66,15 @@ const ManagerReport = () => {
     team: [5.8, 0.2, 5.5, 0.0, 5.4],
   };
 
-  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
+  const [selectedDomain, setSelectedDomain] =
+    useState<string>("People Potential");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
   useEffect(() => {
     if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
-      const firstSub = Object.keys(reportData.scores.domains[selectedDomain].subdomains)[0];
+      const firstSub = Object.keys(
+        reportData.scores.domains[selectedDomain].subdomains,
+      )[0];
       setSelectedSubdomain(firstSub);
     }
   }, [reportData, selectedDomain]);
@@ -78,7 +83,9 @@ const ManagerReport = () => {
 
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
-    const key = Object.keys(reportData?.scores?.domains || {}).find(k => k.toLowerCase().includes(pattern.toLowerCase()));
+    const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
+      k.toLowerCase().includes(pattern.toLowerCase()),
+    );
     return key ? reportData.scores.domains[key].score : 0;
   };
 
@@ -88,62 +95,120 @@ const ManagerReport = () => {
     digitalFluency: findDomainScore("digital"),
   };
 
-
-
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);
   };
 
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
-  const subdomainScore = reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain]?.score || 0;
+  const subdomainScore =
+    reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain]
+      ?.score || 0;
   const domainFeedback = reportData?.scores?.domains[selectedDomain]?.feedback;
 
   const domainInsights = domainFeedback?.insight
-    ? domainFeedback.insight.split(". ").filter((s: string) => s.trim().length > 0)
+    ? domainFeedback.insight
+        .split(". ")
+        .filter((s: string) => s.trim().length > 0)
     : ["No specific insights available for this domain yet."];
 
   const coachingTips = domainFeedback?.coachingTips
-    ? domainFeedback.coachingTips.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    ? domainFeedback.coachingTips
+        .split("\n")
+        .map((s: string) => s.replace("•", "").trim())
+        .filter((s: string) => s.length > 0)
     : ["No specific coaching tips available for this domain yet."];
 
   const recommendations = domainFeedback?.recommendedPrograms
-    ? domainFeedback.recommendedPrograms.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    ? domainFeedback.recommendedPrograms
+        .split("\n")
+        .map((s: string) => s.replace("•", "").trim())
+        .filter((s: string) => s.length > 0)
     : ["No specific recommendations available for this domain yet."];
 
   const domainOkrs: any = {
     "People Potential": {
       objective: "Build high-performing, emotionally intelligent teams",
       krs: [
-        { label: "KR1", text: "100% of team members complete role-specific EI training", value: 80 },
-        { label: "KR2", text: "Achieve 90% positive team climate scores in feedback rounds", value: 90 },
-        { label: "KR3", text: "Identify and mentor 2 high-potential leaders within the team", value: 100 },
-      ]
+        {
+          label: "KR1",
+          text: "100% of team members complete role-specific EI training",
+          value: 80,
+        },
+        {
+          label: "KR2",
+          text: "Achieve 90% positive team climate scores in feedback rounds",
+          value: 90,
+        },
+        {
+          label: "KR3",
+          text: "Identify and mentor 2 high-potential leaders within the team",
+          value: 100,
+        },
+      ],
     },
     "Operational Steadiness": {
-      objective: "Standardize team execution discipline and workflow efficiency",
+      objective:
+        "Standardize team execution discipline and workflow efficiency",
       krs: [
-        { label: "KR1", text: "Achieve 100% adherence to weekly team operating rhythms", value: 95 },
-        { label: "KR2", text: "Reduce project delivery friction metrics by 25%", value: 70 },
-        { label: "KR3", text: "Implement verified accountability frameworks for all members", value: 100 },
-      ]
+        {
+          label: "KR1",
+          text: "Achieve 100% adherence to weekly team operating rhythms",
+          value: 95,
+        },
+        {
+          label: "KR2",
+          text: "Reduce project delivery friction metrics by 25%",
+          value: 70,
+        },
+        {
+          label: "KR3",
+          text: "Implement verified accountability frameworks for all members",
+          value: 100,
+        },
+      ],
     },
     "Digital Fluency": {
-      objective: "Enable team digital transformation and AI workflow integration",
+      objective:
+        "Enable team digital transformation and AI workflow integration",
       krs: [
-        { label: "KR1", text: "Transition 100% of team collaboration to digital-first norms", value: 85 },
-        { label: "KR2", text: "Achieve 70% team proficiency in AI-assisted project management", value: 70 },
-        { label: "KR3", text: "Audit and optimize 100% of team digital tool utilization", value: 100 },
-      ]
-    }
+        {
+          label: "KR1",
+          text: "Transition 100% of team collaboration to digital-first norms",
+          value: 85,
+        },
+        {
+          label: "KR2",
+          text: "Achieve 70% team proficiency in AI-assisted project management",
+          value: 70,
+        },
+        {
+          label: "KR3",
+          text: "Audit and optimize 100% of team digital tool utilization",
+          value: 100,
+        },
+      ],
+    },
   };
 
   const currentOkr = domainOkrs[selectedDomain] || {
     objective: "Lead team improvements in this domain area",
     krs: [
-      { label: "KR1", text: "Establish baseline performance metrics for the team", value: 50 },
-      { label: "KR2", text: "Deliver monthly team development coaching sessions", value: 50 },
-      { label: "KR3", text: "Report 15% growth in domain-specific team metrics", value: 50 },
-    ]
+      {
+        label: "KR1",
+        text: "Establish baseline performance metrics for the team",
+        value: 50,
+      },
+      {
+        label: "KR2",
+        text: "Deliver monthly team development coaching sessions",
+        value: 50,
+      },
+      {
+        label: "KR3",
+        text: "Report 15% growth in domain-specific team metrics",
+        value: 50,
+      },
+    ],
   };
 
   // Calculate radar data dynamically from responses
@@ -158,7 +223,9 @@ const ManagerReport = () => {
   };
 
   const radarData: RadarData = (() => {
-    const subdomains = Object.keys(reportData?.scores?.domains[selectedDomain]?.subdomains || {});
+    const subdomains = Object.keys(
+      reportData?.scores?.domains[selectedDomain]?.subdomains || {},
+    );
     const labels = subdomains;
     const mScores: number[] = [];
     const tScores: number[] = [];
@@ -166,23 +233,38 @@ const ManagerReport = () => {
 
     labels.forEach((sub) => {
       const subRes = reportData?.responses?.filter(
-        (r: any) => r.domain === selectedDomain && r.subdomain === sub
+        (r: any) => r.domain === selectedDomain && r.subdomain === sub,
       );
 
-      const mResponses = subRes?.filter((r: any) => r.stakeholder === "manager") || [];
-      const mAvg = mResponses.length > 0
-        ? mResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / mResponses.length
-        : 0;
+      const mResponses =
+        subRes?.filter((r: any) => r.stakeholder === "manager") || [];
+      const mAvg =
+        mResponses.length > 0
+          ? mResponses.reduce(
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / mResponses.length
+          : 0;
 
-      const tResponses = subRes?.filter((r: any) => r.stakeholder === "employee") || [];
-      const tAvg = tResponses.length > 0
-        ? tResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / tResponses.length
-        : 0;
+      const tResponses =
+        subRes?.filter((r: any) => r.stakeholder === "employee") || [];
+      const tAvg =
+        tResponses.length > 0
+          ? tResponses.reduce(
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / tResponses.length
+          : 0;
 
-      const pResponses = subRes?.filter((r: any) => r.stakeholder === "leader") || [];
-      const pAvg = pResponses.length > 0
-        ? pResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / pResponses.length
-        : 0;
+      const pResponses =
+        subRes?.filter((r: any) => r.stakeholder === "leader") || [];
+      const pAvg =
+        pResponses.length > 0
+          ? pResponses.reduce(
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / pResponses.length
+          : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
       tScores.push(Number((tAvg / 10).toFixed(1)));
@@ -192,13 +274,15 @@ const ManagerReport = () => {
     return { labels, manager: mScores, team: tScores, peer: pScores };
   })();
 
-  const deltaScores = radarData.team.map((t, i) => Number((t - radarData.manager[i]).toFixed(1)));
+  const deltaScores = radarData.team.map((t, i) =>
+    Number((t - radarData.manager[i]).toFixed(1)),
+  );
 
   return (
     <div>
       <div>
         <div
-          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none dark:bg-body-dark dark:text-white"
+          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
           tabIndex={-1}
           id="offcanvasExample"
           aria-labelledby="offcanvasExampleLabel"
@@ -207,7 +291,7 @@ const ManagerReport = () => {
           <div className="flex items-center justify-end p-4">
             <button
               type="button"
-              className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
+              className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
               data-twe-offcanvas-dismiss
               aria-label="Close"
             >
@@ -321,7 +405,7 @@ const ManagerReport = () => {
                 </span>
               </button>
               <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownMenuButton1"
                 data-twe-dropdown-menu-ref
               >
@@ -398,11 +482,13 @@ const ManagerReport = () => {
                 </span>
               </button>
               <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownMenuButton1"
                 data-twe-dropdown-menu-ref
               >
-                {Object.keys(reportData?.scores?.domains[selectedDomain]?.subdomains || {}).map((s) => (
+                {Object.keys(
+                  reportData?.scores?.domains[selectedDomain]?.subdomains || {},
+                ).map((s) => (
                   <li key={s}>
                     <button
                       onClick={() => setSelectedSubdomain(s)}
@@ -495,7 +581,11 @@ const ManagerReport = () => {
               <ul className="mt-4 space-y-2">
                 {domainInsights.map((insight: string, idx: number) => (
                   <li key={idx} className="feature-list flex gap-2">
-                    <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                    <img
+                      src={IconStar}
+                      alt="icon"
+                      className="mt-1 w-4 h-4 shrink-0"
+                    />
                     <span className="text-sm text-[var(--secondary-color)] font-normal italic">
                       {insight}
                     </span>
@@ -552,7 +642,9 @@ const ManagerReport = () => {
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   POD-360™ Model
                 </h3>
-                <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
+                <p className="text-xs text-[#64748B] font-medium">
+                  Interconnectivity of focus areas
+                </p>
               </div>
             </div>
             <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
@@ -560,19 +652,25 @@ const ManagerReport = () => {
             </div>
             <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
               <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">People</p>
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  People
+                </p>
                 <p className="text-sm font-black text-[var(--secondary-color)]">
                   {Math.round(findDomainScore("people"))}%
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Operational</p>
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  Operational
+                </p>
                 <p className="text-sm font-black text-[var(--secondary-color)]">
                   {Math.round(findDomainScore("operational"))}%
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Digital</p>
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  Digital
+                </p>
                 <p className="text-sm font-black text-[var(--secondary-color)]">
                   {Math.round(findDomainScore("digital"))}%
                 </p>
@@ -593,7 +691,11 @@ const ManagerReport = () => {
             <ul className="mt-4 space-y-2">
               {coachingTips.map((tip: string, idx: number) => (
                 <li key={idx} className="feature-list flex gap-2">
-                  <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                  <img
+                    src={IconStar}
+                    alt="icon"
+                    className="mt-1 w-4 h-4 shrink-0"
+                  />
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
                     {tip}
                   </span>
@@ -619,7 +721,11 @@ const ManagerReport = () => {
           <ul className="mt-4 space-y-2">
             {recommendations.map((rec: string, idx: number) => (
               <li key={idx} className="feature-list flex gap-2">
-                <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                <img
+                  src={IconStar}
+                  alt="icon"
+                  className="mt-1 w-4 h-4 shrink-0"
+                />
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
                   {rec}
                 </span>

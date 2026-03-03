@@ -319,7 +319,7 @@ const OrgInvitation = () => {
       case "Accept":
         return (
           <span
-            className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] dark:bg-[#163423] dark:text-[#8CDFAC] dark:border-[#2DA367]`}
+            className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933]`}
           >
             Accepted
           </span>
@@ -327,7 +327,7 @@ const OrgInvitation = () => {
       case "Expire":
         return (
           <span
-            className={`${base} bg-[#FFEEEE] text-[#D71818] border-[#D71818] dark:bg-[#411F26] dark:text-[#FF9BAA] dark:border-[#E2687A]`}
+            className={`${base} bg-[#FFEEEE] text-[#D71818] border-[#D71818]`}
           >
             Expired
           </span>
@@ -335,7 +335,7 @@ const OrgInvitation = () => {
       default:
         return (
           <span
-            className={`${base} bg-[#FFF8EE] text-[#E39631] border-[#E39631] dark:bg-[#43361F] dark:text-[#FFD38A] dark:border-[#E0A84D]`}
+            className={`${base} bg-[#FFF8EE] text-[#E39631] border-[#E39631]`}
           >
             Pending
           </span>
@@ -346,7 +346,7 @@ const OrgInvitation = () => {
   return (
     <>
       <div>
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
+        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
           <div className="grid">
             <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
               <div>
@@ -355,7 +355,7 @@ const OrgInvitation = () => {
                     ? "Organization Management"
                     : "Team Member Management"}
                 </h2>
-                <p className="text-sm text-gray-500 md:mt-1 dark:text-[var(--app-text-muted)]">
+                <p className="text-sm text-gray-500 md:mt-1">
                   {isSuperAdmin
                     ? "Manage all client organizations and their admins."
                     : "Invite and manage your organization team."}
@@ -463,21 +463,28 @@ const OrgInvitation = () => {
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
-                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
-                        ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
-                        : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
-                        }`}
+                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${
+                        isDragging
+                          ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
+                          : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
+                      }`}
                     >
                       <div className="relative mb-3 flex flex-col items-center pointer-events-none">
                         <div
-                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${isDragging ? "opacity-100" : "opacity-0 group-hover/upload:opacity-100"
-                            }`}
+                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${
+                            isDragging
+                              ? "opacity-100"
+                              : "opacity-0 group-hover/upload:opacity-100"
+                          }`}
                         ></div>
                         <Icon
                           icon="logos:csv"
                           width="36"
-                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${isDragging ? "scale-110" : "group-hover/upload:scale-110"
-                            }`}
+                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${
+                            isDragging
+                              ? "scale-110"
+                              : "group-hover/upload:scale-110"
+                          }`}
                         />
                       </div>
 
@@ -568,7 +575,7 @@ const OrgInvitation = () => {
               <div className="relative flex-1 max-w-md">
                 <Icon
                   icon="tabler:search"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#88a7c4]"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                   width="20"
                 />
                 <input
@@ -582,7 +589,7 @@ const OrgInvitation = () => {
                   autoComplete="off"
                   name="searchTerm"
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
                 />
               </div>
 
@@ -674,29 +681,21 @@ const OrgInvitation = () => {
               </div> */}
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)]">
+            <div className="overflow-x-auto rounded-xl border border-gray-100">
               <table className="w-full whitespace-nowrap border-collapse">
                 <thead>
-                  <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]">
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
-                      #
-                    </th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+                  <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
+                    <th className="px-6 py-4 font-semibold">#</th>
+                    <th className="px-6 py-4 font-semibold">
                       {isSuperAdmin ? "Organization" : "Name"}
                     </th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
-                      Email
-                    </th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
-                      Created Date
-                    </th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
+                    <th className="px-6 py-4 font-semibold">Email</th>
+                    <th className="px-6 py-4 font-semibold">Created Date</th>
+                    <th className="px-6 py-4 font-semibold">
                       {isSuperAdmin ? "Total Users" : "Role"}
                     </th>
-                    <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 font-semibold text-center dark:text-[#88a7c4]">
+                    <th className="px-6 py-4 font-semibold">Status</th>
+                    <th className="px-6 py-4 font-semibold text-center">
                       Action
                     </th>
                   </tr>
@@ -708,9 +707,9 @@ const OrgInvitation = () => {
                       return (
                         <tr
                           key={item._id}
-                          className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors dark:border-[var(--app-border-color)] dark:hover:bg-[rgba(121,186,240,0.08)]"
+                          className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
                         >
-                          <td className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-[var(--app-text-color)]">
+                          <td className="px-6 py-4 text-sm font-semibold text-gray-700">
                             {indexOfFirstItem + index + 1}
                           </td>
                           <td className="px-6 py-4 text-sm text-[var(--app-text-color)] font-bold">
@@ -725,10 +724,10 @@ const OrgInvitation = () => {
                               item.name || "—"
                             )}
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-600 dark:text-[var(--app-text-muted)]">
+                          <td className="px-6 py-4 text-sm text-gray-600">
                             {item.email}
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-500 dark:text-[var(--app-text-muted)]">
+                          <td className="px-6 py-4 text-sm text-gray-500">
                             {new Date(item.createdAt).toLocaleDateString(
                               "en-GB",
                             )}
@@ -745,7 +744,7 @@ const OrgInvitation = () => {
                                 </span>
                               </div>
                             ) : (
-                              <span className="uppercase text-xs font-bold dark:text-[var(--app-text-color)]">
+                              <span className="uppercase text-xs font-bold">
                                 {item.role}
                               </span>
                             )}
@@ -761,10 +760,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
+                                  ? "text-red-600 hover:bg-red-50"
+                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -776,7 +776,7 @@ const OrgInvitation = () => {
                     <tr>
                       <td
                         colSpan={7}
-                        className="text-center py-20 text-gray-400 dark:text-[#9cb8d2]"
+                        className="text-center py-20 text-gray-400"
                       >
                         {isLoading ? (
                           <div className="flex flex-col items-center gap-2">
@@ -899,13 +899,13 @@ const OrgInvitation = () => {
                           )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader") && (
-                              <option value="manager">Manager</option>
-                            )}
+                            <option value="manager">Manager</option>
+                          )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader" ||
                             currentUserRole === "manager") && (
-                              <option value="employee">Employee</option>
-                            )}
+                            <option value="employee">Employee</option>
+                          )}
                         </>
                       )}
                     </select>

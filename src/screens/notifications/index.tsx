@@ -70,7 +70,7 @@ const NotificationHistory = () => {
   });
 
   return (
-    <div className="bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] transition-all duration-300">
+    <div className="bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)]  sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] transition-all duration-300">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>

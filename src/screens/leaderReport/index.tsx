@@ -46,7 +46,9 @@ const LeaderReport = () => {
 
     const fetchReport = async () => {
       try {
-        const url = userId ? `dashboard/leader?userId=${userId}` : `dashboard/leader`;
+        const url = userId
+          ? `dashboard/leader?userId=${userId}`
+          : `dashboard/leader`;
         const res = await api.get(url);
         const data = res.data.report;
         setReportData(data);
@@ -61,14 +63,15 @@ const LeaderReport = () => {
     fetchReport();
   }, [userId]);
 
-
-
-  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
+  const [selectedDomain, setSelectedDomain] =
+    useState<string>("People Potential");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
   useEffect(() => {
     if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
-      const firstSub = Object.keys(reportData.scores.domains[selectedDomain].subdomains)[0];
+      const firstSub = Object.keys(
+        reportData.scores.domains[selectedDomain].subdomains,
+      )[0];
       setSelectedSubdomain(firstSub);
     }
   }, [reportData, selectedDomain]);
@@ -77,7 +80,9 @@ const LeaderReport = () => {
 
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
-    const key = Object.keys(reportData?.scores?.domains || {}).find(k => k.toLowerCase().includes(pattern.toLowerCase()));
+    const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
+      k.toLowerCase().includes(pattern.toLowerCase()),
+    );
     return key ? reportData.scores.domains[key].score : 0;
   };
 
@@ -87,10 +92,11 @@ const LeaderReport = () => {
     digitalFluency: findDomainScore("digital"),
   };
 
-
-
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
-  const subdomainScore = reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain] || 0;
+  const subdomainScore =
+    reportData?.scores?.domains[selectedDomain]?.subdomains?.[
+      selectedSubdomain
+    ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
   const getStatus = (val: number) => {
@@ -118,7 +124,9 @@ const LeaderReport = () => {
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);
     if (reportData?.scores?.domains[domain]?.subdomains) {
-      const firstSub = Object.keys(reportData.scores.domains[domain].subdomains)[0];
+      const firstSub = Object.keys(
+        reportData.scores.domains[domain].subdomains,
+      )[0];
       setSelectedSubdomain(firstSub);
     } else {
       setSelectedSubdomain("");
@@ -132,51 +140,107 @@ const LeaderReport = () => {
   const domainFeedback = reportData?.scores?.domains[selectedDomain]?.feedback;
 
   const domainInsights = domainFeedback?.insight
-    ? domainFeedback.insight.split(". ").filter((s: string) => s.trim().length > 0)
+    ? domainFeedback.insight
+        .split(". ")
+        .filter((s: string) => s.trim().length > 0)
     : ["No specific insights available for this domain yet."];
 
   const coachingTips = domainFeedback?.coachingTips
-    ? domainFeedback.coachingTips.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    ? domainFeedback.coachingTips
+        .split("\n")
+        .map((s: string) => s.replace("•", "").trim())
+        .filter((s: string) => s.length > 0)
     : ["No specific coaching tips available for this domain yet."];
 
   const recommendations = domainFeedback?.recommendedPrograms
-    ? domainFeedback.recommendedPrograms.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    ? domainFeedback.recommendedPrograms
+        .split("\n")
+        .map((s: string) => s.replace("•", "").trim())
+        .filter((s: string) => s.length > 0)
     : ["No specific recommendations available for this domain yet."];
 
   const domainOkrs: any = {
     "People Potential": {
       objective: "Cultivate high-trust, psychologically safe leadership",
       krs: [
-        { label: "KR1", text: "Increase psychological safety scores by 25% from baseline", value: 85 },
-        { label: "KR2", text: "90% leadership participation in empathy development focus groups", value: 90 },
-        { label: "KR3", text: "15% improvement in cross-functional trust survey metrics", value: 75 },
-      ]
+        {
+          label: "KR1",
+          text: "Increase psychological safety scores by 25% from baseline",
+          value: 85,
+        },
+        {
+          label: "KR2",
+          text: "90% leadership participation in empathy development focus groups",
+          value: 90,
+        },
+        {
+          label: "KR3",
+          text: "15% improvement in cross-functional trust survey metrics",
+          value: 75,
+        },
+      ],
     },
     "Operational Steadiness": {
       objective: "Enhance operational clarity and execution discipline",
       krs: [
-        { label: "KR1", text: "Reduce priority-switching friction by 30% through alignment", value: 70 },
-        { label: "KR2", text: "Standardize 100% of core leadership operating rhythms", value: 100 },
-        { label: "KR3", text: "Achieve 95% adherence to newly defined execution standards", value: 95 },
-      ]
+        {
+          label: "KR1",
+          text: "Reduce priority-switching friction by 30% through alignment",
+          value: 70,
+        },
+        {
+          label: "KR2",
+          text: "Standardize 100% of core leadership operating rhythms",
+          value: 100,
+        },
+        {
+          label: "KR3",
+          text: "Achieve 95% adherence to newly defined execution standards",
+          value: 95,
+        },
+      ],
     },
     "Digital Fluency": {
       objective: "Accelerate organizational digital maturity and AI adoption",
       krs: [
-        { label: "KR1", text: "Achieve 80% proficiency in enterprise AI-assisted workflows", value: 80 },
-        { label: "KR2", text: "Increase verified data-driven decision making by 40%", value: 40 },
-        { label: "KR3", text: "Complete 100% of advanced digital enablement certifications", value: 100 },
-      ]
-    }
+        {
+          label: "KR1",
+          text: "Achieve 80% proficiency in enterprise AI-assisted workflows",
+          value: 80,
+        },
+        {
+          label: "KR2",
+          text: "Increase verified data-driven decision making by 40%",
+          value: 40,
+        },
+        {
+          label: "KR3",
+          text: "Complete 100% of advanced digital enablement certifications",
+          value: 100,
+        },
+      ],
+    },
   };
 
   const currentOkr = domainOkrs[selectedDomain] || {
     objective: "Improve domain-specific capabilities",
     krs: [
-      { label: "KR1", text: "Define and baseline key metrics for this domain", value: 50 },
-      { label: "KR2", text: "Implement targeted development interventions", value: 50 },
-      { label: "KR3", text: "Monitor and report on progress quarterly", value: 50 },
-    ]
+      {
+        label: "KR1",
+        text: "Define and baseline key metrics for this domain",
+        value: 50,
+      },
+      {
+        label: "KR2",
+        text: "Implement targeted development interventions",
+        value: 50,
+      },
+      {
+        label: "KR3",
+        text: "Monitor and report on progress quarterly",
+        value: 50,
+      },
+    ],
   };
 
   const topPriorities = Object.entries(reportData?.scores?.domains || {})
@@ -185,7 +249,7 @@ const LeaderReport = () => {
     .map(([name, data]: any) => ({
       name,
       score: Math.round(data.score),
-      color: data.score < 50 ? "#D71818" : "#FF8D28"
+      color: data.score < 50 ? "#D71818" : "#FF8D28",
     }));
 
   // Helper to get numeric score from response
@@ -201,7 +265,9 @@ const LeaderReport = () => {
 
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
-    const subdomains = Object.keys(reportData?.scores?.domains[selectedDomain]?.subdomains || {});
+    const subdomains = Object.keys(
+      reportData?.scores?.domains[selectedDomain]?.subdomains || {},
+    );
     const labels = subdomains;
     const mScores: number[] = [];
     const tScores: number[] = [];
@@ -209,23 +275,38 @@ const LeaderReport = () => {
 
     labels.forEach((sub) => {
       const subRes = reportData?.responses?.filter(
-        (r: any) => r.domain === selectedDomain && r.subdomain === sub
+        (r: any) => r.domain === selectedDomain && r.subdomain === sub,
       );
 
-      const mResponses = subRes?.filter((r: any) => r.stakeholder === "manager") || [];
-      const mAvg = mResponses.length > 0
-        ? mResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / mResponses.length
-        : 0;
+      const mResponses =
+        subRes?.filter((r: any) => r.stakeholder === "manager") || [];
+      const mAvg =
+        mResponses.length > 0
+          ? mResponses.reduce(
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / mResponses.length
+          : 0;
 
-      const tResponses = subRes?.filter((r: any) => r.stakeholder === "employee") || [];
-      const tAvg = tResponses.length > 0
-        ? tResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / tResponses.length
-        : 0;
+      const tResponses =
+        subRes?.filter((r: any) => r.stakeholder === "employee") || [];
+      const tAvg =
+        tResponses.length > 0
+          ? tResponses.reduce(
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / tResponses.length
+          : 0;
 
-      const pResponses = subRes?.filter((r: any) => r.stakeholder === "leader") || [];
-      const pAvg = pResponses.length > 0
-        ? pResponses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / pResponses.length
-        : 0;
+      const pResponses =
+        subRes?.filter((r: any) => r.stakeholder === "leader") || [];
+      const pAvg =
+        pResponses.length > 0
+          ? pResponses.reduce(
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / pResponses.length
+          : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
       tScores.push(Number((tAvg / 10).toFixed(1)));
@@ -238,16 +319,33 @@ const LeaderReport = () => {
   // Derive Role Data and Gaps from stakeholders
   const roleAverages = (() => {
     const roles = ["employee", "manager", "leader"];
-    return roles.map(role => {
-      const responses = reportData?.responses?.filter((r: any) => r.stakeholder === role) || [];
-      const score = responses.length > 0
-        ? responses.reduce((acc: number, curr: any) => acc + getNumericScore(curr), 0) / responses.length
-        : 0;
+    return roles.map((role) => {
+      const responses =
+        reportData?.responses?.filter((r: any) => r.stakeholder === role) || [];
+      const score =
+        responses.length > 0
+          ? responses.reduce(
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / responses.length
+          : 0;
 
-      const labelMap: any = { employee: "EMPLOYEE", manager: "MANAGER", leader: "SENIOR LEADER" };
-      const colorMap: any = { employee: "#FF5656", manager: "#FEE114", leader: "#30AD43" };
+      const labelMap: any = {
+        employee: "EMPLOYEE",
+        manager: "MANAGER",
+        leader: "SENIOR LEADER",
+      };
+      const colorMap: any = {
+        employee: "#FF5656",
+        manager: "#FEE114",
+        leader: "#30AD43",
+      };
 
-      return { label: labelMap[role], value: Math.round(score), color: colorMap[role] };
+      return {
+        label: labelMap[role],
+        value: Math.round(score),
+        color: colorMap[role],
+      };
     });
   })();
 
@@ -256,7 +354,8 @@ const LeaderReport = () => {
     let rolesText = "Balanced Views";
     for (let i = 0; i < roleAverages.length; i++) {
       for (let j = i + 1; j < roleAverages.length; j++) {
-        if (roleAverages[i].value === 0 || roleAverages[j].value === 0) continue;
+        if (roleAverages[i].value === 0 || roleAverages[j].value === 0)
+          continue;
         const gap = Math.abs(roleAverages[i].value - roleAverages[j].value);
         if (gap > largest) {
           largest = gap;
@@ -279,7 +378,7 @@ const LeaderReport = () => {
     <div>
       <div>
         <div
-          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none dark:bg-body-dark dark:text-white"
+          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
           tabIndex={-1}
           id="offcanvasExample"
           aria-labelledby="offcanvasExampleLabel"
@@ -288,7 +387,7 @@ const LeaderReport = () => {
           <div className="flex items-center justify-end p-4">
             <button
               type="button"
-              className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
+              className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
               data-twe-offcanvas-dismiss
               aria-label="Close"
             >
@@ -367,7 +466,7 @@ const LeaderReport = () => {
                     </span>
                   </button>
                   <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                     aria-labelledby="dropdownMenuButton1"
                     data-twe-dropdown-menu-ref
                   >
@@ -428,7 +527,7 @@ const LeaderReport = () => {
                     </span>
                   </button>
                   <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                     aria-labelledby="dropdownMenuButton1"
                     data-twe-dropdown-menu-ref
                   >
@@ -489,7 +588,7 @@ const LeaderReport = () => {
                     </span>
                   </button>
                   <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                     aria-labelledby="dropdownMenuButton1"
                     data-twe-dropdown-menu-ref
                   >
@@ -585,7 +684,9 @@ const LeaderReport = () => {
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   POD-360™ Model
                 </h3>
-                <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
+                <p className="text-xs text-[#64748B] font-medium">
+                  Interconnectivity of focus areas
+                </p>
               </div>
             </div>
             <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
@@ -593,19 +694,25 @@ const LeaderReport = () => {
             </div>
             <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
               <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">People</p>
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  People
+                </p>
                 <p className="text-sm font-black text-[var(--secondary-color)]">
                   {Math.round(findDomainScore("people"))}%
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Operational</p>
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  Operational
+                </p>
                 <p className="text-sm font-black text-[var(--secondary-color)]">
                   {Math.round(findDomainScore("operational"))}%
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Digital</p>
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  Digital
+                </p>
                 <p className="text-sm font-black text-[var(--secondary-color)]">
                   {Math.round(findDomainScore("digital"))}%
                 </p>
@@ -667,14 +774,17 @@ const LeaderReport = () => {
                 <RoleProgressChart data={roleData} />
               </div>
               <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                <b className="">Largest Gap:</b> {maxGapInfo.text} (+{maxGapInfo.value})
+                <b className="">Largest Gap:</b> {maxGapInfo.text} (+
+                {maxGapInfo.value})
               </p>
               <div className="sm:mt-16 mt-6 ">
                 <button
                   type="button"
                   className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
                 >
-                  {maxGapInfo.value > 15 ? "Perception Risk Detected" : "Alignment On Track"}
+                  {maxGapInfo.value > 15
+                    ? "Perception Risk Detected"
+                    : "Alignment On Track"}
                 </button>
               </div>
               <div></div>
@@ -696,16 +806,32 @@ const LeaderReport = () => {
             </div>
             <div className="mt-4 space-y-4">
               {topPriorities.map((item, _idx) => (
-                <div key={item.name} className="flex items-center justify-between">
-                  <p className="text-sm font-semibold flex items-center gap-2" style={{ color: item.color }}>
-                    <span className="w-2.5 h-2.5 flex rounded-full" style={{ backgroundColor: item.color }}></span>
+                <div
+                  key={item.name}
+                  className="flex items-center justify-between"
+                >
+                  <p
+                    className="text-sm font-semibold flex items-center gap-2"
+                    style={{ color: item.color }}
+                  >
+                    <span
+                      className="w-2.5 h-2.5 flex rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    ></span>
                     {item.name}
                   </p>
-                  <p className="text-sm font-bold" style={{ color: item.color }}>{item.score}%</p>
+                  <p
+                    className="text-sm font-bold"
+                    style={{ color: item.color }}
+                  >
+                    {item.score}%
+                  </p>
                 </div>
               ))}
               {topPriorities.length === 0 && (
-                <p className="text-sm text-gray-500 italic">No priorities identified yet.</p>
+                <p className="text-sm text-gray-500 italic">
+                  No priorities identified yet.
+                </p>
               )}
             </div>
           </div>
@@ -743,7 +869,7 @@ const LeaderReport = () => {
                   </span>
                 </button>
                 <ul
-                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                   aria-labelledby="dropdownMenuButton1"
                   data-twe-dropdown-menu-ref
                 >
@@ -815,20 +941,21 @@ const LeaderReport = () => {
                 </span>
               </button>
               <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
                 aria-labelledby="dropdownDomain"
                 data-twe-dropdown-menu-ref
               >
-                {reportData?.scores?.domains && Object.keys(reportData.scores.domains).map((domain) => (
-                  <li key={domain}>
-                    <button
-                      onClick={() => handleDomainChange(domain)}
-                      className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                    >
-                      {domain}
-                    </button>
-                  </li>
-                ))}
+                {reportData?.scores?.domains &&
+                  Object.keys(reportData.scores.domains).map((domain) => (
+                    <li key={domain}>
+                      <button
+                        onClick={() => handleDomainChange(domain)}
+                        className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                      >
+                        {domain}
+                      </button>
+                    </li>
+                  ))}
               </ul>
             </div>
             <div className="flex justify-center gap-4 mt-6">
@@ -891,12 +1018,14 @@ const LeaderReport = () => {
                 </span>
               </button>
               <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownSubdomain"
                 data-twe-dropdown-menu-ref
               >
                 {reportData?.scores?.domains[selectedDomain]?.subdomains &&
-                  Object.keys(reportData.scores.domains[selectedDomain].subdomains).map((sub) => (
+                  Object.keys(
+                    reportData.scores.domains[selectedDomain].subdomains,
+                  ).map((sub) => (
                     <li key={sub}>
                       <button
                         onClick={() => handleSubdomainChange(sub)}
@@ -989,7 +1118,11 @@ const LeaderReport = () => {
               <ul className="mt-4 space-y-2">
                 {domainInsights.map((insight: string, idx: number) => (
                   <li key={idx} className="feature-list flex gap-2">
-                    <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                    <img
+                      src={IconStar}
+                      alt="icon"
+                      className="mt-1 w-4 h-4 shrink-0"
+                    />
                     <span className="text-sm text-[var(--secondary-color)] font-normal italic">
                       {insight}
                     </span>
@@ -1053,7 +1186,11 @@ const LeaderReport = () => {
             <ul className="mt-4 space-y-2">
               {coachingTips.map((tip: string, idx: number) => (
                 <li key={idx} className="feature-list flex gap-2">
-                  <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                  <img
+                    src={IconStar}
+                    alt="icon"
+                    className="mt-1 w-4 h-4 shrink-0"
+                  />
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
                     {tip}
                   </span>
@@ -1076,7 +1213,11 @@ const LeaderReport = () => {
             <ul className="mt-4 space-y-2">
               {recommendations.map((rec: string, idx: number) => (
                 <li key={idx} className="feature-list flex gap-2">
-                  <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                  <img
+                    src={IconStar}
+                    alt="icon"
+                    className="mt-1 w-4 h-4 shrink-0"
+                  />
                   <span className="text-sm text-[var(--secondary-color)] font-normal">
                     {rec}
                   </span>

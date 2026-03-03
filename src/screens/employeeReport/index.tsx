@@ -101,24 +101,30 @@ const EmployeeReport = () => {
   // const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-
-  
   // Dynamic selection states
-  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
-  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("Mindset & Adaptability");
+  const [selectedDomain, setSelectedDomain] =
+    useState<string>("People Potential");
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>(
+    "Mindset & Adaptability",
+  );
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const url = userId ? `dashboard/employee?userId=${userId}` : `dashboard/employee`;
+        const url = userId
+          ? `dashboard/employee?userId=${userId}`
+          : `dashboard/employee`;
         const res = await api.get(url);
         const data = res.data.report;
         setReportData(data);
         // Dynamic domain/subdomain selection from organizational framework
         const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
-        const defaultDomain = domainKeys.find(k => k.toLowerCase().includes("people")) || domainKeys[0];
+        const defaultDomain =
+          domainKeys.find((k) => k.toLowerCase().includes("people")) ||
+          domainKeys[0];
         setSelectedDomain(defaultDomain);
 
-        const possibleSubs = ROLE_DOMAIN_SUBDOMAINS.employee[defaultDomain] || [];
+        const possibleSubs =
+          ROLE_DOMAIN_SUBDOMAINS.employee[defaultDomain] || [];
         if (possibleSubs.length > 0) setSelectedSubdomain(possibleSubs[0]);
       } catch (error) {
         console.error("Failed to fetch report:", error);
@@ -153,7 +159,9 @@ const EmployeeReport = () => {
 
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
-    const key = Object.keys(reportData?.scores?.domains || {}).find(k => k.toLowerCase().includes(pattern.toLowerCase()));
+    const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
+      k.toLowerCase().includes(pattern.toLowerCase()),
+    );
     return key ? reportData.scores.domains[key].score : 0;
   };
 
@@ -164,60 +172,116 @@ const EmployeeReport = () => {
   };
 
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
-  const subdomainScore = reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain] || 0;
+  const subdomainScore =
+    reportData?.scores?.domains[selectedDomain]?.subdomains?.[
+      selectedSubdomain
+    ] || 0;
 
   // Get highlights/insights for the selected domain
   const domainFeedback = reportData?.scores?.domains[selectedDomain]?.feedback;
 
   const domainInsights = domainFeedback?.insight
-    ? domainFeedback.insight.split(". ").filter((s: string) => s.trim().length > 0)
+    ? domainFeedback.insight
+        .split(". ")
+        .filter((s: string) => s.trim().length > 0)
     : ["No specific insights available for this domain yet."];
 
   const recommendations = domainFeedback?.recommendedPrograms
-    ? domainFeedback.recommendedPrograms.split("\n").map((s: string) => s.replace("•", "").trim()).filter((s: string) => s.length > 0)
+    ? domainFeedback.recommendedPrograms
+        .split("\n")
+        .map((s: string) => s.replace("•", "").trim())
+        .filter((s: string) => s.length > 0)
     : ["No specific recommendations available for this domain yet."];
 
   const domainOkrs: any = {
     "People Potential": {
       objective: "Develop essential people leadership and EI skills",
       krs: [
-        { label: "KR1", text: "Complete 100% of assigned EI and communication modules", value: 100 },
-        { label: "KR2", text: "Participate in monthly peer-to-peer feedback circles", value: 100 },
-        { label: "KR3", text: "Achieve 85% positive rating in team-readiness surveys", value: 85 },
-      ]
+        {
+          label: "KR1",
+          text: "Complete 100% of assigned EI and communication modules",
+          value: 100,
+        },
+        {
+          label: "KR2",
+          text: "Participate in monthly peer-to-peer feedback circles",
+          value: 100,
+        },
+        {
+          label: "KR3",
+          text: "Achieve 85% positive rating in team-readiness surveys",
+          value: 85,
+        },
+      ],
     },
     "Operational Steadiness": {
       objective: "Improve personal execution discipline and workflow clarity",
       krs: [
-        { label: "KR1", text: "Reduce personal backlog tasks by 20% through better planning", value: 65 },
-        { label: "KR2", text: "Maintain 100% adherence to team operating rhythms", value: 100 },
-        { label: "KR3", text: "Achieve 90% accuracy in task estimation and completion", value: 90 },
-      ]
+        {
+          label: "KR1",
+          text: "Reduce personal backlog tasks by 20% through better planning",
+          value: 65,
+        },
+        {
+          label: "KR2",
+          text: "Maintain 100% adherence to team operating rhythms",
+          value: 100,
+        },
+        {
+          label: "KR3",
+          text: "Achieve 90% accuracy in task estimation and completion",
+          value: 90,
+        },
+      ],
     },
     "Digital Fluency": {
       objective: "Boost personal digital proficiency and tool adoption",
       krs: [
-        { label: "KR1", text: "Complete advanced training for core collaboration tools", value: 80 },
-        { label: "KR2", text: "Implement at least 2 automation workflows in daily tasks", value: 50 },
-        { label: "KR3", text: "Maintain 100% digital hygiene standards across platforms", value: 100 },
-      ]
-    }
+        {
+          label: "KR1",
+          text: "Complete advanced training for core collaboration tools",
+          value: 80,
+        },
+        {
+          label: "KR2",
+          text: "Implement at least 2 automation workflows in daily tasks",
+          value: 50,
+        },
+        {
+          label: "KR3",
+          text: "Maintain 100% digital hygiene standards across platforms",
+          value: 100,
+        },
+      ],
+    },
   };
 
   const currentOkr = domainOkrs[selectedDomain] || {
     objective: "Enhance personal performance in this domain",
     krs: [
-      { label: "KR1", text: "Identify 3 key areas for skill improvement", value: 50 },
-      { label: "KR2", text: "Schedule and complete monthly development reviews", value: 50 },
-      { label: "KR3", text: "Apply new learnings to at least 2 active projects", value: 50 },
-    ]
+      {
+        label: "KR1",
+        text: "Identify 3 key areas for skill improvement",
+        value: 50,
+      },
+      {
+        label: "KR2",
+        text: "Schedule and complete monthly development reviews",
+        value: 50,
+      },
+      {
+        label: "KR3",
+        text: "Apply new learnings to at least 2 active projects",
+        value: 50,
+      },
+    ],
   };
 
   return (
     <div>
       <div>
         <div
-          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none dark:bg-body-dark dark:text-white"
+          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
           tabIndex={-1}
           id="offcanvasExample"
           aria-labelledby="offcanvasExampleLabel"
@@ -226,7 +290,7 @@ const EmployeeReport = () => {
           <div className="flex items-center justify-end p-4">
             <button
               type="button"
-              className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
+              className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
               data-twe-offcanvas-dismiss
               aria-label="Close"
             >
@@ -250,10 +314,6 @@ const EmployeeReport = () => {
           <Sidebar />
         </div>
       </div>
-
-
-
-
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_4px_20px_-5px_rgba(75,155,233,0.15)] sm:p-6 p-3 rounded-[12px]">
         <div className="flex items-center justify-between mb-2">
@@ -292,7 +352,7 @@ const EmployeeReport = () => {
                 </span>
               </button>
               <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownMenuButtonDomain"
                 data-twe-dropdown-menu-ref
               >
@@ -369,21 +429,23 @@ const EmployeeReport = () => {
                 </span>
               </button>
               <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block dark:bg-surface-dark"
+                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownMenuButtonSub"
                 data-twe-dropdown-menu-ref
               >
-                {(ROLE_DOMAIN_SUBDOMAINS.employee[selectedDomain] || []).map((s) => (
-                  <li key={s}>
-                    <button
-                      onClick={() => setSelectedSubdomain(s)}
-                      className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      data-twe-dropdown-item-ref
-                    >
-                      {s}
-                    </button>
-                  </li>
-                ))}
+                {(ROLE_DOMAIN_SUBDOMAINS.employee[selectedDomain] || []).map(
+                  (s) => (
+                    <li key={s}>
+                      <button
+                        onClick={() => setSelectedSubdomain(s)}
+                        className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        data-twe-dropdown-item-ref
+                      >
+                        {s}
+                      </button>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
             <div className="flex justify-center gap-4 mt-6">
@@ -423,28 +485,35 @@ const EmployeeReport = () => {
                   <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                     POD-360™ Model
                   </h3>
-                  <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
+                  <p className="text-xs text-[#64748B] font-medium">
+                    Interconnectivity of focus areas
+                  </p>
                 </div>
-
               </div>
               <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
                 <Triangle data={triangleData} />
               </div>
               <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
                 <div className="text-center">
-                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">People</p>
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                    People
+                  </p>
                   <p className="text-sm font-black text-[var(--secondary-color)]">
                     {Math.round(findDomainScore("people"))}%
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Operational</p>
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                    Operational
+                  </p>
                   <p className="text-sm font-black text-[var(--secondary-color)]">
                     {Math.round(findDomainScore("operational"))}%
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Digital</p>
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                    Digital
+                  </p>
                   <p className="text-sm font-black text-[var(--secondary-color)]">
                     {Math.round(findDomainScore("digital"))}%
                   </p>
@@ -452,7 +521,6 @@ const EmployeeReport = () => {
               </div>
             </div>
           </div>
-
         </div>
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
@@ -540,7 +608,11 @@ const EmployeeReport = () => {
           <ul className="mt-4 space-y-2">
             {recommendations.map((rec: string, idx: number) => (
               <li key={idx} className="feature-list flex gap-2">
-                <img src={IconStar} alt="icon" className="mt-1 w-4 h-4 shrink-0" />
+                <img
+                  src={IconStar}
+                  alt="icon"
+                  className="mt-1 w-4 h-4 shrink-0"
+                />
                 <span className="text-sm text-[var(--secondary-color)] font-normal">
                   {rec}
                 </span>
@@ -549,9 +621,6 @@ const EmployeeReport = () => {
           </ul>
           <div></div>
         </div>
-
-
-
       </div>
     </div>
   );

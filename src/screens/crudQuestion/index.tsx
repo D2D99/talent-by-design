@@ -729,16 +729,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                optionA: {
-                  label: form.optionALabel,
-                  insightPrompt: form.optionAPrompt,
-                },
-                optionB: {
-                  label: form.optionBLabel,
-                  insightPrompt: form.optionBPrompt,
-                },
-                higherValueOption: form.higherValueOption as "A" | "B",
-              }
+                  optionA: {
+                    label: form.optionALabel,
+                    insightPrompt: form.optionAPrompt,
+                  },
+                  optionB: {
+                    label: form.optionBLabel,
+                    insightPrompt: form.optionBPrompt,
+                  },
+                  higherValueOption: form.higherValueOption as "A" | "B",
+                }
               : undefined,
         };
       });
@@ -777,16 +777,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-              optionA: {
-                label: editFormData.optionALabel,
-                insightPrompt: editFormData.optionAPrompt,
-              },
-              optionB: {
-                label: editFormData.optionBLabel,
-                insightPrompt: editFormData.optionBPrompt,
-              },
-              higherValueOption: editFormData.higherValueOption as "A" | "B",
-            }
+                optionA: {
+                  label: editFormData.optionALabel,
+                  insightPrompt: editFormData.optionAPrompt,
+                },
+                optionB: {
+                  label: editFormData.optionBLabel,
+                  insightPrompt: editFormData.optionBPrompt,
+                },
+                higherValueOption: editFormData.higherValueOption as "A" | "B",
+              }
             : undefined,
       });
       await fetchQuestions();
@@ -915,22 +915,20 @@ const CrudQuestion = () => {
     <div className="crud-question-screen relative flex flex-col lg:flex-row gap-4 items-start">
       {/* --- FILTER SIDEBAR --- */}
       {showFilters && (
-        <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-[55] md:absolute fixed md:top-40 md:right-7 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+        <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-[55] md:absolute fixed md:top-40 md:right-7 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full">
           <div className="flex justify-between items-center mb-6 px-5">
             <div className="flex items-center gap-3">
-              <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
-                Filters
-              </h3>
+              <h3 className="font-bold text-lg text-gray-800">Filters</h3>
               <button
                 onClick={resetFilters}
-                className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
+                className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors"
               >
                 Reset
               </button>
             </div>
             <button
               onClick={() => setShowFilters(false)}
-              className="text-gray-400 hover:text-gray-600 transition-colors dark:text-[#88a7c4] dark:hover:text-[#d6e8f8]"
+              className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <Icon icon="material-symbols:close" width="22" />
             </button>
@@ -939,13 +937,13 @@ const CrudQuestion = () => {
           <div className="md:max-h-[500px] max-h-[calc(100vh-80px)] overflow-y-auto px-5">
             {/* Role Filter */}
             <div className="mb-4">
-              <label className="block text-sm font-bold text-gray-700 mb-2 dark:text-[var(--app-text-muted)]">
+              <label className="block text-sm font-bold text-gray-700 mb-2">
                 Role
               </label>
               <div className="relative w-full">
                 <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
                   <svg
-                    className="h-4 w-4 text-[#5D5D5D] dark:text-[#88a7c4]"
+                    className="h-4 w-4 text-[#5D5D5D]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -959,7 +957,7 @@ const CrudQuestion = () => {
                   </svg>
                 </div>
                 <select
-                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                   value={filterRole}
                   onChange={(e) => {
                     setFilterRole(e.target.value);
@@ -990,11 +988,9 @@ const CrudQuestion = () => {
                       setFilterDomains([d]);
                       setFilterSubdomains([]); // Clear subdomains when changing domain to avoid empty results
                     }}
-                    className="accent-blue-500 text-blue-600 focus:ring-blue-500 rounded-full dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
+                    className="accent-blue-500 text-blue-600 focus:ring-blue-500 rounded-full"
                   />
-                  <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)]">
-                    {d}
-                  </span>
+                  <span className="text-sm text-gray-700">{d}</span>
                 </label>
               ))}
             </FilterSection>
@@ -1011,18 +1007,15 @@ const CrudQuestion = () => {
                       type="checkbox"
                       checked={filterSubdomains.includes(sd)}
                       onChange={() => toggleFilter(setFilterSubdomains, sd)}
-                      className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
+                      className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500"
                     />
-                    <span
-                      className="text-sm text-gray-700 dark:text-[var(--app-text-muted)] truncate"
-                      title={sd}
-                    >
+                    <span className="text-sm text-gray-700 truncate" title={sd}>
                       {sd}
                     </span>
                   </label>
                 ))
               ) : (
-                <p className="text-xs text-gray-400 dark:text-[#88a7c4]">
+                <p className="text-xs text-gray-400">
                   Select Role/Domain to view
                 </p>
               )}
@@ -1039,11 +1032,9 @@ const CrudQuestion = () => {
                     type="checkbox"
                     checked={filterTypes.includes(t)}
                     onChange={() => handleTypeFilterChange(t)}
-                    className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
+                    className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)]">
-                    {t}
-                  </span>
+                  <span className="text-sm text-gray-700">{t}</span>
                 </label>
               ))}
             </FilterSection>
@@ -1058,9 +1049,9 @@ const CrudQuestion = () => {
                     type="checkbox"
                     checked={filterScales.includes(s)}
                     onChange={() => handleScaleFilterChange(s)}
-                    className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
+                    className="rounded text-blue-600 accent-blue-500 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-[var(--app-text-muted)] lowercase">
+                  <span className="text-sm text-gray-700 lowercase">
                     {s.replace("_", " ")}
                   </span>
                 </label>
@@ -1071,10 +1062,10 @@ const CrudQuestion = () => {
       )}
 
       {/* --- MAIN CONTENT AREA --- */}
-      <div className="flex-1 w-full bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]">
+      <div className="flex-1 w-full bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] min-h-[calc(100vh-162px)]">
         {/* HEADER: Title left, Add Button right */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <h2 className="md:text-2xl text-xl font-bold text-gray-800 dark:text-[var(--app-heading-color)]">
+          <h2 className="md:text-2xl text-xl font-bold text-gray-800">
             Assessment Questions
           </h2>
           <button
@@ -1094,7 +1085,7 @@ const CrudQuestion = () => {
 
           {/* Centered Tabs */}
           <div className="flex md:justify-end justify-start items-start w-full overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-            <ul className="flex list-none flex-row bg-[var(--light-primary-color)] rounded-full p-1 border border-gray-100 gap-1 md:min-w-max dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)]">
+            <ul className="flex list-none flex-row bg-[var(--light-primary-color)] rounded-full p-1 border border-gray-100 gap-1 md:min-w-max">
               {DOMAINS.map((domain, index) => (
                 <li key={index}>
                   <button
@@ -1103,10 +1094,11 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain to ensure immediate updates
                     }}
                     className={`px-6 py-2.5 text-sm  uppercase rounded-full transition-all whitespace-nowrap
-                            ${filterDomains.includes(domain)
-                        ? "bg-white text-gray-900 shadow-sm font-semibold dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]"
-                        : "text-neutral-500 font-semibold dark:text-[#9bb8d3]"
-                      }`}
+                            ${
+                              filterDomains.includes(domain)
+                                ? "bg-white text-gray-900 shadow-sm font-semibold"
+                                : "text-neutral-500 font-semibold"
+                            }`}
                   >
                     {domain}
                   </button>
@@ -1120,10 +1112,11 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${showFilters
-                ? "bg-[var(--primary-color)] text-white"
-                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-              }`}
+                    ${
+                      showFilters
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+                    }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -1132,7 +1125,7 @@ const CrudQuestion = () => {
             {activeFilterCount > 0 && (
               <span
                 className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors
-                ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
+                ${showFilters ? "bg-white text-[var(--primary-color)]" : "bg-[var(--primary-color)] text-white"}`}
               >
                 {activeFilterCount}
               </span>
@@ -1150,10 +1143,10 @@ const CrudQuestion = () => {
                   className="text-[var(--primary-color)] w-10 h-10"
                 />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 dark:text-[var(--app-heading-color)]">
+              <h3 className="text-xl font-bold text-gray-800">
                 No Role Selected
               </h3>
-              <p className="text-gray-500 max-w-sm mb-6 text-sm leading-relaxed px-4 dark:text-[var(--app-text-muted)]">
+              <p className="text-gray-500 max-w-sm mb-6 text-sm leading-relaxed px-4">
                 To view the assessment structure and questions, Please select a{" "}
                 <strong>Role</strong>.
               </p>
@@ -1161,7 +1154,7 @@ const CrudQuestion = () => {
               <div className="w-full max-w-xs relative">
                 <div className="absolute inset-y-0 right-0 top-1 flex items-center pr-3 pointer-events-none">
                   <svg
-                    className="h-4 w-4 text-[#5D5D5D] dark:text-[#88a7c4]"
+                    className="h-4 w-4 text-[#5D5D5D] "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1175,7 +1168,7 @@ const CrudQuestion = () => {
                   </svg>
                 </div>
                 <select
-                  className="font-semibold text-sm appearance-none text-[#1A3652] outline-none shadow-sm sm:w-full w-fit p-3 border rounded-md transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:hover:bg-[var(--app-surface-soft)]"
+                  className="font-semibold text-sm appearance-none text-[#1A3652] outline-none shadow-sm sm:w-full w-fit p-3 border rounded-md transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50"
                   value={filterRole}
                   onChange={(e) => {
                     setFilterRole(e.target.value);
@@ -1207,11 +1200,11 @@ const CrudQuestion = () => {
                   return (
                     <div
                       key={subdomainTitle}
-                      className="rounded-xl border border-gray-100 bg-white overflow-hidden dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)]"
+                      className="rounded-xl border border-gray-100 bg-white overflow-hidden"
                     >
                       <h2 className="mb-0" id={`heading-${safeId}`}>
                         <button
-                          className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none dark:text-[var(--app-heading-color)] dark:hover:bg-[var(--app-surface-muted)]"
+                          className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
                           type="button"
                           onClick={() => {
                             setOpenSubdomains((prev) =>
@@ -1227,10 +1220,11 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
+                              openSubdomains.includes(subdomainTitle)
                                 ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
                                 : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                              }`}
+                            }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -1238,10 +1232,11 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${openSubdomains.includes(subdomainTitle)
+                        className={`!visible ${
+                          openSubdomains.includes(subdomainTitle)
                             ? ""
                             : "hidden"
-                          }`}
+                        }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
                         <Droppable droppableId={subdomainTitle}>
@@ -1263,13 +1258,14 @@ const CrudQuestion = () => {
                                         <div
                                           ref={provided.innerRef}
                                           {...provided.draggableProps}
-                                          className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 dark:bg-[var(--app-surface)] dark:hover:bg-[var(--app-surface-muted)] dark:hover:border-[var(--app-border-color)] sm:flex-row flex-col gap-y-2.5"
+                                          className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100
+                                           sm:flex-row flex-col gap-y-2.5"
                                         >
                                           <div className="flex gap-3 pr-2 min-w-0">
-                                            <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px] dark:text-[var(--app-heading-color)]">
+                                            <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">
                                               Q{qIdx + 1}.
                                             </span>
-                                            <p className="text-gray-700 text-sm font-medium leading-relaxed break-words dark:text-[var(--app-text-muted)]">
+                                            <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">
                                               {q.questionStem}
                                             </p>
                                           </div>
@@ -1296,7 +1292,7 @@ const CrudQuestion = () => {
                                             </button>
                                             <div
                                               {...provided.dragHandleProps}
-                                              className="text-gray-400 hover:text-gray-600 cursor-grab p-1 dark:text-[#88a7c4] dark:hover:text-[#d6e8f8]"
+                                              className="text-gray-400 hover:text-gray-600 cursor-grab p-1"
                                               title="Drag to reorder"
                                             >
                                               <Icon
@@ -1312,7 +1308,7 @@ const CrudQuestion = () => {
                                   {provided.placeholder}
                                 </div>
                               ) : (
-                                <div className="text-gray-400 text-sm italic py-2 dark:text-[#88a7c4]">
+                                <div className="text-gray-400 text-sm italic py-2">
                                   {filterRole
                                     ? "No questions added yet."
                                     : "Select a filter to view questions."}
@@ -1366,10 +1362,10 @@ const FilterSection = ({
 }) => {
   const [isOpen, setIsOpen] = useState(open);
   return (
-    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100 dark:border-[var(--app-border-color)]">
+    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full font-semibold text-gray-700 text-sm mb-2 dark:text-[var(--app-text-muted)]"
+        className="flex items-center justify-between w-full font-semibold text-gray-700 text-sm mb-2"
       >
         {title}
         <Icon
