@@ -154,6 +154,7 @@ const UserProfile = () => {
       data.append("country", formData.country);
       data.append("state", formData.state);
       data.append("zipCode", formData.zipCode);
+      data.append("department", formData.department);
 
       if (selectedFile) {
         data.append("profileImage", selectedFile);
@@ -259,11 +260,10 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
-                  isEditing
-                    ? "cursor-pointer bg-white hover:bg-neutral-50"
-                    : "bg-gray-100 cursor-not-allowed pointer-events-none"
-                }`}
+                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${isEditing
+                  ? "cursor-pointer bg-white hover:bg-neutral-50"
+                  : "bg-gray-100 cursor-not-allowed pointer-events-none"
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -527,21 +527,31 @@ const UserProfile = () => {
               </div>
             )}
 
-            {formData.department && (
+            {(formData.role?.toLowerCase() === "leader" || formData.role?.toLowerCase() === "manager" || formData.department) && (
               <div>
                 <label
-                  htmlFor="userDept"
+                  htmlFor="department"
                   className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
                 >
                   Department
                 </label>
                 <input
                   type="text"
-                  id="userDept"
+                  id="department"
                   value={formData.department}
-                  readOnly
-                  className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
-                  placeholder="Department"
+                  onChange={handleChange}
+                  disabled={
+                    !isEditing ||
+                    formData.role?.toLowerCase() === "leader" ||
+                    formData.role?.toLowerCase() === "manager"
+                  }
+                  className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] ${!isEditing ||
+                    formData.role?.toLowerCase() === "leader" ||
+                    formData.role?.toLowerCase() === "manager"
+                    ? "bg-neutral-100 cursor-not-allowed"
+                    : "focus:border-[var(--primary-color)]"
+                    }`}
+                  placeholder="No Department Assigned"
                 />
               </div>
             )}

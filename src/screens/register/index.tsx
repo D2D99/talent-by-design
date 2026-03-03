@@ -29,13 +29,43 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setError,
+    clearErrors,
+    setValue,
+    formState: { errors },
+  } = useForm<RegisterFields>({
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
   // ✅ PAGE LOADER EFFECT (ADDED)
   useEffect(() => {
+    const fetchInviteDetails = async (token: string) => {
+      try {
+        const response = await api.get(`auth/invitation-details/${token}`);
+        if (response.data?.email) {
+          setValue("email", response.data.email);
+        }
+      } catch (error) {
+        console.error("Error fetching invitation details:", error);
+      }
+    };
+
     // Capture tokens from URL if they exist (Fallback for cross-site cookie issues)
     const params = new URLSearchParams(window.location.search);
     const authToken = params.get("authToken");
     const token1 = params.get("token1");
     const token = params.get("token"); // Functional fix: Capture the standard 'token' redirect
+
+    let activeToken = token || token1 || authToken;
 
     if (authToken || token1 || token) {
       console.log("Tokens found in URL, storing in localStorage...");
@@ -46,6 +76,12 @@ const Register = () => {
 
       // Clean URL
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      activeToken = localStorage.getItem("tempInvitationToken") || localStorage.getItem("tempToken1") || localStorage.getItem("tempAuthToken");
+    }
+
+    if (activeToken) {
+      fetchInviteDetails(activeToken);
     }
 
     const timer = setTimeout(() => {
@@ -53,23 +89,7 @@ const Register = () => {
     }, 1000); // adjust if needed
 
     return () => clearTimeout(timer);
-  }, []);
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setError,
-    clearErrors,
-    formState: { errors },
-  } = useForm<RegisterFields>({
-    mode: "onChange",
-    defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  }, [setValue]);
 
   const emailValue = watch("email") || "";
   const passwordValue = watch("password") || "";
@@ -199,12 +219,12 @@ const Register = () => {
               <input
                 type="email"
                 id="email"
+                readOnly
                 placeholder="Enter your email"
-                className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${
-                  errors.email
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                className={`font-medium text-sm text-[#5D5D5D] bg-gray-100 cursor-not-allowed outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${errors.email
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -232,11 +252,10 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter your password"
-                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
-                    errors.password
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.password
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    }`}
                   {...register("password", {
                     required: "Password is required",
                   })}
@@ -261,16 +280,14 @@ const Register = () => {
                   {[...Array(5)].map((_, i) => (
                     <div
                       key={i}
-                      className={`h-full flex-1 transition-all duration-500 ${
-                        i < strengthCount ? strengthColor : "bg-transparent"
-                      }`}
+                      className={`h-full flex-1 transition-all duration-500 ${i < strengthCount ? strengthColor : "bg-transparent"
+                        }`}
                     />
                   ))}
                 </div>
                 <p
-                  className={`text-[10px] mt-1 font-bold uppercase ${
-                    strengthCount === 5 ? "text-green-600" : "text-gray-400"
-                  }`}
+                  className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5 ? "text-green-600" : "text-gray-400"
+                    }`}
                 >
                   Strength:{" "}
                   {strengthCount === 5
@@ -307,9 +324,8 @@ const Register = () => {
                     <Icon
                       icon="material-symbols-light:check"
                       width="16"
-                      className={`rounded-full p-px transition-all ${
-                        item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
-                      }`}
+                      className={`rounded-full p-px transition-all ${item.met ? "bg-[#D1E9FF] text-black" : "bg-transparent"
+                        }`}
                     />
                     <span className={item.met ? "text-black" : "text-gray-400"}>
                       {item.label}
@@ -331,11 +347,10 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   placeholder="Confirm your password"
-                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${
-                    errors.confirmPassword
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                  className={`font-medium text-sm text-[#5D5D5D]  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all pr-12 ${errors.confirmPassword
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    }`}
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
                     validate: (val: string) =>
@@ -364,19 +379,17 @@ const Register = () => {
             <button
               type="submit"
               disabled={!isButtonActive}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${
-                isButtonActive
-                  ? "opacity-100 cursor-pointer"
-                  : "opacity-40 cursor-not-allowed pointer-events-none"
-              }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 ${isButtonActive
+                ? "opacity-100 cursor-pointer"
+                : "opacity-40 cursor-not-allowed pointer-events-none"
+                }`}
             >
               {loading ? "Registering..." : "Register"}
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="25"
-                className={`transition-transform duration-300 ${
-                  isButtonActive ? "rotate-0" : "-rotate-45"
-                }`}
+                className={`transition-transform duration-300 ${isButtonActive ? "rotate-0" : "-rotate-45"
+                  }`}
               />
             </button>
 
