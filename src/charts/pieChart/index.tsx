@@ -18,7 +18,6 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
             chartRef.current.destroy();
         }
 
-        const isDarkMode = document.documentElement.classList.contains('dark');
         const textColor = getComputedStyle(document.documentElement).getPropertyValue('--app-text-muted') || '#5d5d5d';
         const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--app-surface') || '#ffffff';
 
@@ -57,7 +56,7 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
                             }
                         },
                         tooltip: {
-                            backgroundColor: isDarkMode ? '#1e293b' : '#0f172a',
+                            backgroundColor: '#0f172a',
                             titleFont: { size: 12, weight: 'bold' },
                             bodyFont: { size: 11 },
                             padding: 12,

@@ -553,7 +553,7 @@ const Home = () => {
       {/* Leadership And Digital Section End */}
 
       {/* POD-360™ Assessment Section Start */}
-      <div className="md:py-20 py-12 bg-[linear-gradient(53deg,rgba(237,245,253,0)_75%,#e4f0fc_100%)] dark:bg-[linear-gradient(53deg,rgba(6,23,37,0)_75%,#123049_100%)]">
+      <div className="md:py-20 py-12 bg-[linear-gradient(53deg,rgba(237,245,253,0)_75%,#e4f0fc_100%)]%,#123049_100%)]">
         <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
           <div className="flex sm:items-center gap-x-10 gap-y-5 justify-between sm:flex-row flex-col-reverse">
             <div>
@@ -720,7 +720,7 @@ const Home = () => {
       {/* POD-360™ Assessment Section End */}
 
       {/* How it works Section Start */}
-      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] dark:bg-[linear-gradient(to_top,rgba(6,23,37,0)_50%,rgba(26,63,95,0.35))] md:py-20 py-12">
+      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))]%,rgba(26,63,95,0.35))] md:py-20 py-12">
         <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
           <h4 className="badge">How it works</h4>
           <h2 className="sub-heading">
@@ -1024,7 +1024,7 @@ const Home = () => {
       {/* Measurable Performance Section End */}
 
       {/* POD Insights™ AI-Powered Organizational Intelligence Start */}
-      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))] dark:bg-[linear-gradient(to_top,rgba(6,23,37,0)_50%,rgba(26,63,95,0.35))]">
+      <div className="bg-[linear-gradient(to_top,rgba(237,245,253,0)_50%,rgba(228,240,252,0.19))]%,rgba(26,63,95,0.35))]">
         <div className="md:py-20 py-12">
           <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
             <div className="flex sm:items-center gap-x-10 gap-y-5 justify-between sm:flex-row flex-col-reverse">
@@ -1206,7 +1206,7 @@ const Home = () => {
       {/* POD Insights™ AI-Powered Organizational Intelligence End */}
 
       {/* Leadership Section Start */}
-      <div className="lg:bg-[linear-gradient(117deg,rgba(237,245,253,0)_50%,#e4f0fc_100%)] bg-[linear-gradient(0deg,rgba(237,245,253,0)_50%,#e4f0fc4f_100%)] dark:lg:bg-[linear-gradient(117deg,rgba(6,23,37,0)_50%,#123049_100%)] dark:bg-[linear-gradient(0deg,rgba(6,23,37,0)_50%,rgba(26,63,95,0.45)_100%)]">
+      <div className="lg:bg-[linear-gradient(117deg,rgba(237,245,253,0)_50%,#e4f0fc_100%)] bg-[linear-gradient(0deg,rgba(237,245,253,0)_50%,#e4f0fc4f_100%)]%,#123049_100%)]%,rgba(26,63,95,0.45)_100%)]">
         <div
           className="md:py-20 pt-12 !bg-no-repeat !bg-contain"
           id="leader-bg-effect"

@@ -29,12 +29,12 @@ const SuperAdminAdvancedOverview = () => {
     return (
         <div className="min-h-screen p-4 sm:p-6 space-y-8 animate-in fade-in duration-700">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 p-6 rounded-2xl shadow-xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/40 backdrop-blur-xl border border-white/20 p-6 rounded-2xl shadow-xl">
                 <div>
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1a3652] to-[#448bd2] bg-clip-text text-transparent">
                         Super Admin Intelligence Overview
                     </h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium italic">
+                    <p className="text-slate-500 mt-1 font-medium italic">
                         "Design is intelligence made visible." - Alvis One
                     </p>
                 </div>
@@ -55,11 +55,11 @@ const SuperAdminAdvancedOverview = () => {
                 {stats.map((stat, index) => (
                     <div
                         key={index}
-                        className="group relative overflow-hidden bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-[#448bd2]/50 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+                        className="group relative overflow-hidden bg-white p-6 rounded-2xl border border-slate-100 hover:border-[#448bd2]/50 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
                     >
                         <div className="flex justify-between items-start mb-4">
                             <div
-                                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 group-hover:scale-110 transition-transform duration-500"
+                                className="p-3 rounded-xl bg-slate-50 group-hover:scale-110 transition-transform duration-500"
                                 style={{ color: stat.color }}
                             >
                                 <Icon icon={stat.icon} width="28" />
@@ -70,10 +70,10 @@ const SuperAdminAdvancedOverview = () => {
                             </span>
                         </div>
                         <div>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">
+                            <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">
                                 {stat.label}
                             </p>
-                            <h3 className="text-3xl font-black text-slate-800 dark:text-white">
+                            <h3 className="text-3xl font-black text-slate-800">
                                 {stat.value}
                             </h3>
                         </div>
@@ -91,13 +91,13 @@ const SuperAdminAdvancedOverview = () => {
 
                 {/* Left: Organization Health Map */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xl overflow-hidden">
-                        <div className="p-6 border-b border-slate-50 dark:border-slate-700 flex justify-between items-center bg-slate-50/50">
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden">
+                        <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                            <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
                                 <Icon icon="solar:global-linear" className="text-[#448bd2]" />
                                 Organization Performance Spectrum
                             </h3>
-                            <div className="flex bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <div className="flex bg-white p-1 rounded-lg border border-slate-200">
                                 {["all", "growth", "stable"].map((tab) => (
                                     <button
                                         key={tab}
@@ -119,9 +119,9 @@ const SuperAdminAdvancedOverview = () => {
                             </div>
                             <div className="relative group cursor-pointer">
                                 <div className="absolute -inset-4 bg-gradient-to-r from-[#448bd2] to-[#8E54E9] rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-1000"></div>
-                                <Icon icon="solar:graph-up-bold-duotone" width="120" className="text-slate-200 dark:text-slate-700 relative" />
+                                <Icon icon="solar:graph-up-bold-duotone" width="120" className="text-slate-200 relative" />
                             </div>
-                            <p className="mt-6 text-slate-500 dark:text-slate-400 max-w-md italic">
+                            <p className="mt-6 text-slate-500 max-w-md italic">
                                 Advanced cross-organization correlation analysis will be visualized here once more assessment data is compiled.
                             </p>
                         </div>
@@ -130,8 +130,8 @@ const SuperAdminAdvancedOverview = () => {
 
                 {/* Right: Real-time Pulse */}
                 <div className="space-y-6">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xl p-6">
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-xl p-6">
+                        <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                             <Icon icon="solar:transmission-bold-duotone" className="text-[#FF512F] animate-pulse" />
                             Intelligence Pulse
                         </h3>
@@ -141,20 +141,20 @@ const SuperAdminAdvancedOverview = () => {
                                     <div className="relative">
                                         <div className={`w-3 h-3 rounded-full mt-1.5 ${activity.status === "Success" ? "bg-emerald-500" : "bg-amber-500"}`}></div>
                                         {activity.id !== recentActivities.length && (
-                                            <div className="absolute top-4.5 left-1.5 w-[1px] h-12 bg-slate-100 dark:bg-slate-700"></div>
+                                            <div className="absolute top-4.5 left-1.5 w-[1px] h-12 bg-slate-100"></div>
                                         )}
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-slate-800 dark:text-white group-hover:text-[#448bd2] transition-colors">
+                                        <h4 className="font-bold text-slate-800 group-hover:text-[#448bd2] transition-colors">
                                             {activity.org}
                                         </h4>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">{activity.action}</p>
+                                        <p className="text-sm text-slate-500">{activity.action}</p>
                                         <span className="text-xs text-slate-400 mt-1 block">{activity.time}</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <button className="w-full mt-8 py-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-slate-500 font-bold hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
+                        <button className="w-full mt-8 py-3 rounded-xl border border-dashed border-slate-200 text-slate-500 font-bold hover:bg-slate-50 transition-colors">
                             View All Insights
                         </button>
                     </div>
@@ -173,9 +173,9 @@ const SuperAdminAdvancedOverview = () => {
             </div>
 
             {/* Footer Branding */}
-            <div className="text-center py-6 border-t border-slate-100 dark:border-slate-800">
+            <div className="text-center py-6 border-t border-slate-100">
                 <p className="text-slate-400 text-sm flex items-center justify-center gap-2 font-medium">
-                    Powered by <span className="font-bold text-slate-600 dark:text-slate-300 tracking-tighter">ALVIS ONE</span> Advanced Analytics Engine
+                    Powered by <span className="font-bold text-slate-600 tracking-tighter">ALVIS ONE</span> Advanced Analytics Engine
                 </p>
             </div>
         </div>

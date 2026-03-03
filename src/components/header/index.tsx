@@ -32,24 +32,24 @@ const Header = () => {
   };
 
   const navLinkClasses =
-    "uppercase text-[var(--secondary-color)] transition duration-200 hover:text-black/80 hover:ease-in-out focus:text-black/80 active:text-black/80 motion-reduce:transition-none dark:text-[#cfe3f7] dark:hover:text-[#eff7ff] dark:focus:text-[#eff7ff] dark:active:text-[#eff7ff] lg:px-4 font-semibold";
+    "uppercase text-[var(--secondary-color)] transition duration-200 hover:text-black/80 hover:ease-in-out focus:text-black/80 active:text-black/80 motion-reduce:transition-none lg:px-4 font-semibold";
 
   const ctaButtonClasses =
-    "group rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase transition-all text-white bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] hover:opacity-90 dark:text-[#091b2b] dark:from-[#9bcaf5] dark:to-[#79b4eb]";
+    "group rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase transition-all text-white bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] hover:opacity-90";
 
   return (
     <>
       <nav
-        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between bg-[var(--white-color)] py-3 lg:flex-wrap lg:justify-start dark:bg-[var(--app-bg)]
+        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between bg-[var(--white-color)] py-3 lg:flex-wrap lg:justify-start
         transition-all duration-300
-        ${scrolled ? "shadow-md dark:shadow-[0_10px_24px_rgba(0,0,0,0.35)]" : ""}`}
+        ${scrolled ? "shadow-md" : ""}`}
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
           <div className="flex w-full flex-wrap items-center justify-between">
             <img src={Logo} alt="logo" className="lg:hidden block" />
 
             <button
-              className="block border-0 bg-transparent px-2 text-black/50 hover:no-underline hover:shadow-none focus:no-underline focus:shadow-none focus:outline-none focus:ring-0 dark:text-[#c5d9ee] lg:hidden"
+              className="block border-0 bg-transparent px-2 text-black/50 hover:no-underline hover:shadow-none focus:no-underline focus:shadow-none focus:outline-none focus:ring-0 lg:hidden"
               type="button"
               data-twe-collapse-init
               data-twe-target="#navbarSupportedContent1"
@@ -57,7 +57,7 @@ const Header = () => {
               aria-expanded="false"
               aria-label="Toggle navigation"
             >
-              <span className="[&>svg]:w-7 text-black/50 dark:text-[#c5d9ee]">
+              <span className="[&>svg]:w-7 text-black/50">
                 <svg
                   width="24"
                   height="24"
@@ -74,12 +74,12 @@ const Header = () => {
             </button>
 
             <div
-              className="!visible hidden flex-grow basis-[100%] items-center lg:!flex lg:basis-auto mt-3 lg:mt-0 p-4 lg:p-0 rounded-lg lg:rounded-none bg-white border border-[#E4F0FC] lg:bg-transparent lg:border-none dark:bg-[var(--app-bg)] dark:border-none dark:shadow-none lg:dark:bg-[var(--app-bg)]"
+              className="!visible hidden flex-grow basis-[100%] items-center lg:!flex lg:basis-auto mt-3 lg:mt-0 p-4 lg:p-0 rounded-lg lg:rounded-none bg-white border border-[#E4F0FC] lg:bg-transparent lg:border-none lg:"
               id="navbarSupportedContent1"
               data-twe-collapse-item
             >
               <a
-                className="mb-4 me-5 ms-2 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 dark:text-[#e8f2ff] dark:hover:text-[#e8f2ff] dark:focus:text-[#e8f2ff] lg:mb-0 lg:mt-0"
+                className="mb-4 me-5 ms-2 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 lg:mb-0 lg:mt-0"
                 href="#"
               >
                 <img src={Logo} alt="logo" className="lg:block hidden" />
