@@ -208,10 +208,10 @@ const OrgUsers = ({
 
   return (
     <div
-      className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]"}`}
+      className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)]"}`}
     >
       {!isEmbedded && (
-        <div className="mb-8 bg-white relative overflow-hidden">
+        <div className="mb-8 bg-white relative overflow-hidden dark:bg-transparent">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <div>
               {/* <div
@@ -221,10 +221,10 @@ const OrgUsers = ({
                 <Icon icon="material-symbols:arrow-back-rounded" width="16" />
                 <span className="uppercase tracking-wider">Back</span>
               </div> */}
-              <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
+              <h2 className="md:text-3xl text-2xl font-bold text-gray-800 dark:text-[var(--app-heading-color)]">
                 {details?.orgName || "Organization Users"}
               </h2>
-              <p className="text-sm text-gray-500 mt-1 mb-6">
+              <p className="text-sm text-gray-500 mt-1 mb-6 dark:text-[var(--app-text-muted)]">
                 {currentUser?.role === "leader" || currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
@@ -244,80 +244,80 @@ const OrgUsers = ({
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4">
+            <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4 dark:from-[#1b3650] dark:to-[#22486b] dark:border-[#3f78ab]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-[var(--primary-color)] uppercase tracking-wider">
+                  <p className="text-xs font-bold text-[var(--primary-color)] uppercase tracking-wider dark:text-[#8cc3f6]">
                     Total Users
                   </p>
-                  <p className="text-2xl font-bold text-[var(--primary-color)] mt-1">
+                  <p className="text-2xl font-bold text-[var(--primary-color)] mt-1 dark:text-[#d8ecff]">
                     {totalUsers}
                   </p>
                 </div>
-                <div className="p-3 bg-blue-200/50 rounded-lg">
+                <div className="p-3 bg-blue-200/50 rounded-lg dark:bg-[#2d5a7f]">
                   <Icon
                     icon="solar:users-group-rounded-bold"
-                    className="text-[var(--primary-color)]"
+                    className="text-[var(--primary-color)] dark:text-[#d5ebff]"
                     width="24"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4 dark:from-[#1b3f33] dark:to-[#1f4e3d] dark:border-[#3c8a71]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
+                  <p className="text-xs font-bold text-green-600 uppercase tracking-wider dark:text-[#95e7ba]">
                     Accepted
                   </p>
-                  <p className="text-2xl font-bold text-green-600 mt-1">
+                  <p className="text-2xl font-bold text-green-600 mt-1 dark:text-[#dcffed]">
                     {acceptedUsers}
                   </p>
                 </div>
-                <div className="p-3 bg-green-200/50 rounded-lg">
+                <div className="p-3 bg-green-200/50 rounded-lg dark:bg-[#2d7058]">
                   <Icon
                     icon="solar:check-circle-bold"
-                    className="text-green-600"
+                    className="text-green-600 dark:text-[#defeee]"
                     width="24"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border border-yellow-200 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border border-yellow-200 rounded-xl p-4 dark:from-[#433718] dark:to-[#55441d] dark:border-[#8f7440]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-yellow-600 uppercase tracking-wider">
+                  <p className="text-xs font-bold text-yellow-600 uppercase tracking-wider dark:text-[#ffd27b]">
                     Pending
                   </p>
-                  <p className="text-2xl font-bold text-yellow-600 mt-1">
+                  <p className="text-2xl font-bold text-yellow-600 mt-1 dark:text-[#fff0cf]">
                     {pendingUsers}
                   </p>
                 </div>
-                <div className="p-3 bg-yellow-200/50 rounded-lg">
+                <div className="p-3 bg-yellow-200/50 rounded-lg dark:bg-[#7f6b34]">
                   <Icon
                     icon="solar:clock-circle-bold"
-                    className="text-yellow-600"
+                    className="text-yellow-600 dark:text-[#fff1d4]"
                     width="24"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4 dark:from-[#4a2228] dark:to-[#5b2930] dark:border-[#9f4d5b]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-red-600 uppercase tracking-wider">
+                  <p className="text-xs font-bold text-red-600 uppercase tracking-wider dark:text-[#ffb2bd]">
                     Expired
                   </p>
-                  <p className="text-2xl font-bold text-red-600 mt-1">
+                  <p className="text-2xl font-bold text-red-600 mt-1 dark:text-[#ffe2e6]">
                     {expiredUsers}
                   </p>
                 </div>
-                <div className="p-3 bg-red-200/50 rounded-lg">
+                <div className="p-3 bg-red-200/50 rounded-lg dark:bg-[#7c3b46]">
                   <Icon
                     icon="solar:close-circle-bold"
-                    className="text-red-600"
+                    className="text-red-600 dark:text-[#ffe4ea]"
                     width="24"
                   />
                 </div>
@@ -331,7 +331,7 @@ const OrgUsers = ({
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#88a7c4]"
             width="20"
           />
           <input
@@ -340,7 +340,7 @@ const OrgUsers = ({
             value={searchTerm}
             autoComplete="off"
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
           />
         </div>
         {/* <div className="flex items-center gap-2">
@@ -349,7 +349,7 @@ const OrgUsers = ({
             className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${
               showFilters
                 ? "bg-[var(--primary-color)] text-white"
-                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
             }`}
           >
             <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -357,7 +357,7 @@ const OrgUsers = ({
             {roleFilter.length > 0 && (
               <span
                 className={`flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold transition-colors ml-1
-                ${showFilters ? "bg-white text-[var(--primary-color)]" : "bg-[var(--primary-color)] text-white"}`}
+                ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
               >
                 {roleFilter.length}
               </span>
@@ -367,16 +367,16 @@ const OrgUsers = ({
       </div>
 
       {/* {showFilters && (
-        <div className="w-full md:w-80 bg-white shadow-[0_0_10px_rgba(68,140,210,0.4)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full transition-all animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="flex justify-between items-center mb-6 px-5 border-b pb-4 border-gray-100">
+        <div className="w-full md:w-80 bg-white shadow-[0_0_10px_rgba(68,140,210,0.4)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition-all animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="flex justify-between items-center mb-6 px-5 border-b pb-4 border-gray-100 dark:border-[var(--app-border-color)]/30">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg text-gray-800">
+              <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
                 Filters
               </h3>
               {roleFilter.length > 0 && (
                 <button
                   onClick={() => setRoleFilter([])}
-                  className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors"
+                  className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
                 >
                   Reset
                 </button>
@@ -384,14 +384,14 @@ const OrgUsers = ({
             </div>
             <button
               onClick={() => setShowFilters(false)}
-              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-1 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-[var(--app-surface-soft)]"
             >
               <Icon icon="material-symbols:close" width="20" />
             </button>
           </div>
 
           <div className="px-5">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2.5">
+            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2.5 dark:text-[#88a7c4]">
               Staff Role
             </label>
             <div className="space-y-2.5 mt-2">
@@ -411,11 +411,11 @@ const OrgUsers = ({
                             : [...prev, r],
                         );
                       }}
-                      className="w-4.5 h-4.5 rounded border-gray-200 text-blue-600 focus:ring-blue-500/20 accent-blue-600"
+                      className="w-4.5 h-4.5 rounded border-gray-200 text-blue-600 focus:ring-blue-500/20 accent-blue-600 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
                     />
                   </div>
                   <span
-                    className={`text-sm capitalize transition-colors ${roleFilter.includes(r) ? "text-blue-600 font-bold" : "text-gray-500"}`}
+                    className={`text-sm capitalize transition-colors ${roleFilter.includes(r) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-500 dark:text-[var(--app-text-muted)]"}`}
                   >
                     {r}
                   </span>
@@ -426,13 +426,13 @@ const OrgUsers = ({
         </div>
       )} */}
 
-      <div className="overflow-x-auto rounded-xl border border-gray-100 border-b-0">
+      <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-[var(--app-border-color)] border-b-0">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50/50 border-b border-gray-100">
-              <th className="px-6 py-4 font-semibold">#</th>
+            <tr className="bg-gray-50/50 border-b border-gray-100 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)]">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">#</th>
               <th
-                className="px-6 py-4 font-semibold"
+                className="px-6 py-4 font-semibold dark:text-[#88a7c4]"
                 onClick={() => handleSort("firstName")}
               >
                 <div className="flex items-center justify-between">
@@ -444,7 +444,7 @@ const OrgUsers = ({
                 </div>
               </th>
               <th
-                className="px-6 py-4 font-semibold"
+                className="px-6 py-4 font-semibold dark:text-[#88a7c4]"
                 onClick={() => handleSort("email")}
               >
                 <div className="flex items-center justify-between">
@@ -455,16 +455,16 @@ const OrgUsers = ({
                   />
                 </div>
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Added On
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Role
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Status
               </th>
-              <th className="px-6 py-4 text-center font-semibold">
+              <th className="px-6 py-4 text-center font-semibold dark:text-[#88a7c4]">
                 Report
               </th>
             </tr>
@@ -474,12 +474,12 @@ const OrgUsers = ({
               currentData.map((member, index) => (
                 <tr
                   key={member._id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors dark:border-[var(--app-border-color)] dark:hover:bg-[rgba(121,186,240,0.08)]"
                 >
                   <td className="px-6 py-4 text-sm font-semibold text-gray-700">
                     {indexOfFirstItem + index + 1}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium">
+                  <td className="px-6 py-4 text-sm font-medium dark:text-[var(--app-text-color)]">
                     <span className="font-bold text-gray-800 tracking-tight text-nowrap">
                       {member.firstName === "-" ? (
                         <span className="text-gray-300 font-black">—</span>
@@ -495,14 +495,14 @@ const OrgUsers = ({
                     {new Date(member.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="uppercase text-xs font-bold">
+                    <span className="uppercase text-xs font-bold dark:text-[var(--app-text-color)]">
                       {member.role}
                     </span>
                   </td>
                   {showStatusColumn && (
                     <td className="px-6 py-4">
                       {member.status === "Accept" ? (
-                        <span className="bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center">
+                        <span className="bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] dark:bg-[#163423] dark:text-[#8CDFAC] dark:border-[#2DA367 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center">
                           Accepted
                         </span>
                       ) : member.status === "Pending" ? (
@@ -532,7 +532,7 @@ const OrgUsers = ({
                             "employee";
                           window.location.href = `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`;
                         }}
-                        className="text-gray-400 hover:text-[#448CD2] transition-colors"
+                        className="text-gray-400 hover:text-[#448CD2] transition-colors dark:text-[#88a7c4] dark:hover:text-[#cbe4fb]"
                         title="View Report"
                       >
                         <svg
@@ -560,7 +560,7 @@ const OrgUsers = ({
               <tr>
                 <td
                   colSpan={7}
-                  className="py-20 text-center text-gray-400"
+                  className="py-20 text-center text-gray-400 dark:text-[#9cb8d2]"
                 >
                   {isLoading ? "Loading directory..." : "No members found."}
                 </td>
@@ -592,9 +592,9 @@ const OrgUsers = ({
           data-twe-modal-dialog-ref
           className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
         >
-          <div className="mx-3 pointer-events-auto relative flex w-full flex-col rounded-[24px] border-none bg-white bg-clip-padding text-current shadow-2xl outline-none overflow-hidden">
-            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4">
-              <h5 className="text-xl font-bold leading-normal text-neutral-800">
+          <div className="mx-3 pointer-events-auto relative flex w-full flex-col rounded-[24px] border-none bg-white bg-clip-padding text-current shadow-2xl outline-none overflow-hidden dark:bg-[var(--app-surface)] dark:text-[var(--app-text-color)]">
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4 dark:border-[var(--app-border-color)]">
+              <h5 className="text-xl font-bold leading-normal text-neutral-800 dark:text-[var(--app-heading-color)]">
                 Invite New Member
               </h5>
               <button
@@ -621,7 +621,7 @@ const OrgUsers = ({
             </div>
             <div className="relative p-6">
               <div className="mb-4">
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 mb-2 dark:text-[var(--app-text-muted)]">
                   Email Address
                 </label>
                 <input
@@ -629,19 +629,19 @@ const OrgUsers = ({
                   value={email}
                   autoComplete="off"
                   onChange={(e) => setEmail(e.target.value)}
-                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
                   placeholder="e.g. user@example.com"
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 mb-2 dark:text-[var(--app-text-muted)]">
                   Assigned Role
                 </label>
                 <select
                   value={role}
                   autoComplete="off"
                   onChange={(e) => setRole(e.target.value)}
-                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)]"
                 >
                   <option value="">Select a role...</option>
                   {currentUser?.role?.toLowerCase() === "admin" && (
@@ -656,7 +656,7 @@ const OrgUsers = ({
                 </select>
               </div>
             </div>
-            <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2">
+            <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2 dark:border-[var(--app-border-color)]">
               <button
                 type="button"
                 data-twe-modal-dismiss

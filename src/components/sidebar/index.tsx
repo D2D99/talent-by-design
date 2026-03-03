@@ -438,7 +438,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
           </div>
         </button>
         <ul
-          className="absolute z-[1000] float-left m-0 hidden min-w-32 list-none overflow-hidden rounded-lg border-none bg-[var(--app-surface)] shadow-xl data-[twe-dropdown-show]:block custom-inset ring-1 ring-black/5"
+          className="absolute z-[1000] float-left m-0 hidden min-w-32 list-none overflow-hidden rounded-lg border-none bg-[var(--app-surface)] shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] data-[twe-dropdown-show]:block custom-inset ring-1 ring-black/5"
           aria-labelledby="dropdownMenuButton1"
           data-twe-dropdown-menu-ref
         >

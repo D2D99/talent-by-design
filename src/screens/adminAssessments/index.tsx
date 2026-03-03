@@ -99,7 +99,7 @@ const AdminAssessments = () => {
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#88a7c4]"
             width="20"
           />
           <input
@@ -107,7 +107,7 @@ const AdminAssessments = () => {
             placeholder="Search team members..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
           />
         </div>
       </div>
@@ -148,20 +148,20 @@ const AdminAssessments = () => {
       <div className="overflow-x-auto rounded-xl border border-gray-100">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
-              <th className="px-6 py-4 font-semibold">
+            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Name
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Email
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Role
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Assessment Status
               </th>
-              <th className="px-6 py-4 font-semibold ">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4] ">
                 Progress
               </th>
             </tr>
@@ -181,9 +181,9 @@ const AdminAssessments = () => {
               return (
                 <tr
                   key={idx}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors dark:border-[var(--app-border-color)] dark:hover:bg-[rgba(121,186,240,0.08)]"
                 >
-                  <td className="px-6 py-4 text-sm font-medium">
+                  <td className="px-6 py-4 text-sm font-medium dark:text-[var(--app-text-color)]">
                     <div className="font-bold">
                       {member.firstName === "-" ? (
                         <span className="text-gray-300">—</span>
@@ -196,7 +196,7 @@ const AdminAssessments = () => {
                     {member.email}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="uppercase text-xs font-bold">
+                    <span className="uppercase text-xs font-bold dark:text-[var(--app-text-color)]">
                       {member.role}
                     </span>
                   </td>

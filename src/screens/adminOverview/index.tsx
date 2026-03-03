@@ -45,7 +45,7 @@ const AdminOverview = () => {
     <div className="sm:p-6 p-3 space-y-6 max-w-[1600px] mx-auto animate-in fade-in duration-500">
 
       {/* Header Section */}
-      <div className="bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[0_8px_30px_rgba(68,140,210,0.08)] sm:p-8 p-5 rounded-[20px]">
+      <div className="bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[0_8px_30px_rgba(68,140,210,0.08)] sm:p-8 p-5 rounded-[20px] dark:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-center gap-6">
             <div className="w-16 h-16 bg-gradient-to-br from-[#448CD2] to-[#1a3652] rounded-[18px] flex items-center justify-center text-white shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300">

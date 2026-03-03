@@ -143,7 +143,7 @@ const TopBar = () => {
 
   return (
     <>
-      <div className="sticky top-6 z-30 flex items-center gap-4 justify-between bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] sm:p-6 rounded-[12px] py-3 px-3 mb-6 items-center transition-all duration-300">
+      <div className="sticky top-6 z-30 flex items-center gap-4 justify-between bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] sm:p-6 rounded-[12px] py-3 px-3 mb-6 items-center transition-all duration-300">
         {/* Mobile Sidebar Toggle */}
         <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-6 transform left-[-12px] cursor-pointer">
           <button
@@ -288,7 +288,7 @@ const TopBar = () => {
 
           {/* Dropdown Menu */}
           {isOpen && (
-            <div className="absolute right-[-10px] sm:right-0 top-16 w-[92vw] sm:w-[420px] bg-[var(--app-surface)] rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] border border-[var(--app-border-color)]/30 z-[9999] overflow-hidden transform transition-all duration-200 origin-top-right ring-1 ring-black/5">
+            <div className="absolute right-[-10px] sm:right-0 top-16 w-[92vw] sm:w-[420px] bg-[var(--app-surface)] rounded-2xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-[var(--app-border-color)]/30 z-[9999] overflow-hidden transform transition-all duration-200 origin-top-right ring-1 ring-black/5">
               {/* Header */}
               <div className="px-6 py-5 bg-[var(--app-surface)] flex items-center justify-between sticky top-0 z-20 border-b border-[var(--app-border-color)]/20">
                 <div>

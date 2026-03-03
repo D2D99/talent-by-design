@@ -63,7 +63,7 @@ const SuperAdminStats = () => {
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#88a7c4]"
             width="20"
           />
           <input
@@ -71,7 +71,7 @@ const SuperAdminStats = () => {
             placeholder="Search organizations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700 dark:bg-[var(--app-surface-muted)] dark:border-[var(--app-border-color)] dark:text-[var(--app-text-color)] dark:placeholder:text-[#88a7c4]"
           />
         </div>
       </div>
@@ -112,17 +112,17 @@ const SuperAdminStats = () => {
       <div className="overflow-x-auto rounded-xl border border-gray-100">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
-              <th className="px-6 py-4 font-semibold">
+            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Organization
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Participants
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Completed
               </th>
-              <th className="px-6 py-4 font-semibold">
+              <th className="px-6 py-4 font-semibold dark:text-[#88a7c4]">
                 Progress
               </th>
             </tr>
@@ -136,9 +136,9 @@ const SuperAdminStats = () => {
               return (
                 <tr
                   key={idx}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors dark:border-[var(--app-border-color)] dark:hover:bg-[rgba(121,186,240,0.08)]"
                 >
-                  <td className="px-6 py-4 text-sm font-medium">
+                  <td className="px-6 py-4 text-sm font-medium dark:text-[var(--app-text-color)]">
                     <div
                       onClick={() =>
                         navigate(
@@ -150,7 +150,7 @@ const SuperAdminStats = () => {
                       {org.orgName}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-xs text-gray-600">
+                  <td className="px-6 py-4 text-xs text-gray-600 dark:text-[var(--app-text-muted)]">
                     <span className="flex items-center gap-2 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100 font-bold">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -183,7 +183,7 @@ const SuperAdminStats = () => {
                       {org.users}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-[var(--app-text-muted)]">
                     <span
                       className={`rounded-md text-sm ${org.completed > 0 ? "text-neutral-800 font-bold" : "text-gray-400"}`}
                     >

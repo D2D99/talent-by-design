@@ -112,7 +112,7 @@ const SuperAdminOverview = () => {
   };
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] space-y-6">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] dark:bg-[var(--app-surface)] dark:border-[var(--app-border-color)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.26)] dark:text-[var(--app-text-color)] space-y-6">
       {/* ── Header ── */}
       <div className="">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 flex-wrap">
