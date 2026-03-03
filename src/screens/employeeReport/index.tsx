@@ -255,7 +255,25 @@ const EmployeeReport = () => {
         </div>
       </div>
 
-
+     
+      {aiInsight && (
+        <div className="bg-gradient-to-r from-[#1E293B] to-[#334155] p-6 rounded-[16px] shadow-xl mb-8 text-white flex items-center gap-8 border border-white/10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+          <div className="relative bg-white/10 p-5 rounded-2xl backdrop-blur-md border border-white/20">
+            <img src={StreamlinePlump} alt="ai-icon" className="w-12 h-12" />
+          </div>
+          <div className="relative flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">POD Insights™ AI</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${aiInsight.type === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : aiInsight.type === 'warning' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}>
+                {aiInsight.type}
+              </span>
+            </div>
+            <h4 className="text-2xl font-black mb-2 text-white">{aiInsight.title}</h4>
+            <p className="text-sm font-medium text-slate-300 leading-relaxed max-w-3xl">{aiInsight.description}</p>
+          </div>
+        </div>
+      )}
 
 
 
@@ -429,7 +447,7 @@ const EmployeeReport = () => {
                   </h3>
                   <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
                 </div>
-
+                
               </div>
               <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
                 <Triangle data={triangleData} />

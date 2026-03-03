@@ -63,16 +63,6 @@ const LeaderReport = () => {
 
 
 
-  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
-  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
-
-  useEffect(() => {
-    if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
-      const firstSub = Object.keys(reportData.scores.domains[selectedDomain].subdomains)[0];
-      setSelectedSubdomain(firstSub);
-    }
-  }, [reportData, selectedDomain]);
-
   if (loading) return <SpinnerLoader />;
 
   // Robust triangle data mapping
@@ -87,7 +77,15 @@ const LeaderReport = () => {
     digitalFluency: findDomainScore("digital"),
   };
 
+  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
+  useEffect(() => {
+    if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
+      const firstSub = Object.keys(reportData.scores.domains[selectedDomain].subdomains)[0];
+      setSelectedSubdomain(firstSub);
+    }
+  }, [reportData, selectedDomain]);
 
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
   const subdomainScore = reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain] || 0;
@@ -579,36 +577,19 @@ const LeaderReport = () => {
               </div>
             </div>
           </div>
-          <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
-            <div className="flex items-center justify-between w-full mb-2">
+          <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full">
+            <div className="flex items-center justify-between ">
               <div>
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   POD-360™ Model
                 </h3>
-                <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
               </div>
             </div>
-            <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
-              <Triangle data={triangleData} />
-            </div>
-            <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">People</p>
-                <p className="text-sm font-black text-[var(--secondary-color)]">
-                  {Math.round(findDomainScore("people"))}%
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Operational</p>
-                <p className="text-sm font-black text-[var(--secondary-color)]">
-                  {Math.round(findDomainScore("operational"))}%
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Digital</p>
-                <p className="text-sm font-black text-[var(--secondary-color)]">
-                  {Math.round(findDomainScore("digital"))}%
-                </p>
+            <div>
+              <div className="flex justify-center">
+                <div style={{ width: 400 }}>
+                  <Triangle data={triangleData} />
+                </div>
               </div>
             </div>
           </div>

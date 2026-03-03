@@ -4,6 +4,8 @@ type Props = {
   data: TriangleData;
 };
 
+const clamp = (v: number) => Math.max(0, Math.min(1, v / 100));
+
 /**
  * Creates a rounded triangle path
  */
@@ -37,6 +39,7 @@ function roundedTrianglePath(
 }
 
 export default function Triangle({ data }: Props) {
+
   // ===== EQUILATERAL BIG TRIANGLE =====
   const center = { x: 150, y: 150 };
   const radius = 120;
@@ -51,77 +54,80 @@ export default function Triangle({ data }: Props) {
     y: center.y + radius * Math.cos(Math.PI / 3),
   };
 
-  const pVal = data.peoplePotential || 0;
-  const oVal = data.operationalSteadiness || 0;
-  const dVal = data.digitalFluency || 0;
+  // Midpoints of sides
+  const Mpo = { x: (P.x + O.x) / 2, y: (P.y + O.y) / 2 };
+  const Mod = { x: (O.x + D.x) / 2, y: (O.y + D.y) / 2 };
+  const Mdp = { x: (D.x + P.x) / 2, y: (D.y + P.y) / 2 };
 
-  // If all are zero, default to central point perfectly
-  const isAllZero = pVal === 0 && oVal === 0 && dVal === 0;
-  const p = isAllZero ? 33.3 : pVal;
-  const o = isAllZero ? 33.3 : oVal;
-  const d = isAllZero ? 33.3 : dVal;
+  // Normalize values (0 to 1)
+  const p = clamp(data.peoplePotential);
+  const o = clamp(data.operationalSteadiness);
+  const d = clamp(data.digitalFluency);
 
-  // Inverse weights trick: We want a high value to push the intersection AWAY from its vertex,
-  // making the adjacent area larger. 
-  const invP = o + d;
-  const invO = p + d;
-  const invD = p + o;
-  const total = invP + invO + invD;
+  // Growth helper: lerps a point V toward the center based on score s
+  const grow = (V: any, s: number) => ({
+    x: V.x + (center.x - V.x) * s,
+    y: V.y + (center.y - V.y) * s,
+  });
 
-  const wp = invP / total;
-  const wo = invO / total;
-  const wd = invD / total;
+  const edgeGrow = (V: any, M: any, s: number) => ({
+    x: V.x + (M.x - V.x) * s,
+    y: V.y + (M.y - V.y) * s,
+  });
 
-  // DYNAMIC CENTER POINT
-  const C = {
-    x: wp * P.x + wo * O.x + wd * D.x,
-    y: wp * P.y + wo * O.y + wd * D.y,
-  };
-
+  // Colors based on user preference
   const colors = {
-    left: "#E6F0FA",   // Very light blue for left section
-    right: "#BFE0F6",  // Slightly darker light blue for right section
-    bottom: "#357ABD"  // Dark blue for bottom section
+    P: "#EDF5FD", // Top (People) - Light
+    O: "#93C5FD", // Left (Operational) - Medium
+    D: "#2563EB", // Right (Digital) - Dark
   };
 
   return (
     <svg viewBox="0 0 300 300" width="100%">
-      {/* BACKGROUND AND BORDER - Optional, to keep structural boundary */}
+      {/* ===== BIG ROUNDED TRIANGLE BACKGROUND ===== */}
       <path
-        d={roundedTrianglePath(P, O, D, 0.1)}
-        fill="transparent"
+        d={roundedTrianglePath(P, O, D, 0.12)}
+        fill="#FFFFFF"
+        stroke="#E2E8F0"
+        strokeWidth={1}
       />
 
       <defs>
         <clipPath id="triangleClip">
-          <path d={roundedTrianglePath(P, O, D, 0.1)} />
+          <path d={roundedTrianglePath(P, O, D, 0.12)} />
         </clipPath>
       </defs>
 
       <g clipPath="url(#triangleClip)">
-        {/* LEFT SECTOR: Center -> Top(P) -> BottomLeft(O) */}
-        <polygon
-          points={`${C.x},${C.y} ${P.x},${P.y} ${O.x},${O.y}`}
-          fill={colors.left}
-        />
+        {/* PEOPPLE SECTOR: Vertex P -> Midpoints -> Center */}
+        {p > 0 && (
+          <polygon
+            points={`${P.x},${P.y} ${edgeGrow(P, Mpo, p).x},${edgeGrow(P, Mpo, p).y} ${grow(P, p).x},${grow(P, p).y} ${edgeGrow(P, Mdp, p).x},${edgeGrow(P, Mdp, p).y}`}
+            fill={colors.P}
+          />
+        )}
 
-        {/* RIGHT SECTOR: Center -> Top(P) -> BottomRight(D) */}
-        <polygon
-          points={`${C.x},${C.y} ${P.x},${P.y} ${D.x},${D.y}`}
-          fill={colors.right}
-        />
+        {/* OPERATIONAL SECTOR: Vertex O -> Midpoints -> Center */}
+        {o > 0 && (
+          <polygon
+            points={`${O.x},${O.y} ${edgeGrow(O, Mod, o).x},${edgeGrow(O, Mod, o).y} ${grow(O, o).x},${grow(O, o).y} ${edgeGrow(O, Mpo, o).x},${edgeGrow(O, Mpo, o).y}`}
+            fill={colors.O}
+          />
+        )}
 
-        {/* BOTTOM SECTOR: Center -> BottomLeft(O) -> BottomRight(D) */}
-        <polygon
-          points={`${C.x},${C.y} ${O.x},${O.y} ${D.x},${D.y}`}
-          fill={colors.bottom}
-        />
+        {/* DIGITAL SECTOR: Vertex D -> Midpoints -> Center */}
+        {d > 0 && (
+          <polygon
+            points={`${D.x},${D.y} ${edgeGrow(D, Mdp, d).x},${edgeGrow(D, Mdp, d).y} ${grow(D, d).x},${grow(D, d).y} ${edgeGrow(D, Mod, d).x},${edgeGrow(D, Mod, d).y}`}
+            fill={colors.D}
+          />
+        )}
       </g>
 
       {/* ===== BOLD LABELS ===== */}
       <text
         x={P.x}
-        y={P.y - 12}
+        y={P.y - 15}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
@@ -133,29 +139,29 @@ export default function Triangle({ data }: Props) {
       </text>
 
       <text
-        x={O.x - 30}
-        y={O.y + 20}
+        x={O.x}
+        y={O.y + 30}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
         fontSize={12}
         className="uppercase tracking-tighter"
       >
-        <tspan x={O.x + 10} dy="0">Operational</tspan>
-        <tspan x={O.x + 10} dy="1.1em">Steadiness</tspan>
+        <tspan x={O.x} dy="0">Operational</tspan>
+        <tspan x={O.x} dy="1.1em">Steadiness</tspan>
       </text>
 
       <text
-        x={D.x + 20}
-        y={D.y + 20}
+        x={D.x}
+        y={D.y + 30}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
         fontSize={12}
         className="uppercase tracking-tighter"
       >
-        <tspan x={D.x - 10} dy="0">Digital</tspan>
-        <tspan x={D.x - 10} dy="1.1em">Fluency</tspan>
+        <tspan x={D.x} dy="0">Digital</tspan>
+        <tspan x={D.x} dy="1.1em">Fluency</tspan>
       </text>
     </svg>
   );
