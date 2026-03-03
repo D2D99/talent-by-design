@@ -446,7 +446,7 @@ const AssessmentQuestion = () => {
                   </>
                 ) : (
                   <div className="sm:my-6 my-4">
-                    <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)] mb-6">
+                    <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
                       Finalizing Your Confidential Submission
                     </h2>
                     <div className="sm:mb-4 mb-2">
@@ -459,7 +459,7 @@ const AssessmentQuestion = () => {
                             firstName: e.target.value,
                           })
                         }
-                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                        className="w-full p-3 mt-2 border rounded-lg"
                       />
                     </div>
                     <div className="sm:mb-4 mb-2">
@@ -472,7 +472,7 @@ const AssessmentQuestion = () => {
                             lastName: e.target.value,
                           })
                         }
-                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                        className="w-full p-3 mt-2 border rounded-lg"
                       />
                     </div>
                     <div className="sm:mb-4 mb-2">
@@ -481,7 +481,7 @@ const AssessmentQuestion = () => {
                         type="email"
                         value={finalForm.email}
                         readOnly={!!finalForm.email}
-                        className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
+                        className={`w-full p-3 mt-2 border rounded-lg ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
                       />
                     </div>
                     <div className="sm:mb-6 mb-5">
@@ -494,7 +494,7 @@ const AssessmentQuestion = () => {
                             department: e.target.value,
                           })
                         }
-                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg appearance-none transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                        className="w-full p-3 mt-2 border rounded-lg appearance-none"
                       >
                         <option value="">Select your department</option>
                         <option value="hr">HR</option>

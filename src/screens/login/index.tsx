@@ -8,7 +8,6 @@ import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
-
 import { toast } from "react-toastify";
 
 import { useAuth } from "../../context/useAuth"; // Ensure this path is correct
@@ -116,9 +115,7 @@ const Login = () => {
         if (res.data.user && !res.data.user.profileCompleted) {
           // If we have a verification token from any source, use it
           const vToken = res.data.user.emailVerificationToken || "";
-          navigate(`/profile-info${vToken ? `?verifyToken=${vToken}` : ""}`, {
-            replace: true,
-          });
+          navigate(`/profile-info${vToken ? `?verifyToken=${vToken}` : ""}`, { replace: true });
           return;
         }
 
@@ -188,11 +185,10 @@ const Login = () => {
                 type="email"
                 id="email"
                 autoComplete="email"
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
-                  errors.email
-                    ? "border-red-500"
-                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                }`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.email
+                  ? "border-red-500"
+                  : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  }`}
                 placeholder="Enter your email"
                 {...register("email", {
                   required: "Email is required",
@@ -221,11 +217,10 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   autoComplete="current-password"
-                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
-                    errors.password
-                      ? "border-red-500"
-                      : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                  }`}
+                  className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.password
+                    ? "border-red-500"
+                    : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    }`}
                   placeholder="Enter your password"
                   {...register("password", {
                     required: "Password is required",
@@ -266,20 +261,18 @@ const Login = () => {
             <button
               type="submit"
               disabled={isButtonDisabled}
-              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
-                isButtonDisabled
-                  ? "disabled:pointer-events-none disabled:opacity-40"
-                  : "opacity-100 active:scale-95"
-              }`}
+              className={`w-full mx-auto group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${isButtonDisabled
+                ? "disabled:pointer-events-none disabled:opacity-40"
+                : "opacity-100 active:scale-95"
+                }`}
             >
               {loading ? "Logging in..." : "Log In"}
               {!loading && (
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="25"
-                  className={`transition-transform duration-300 ${
-                    isButtonDisabled ? "-rotate-45" : "rotate-0"
-                  }`}
+                  className={`transition-transform duration-300 ${isButtonDisabled ? "-rotate-45" : "rotate-0"
+                    }`}
                 />
               )}
             </button>

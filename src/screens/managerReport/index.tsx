@@ -76,11 +76,18 @@ const ManagerReport = () => {
 
   if (loading) return <SpinnerLoader />;
 
-  const triangleData = {
-    peoplePotential: reportData?.scores?.domains["People Potential"]?.score || 0,
-    operationalSteadiness: reportData?.scores?.domains["Operational Steadiness"]?.score || 0,
-    digitalFluency: reportData?.scores?.domains["Digital Fluency"]?.score || 0,
+  // Robust triangle data mapping
+  const findDomainScore = (pattern: string) => {
+    const key = Object.keys(reportData?.scores?.domains || {}).find(k => k.toLowerCase().includes(pattern.toLowerCase()));
+    return key ? reportData.scores.domains[key].score : 0;
   };
+
+  const triangleData = {
+    peoplePotential: findDomainScore("people"),
+    operationalSteadiness: findDomainScore("operational"),
+    digitalFluency: findDomainScore("digital"),
+  };
+
 
 
   const handleDomainChange = (domain: string) => {
@@ -539,17 +546,37 @@ const ManagerReport = () => {
         </div>
         {/*  */}
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-            <div className="flex items-center justify-between ">
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
+            <div className="flex items-center justify-between w-full mb-2">
               <div>
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   POD-360™ Model
                 </h3>
+                <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
               </div>
             </div>
-            <div></div>
-            <div style={{ width: 400 }}>
+            <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
               <Triangle data={triangleData} />
+            </div>
+            <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">People</p>
+                <p className="text-sm font-black text-[var(--secondary-color)]">
+                  {Math.round(findDomainScore("people"))}%
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Operational</p>
+                <p className="text-sm font-black text-[var(--secondary-color)]">
+                  {Math.round(findDomainScore("operational"))}%
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Digital</p>
+                <p className="text-sm font-black text-[var(--secondary-color)]">
+                  {Math.round(findDomainScore("digital"))}%
+                </p>
+              </div>
             </div>
           </div>
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">

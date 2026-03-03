@@ -3,6 +3,7 @@ import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { Icon } from "@iconify/react";
 
 const UserProfilePic = "/static/img/ic-profile-ph.svg";
 
@@ -20,7 +21,10 @@ interface ProfileFormData {
   zipCode: string;
   profileImage: string;
   orgName: string;
+  orgLogo: string;
 }
+
+const OrgLogoPlaceholder = "/static/img/POD-logo.svg";
 
 const UserProfile = () => {
   const [formData, setFormData] = useState<ProfileFormData>({
@@ -37,6 +41,7 @@ const UserProfile = () => {
     zipCode: "",
     profileImage: "",
     orgName: "",
+    orgLogo: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -44,6 +49,9 @@ const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [selectedOrgLogoFile, setSelectedOrgLogoFile] = useState<File | null>(null);
+  const [orgLogoPreviewUrl, setOrgLogoPreviewUrl] = useState<string>("");
+  const [showLogoModal, setShowLogoModal] = useState(false);
 
   const fetchProfile = async () => {
     try {
@@ -73,8 +81,10 @@ const UserProfile = () => {
         zipCode: data.zipCode || "",
         profileImage: data.profileImage || "",
         orgName: data.orgName || "",
+        orgLogo: data.orgLogo || "",
       });
       setPreviewUrl(data.profileImage || "");
+      setOrgLogoPreviewUrl(data.orgLogo || "");
     } catch (error) {
       console.error("Error fetching profile:", error);
       toast.error("Failed to load profile data");
@@ -118,6 +128,14 @@ const UserProfile = () => {
     }
   };
 
+  const handleOrgLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedOrgLogoFile(file);
+      setOrgLogoPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -134,6 +152,10 @@ const UserProfile = () => {
 
       if (selectedFile) {
         data.append("profileImage", selectedFile);
+      }
+
+      if (selectedOrgLogoFile) {
+        data.append("orgLogo", selectedOrgLogoFile);
       }
 
       const response = await api.patch("/auth/update-profile", data, {
@@ -233,8 +255,8 @@ const UserProfile = () => {
               <label
                 htmlFor="upload"
                 className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${isEditing
-                    ? "cursor-pointer bg-white hover:bg-neutral-50"
-                    : "bg-gray-100 cursor-not-allowed pointer-events-none"
+                  ? "cursor-pointer bg-white hover:bg-neutral-50"
+                  : "bg-gray-100 cursor-not-allowed pointer-events-none"
                   }`}
               >
                 <svg
@@ -312,6 +334,7 @@ const UserProfile = () => {
                 {formData.role || "User Role"}
               </p>
             </div>
+
           </div>
 
           <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-6 mt-6">
@@ -479,7 +502,7 @@ const UserProfile = () => {
               />
             </div>
 
-            {formData.role !== "superadmin" && (
+            {formData.role !== "superAdmin" && (
               <div>
                 <label
                   htmlFor="orgName"
@@ -495,6 +518,43 @@ const UserProfile = () => {
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
                   placeholder="Organization name"
                 />
+              </div>
+            )}
+
+            {/* View Or Edit Organization Logo based on role */}
+            {(formData.role === "admin" || orgLogoPreviewUrl) && (
+              <div className="relative w-full">
+                <label className="font-bold text-[var(--secondary-color)] text-sm mb-2 block">
+                  Organization Logo
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={selectedOrgLogoFile ? selectedOrgLogoFile.name : (orgLogoPreviewUrl ? "Organization Logo Available" : "No Logo Uploaded")}
+                    readOnly
+                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed pr-[80px]"
+                    placeholder="Organization Logo"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    {orgLogoPreviewUrl && (
+                      <button type="button" onClick={() => setShowLogoModal(true)} title="View Logo" className="text-[#448cd2] hover:text-[#2d5d82] focus:outline-none">
+                        <Icon icon="mdi:eye" width="22" height="22" />
+                      </button>
+                    )}
+                    {formData.role === "admin" && (
+                      <label className={`cursor-pointer ${!isEditing && 'opacity-50 pointer-events-none'}`} title={isEditing ? "Upload Logo" : "Edit to upload"}>
+                        <Icon icon="fe:upload" width="22" height="22" className="text-[#448cd2] hover:text-[#2d5d82]" />
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleOrgLogoChange}
+                          disabled={!isEditing}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -561,6 +621,17 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
+
+      {showLogoModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50" onClick={() => setShowLogoModal(false)}>
+          <div className="bg-white p-6 rounded-lg relative max-w-[90vw] max-h-[90vh] shadow-xl flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 focus:outline-none" onClick={() => setShowLogoModal(false)}>
+              <Icon icon="mdi:close" width="24" height="24" />
+            </button>
+            <img src={orgLogoPreviewUrl || OrgLogoPlaceholder} alt="Organization Logo Preview" className="max-w-full max-h-[80vh] object-contain rounded" />
+          </div>
+        </div>
+      )}
     </>
   );
 };
