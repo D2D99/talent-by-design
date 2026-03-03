@@ -365,31 +365,34 @@ const Home = () => {
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4">
           <div className="lg:grid lg:grid-cols-2 grid-cols-2 lg:justify-between lg:gap-3">
             <div>
-              <h4 className="badge">HOW WE SUPPORT OUR CLIENTS</h4>
-              <h2 className="sub-heading">
-                Leadership and Digital Capability Building for the{" "}
-                <span className="sub-heading-highlight">
-                  Modern Workplace
-                </span>{" "}
-              </h2>
-              <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]  ">
-                The landscape has changed dramatically over the past seven
-                years. Hybrid and remote working, new digital tools, redesigned
-                processes and systems, and shifting employee expectations mean
-                that traditional approaches to leadership development, coaching,
-                and learning no longer work. Organizations need solutions that
-                are data-informed, people-centered, and built for modern
-                complexity.
-              </p>
-              <p className="sm:mt-6 mt-4 text-base font-normal max-w-xl text-[var(--secondary-color)] ">
-                Our approach can be summarized in four simple steps:
-              </p>
-              <img
-                src={CapabilityPerformance}
-                className="sm:mt-12 mt-5 mx-auto lg:mx-0"
-                alt="CapabilityPerformance"
-              />
+              <div className="md:sticky static md:top-32">
+                <h4 className="badge">HOW WE SUPPORT OUR CLIENTS</h4>
+                <h2 className="sub-heading">
+                  Leadership and Digital Capability Building for the{" "}
+                  <span className="sub-heading-highlight">
+                    Modern Workplace
+                  </span>{" "}
+                </h2>
+                <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]  ">
+                  The landscape has changed dramatically over the past seven
+                  years. Hybrid and remote working, new digital tools,
+                  redesigned processes and systems, and shifting employee
+                  expectations mean that traditional approaches to leadership
+                  development, coaching, and learning no longer work.
+                  Organizations need solutions that are data-informed,
+                  people-centered, and built for modern complexity.
+                </p>
+                <p className="sm:mt-6 mt-4 text-base font-normal max-w-xl text-[var(--secondary-color)] ">
+                  Our approach can be summarized in four simple steps:
+                </p>
+                <img
+                  src={CapabilityPerformance}
+                  className="sm:mt-12 mt-5 mx-auto lg:mx-0"
+                  alt="CapabilityPerformance"
+                />
+              </div>
             </div>
+
             <div>
               <div className="grid grid-cols-1 gap-y-5 lg:mt-0 mt-7 ">
                 <div className="home-step-card grid-rows-1 shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] sm:p-6 p-4 bg-white rounded-xl md:sticky md:top-32 static">

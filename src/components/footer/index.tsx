@@ -46,7 +46,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="flex justify-between md:flex-nowrap flex-wrap lg:w-7/12 w-full xl:pe-32 lg:pe-16">
+          <div className="flex justify-between md:flex-nowrap flex-wrap lg:w-7/12 w-full xl:pe-32 lg:pe-16 sm:gap-x-0 gap-x-10">
             <div>
               <h3 className="uppercase font-bold md:text-lg text-base text-[var(--white-color)] mt-4 mb-3">
                 Quick links
