@@ -64,14 +64,6 @@ const ManagerReport = () => {
     team: [5.8, 0.2, 5.5, 0.0, 5.4],
   };
 
-  if (loading) return <SpinnerLoader />;
-
-  const triangleData = {
-    peoplePotential: reportData?.scores?.domains["People Potential"]?.score || 0,
-    operationalSteadiness: reportData?.scores?.domains["Operational Steadiness"]?.score || 0,
-    digitalFluency: reportData?.scores?.domains["Digital Fluency"]?.score || 0,
-  };
-
   const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
@@ -81,6 +73,15 @@ const ManagerReport = () => {
       setSelectedSubdomain(firstSub);
     }
   }, [reportData, selectedDomain]);
+
+  if (loading) return <SpinnerLoader />;
+
+  const triangleData = {
+    peoplePotential: reportData?.scores?.domains["People Potential"]?.score || 0,
+    operationalSteadiness: reportData?.scores?.domains["Operational Steadiness"]?.score || 0,
+    digitalFluency: reportData?.scores?.domains["Digital Fluency"]?.score || 0,
+  };
+
 
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);

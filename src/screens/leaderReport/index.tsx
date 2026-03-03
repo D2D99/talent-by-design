@@ -63,8 +63,17 @@ const LeaderReport = () => {
 
 
 
-  if (loading) return <SpinnerLoader />;
+  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
+  useEffect(() => {
+    if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
+      const firstSub = Object.keys(reportData.scores.domains[selectedDomain].subdomains)[0];
+      setSelectedSubdomain(firstSub);
+    }
+  }, [reportData, selectedDomain]);
+
+  if (loading) return <SpinnerLoader />;
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find(k => k.toLowerCase().includes(pattern.toLowerCase()));
@@ -77,15 +86,6 @@ const LeaderReport = () => {
     digitalFluency: findDomainScore("digital"),
   };
 
-  const [selectedDomain, setSelectedDomain] = useState<string>("People Potential");
-  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
-
-  useEffect(() => {
-    if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
-      const firstSub = Object.keys(reportData.scores.domains[selectedDomain].subdomains)[0];
-      setSelectedSubdomain(firstSub);
-    }
-  }, [reportData, selectedDomain]);
 
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
   const subdomainScore = reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain] || 0;
