@@ -51,7 +51,9 @@ const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [selectedOrgLogoFile, setSelectedOrgLogoFile] = useState<File | null>(null);
+  const [selectedOrgLogoFile, setSelectedOrgLogoFile] = useState<File | null>(
+    null,
+  );
   const [orgLogoPreviewUrl, setOrgLogoPreviewUrl] = useState<string>("");
   const [showLogoModal, setShowLogoModal] = useState(false);
 
@@ -212,7 +214,7 @@ const UserProfile = () => {
   return (
     <>
       <div className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
-        <div className="flex items-center md:justify-between gap-4 flex-wrap mb-8">
+        <div className="flex items-center justify-between gap-4 flex-wrap mb-8">
           <h2 className="md:text-2xl text-xl font-bold">My Profile</h2>
 
           <button
@@ -257,10 +259,11 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${isEditing
-                  ? "cursor-pointer bg-white hover:bg-neutral-50"
-                  : "bg-gray-100 cursor-not-allowed pointer-events-none"
-                  }`}
+                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
+                  isEditing
+                    ? "cursor-pointer bg-white hover:bg-neutral-50"
+                    : "bg-gray-100 cursor-not-allowed pointer-events-none"
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -337,7 +340,6 @@ const UserProfile = () => {
                 {formData.role || "User Role"}
               </p>
             </div>
-
           </div>
 
           <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-6 mt-6">
@@ -411,6 +413,7 @@ const UserProfile = () => {
                 onChange={handleChange}
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
+                required
               />
             </div>
 
@@ -500,7 +503,7 @@ const UserProfile = () => {
                 id="userRole"
                 value={formData.role}
                 readOnly
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed capitalize"
                 placeholder="User role"
               />
             </div>
@@ -552,20 +555,43 @@ const UserProfile = () => {
                 <div className="relative">
                   <input
                     type="text"
-                    value={selectedOrgLogoFile ? selectedOrgLogoFile.name : (orgLogoPreviewUrl ? "Organization Logo Available" : "No Logo Uploaded")}
+                    value={
+                      selectedOrgLogoFile
+                        ? selectedOrgLogoFile.name
+                        : orgLogoPreviewUrl
+                          ? formData.orgName + " Logo"
+                          : "No Logo Uploaded Yet"
+                    }
                     readOnly
                     className="font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed pr-[80px]"
                     placeholder="Organization Logo"
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <p className="text-xs text-gray-600 mt-1.5 uppercase">
+                    Max 4MB <span className="text-gray-950">🞄</span> Allowed
+                    only .png, .jpg, .jpeg
+                  </p>
+                  <div className="absolute right-3 top-3 flex items-center gap-2.5">
                     {orgLogoPreviewUrl && (
-                      <button type="button" onClick={() => setShowLogoModal(true)} title="View Logo" className="text-[#448cd2] hover:text-[#2d5d82] focus:outline-none">
+                      <button
+                        type="button"
+                        onClick={() => setShowLogoModal(true)}
+                        title="View Logo"
+                        className="text-[#448cd2] hover:text-[#2d5d82] focus:outline-none"
+                      >
                         <Icon icon="mdi:eye" width="22" height="22" />
                       </button>
                     )}
                     {formData.role === "admin" && (
-                      <label className={`cursor-pointer ${!isEditing && 'opacity-50 pointer-events-none'}`} title={isEditing ? "Upload Logo" : "Edit to upload"}>
-                        <Icon icon="fe:upload" width="22" height="22" className="text-[#448cd2] hover:text-[#2d5d82]" />
+                      <label
+                        className={`cursor-pointer ${!isEditing && "opacity-50 pointer-events-none"}`}
+                        title={isEditing ? "Upload Logo" : "Edit to upload"}
+                      >
+                        <Icon
+                          icon="tabler:upload"
+                          width="22"
+                          height="22"
+                          className="text-[#448cd2] hover:text-[#2d5d82]"
+                        />
                         <input
                           type="file"
                           className="hidden"
@@ -602,6 +628,7 @@ const UserProfile = () => {
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your country"
+                required
               />
             </div>
 
@@ -620,6 +647,7 @@ const UserProfile = () => {
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your state"
+                required
               />
             </div>
 
@@ -638,6 +666,7 @@ const UserProfile = () => {
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your zip code"
+                required
               />
             </div>
           </div>
@@ -645,12 +674,25 @@ const UserProfile = () => {
       </div>
 
       {showLogoModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50" onClick={() => setShowLogoModal(false)}>
-          <div className="bg-white p-6 rounded-lg relative max-w-[90vw] max-h-[90vh] shadow-xl flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 focus:outline-none" onClick={() => setShowLogoModal(false)}>
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setShowLogoModal(false)}
+        >
+          <div
+            className="bg-white p-10 rounded-lg relative max-w-[90vw] max-h-[90vh] shadow-xl flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 focus:outline-none"
+              onClick={() => setShowLogoModal(false)}
+            >
               <Icon icon="mdi:close" width="24" height="24" />
             </button>
-            <img src={orgLogoPreviewUrl || OrgLogoPlaceholder} alt="Organization Logo Preview" className="max-w-full max-h-[80vh] object-contain rounded" />
+            <img
+              src={orgLogoPreviewUrl || OrgLogoPlaceholder}
+              alt="Organization Logo Preview"
+              className="w-80 mt-5 max-h-max object-contain rounded"
+            />
           </div>
         </div>
       )}
