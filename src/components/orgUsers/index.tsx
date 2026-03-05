@@ -16,6 +16,8 @@ interface UserMember {
   createdAt: string;
   status: string;
   assessmentStatus?: string;
+  lastScore?: number;
+  classification?: string;
 }
 
 interface OrgDetails {
@@ -437,6 +439,7 @@ const OrgUsers = ({
               <th className="px-6 py-4 font-semibold">Added On</th>
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold">Status</th>
+              <th className="px-6 py-4 font-semibold">Score</th>
               <th className="px-6 py-4 text-center font-semibold">Report</th>
             </tr>
           </thead>
@@ -487,6 +490,24 @@ const OrgUsers = ({
                       )}
                     </td>
                   )}
+                  <td className="px-6 py-4">
+                    {member.assessmentStatus === "Completed" ? (
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-gray-800">{member.lastScore}%</span>
+                        {member.classification === "High" && (
+                          <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">High</span>
+                        )}
+                        {member.classification === "Medium" && (
+                          <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Med</span>
+                        )}
+                        {member.classification === "Low" && (
+                          <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Low</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-center">
                     {member.assessmentStatus === "Completed" ? (
                       <button

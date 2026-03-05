@@ -383,6 +383,9 @@ const AdminOverview = () => {
                   Lifecycle Status
                 </th>
                 <th className="px-8 py-4 text-[10px] font-black text-[var(--app-text-muted)] uppercase tracking-widest">
+                  Score
+                </th>
+                <th className="px-8 py-4 text-[10px] font-black text-[var(--app-text-muted)] uppercase tracking-widest">
                   Last Activity
                 </th>
               </tr>
@@ -426,6 +429,26 @@ const AdminOverview = () => {
                           {person.assessmentStatus}
                         </span>
                       </div>
+                    </td>
+                    <td className="px-8 py-5">
+                      {person.assessmentStatus === "Completed" ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-[var(--app-heading-color)]">
+                            {person.lastScore}%
+                          </span>
+                          {person.classification === "High" && (
+                            <span className="text-[9px] font-black bg-green-100 text-green-700 px-1.5 py-0.5 rounded border border-green-200 uppercase">High</span>
+                          )}
+                          {person.classification === "Medium" && (
+                            <span className="text-[9px] font-black bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 uppercase">Med</span>
+                          )}
+                          {person.classification === "Low" && (
+                            <span className="text-[9px] font-black bg-red-100 text-red-700 px-1.5 py-0.5 rounded border border-red-200 uppercase">Low</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-300">—</span>
+                      )}
                     </td>
                     <td className="px-8 py-5">
                       <span className="text-[11px] font-semibold text-slate-400">
