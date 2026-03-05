@@ -96,10 +96,12 @@ const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
 const EmployeeReport = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
+  const userEmail = searchParams.get("email"); // For guest employees (no User account)
 
   const [reportData, setReportData] = useState<any>(null);
-  // const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [detailedPods, setDetailedPods] = useState<any>(null);
+
 
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] =
@@ -107,16 +109,21 @@ const EmployeeReport = () => {
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>(
     "Mindset & Adaptability",
   );
+
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const url = userId
-          ? `dashboard/employee?userId=${userId}`
-          : `dashboard/employee`;
+        // Build URL: if we have an email (guest employee), use it; else use userId
+        let url = `dashboard/employee`;
+        if (userEmail) {
+          url = `dashboard/employee?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (userId) {
+          url = `dashboard/employee?userId=${userId}`;
+        }
         const res = await api.get(url);
         const data = res.data.report;
         setReportData(data);
-        // Dynamic domain/subdomain selection from organizational framework
+
         const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
         const defaultDomain =
           domainKeys.find((k) => k.toLowerCase().includes("people")) ||
@@ -135,6 +142,32 @@ const EmployeeReport = () => {
 
     fetchReport();
   }, [userId]);
+
+  // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
+  useEffect(() => {
+    const fetchDetailedPods = async () => {
+
+      try {
+        // Build URL: pass email for guest employees, and include subdomain
+        let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
+        if (userEmail) {
+          url += `&userId=${userId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (userId) {
+          url += `&userId=${userId}`;
+        }
+        const res = await api.get(url);
+        setDetailedPods(res.data.pods);
+      } catch (error) {
+        console.error("Failed to fetch detailed pods:", error);
+      } finally {
+
+      }
+    };
+
+    if (reportData) {
+      fetchDetailedPods();
+    }
+  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
 
   // Re-initialize TW-Elements after data is loaded and components are rendered
   useEffect(() => {
@@ -174,108 +207,25 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
 
-  // Get highlights/insights for the selected domain
-  const domainFeedback = reportData?.scores?.domains[selectedDomain]?.feedback;
+  // Use dynamic pods if available, fallback to legacy
+  const displayInsights = detailedPods?.insights?.mainText
+    ? [detailedPods.insights.mainText]
+    : ["Processing insights..."];
 
-  const domainInsights = domainFeedback?.insight
-    ? domainFeedback.insight
-        .split(". ")
-        .filter((s: string) => s.trim().length > 0)
-    : ["No specific insights available for this domain yet."];
+  const displayKRs = detailedPods?.objectives?.items?.map(
+    (text: string, i: number) => ({
+      label: `KR${i + 1}`,
+      text: text,
+      value: detailedPods.objectives.progress || 0,
+    }),
+  ) || [];
 
-  const recommendations = domainFeedback?.recommendedPrograms
-    ? domainFeedback.recommendedPrograms
-        .split("\n")
-        .map((s: string) => s.replace("•", "").trim())
-        .filter((s: string) => s.length > 0)
-    : ["No specific recommendations available for this domain yet."];
-
-  const domainOkrs: any = {
-    "People Potential": {
-      objective: "Develop essential people leadership and EI skills",
-      krs: [
-        {
-          label: "KR1",
-          text: "Complete 100% of assigned EI and communication modules",
-          value: 100,
-        },
-        {
-          label: "KR2",
-          text: "Participate in monthly peer-to-peer feedback circles",
-          value: 100,
-        },
-        {
-          label: "KR3",
-          text: "Achieve 85% positive rating in team-readiness surveys",
-          value: 85,
-        },
-      ],
-    },
-    "Operational Steadiness": {
-      objective: "Improve personal execution discipline and workflow clarity",
-      krs: [
-        {
-          label: "KR1",
-          text: "Reduce personal backlog tasks by 20% through better planning",
-          value: 65,
-        },
-        {
-          label: "KR2",
-          text: "Maintain 100% adherence to team operating rhythms",
-          value: 100,
-        },
-        {
-          label: "KR3",
-          text: "Achieve 90% accuracy in task estimation and completion",
-          value: 90,
-        },
-      ],
-    },
-    "Digital Fluency": {
-      objective: "Boost personal digital proficiency and tool adoption",
-      krs: [
-        {
-          label: "KR1",
-          text: "Complete advanced training for core collaboration tools",
-          value: 80,
-        },
-        {
-          label: "KR2",
-          text: "Implement at least 2 automation workflows in daily tasks",
-          value: 50,
-        },
-        {
-          label: "KR3",
-          text: "Maintain 100% digital hygiene standards across platforms",
-          value: 100,
-        },
-      ],
-    },
-  };
-
-  const currentOkr = domainOkrs[selectedDomain] || {
-    objective: "Enhance personal performance in this domain",
-    krs: [
-      {
-        label: "KR1",
-        text: "Identify 3 key areas for skill improvement",
-        value: 50,
-      },
-      {
-        label: "KR2",
-        text: "Schedule and complete monthly development reviews",
-        value: 50,
-      },
-      {
-        label: "KR3",
-        text: "Apply new learnings to at least 2 active projects",
-        value: 50,
-      },
-    ],
-  };
+  const displayRecommendations =
+    detailedPods?.recommendations?.items ||
+    ["No specific recommendations available for this domain yet."];
 
   return (
     <div>
@@ -490,8 +440,45 @@ const EmployeeReport = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
-                <Triangle data={triangleData} />
+              <div className="flex-1 flex flex-row items-center justify-center py-4 w-full gap-4">
+                <div className="flex-1 max-w-[250px] flex items-center justify-center">
+                  <Triangle data={triangleData} />
+                </div>
+                <div className="flex flex-col justify-center gap-3 shrink-0 max-w-[50%] max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                  {detailedPods?.insights?.modelDescription ? (
+                    detailedPods.insights.modelDescription
+                      .split(/[•\n\r]/)
+                      .map((item: string) => item.trim())
+                      .filter((item: string) => item.length > 0)
+                      .map((bullet: string, idx: number) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0 mt-0.5" />
+                          <span className="text-sm font-medium text-[#64748B] leading-snug">
+                            {bullet}
+                          </span>
+                        </div>
+                      ))
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                        <span className="text-sm font-medium text-[#64748B]">Capability</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                        <span className="text-sm font-medium text-[#64748B]">Engagement</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                        <span className="text-sm font-medium text-[#64748B]">Confidence</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                        <span className="text-sm font-medium text-[#64748B]">Change resilience</span>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
               <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
                 <div className="text-center">
@@ -539,7 +526,7 @@ const EmployeeReport = () => {
             </div>
             <div>
               <ul className="mt-4 space-y-2">
-                {domainInsights.map((insight: string, idx: number) => (
+                {displayInsights.map((insight: string, idx: number) => (
                   <li key={idx} className="feature-list">
                     <img src={IconStar} alt="icon" className="mt-1" />
                     <span className="text-sm text-[var(--secondary-color)] font-normal">
@@ -557,7 +544,7 @@ const EmployeeReport = () => {
                   Objectives and Key Results
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  {currentOkr.objective}
+                  {detailedPods?.objectives?.subtitle || "Develop essential leadership and EI skills"}
                 </p>
               </div>
               <div>
@@ -565,7 +552,7 @@ const EmployeeReport = () => {
               </div>
             </div>
             <div className="space-y-6">
-              {currentOkr.krs.map((kr: any, idx: number) => (
+              {displayKRs.map((kr: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-3 mt-4">
                   <div className="text-lg-progress">
                     <CircularProgress
@@ -586,6 +573,7 @@ const EmployeeReport = () => {
                   </div>
                 </div>
               ))}
+              {displayKRs.length === 0 && <p className="text-sm text-gray-400 italic">No specific key results available for this score level.</p>}
             </div>
             <div></div>
           </div>
@@ -606,7 +594,7 @@ const EmployeeReport = () => {
             </div>
           </div>
           <ul className="mt-4 space-y-2">
-            {recommendations.map((rec: string, idx: number) => (
+            {displayRecommendations.map((rec: string, idx: number) => (
               <li key={idx} className="feature-list flex gap-2">
                 <img
                   src={IconStar}

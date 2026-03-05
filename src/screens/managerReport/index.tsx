@@ -26,10 +26,12 @@ import GapBarChart from "../../charts/gapBarChart";
 const ManagerReport = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
+  const userEmail = searchParams.get("email"); // Guest employee support
 
   const [reportData, setReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [detailedPods, setDetailedPods] = useState<any>(null);
 
   // setChartData
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
@@ -39,9 +41,12 @@ const ManagerReport = () => {
 
     const fetchReport = async () => {
       try {
-        const url = userId
-          ? `dashboard/manager?userId=${userId}`
-          : `dashboard/manager`;
+        let url = `dashboard/manager`;
+        if (userEmail) {
+          url = `dashboard/manager?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (userId) {
+          url = `dashboard/manager?userId=${userId}`;
+        }
         const res = await api.get(url);
         setReportData(res.data.report);
         setUserData(res.data.user);
@@ -79,6 +84,28 @@ const ManagerReport = () => {
     }
   }, [reportData, selectedDomain]);
 
+  // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
+  useEffect(() => {
+    const fetchDetailedPods = async () => {
+      try {
+        let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
+        if (userEmail) {
+          url += `&userId=${userId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (userId) {
+          url += `&userId=${userId}`;
+        }
+        const res = await api.get(url);
+        setDetailedPods(res.data.pods);
+      } catch (error) {
+        console.error("Failed to fetch detailed pods:", error);
+      }
+    };
+
+    if (reportData) {
+      fetchDetailedPods();
+    }
+  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
+
   if (loading) return <SpinnerLoader />;
 
   // Robust triangle data mapping
@@ -103,113 +130,23 @@ const ManagerReport = () => {
   const subdomainScore =
     reportData?.scores?.domains[selectedDomain]?.subdomains?.[selectedSubdomain]
       ?.score || 0;
-  const domainFeedback = reportData?.scores?.domains[selectedDomain]?.feedback;
 
-  const domainInsights = domainFeedback?.insight
-    ? domainFeedback.insight
-        .split(". ")
-        .filter((s: string) => s.trim().length > 0)
-    : ["No specific insights available for this domain yet."];
+  // Use dynamic pods if available
+  const displayInsights = detailedPods?.insights?.mainText
+    ? [detailedPods.insights.mainText]
+    : ["Processing insights..."];
 
-  const coachingTips = domainFeedback?.coachingTips
-    ? domainFeedback.coachingTips
-        .split("\n")
-        .map((s: string) => s.replace("•", "").trim())
-        .filter((s: string) => s.length > 0)
-    : ["No specific coaching tips available for this domain yet."];
+  const displayKRs = detailedPods?.objectives?.items?.map(
+    (text: string, i: number) => ({
+      label: `KR${i + 1}`,
+      text: text,
+      value: detailedPods.objectives.progress || 0,
+    }),
+  ) || [];
 
-  const recommendations = domainFeedback?.recommendedPrograms
-    ? domainFeedback.recommendedPrograms
-        .split("\n")
-        .map((s: string) => s.replace("•", "").trim())
-        .filter((s: string) => s.length > 0)
-    : ["No specific recommendations available for this domain yet."];
-
-  const domainOkrs: any = {
-    "People Potential": {
-      objective: "Build high-performing, emotionally intelligent teams",
-      krs: [
-        {
-          label: "KR1",
-          text: "100% of team members complete role-specific EI training",
-          value: 80,
-        },
-        {
-          label: "KR2",
-          text: "Achieve 90% positive team climate scores in feedback rounds",
-          value: 90,
-        },
-        {
-          label: "KR3",
-          text: "Identify and mentor 2 high-potential leaders within the team",
-          value: 100,
-        },
-      ],
-    },
-    "Operational Steadiness": {
-      objective:
-        "Standardize team execution discipline and workflow efficiency",
-      krs: [
-        {
-          label: "KR1",
-          text: "Achieve 100% adherence to weekly team operating rhythms",
-          value: 95,
-        },
-        {
-          label: "KR2",
-          text: "Reduce project delivery friction metrics by 25%",
-          value: 70,
-        },
-        {
-          label: "KR3",
-          text: "Implement verified accountability frameworks for all members",
-          value: 100,
-        },
-      ],
-    },
-    "Digital Fluency": {
-      objective:
-        "Enable team digital transformation and AI workflow integration",
-      krs: [
-        {
-          label: "KR1",
-          text: "Transition 100% of team collaboration to digital-first norms",
-          value: 85,
-        },
-        {
-          label: "KR2",
-          text: "Achieve 70% team proficiency in AI-assisted project management",
-          value: 70,
-        },
-        {
-          label: "KR3",
-          text: "Audit and optimize 100% of team digital tool utilization",
-          value: 100,
-        },
-      ],
-    },
-  };
-
-  const currentOkr = domainOkrs[selectedDomain] || {
-    objective: "Lead team improvements in this domain area",
-    krs: [
-      {
-        label: "KR1",
-        text: "Establish baseline performance metrics for the team",
-        value: 50,
-      },
-      {
-        label: "KR2",
-        text: "Deliver monthly team development coaching sessions",
-        value: 50,
-      },
-      {
-        label: "KR3",
-        text: "Report 15% growth in domain-specific team metrics",
-        value: 50,
-      },
-    ],
-  };
+  const displayRecommendations =
+    detailedPods?.recommendations?.items ||
+    ["No specific recommendations available for this domain yet."];
 
   // Calculate radar data dynamically from responses
   const getNumericScore = (res: any) => {
@@ -241,9 +178,9 @@ const ManagerReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -251,9 +188,9 @@ const ManagerReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -261,9 +198,9 @@ const ManagerReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -579,7 +516,7 @@ const ManagerReport = () => {
             </div>
             <div>
               <ul className="mt-4 space-y-2">
-                {domainInsights.map((insight: string, idx: number) => (
+                {displayInsights.map((insight: string, idx: number) => (
                   <li key={idx} className="feature-list flex gap-2">
                     <img
                       src={IconStar}
@@ -601,7 +538,7 @@ const ManagerReport = () => {
                   Objectives and Key Results
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  {currentOkr.objective}
+                  {detailedPods?.objectives?.subtitle || "Lead team improvements in this domain area"}
                 </p>
               </div>
               <div>
@@ -609,7 +546,7 @@ const ManagerReport = () => {
               </div>
             </div>
             <div className="space-y-6">
-              {currentOkr.krs.map((kr: any, idx: number) => (
+              {displayKRs.map((kr: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-3 mt-4">
                   <div className="text-lg-progress">
                     <CircularProgress
@@ -630,6 +567,7 @@ const ManagerReport = () => {
                   </div>
                 </div>
               ))}
+              {displayKRs.length === 0 && <p className="text-sm text-gray-400 italic">No specific team key results available.</p>}
             </div>
             <div></div>
           </div>
@@ -647,8 +585,45 @@ const ManagerReport = () => {
                 </p>
               </div>
             </div>
-            <div className="flex-1 flex items-center justify-center py-4 w-full max-w-[320px]">
-              <Triangle data={triangleData} />
+            <div className="flex-1 flex flex-row px-2 items-center justify-center py-4 w-full gap-4">
+              <div className="flex-1 max-w-[250px] flex items-center justify-center">
+                <Triangle data={triangleData} />
+              </div>
+              <div className="flex flex-col justify-center gap-3 shrink-0 max-w-[50%] max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                {detailedPods?.insights?.modelDescription ? (
+                  detailedPods.insights.modelDescription
+                    .split(/[•\n\r]/)
+                    .map((item: string) => item.trim())
+                    .filter((item: string) => item.length > 0)
+                    .map((bullet: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span className="text-sm font-medium text-[#64748B] leading-snug">
+                          {bullet}
+                        </span>
+                      </div>
+                    ))
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                      <span className="text-sm font-medium text-[#64748B]">Capability</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                      <span className="text-sm font-medium text-[#64748B]">Engagement</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                      <span className="text-sm font-medium text-[#64748B]">Confidence</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
+                      <span className="text-sm font-medium text-[#64748B]">Change resilience</span>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
             <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
               <div className="text-center">
@@ -689,7 +664,7 @@ const ManagerReport = () => {
               </div>
             </div>
             <ul className="mt-4 space-y-2">
-              {coachingTips.map((tip: string, idx: number) => (
+              {[detailedPods?.insights?.modelDescription].filter(Boolean).map((tip: string, idx: number) => (
                 <li key={idx} className="feature-list flex gap-2">
                   <img
                     src={IconStar}
@@ -701,6 +676,7 @@ const ManagerReport = () => {
                   </span>
                 </li>
               ))}
+              {!detailedPods?.insights?.modelDescription && <li className="text-xs text-gray-400">Strategic model application details will appear here.</li>}
             </ul>
             <div></div>
           </div>
@@ -719,7 +695,7 @@ const ManagerReport = () => {
             </div>
           </div>
           <ul className="mt-4 space-y-2">
-            {recommendations.map((rec: string, idx: number) => (
+            {displayRecommendations.map((rec: string, idx: number) => (
               <li key={idx} className="feature-list flex gap-2">
                 <img
                   src={IconStar}
