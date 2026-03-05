@@ -572,7 +572,7 @@ const LeaderReport = () => {
                 }}
               >
                 <CircularProgress
-                  value={overallScore}
+                  value={Math.round(overallScore)}
                   width={180}
                   pathColor={currentStatus.color}
                   trailColor={currentStatus.trail}
