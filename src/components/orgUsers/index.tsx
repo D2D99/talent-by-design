@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import api from "../../services/axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, Ripple, initTWE } from "tw-elements";
 
@@ -38,6 +38,7 @@ const OrgUsers = ({
   hideAdmin = true,
 }: OrgUsersProps) => {
   const { orgName: routeOrgName } = useParams();
+  const navigate = useNavigate();
 
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
@@ -227,7 +228,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                currentUser?.role === "manager"
+                  currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -524,7 +525,8 @@ const OrgUsers = ({
                           const reportType =
                             roleMapping[member.role.toLowerCase()] ||
                             "employee";
-                          window.location.href = `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`;
+                          // Pass email so backend can find guest employees (no User account)
+                          navigate(`/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`);
                         }}
                         className="text-gray-400 hover:text-[#448CD2] transition-colors"
                         title="View Report"
