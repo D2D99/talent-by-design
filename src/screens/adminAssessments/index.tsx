@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
+import Pagination from "../../components/Pagination";
 
 interface UserMember {
   _id: string;
@@ -19,6 +20,9 @@ const AdminAssessments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter] = useState<string[]>([]);
   const [statusFilter] = useState<string[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -78,6 +82,10 @@ const AdminAssessments = () => {
 
     return matchesSearch && matchesRole && matchesStatus;
   });
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = filteredMembers.slice(indexOfFirstItem, indexOfLastItem);
 
   if (loading) return <SpinnerLoader />;
 
@@ -149,6 +157,7 @@ const AdminAssessments = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
+              <th className="px-6 py-4 font-semibold">#</th>
               <th className="px-6 py-4 font-semibold">Name</th>
               <th className="px-6 py-4 font-semibold">Email</th>
               <th className="px-6 py-4 font-semibold">Role</th>
@@ -157,7 +166,7 @@ const AdminAssessments = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {filteredMembers.map((member, idx) => {
+            {currentData.map((member, idx) => {
               const status = member.assessmentStatus || "Not Started";
               const percentage =
                 status === "Completed"
@@ -170,9 +179,12 @@ const AdminAssessments = () => {
 
               return (
                 <tr
-                  key={idx}
+                  key={member._id}
                   className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors "
                 >
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                    {indexOfFirstItem + idx + 1}
+                  </td>
                   <td className="px-6 py-4 text-sm font-medium ">
                     <div className="font-bold">
                       {member.firstName === "-" ? (
@@ -239,7 +251,7 @@ const AdminAssessments = () => {
             })}
             {filteredMembers.length === 0 && (
               <tr>
-                <td colSpan={5} className="text-center py-12">
+                <td colSpan={6} className="text-center py-12">
                   <div className="flex flex-col items-center justify-center text-gray-400">
                     <Icon
                       icon="solar:file-remove-linear"
@@ -254,6 +266,14 @@ const AdminAssessments = () => {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        totalItems={filteredMembers.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 };

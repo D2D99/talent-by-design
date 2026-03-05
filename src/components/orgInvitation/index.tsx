@@ -463,28 +463,25 @@ const OrgInvitation = () => {
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
-                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${
-                        isDragging
+                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
                           ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
                           : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
-                      }`}
+                        }`}
                     >
                       <div className="relative mb-3 flex flex-col items-center pointer-events-none">
                         <div
-                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${
-                            isDragging
+                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${isDragging
                               ? "opacity-100"
                               : "opacity-0 group-hover/upload:opacity-100"
-                          }`}
+                            }`}
                         ></div>
                         <Icon
                           icon="logos:csv"
                           width="36"
-                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${
-                            isDragging
+                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${isDragging
                               ? "scale-110"
                               : "group-hover/upload:scale-110"
-                          }`}
+                            }`}
                         />
                       </div>
 
@@ -760,11 +757,10 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${
-                                canDelete
+                              className={`p-2 rounded-full transition-all ${canDelete
                                   ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
-                              }`}
+                                }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -794,7 +790,7 @@ const OrgInvitation = () => {
             </div>
 
             <Pagination
-              totalItems={dataList.length}
+              totalItems={sortedData.length}
               itemsPerPage={itemsPerPage}
               currentPage={currentPage}
               onPageChange={setCurrentPage}
@@ -899,13 +895,13 @@ const OrgInvitation = () => {
                           )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader") && (
-                            <option value="manager">Manager</option>
-                          )}
+                              <option value="manager">Manager</option>
+                            )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader" ||
                             currentUserRole === "manager") && (
-                            <option value="employee">Employee</option>
-                          )}
+                              <option value="employee">Employee</option>
+                            )}
                         </>
                       )}
                     </select>

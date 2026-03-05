@@ -204,13 +204,17 @@ const UserProfile = () => {
   };
 
   if (loading) {
-    return (
-      // <div className="flex justify-center items-center h-screen">
-      //   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#448CD2]"></div>
-      // </div>
-      <SpinnerLoader />
-    );
+    return <SpinnerLoader />;
   }
+
+  const isFormValid =
+    formData.firstName.trim() !== "" &&
+    formData.lastName.trim() !== "" &&
+    formData.dob.trim() !== "" &&
+    formData.phoneNumber.trim() !== "" &&
+    formData.country.trim() !== "" &&
+    formData.state.trim() !== "" &&
+    formData.zipCode.trim() !== "";
 
   return (
     <>
@@ -227,8 +231,8 @@ const UserProfile = () => {
                 setIsEditing(true);
               }
             }}
-            disabled={saving}
-            className="relative overflow-hidden z-0 text-white px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            disabled={saving || (isEditing && !isFormValid)}
+            className="relative overflow-hidden z-0 text-white px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 disabled:pointer-events-none disabled:before:content-[''] disabled:before:bg-transparent"
           >
             {saving ? (
               "Saving..."
@@ -260,10 +264,11 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${isEditing
-                  ? "cursor-pointer bg-white hover:bg-neutral-50"
-                  : "bg-gray-100 cursor-not-allowed pointer-events-none"
-                  }`}
+                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
+                  isEditing
+                    ? "cursor-pointer bg-white hover:bg-neutral-50"
+                    : "bg-gray-100 cursor-not-allowed pointer-events-none"
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -527,7 +532,9 @@ const UserProfile = () => {
               </div>
             )}
 
-            {(formData.role?.toLowerCase() === "leader" || formData.role?.toLowerCase() === "manager" || formData.department) && (
+            {(formData.role?.toLowerCase() === "leader" ||
+              formData.role?.toLowerCase() === "manager" ||
+              formData.department) && (
               <div>
                 <label
                   htmlFor="department"
@@ -545,12 +552,13 @@ const UserProfile = () => {
                     formData.role?.toLowerCase() === "leader" ||
                     formData.role?.toLowerCase() === "manager"
                   }
-                  className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] ${!isEditing ||
+                  className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] ${
+                    !isEditing ||
                     formData.role?.toLowerCase() === "leader" ||
                     formData.role?.toLowerCase() === "manager"
-                    ? "bg-neutral-100 cursor-not-allowed"
-                    : "focus:border-[var(--primary-color)]"
-                    }`}
+                      ? "bg-neutral-100 cursor-not-allowed"
+                      : "focus:border-[var(--primary-color)]"
+                  }`}
                   placeholder="No Department Assigned"
                 />
               </div>

@@ -123,9 +123,8 @@ const OrgUsers = ({
   });
 
   const filteredMembers = sortedMembers.filter((m) => {
-    // Exclude admins and only show accepted members
+    // Exclude admins
     if (hideAdmin && m.role.toLowerCase() === "admin") return false;
-    if (m.status !== "Accept") return false;
 
     // 🚀 ROLE-BASED FILTERING FOR LEADERS/MANAGERS
     if (currentUser) {
@@ -203,9 +202,6 @@ const OrgUsers = ({
   const pendingUsers = nonAdminMembers.filter(
     (m) => m.status === "Pending",
   ).length;
-  const expiredUsers = nonAdminMembers.filter(
-    (m) => m.status === "Expire",
-  ).length;
 
   return (
     <div
@@ -227,7 +223,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                currentUser?.role === "manager"
+                  currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -245,7 +241,7 @@ const OrgUsers = ({
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4 ">
               <div className="flex items-center justify-between">
                 <div>
@@ -300,26 +296,6 @@ const OrgUsers = ({
                   <Icon
                     icon="solar:clock-circle-bold"
                     className="text-yellow-600"
-                    width="24"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-red-600 uppercase tracking-wider">
-                    Expired
-                  </p>
-                  <p className="text-2xl font-bold text-red-600 mt-1">
-                    {expiredUsers}
-                  </p>
-                </div>
-                <div className="p-3 bg-red-200/50 rounded-lg">
-                  <Icon
-                    icon="solar:close-circle-bold"
-                    className="text-red-600"
                     width="24"
                   />
                 </div>
@@ -500,7 +476,7 @@ const OrgUsers = ({
                           Accepted
                         </span>
                       ) : member.status === "Pending" ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-yellow-50 text-yellow-500 border border-yellow-200 inline-flex items-center text-xs justify-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center bg-[#FFF8EE] text-[#E39631] border-[#E39631]">
                           Pending
                         </span>
                       ) : (
@@ -561,15 +537,13 @@ const OrgUsers = ({
         </table>
       </div>
 
-      <div className="mt-6">
-        <Pagination
-          totalItems={filteredMembers.length}
-          itemsPerPage={itemsPerPage}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
-      </div>
+      <Pagination
+        totalItems={filteredMembers.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
 
       {/* Invite Modal */}
       <div

@@ -84,7 +84,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex items-center md:justify-between w-full py-4 flex-wrap gap-3">
+    <div className="flex items-center md:justify-between w-full py-4 flex-wrap gap-3 mt-6">
       {/* Left Side: Items Per Page Selector */}
       <div className="flex items-center gap-2">
         <div className="relative">
