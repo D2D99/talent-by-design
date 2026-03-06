@@ -230,6 +230,7 @@ const AssessmentQuestion = () => {
       if (response.status === 200) {
         localStorage.removeItem(`ans_${token}`);
         localStorage.removeItem(`idx_${token}`);
+
         setIsSubmitted(true);
       }
     } catch (error: unknown) {
@@ -249,8 +250,8 @@ const AssessmentQuestion = () => {
   const progressPercentage =
     questions.length > 0
       ? ((currentIndex + (showFinalForm || userRole !== "employee" ? 1 : 0)) /
-          questions.length) *
-        100
+        questions.length) *
+      100
       : 0;
 
   const isContinueDisabled =
@@ -309,6 +310,7 @@ const AssessmentQuestion = () => {
                 <p className="text-sm font-normal sm:mb-6 mb-3 text-center text-gray-600">
                   Your inputs have been securely recorded.
                 </p>
+
                 <div className="flex justify-center mt-8">
                   <button
                     type="button"
@@ -350,11 +352,10 @@ const AssessmentQuestion = () => {
                         {[1, 2, 3, 4, 5].map((num) => (
                           <div key={num} className="flex flex-col items-center">
                             <label
-                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
-                                selectedValue === num
-                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
-                              }`}
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
+                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                                : "text-[var(--secondary-color)] hover:bg-blue-50"
+                                }`}
                             >
                               {num}
                               <input
@@ -393,11 +394,10 @@ const AssessmentQuestion = () => {
                         {(["A", "B"] as const).map((opt) => (
                           <label
                             key={opt}
-                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${
-                              selectedValue === opt
-                                ? "border-[var(--primary-color)] bg-blue-50"
-                                : ""
-                            }`}
+                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${selectedValue === opt
+                              ? "border-[var(--primary-color)] bg-blue-50"
+                              : ""
+                              }`}
                           >
                             <input
                               className="w-4 h-4 accent-blue-500"
@@ -416,24 +416,23 @@ const AssessmentQuestion = () => {
                     )}
 
                     <div
-                      className={`transition-all duration-300 ${
-                        (!isForcedChoice &&
-                          typeof selectedValue === "number" &&
-                          selectedValue <= 2) ||
+                      className={`transition-all duration-300 ${(!isForcedChoice &&
+                        typeof selectedValue === "number" &&
+                        selectedValue <= 2) ||
                         (isForcedChoice && selectedValue === higherValueOption)
-                          ? "opacity-100 h-auto"
-                          : "opacity-0 h-0 overflow-hidden"
-                      }`}
+                        ? "opacity-100 h-auto"
+                        : "opacity-0 h-0 overflow-hidden"
+                        }`}
                     >
                       <label className="text-sm font-bold block mb-2">
                         {isForcedChoice
                           ? selectedValue === "A"
                             ? currentQuestion?.forcedChoice?.optionA
-                                .insightPrompt
+                              .insightPrompt
                             : currentQuestion?.forcedChoice?.optionB
-                                .insightPrompt
+                              .insightPrompt
                           : currentQuestion?.insightPrompt ||
-                            "Why did you choose this score?"}
+                          "Why did you choose this score?"}
                         <span className="text-black"> *</span>
                       </label>
                       <textarea
@@ -539,7 +538,7 @@ const AssessmentQuestion = () => {
                       : showFinalForm
                         ? "Finish Assessment"
                         : currentIndex === questions.length - 1 &&
-                            userRole !== "employee"
+                          userRole !== "employee"
                           ? "Finish Assessment"
                           : "Continue"}
                     {!isSubmitting && (
