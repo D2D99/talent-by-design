@@ -19,7 +19,7 @@ import OrgAssessmentDetails from "./components/orgAssessmentDetails";
 import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
-import SuperAdminOverview from "./screens/superAdminOverview";
+
 import LeaderOverview from "./screens/leaderOverview";
 import ManagerOverview from "./screens/managerOverview";
 import "react-tooltip/dist/react-tooltip.css";
@@ -33,6 +33,7 @@ import AdminAssessments from "./screens/adminAssessments";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EmployeeReport from "./screens/employeeReport";
+import AdminReport from "./screens/adminReport";
 // import { useTheme } from "./context/useTheme";
 
 function App() {
@@ -50,7 +51,7 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        // theme={theme}
+      // theme={theme}
       />
       <SessionPopup />
 
@@ -91,7 +92,7 @@ function App() {
             <Route path="settings" element={<AccountSetting />} />
 
             {/* Reports */}
-            <Route path="reports/org-head" element={<SuperAdminOverview />} />
+            <Route path="reports/org-head" element={<AdminReport />} />
             <Route path="reports/senior-leader" element={<LeaderOverview />} />
             <Route path="reports/manager" element={<ManagerOverview />} />
             <Route path="reports/employee" element={<EmployeeReport />} />

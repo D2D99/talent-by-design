@@ -8,11 +8,14 @@ import Healthicons from "../../../public/static/img/home/healthicons_i-certifica
 // import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
+import Select from "react-select";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import Sidebar from "../../components/sidebar";
+import { useAuth } from "../../context/useAuth";
+import { Icon } from "@iconify/react";
 import SpeedMeter from "../../components/speedMeter";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
@@ -94,9 +97,25 @@ const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
 };
 
 const EmployeeReport = () => {
+
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
-  const userEmail = searchParams.get("email"); // For guest employees (no User account)
+  const userEmail = searchParams.get("email");
+  const userRole = user?.role?.toLowerCase() || "";
+  const isSuperAdmin = userRole === "superadmin";
+  const isAdmin = userRole === "admin";
+  const isReportPage = location.pathname.includes("reports");
+
+  const [orgs, setOrgs] = useState<string[]>([]);
+  const [depts, setDepts] = useState<string[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
+
+  const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
+  const [selectedDept, setSelectedDept] = useState<string>("");
+  const [selectedMember, setSelectedMember] = useState<any>(null);
 
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -111,6 +130,78 @@ const EmployeeReport = () => {
   );
 
   useEffect(() => {
+    if (isSuperAdmin) {
+      api.get("/auth/organizations").then((res) => setOrgs(res.data.organizations));
+    }
+  }, [isSuperAdmin]);
+
+  useEffect(() => {
+    if (selectedOrg) {
+      api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
+        setDepts(res.data.departments);
+        setMembers(res.data.members);
+      });
+    }
+  }, [selectedOrg]);
+
+  const filteredMembers = members.filter((m) => {
+    const roleLower = m.role.toLowerCase();
+    const matchesDept = !selectedDept || m.department === selectedDept;
+
+    // For Employee report, we only show members with role 'employee'
+    const isAllowedRole = roleLower === "employee";
+
+    return matchesDept && isAllowedRole;
+  });
+
+  const customSelectStyles = {
+    control: (provided: any) => ({
+      ...provided,
+      backgroundColor: '#EDF5FD',
+      border: 'none',
+      borderRadius: '4px',
+      fontSize: '12px',
+      minHeight: '32px',
+      width: '180px',
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: '#E4F0FC'
+      }
+    }),
+    valueContainer: (provided: any) => ({
+      ...provided,
+      padding: '0 8px'
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      fontWeight: '500'
+    }),
+    placeholder: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      fontWeight: '500'
+    }),
+    dropdownIndicator: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      padding: '4px',
+      '&:hover': {
+        color: '#448CD2'
+      }
+    }),
+    indicatorSeparator: () => ({
+      display: 'none'
+    }),
+    menu: (provided: any) => ({
+      ...provided,
+      zIndex: 9999
+    })
+  };
+
+  useEffect(() => {
+    initTWE({ Ripple, Offcanvas, Dropdown });
+
     const fetchReport = async () => {
       try {
         // Build URL: if we have an email (guest employee), use it; else use userId
@@ -141,7 +232,7 @@ const EmployeeReport = () => {
     };
 
     fetchReport();
-  }, [userId]);
+  }, [userId, userEmail]);
 
   // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
   useEffect(() => {
@@ -170,13 +261,14 @@ const EmployeeReport = () => {
   }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
 
   // Re-initialize TW-Elements after data is loaded and components are rendered
-  useEffect(() => {
-    if (!loading) {
-      setTimeout(() => {
-        initTWE({ Ripple, Offcanvas, Dropdown });
-      }, 0);
-    }
-  }, [loading]);
+  // This useEffect is now redundant as initTWE is called in the main fetchReport useEffect
+  // useEffect(() => {
+  //   if (!loading) {
+  //     setTimeout(() => {
+  //       initTWE({ Ripple, Offcanvas, Dropdown });
+  //     }, 0);
+  //   }
+  // }, [loading]);
 
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);
@@ -188,7 +280,7 @@ const EmployeeReport = () => {
     }
   };
 
-  if (loading) return <SpinnerLoader />;
+  if (loading) return <SpinnerLoader />; // Assuming SpinnerLoader is defined elsewhere
 
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
@@ -266,10 +358,92 @@ const EmployeeReport = () => {
       </div>
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_4px_20px_-5px_rgba(75,155,233,0.15)] sm:p-6 p-3 rounded-[12px]">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xl font-extrabold text-[var(--secondary-color)]">
-            Core Assessment Metrics
-          </h3>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
+              {reportData?.userDetails?.firstName || "Employee"}'s Report Highlights
+            </h3>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="group text-white rounded-full py-2.5 sm:scale-100 scale-75 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
+            >
+              Export report
+              <Icon
+                icon="mynaui:arrow-right-circle-solid"
+                width="24"
+                height="24"
+                className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Filters Section */}
+        <div className="flex flex-wrap gap-2 justify-end mt-4 mb-2">
+          {isSuperAdmin && (
+            <Select
+              styles={customSelectStyles}
+              placeholder="Organization"
+              options={orgs.map(o => ({ value: o, label: o }))}
+              value={selectedOrg ? { value: selectedOrg, label: selectedOrg } : null}
+              onChange={(option: any) => {
+                setSelectedOrg(option?.value || "");
+                setSelectedDept("");
+                setSelectedMember(null);
+              }}
+            />
+          )}
+
+          {(isSuperAdmin || isAdmin || isReportPage) && (
+            <>
+              {(isSuperAdmin || isAdmin) && (
+                <Select
+                  styles={customSelectStyles}
+                  placeholder="Business Unit | Department"
+                  options={[
+                    { value: "", label: "All Departments" },
+                    ...depts.map(d => ({ value: d, label: d }))
+                  ]}
+                  value={selectedDept ? { value: selectedDept, label: selectedDept } : null}
+                  onChange={(option: any) => {
+                    setSelectedDept(option?.value || "");
+                    setSelectedMember(null);
+                  }}
+                />
+              )}
+            </>
+          )}
+
+          {(isSuperAdmin || isAdmin || isReportPage) && (
+            <Select
+              styles={customSelectStyles}
+              placeholder="Select Member"
+              options={filteredMembers.map(m => ({
+                value: m._id,
+                label: `${m.name} (${m.role})`,
+                data: m
+              }))}
+              value={selectedMember ? { value: selectedMember._id, label: `${selectedMember.name} (${selectedMember.role})` } : null}
+              onChange={(option: any) => {
+                const m = option?.data;
+                if (m) {
+                  setSelectedMember(m);
+                  const roleMapping: Record<string, string> = {
+                    superadmin: "org-head",
+                    super_admin: "org-head",
+                    admin: "org-head",
+                    leader: "senior-leader",
+                    manager: "manager",
+                    employee: "employee",
+                  };
+                  const reportType = roleMapping[m.role.toLowerCase()] || "employee";
+                  navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`);
+                }
+              }}
+            />
+          )}
         </div>
         <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">

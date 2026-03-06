@@ -12,11 +12,12 @@ import DownArrow from "../../../public/static/img/home/down-arrow.svg";
 import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
 import { useState, useEffect } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { useAuth } from "../../context/useAuth";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
+import Select from "react-select";
 import Sidebar from "../../components/sidebar";
 import Triangle from "../../components/triangle";
 import CircularProgress from "../../components/percentageCircle";
@@ -42,6 +43,85 @@ const LeaderReport = () => {
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
   const isReportPage = location.pathname.includes("reports");
+
+  const [orgs, setOrgs] = useState<string[]>([]);
+  const [depts, setDepts] = useState<string[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
+
+  const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
+  const [selectedDept, setSelectedDept] = useState<string>("");
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+
+  useEffect(() => {
+    if (isSuperAdmin) {
+      api.get("/auth/organizations").then((res) => setOrgs(res.data.organizations));
+    }
+  }, [isSuperAdmin]);
+
+  useEffect(() => {
+    if (selectedOrg) {
+      api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
+        setDepts(res.data.departments);
+        setMembers(res.data.members);
+      });
+    }
+  }, [selectedOrg]);
+
+  const filteredMembers = members.filter((m) => {
+    const roleLower = m.role.toLowerCase();
+    const matchesDept = !selectedDept || m.department === selectedDept;
+    // For Senior Leader report, we only show members with role 'leader'
+    const isAllowedRole = roleLower === "leader";
+
+    return matchesDept && isAllowedRole;
+  });
+
+  const customSelectStyles = {
+    control: (provided: any) => ({
+      ...provided,
+      backgroundColor: '#EDF5FD',
+      border: 'none',
+      borderRadius: '4px',
+      fontSize: '12px',
+      minHeight: '32px',
+      width: '180px',
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: '#E4F0FC'
+      }
+    }),
+    valueContainer: (provided: any) => ({
+      ...provided,
+      padding: '0 8px'
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      fontWeight: '500'
+    }),
+    placeholder: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      fontWeight: '500'
+    }),
+    dropdownIndicator: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      padding: '4px',
+      '&:hover': {
+        color: '#448CD2'
+      }
+    }),
+    indicatorSeparator: () => ({
+      display: 'none'
+    }),
+    menu: (provided: any) => ({
+      ...provided,
+      zIndex: 9999
+    })
+  };
+
+  const navigate = useNavigate(); // Assume useNavigate is available or add import
 
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
@@ -373,198 +453,80 @@ const LeaderReport = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 mb-2 items-center"></div>
-        <div className="mt-4 grid xl:grid-cols-2 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full">
-            <div className="flex justify-end gap-2 flex-wrap ">
-              {isSuperAdmin && (
-                <div className="relative" data-twe-dropdown-ref>
-                  <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                    type="button"
-                    id="dropdownMenuButton1"
-                    data-twe-dropdown-toggle-ref
-                    aria-expanded="false"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
-                  >
-                    Organization
-                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                  <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                    aria-labelledby="dropdownMenuButton1"
-                    data-twe-dropdown-menu-ref
-                  >
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Action
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Another action
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Something else here
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              )}
+        {/* Filters Section */}
+        <div className="flex flex-wrap gap-2 justify-end mt-4 mb-2">
+          {isSuperAdmin && (
+            <Select
+              styles={customSelectStyles}
+              placeholder="Organization"
+              options={orgs.map(o => ({ value: o, label: o }))}
+              value={selectedOrg ? { value: selectedOrg, label: selectedOrg } : null}
+              onChange={(option: any) => {
+                setSelectedOrg(option?.value || "");
+                setSelectedDept("");
+                setSelectedMember(null);
+              }}
+            />
+          )}
+
+          {(isSuperAdmin || isAdmin || isReportPage) && (
+            <>
               {(isSuperAdmin || isAdmin) && (
-                <div className="relative" data-twe-dropdown-ref>
-                  <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                    type="button"
-                    id="dropdownMenuButton1"
-                    data-twe-dropdown-toggle-ref
-                    aria-expanded="false"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
-                  >
-                    Business Unit | Department
-                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                  <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                    aria-labelledby="dropdownMenuButton1"
-                    data-twe-dropdown-menu-ref
-                  >
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Action
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Another action
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Something else here
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                <Select
+                  styles={customSelectStyles}
+                  placeholder="Business Unit | Department"
+                  options={[
+                    { value: "", label: "All Departments" },
+                    ...depts.map(d => ({ value: d, label: d }))
+                  ]}
+                  value={selectedDept ? { value: selectedDept, label: selectedDept } : null}
+                  onChange={(option: any) => {
+                    setSelectedDept(option?.value || "");
+                    setSelectedMember(null);
+                  }}
+                />
               )}
-              {(isSuperAdmin || isAdmin || isReportPage) && (
-                <div className="relative " data-twe-dropdown-ref>
-                  <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[12px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                    type="button"
-                    id="dropdownMenuButton1"
-                    data-twe-dropdown-toggle-ref
-                    aria-expanded="false"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
-                  >
-                    Role
-                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                  <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                    aria-labelledby="dropdownMenuButton1"
-                    data-twe-dropdown-menu-ref
-                  >
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Action
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Another action
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        href="#"
-                        data-twe-dropdown-item-ref
-                      >
-                        Something else here
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
+            </>
+          )}
+
+          {(isSuperAdmin || isAdmin || isReportPage) && (
+            <Select
+              styles={customSelectStyles}
+              placeholder="Select Member"
+              options={filteredMembers.map(m => ({
+                value: m._id,
+                label: `${m.name} (${m.role})`,
+                data: m
+              }))}
+              value={selectedMember ? { value: selectedMember._id, label: `${selectedMember.name} (${selectedMember.role})` } : null}
+              onChange={(option: any) => {
+                const m = option?.data;
+                if (m) {
+                  setSelectedMember(m);
+                  const roleMapping: Record<string, string> = {
+                    superadmin: "org-head",
+                    super_admin: "org-head",
+                    admin: "org-head",
+                    leader: "senior-leader",
+                    manager: "manager",
+                    employee: "employee",
+                  };
+                  const reportType = roleMapping[m.role.toLowerCase()] || "employee";
+                  navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`);
+                }
+              }}
+            />
+          )}
+        </div>
+
+        <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+              Organizational Health
+            </h2>
             <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
               <div
                 style={{
-                  // minHeight: "100vh",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",

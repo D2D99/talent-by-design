@@ -8,11 +8,13 @@ import Healthicons from "../../../public/static/img/home/healthicons_i-certifica
 // import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
+import Select from "react-select";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import Sidebar from "../../components/sidebar";
+import { useAuth } from "../../context/useAuth";
 import ScoreBar from "../../components/scoreBar";
 import SpeedMeter from "../../components/speedMeter";
 import MultiLineChart from "../../charts/multiLineChart";
@@ -36,6 +38,91 @@ const ManagerReport = () => {
   // setChartData
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
 
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userRole = user?.role?.toLowerCase() || "";
+  const isSuperAdmin = userRole === "superadmin";
+  const isAdmin = userRole === "admin";
+  const isReportPage = location.pathname.includes("reports");
+
+  const [orgs, setOrgs] = useState<string[]>([]);
+  const [depts, setDepts] = useState<string[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
+
+  const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
+  const [selectedDept, setSelectedDept] = useState<string>("");
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+
+  useEffect(() => {
+    if (isSuperAdmin) {
+      api.get("/auth/organizations").then((res) => setOrgs(res.data.organizations));
+    }
+  }, [isSuperAdmin]);
+
+  useEffect(() => {
+    if (selectedOrg) {
+      api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
+        setDepts(res.data.departments);
+        setMembers(res.data.members);
+      });
+    }
+  }, [selectedOrg]);
+
+  const filteredMembers = members.filter((m) => {
+    const roleLower = m.role.toLowerCase();
+    const matchesDept = !selectedDept || m.department === selectedDept;
+    // For Manager report, we only show members with role 'manager'
+    const isAllowedRole = roleLower === "manager";
+
+    return matchesDept && isAllowedRole;
+  });
+
+  const customSelectStyles = {
+    control: (provided: any) => ({
+      ...provided,
+      backgroundColor: '#EDF5FD',
+      border: 'none',
+      borderRadius: '4px',
+      fontSize: '12px',
+      minHeight: '32px',
+      width: '180px',
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: '#E4F0FC'
+      }
+    }),
+    valueContainer: (provided: any) => ({
+      ...provided,
+      padding: '0 8px'
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      fontWeight: '500'
+    }),
+    placeholder: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      fontWeight: '500'
+    }),
+    dropdownIndicator: (provided: any) => ({
+      ...provided,
+      color: '#676767',
+      padding: '4px',
+      '&:hover': {
+        color: '#448CD2'
+      }
+    }),
+    indicatorSeparator: () => ({
+      display: 'none'
+    }),
+    menu: (provided: any) => ({
+      ...provided,
+      zIndex: 9999
+    })
+  };
+
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
 
@@ -58,7 +145,7 @@ const ManagerReport = () => {
     };
 
     fetchReport();
-  }, [userId]);
+  }, [userId, userEmail]);
 
   // Handle label selection from Radar Chart
   const handleRadarChartSelection = (label: string) => {
@@ -290,7 +377,7 @@ const ManagerReport = () => {
       </div> */}
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center flex-wrap gap-2 md:justify-between justify-center">
           <div>
             <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
               {userData?.firstName}'s Insights (Manager View)
@@ -310,6 +397,72 @@ const ManagerReport = () => {
               />
             </button>
           </div>
+        </div>
+
+        {/* Filters Section */}
+        <div className="flex flex-wrap gap-2 justify-end mt-4 mb-2">
+          {isSuperAdmin && (
+            <Select
+              styles={customSelectStyles}
+              placeholder="Organization"
+              options={orgs.map(o => ({ value: o, label: o }))}
+              value={selectedOrg ? { value: selectedOrg, label: selectedOrg } : null}
+              onChange={(option: any) => {
+                setSelectedOrg(option?.value || "");
+                setSelectedDept("");
+                setSelectedMember(null);
+              }}
+            />
+          )}
+
+          {(isSuperAdmin || isAdmin || isReportPage) && (
+            <>
+              {(isSuperAdmin || isAdmin) && (
+                <Select
+                  styles={customSelectStyles}
+                  placeholder="Business Unit | Department"
+                  options={[
+                    { value: "", label: "All Departments" },
+                    ...depts.map(d => ({ value: d, label: d }))
+                  ]}
+                  value={selectedDept ? { value: selectedDept, label: selectedDept } : null}
+                  onChange={(option: any) => {
+                    setSelectedDept(option?.value || "");
+                    setSelectedMember(null);
+                  }}
+                />
+              )}
+            </>
+          )}
+
+          {(isSuperAdmin || isAdmin || isReportPage) && (
+            <Select
+              styles={customSelectStyles}
+              placeholder="Select Member"
+              options={filteredMembers.map(m => ({
+                value: m._id,
+                label: `${m.name} (${m.role})`,
+                data: m
+              }))}
+              value={selectedMember ? { value: selectedMember._id, label: `${selectedMember.name} (${selectedMember.role})` } : null}
+              onChange={(option: any) => {
+                const m = option?.data;
+                if (m) {
+                  setSelectedMember(m);
+                  const roleMapping: Record<string, string> = {
+                    superadmin: "org-head",
+                    super_admin: "org-head",
+                    admin: "org-head",
+                    leader: "senior-leader",
+                    manager: "manager",
+                    employee: "employee",
+                  };
+                  const reportType = roleMapping[m.role.toLowerCase()] || "employee";
+                  navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`);
+                }
+              }}
+            />
+          )}
         </div>
         <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
           <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">

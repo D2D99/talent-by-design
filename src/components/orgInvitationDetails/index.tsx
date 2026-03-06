@@ -15,6 +15,7 @@ interface UserMember {
   department?: string;
   createdAt: string;
   status: string;
+  assessmentStatus?: string;
 }
 
 interface OrgDetails {
@@ -41,6 +42,18 @@ const OrgInvitationDetails = () => {
     key: keyof UserMember;
     direction: "asc" | "desc";
   } | null>(null);
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this invitation?"))
+      return;
+    try {
+      await api.delete(`auth/invitation/${id}`);
+      toast.success("Invitation deleted");
+      fetchMembers();
+    } catch (err) {
+      toast.error("Failed to delete invitation");
+    }
+  };
 
   const fetchMembers = useCallback(async () => {
     setIsLoading(true);
@@ -470,6 +483,7 @@ const OrgInvitationDetails = () => {
                 </div>
               </th>
               <th className="px-6 py-4 font-semibold">Invitation Status</th>
+              <th className="px-6 py-4 font-semibold">Assessment</th>
               <th className="px-6 text-center py-4 font-semibold">Action</th>
             </tr>
           </thead>
@@ -506,13 +520,53 @@ const OrgInvitationDetails = () => {
                   <td className="px-6 py-4">
                     {renderStatusBadge(member.status)}
                   </td>
+                  <td className="px-6 py-4">
+                    {member.assessmentStatus === "Completed" ? (
+                      <span className="bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center">
+                        Completed
+                      </span>
+                    ) : (
+                      <span className="bg-gray-50 text-gray-400 border-gray-200 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center">
+                        {member.assessmentStatus || "Not Started"}
+                      </span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-center">
-                    <button
-                      disabled
-                      className="p-2 rounded-full transition-all text-gray-300 cursor-not-allowed opacity-50"
-                    >
-                      <Icon icon="si:bin-line" width="16" height="16" />
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      {member.assessmentStatus === "Completed" ? (
+                        <button
+                          onClick={() => {
+                            const roleMapping: Record<string, string> = {
+                              superAdmin: "org-head",
+                              admin: "org-head",
+                              leader: "senior-leader",
+                              manager: "manager",
+                              employee: "employee",
+                            };
+                            const reportType =
+                              roleMapping[member.role.toLowerCase()] ||
+                              "employee";
+                            navigate(`/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`);
+                          }}
+                          className="p-2 rounded-full text-[#448CD2] hover:bg-blue-50 transition-all"
+                          title="View Report"
+                        >
+                          <Icon icon="solar:eye-bold" width="18" height="18" />
+                        </button>
+                      ) : null}
+
+                      <button
+                        disabled={member.status !== "Expire"}
+                        onClick={() => handleDelete(member._id)}
+                        className={`p-2 rounded-full transition-all ${member.status === "Expire"
+                          ? "text-red-600 hover:bg-red-50"
+                          : "text-gray-300 cursor-not-allowed opacity-50"
+                          }`}
+                        title="Delete Invitation"
+                      >
+                        <Icon icon="si:bin-line" width="16" height="16" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
