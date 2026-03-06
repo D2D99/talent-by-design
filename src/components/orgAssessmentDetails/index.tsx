@@ -487,7 +487,7 @@ const OrgAssessmentDetails = () => {
               <th className="px-6 py-4 text-nowrap font-semibold">
                 Assessment Status
               </th>
-              <th className="px-6 py-4 text-center font-semibold">Action</th>
+              <th className="px-6 py-4 text-center font-semibold">Report</th>
             </tr>
           </thead>
           <tbody>

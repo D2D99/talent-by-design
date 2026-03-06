@@ -129,7 +129,7 @@ const Header = () => {
                       // data-twe-ripple-init
                       // data-twe-ripple-color="light"
                     >
-                      {isSessionActive ? "Go to Dashboard" : "Login"}
+                      {isSessionActive ? "Access POD-360™" : "Login"}
                       <Icon
                         icon="mynaui:arrow-right-circle-solid"
                         width="20"
@@ -152,7 +152,7 @@ const Header = () => {
                 // data-twe-ripple-init
                 // data-twe-ripple-color="light"
               >
-                {isSessionActive ? "Go to Dashboard" : "Login"}
+                {isSessionActive ? "Access POD-360™" : "Login"}
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="20"
