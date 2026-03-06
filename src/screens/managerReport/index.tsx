@@ -769,7 +769,7 @@ const ManagerReport = () => {
               <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
                 <Triangle data={triangleData} />
               </div>
-              <div className="flex flex-col justify-center gap-3 shrink-0 max-w-[50%] max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
                 {detailedPods?.insights?.modelDescription ? (
                   detailedPods.insights.modelDescription
                     .split(/[•\n\r]/)
