@@ -759,3 +759,7 @@ a {
 #text-white {
   color: #fff !important;
 }
+
+.select-search > div {
+  border: 1px solid #e8e8e8;
+}

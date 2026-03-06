@@ -226,7 +226,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                  currentUser?.role === "manager"
+                currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -439,7 +439,7 @@ const OrgUsers = ({
               <th className="px-6 py-4 font-semibold">Added On</th>
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold">Status</th>
-              <th className="px-6 py-4 font-semibold">Score</th>
+              {/* <th className="px-6 py-4 font-semibold">Score</th> */}
               <th className="px-6 py-4 text-center font-semibold">Report</th>
             </tr>
           </thead>
@@ -490,24 +490,32 @@ const OrgUsers = ({
                       )}
                     </td>
                   )}
-                  <td className="px-6 py-4">
+                  {/* <td className="px-6 py-4">
                     {member.assessmentStatus === "Completed" ? (
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-gray-800">{member.lastScore}%</span>
+                        <span className="font-bold text-gray-800">
+                          {member.lastScore}%
+                        </span>
                         {member.classification === "High" && (
-                          <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">High</span>
+                          <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+                            High
+                          </span>
                         )}
                         {member.classification === "Medium" && (
-                          <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Med</span>
+                          <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+                            Med
+                          </span>
                         )}
                         {member.classification === "Low" && (
-                          <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Low</span>
+                          <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+                            Low
+                          </span>
                         )}
                       </div>
                     ) : (
                       <span className="text-gray-300">—</span>
                     )}
-                  </td>
+                  </td> */}
                   <td className="px-6 py-4 text-center">
                     {member.assessmentStatus === "Completed" ? (
                       <button
@@ -523,7 +531,9 @@ const OrgUsers = ({
                             roleMapping[member.role.toLowerCase()] ||
                             "employee";
                           // Pass email so backend can find guest employees (no User account)
-                          navigate(`/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`);
+                          navigate(
+                            `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`,
+                          );
                         }}
                         className="text-gray-400 hover:text-[#448CD2] transition-colors"
                         title="View Report"

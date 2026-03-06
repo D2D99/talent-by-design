@@ -40,7 +40,10 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="">
+                <a
+                  href="https://www.linkedin.com/company/tbd-collective-inc/"
+                  target="_blank"
+                >
                   <img src={Linkedin} alt="linkedin icon" />
                 </a>
               </li>
