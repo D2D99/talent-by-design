@@ -520,8 +520,8 @@ const AdminReport = () => {
                 </p>
               </div>
             </div>
-            <div className="flex-1 flex flex-row px-2 items-center justify-center py-4 w-full gap-4">
-              <div className="flex-1 max-w-[250px] flex items-center justify-center">
+            <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
+              <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
                 <Triangle data={triangleData} />
               </div>
               <div className="flex flex-col justify-center gap-3 shrink-0 max-w-[50%] max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
