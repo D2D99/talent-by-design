@@ -54,7 +54,9 @@ const LeaderReport = () => {
 
   useEffect(() => {
     if (isSuperAdmin) {
-      api.get("/auth/organizations").then((res) => setOrgs(res.data.organizations));
+      api
+        .get("/auth/organizations")
+        .then((res) => setOrgs(res.data.organizations));
     }
   }, [isSuperAdmin]);
 
@@ -76,50 +78,50 @@ const LeaderReport = () => {
     return matchesDept && isAllowedRole;
   });
 
-  const customSelectStyles = {
-    control: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#EDF5FD',
-      border: 'none',
-      borderRadius: '4px',
-      fontSize: '12px',
-      minHeight: '32px',
-      width: '180px',
-      boxShadow: 'none',
-      '&:hover': {
-        backgroundColor: '#E4F0FC'
-      }
-    }),
-    valueContainer: (provided: any) => ({
-      ...provided,
-      padding: '0 8px'
-    }),
-    singleValue: (provided: any) => ({
-      ...provided,
-      color: '#676767',
-      fontWeight: '500'
-    }),
-    placeholder: (provided: any) => ({
-      ...provided,
-      color: '#676767',
-      fontWeight: '500'
-    }),
-    dropdownIndicator: (provided: any) => ({
-      ...provided,
-      color: '#676767',
-      padding: '4px',
-      '&:hover': {
-        color: '#448CD2'
-      }
-    }),
-    indicatorSeparator: () => ({
-      display: 'none'
-    }),
-    menu: (provided: any) => ({
-      ...provided,
-      zIndex: 9999
-    })
-  };
+  // const customSelectStyles = {
+  //   control: (provided: any) => ({
+  //     ...provided,
+  //     backgroundColor: '#EDF5FD',
+  //     border: 'none',
+  //     borderRadius: '4px',
+  //     fontSize: '12px',
+  //     minHeight: '32px',
+  //     width: '180px',
+  //     boxShadow: 'none',
+  //     '&:hover': {
+  //       backgroundColor: '#E4F0FC'
+  //     }
+  //   }),
+  //   valueContainer: (provided: any) => ({
+  //     ...provided,
+  //     padding: '0 8px'
+  //   }),
+  //   singleValue: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     fontWeight: '500'
+  //   }),
+  //   placeholder: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     fontWeight: '500'
+  //   }),
+  //   dropdownIndicator: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     padding: '4px',
+  //     '&:hover': {
+  //       color: '#448CD2'
+  //     }
+  //   }),
+  //   indicatorSeparator: () => ({
+  //     display: 'none'
+  //   }),
+  //   menu: (provided: any) => ({
+  //     ...provided,
+  //     zIndex: 9999
+  //   })
+  // };
 
   const navigate = useNavigate(); // Assume useNavigate is available or add import
 
@@ -202,7 +204,7 @@ const LeaderReport = () => {
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
@@ -249,17 +251,16 @@ const LeaderReport = () => {
     ? [detailedPods.insights.mainText]
     : ["Processing insights..."];
 
-  const displayKRs = detailedPods?.objectives?.items?.map(
-    (text: string, i: number) => ({
+  const displayKRs =
+    detailedPods?.objectives?.items?.map((text: string, i: number) => ({
       label: `KR${i + 1}`,
       text: text,
       value: detailedPods.objectives.progress || 0,
-    }),
-  ) || [];
+    })) || [];
 
-  const displayRecommendations =
-    detailedPods?.recommendations?.items ||
-    ["No specific recommendations available for this domain yet."];
+  const displayRecommendations = detailedPods?.recommendations?.items || [
+    "No specific recommendations available for this domain yet.",
+  ];
 
   const topPriorities = Object.entries(reportData?.scores?.domains || {})
     .sort(([, a]: any, [, b]: any) => a.score - b.score)
@@ -301,9 +302,9 @@ const LeaderReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / mResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -311,9 +312,9 @@ const LeaderReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / tResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -321,9 +322,9 @@ const LeaderReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / pResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -343,9 +344,9 @@ const LeaderReport = () => {
       const score =
         responses.length > 0
           ? responses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / responses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / responses.length
           : 0;
 
       const labelMap: any = {
@@ -440,7 +441,7 @@ const LeaderReport = () => {
           <div>
             <button
               type="button"
-              className="group text-white rounded-full py-2.5 sm:scale-100 scale-75 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
+              className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-5 pe-2.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             >
               Export report
               <Icon
@@ -454,13 +455,18 @@ const LeaderReport = () => {
         </div>
 
         {/* Filters Section */}
-        <div className="flex flex-wrap gap-2 justify-end mt-4 mb-2">
+        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
+          <div className="xl:block hidden"></div>
+
           {isSuperAdmin && (
             <Select
-              styles={customSelectStyles}
+              // styles={customSelectStyles}
+              className="select-search"
               placeholder="Organization"
-              options={orgs.map(o => ({ value: o, label: o }))}
-              value={selectedOrg ? { value: selectedOrg, label: selectedOrg } : null}
+              options={orgs.map((o) => ({ value: o, label: o }))}
+              value={
+                selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
+              }
               onChange={(option: any) => {
                 setSelectedOrg(option?.value || "");
                 setSelectedDept("");
@@ -473,13 +479,18 @@ const LeaderReport = () => {
             <>
               {(isSuperAdmin || isAdmin) && (
                 <Select
-                  styles={customSelectStyles}
+                  // styles={customSelectStyles}
+                  className="select-search"
                   placeholder="Business Unit | Department"
                   options={[
                     { value: "", label: "All Departments" },
-                    ...depts.map(d => ({ value: d, label: d }))
+                    ...depts.map((d) => ({ value: d, label: d })),
                   ]}
-                  value={selectedDept ? { value: selectedDept, label: selectedDept } : null}
+                  value={
+                    selectedDept
+                      ? { value: selectedDept, label: selectedDept }
+                      : null
+                  }
                   onChange={(option: any) => {
                     setSelectedDept(option?.value || "");
                     setSelectedMember(null);
@@ -491,14 +502,22 @@ const LeaderReport = () => {
 
           {(isSuperAdmin || isAdmin || isReportPage) && (
             <Select
-              styles={customSelectStyles}
+              // styles={customSelectStyles}
+              className="select-search"
               placeholder="Select Member"
-              options={filteredMembers.map(m => ({
+              options={filteredMembers.map((m) => ({
                 value: m._id,
                 label: `${m.name} (${m.role})`,
-                data: m
+                data: m,
               }))}
-              value={selectedMember ? { value: selectedMember._id, label: `${selectedMember.name} (${selectedMember.role})` } : null}
+              value={
+                selectedMember
+                  ? {
+                      value: selectedMember._id,
+                      label: `${selectedMember.name} (${selectedMember.role})`,
+                    }
+                  : null
+              }
               onChange={(option: any) => {
                 const m = option?.data;
                 if (m) {
@@ -511,8 +530,11 @@ const LeaderReport = () => {
                     manager: "manager",
                     employee: "employee",
                   };
-                  const reportType = roleMapping[m.role.toLowerCase()] || "employee";
-                  navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`);
+                  const reportType =
+                    roleMapping[m.role.toLowerCase()] || "employee";
+                  navigate(
+                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`,
+                  );
                 }
               }}
             />
@@ -601,7 +623,11 @@ const LeaderReport = () => {
                     .filter((item: string) => item.length > 0)
                     .map((bullet: string, idx: number) => (
                       <div key={idx} className="flex items-start gap-2">
-                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0 mt-0.5" />
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0 mt-0.5"
+                        />
                         <span className="text-sm font-medium text-[#64748B] leading-snug">
                           {bullet}
                         </span>
@@ -610,20 +636,44 @@ const LeaderReport = () => {
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
-                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                      <span className="text-sm font-medium text-[#64748B]">Capability</span>
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Capability
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                      <span className="text-sm font-medium text-[#64748B]">Engagement</span>
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Engagement
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                      <span className="text-sm font-medium text-[#64748B]">Confidence</span>
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Confidence
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                      <span className="text-sm font-medium text-[#64748B]">Change resilience</span>
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Change resilience
+                      </span>
                     </div>
                   </>
                 )}
@@ -1075,7 +1125,8 @@ const LeaderReport = () => {
                   Objectives and Key Results
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  {detailedPods?.objectives?.subtitle || "Cultivate high-trust, psychologically safe leadership"}
+                  {detailedPods?.objectives?.subtitle ||
+                    "Cultivate high-trust, psychologically safe leadership"}
                 </p>
               </div>
               <div>
@@ -1104,7 +1155,11 @@ const LeaderReport = () => {
                   </div>
                 </div>
               ))}
-              {displayKRs.length === 0 && <p className="text-sm text-gray-400 italic">Strategic key results are being generated.</p>}
+              {displayKRs.length === 0 && (
+                <p className="text-sm text-gray-400 italic">
+                  Strategic key results are being generated.
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -1122,19 +1177,25 @@ const LeaderReport = () => {
               </div>
             </div>
             <ul className="mt-4 space-y-2">
-              {[detailedPods?.insights?.modelDescription].filter(Boolean).map((tip: string, idx: number) => (
-                <li key={idx} className="feature-list flex gap-2">
-                  <img
-                    src={IconStar}
-                    alt="icon"
-                    className="mt-1 w-4 h-4 shrink-0"
-                  />
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    {tip}
-                  </span>
+              {[detailedPods?.insights?.modelDescription]
+                .filter(Boolean)
+                .map((tip: string, idx: number) => (
+                  <li key={idx} className="feature-list flex gap-2">
+                    <img
+                      src={IconStar}
+                      alt="icon"
+                      className="mt-1 w-4 h-4 shrink-0"
+                    />
+                    <span className="text-sm text-[var(--secondary-color)] font-normal">
+                      {tip}
+                    </span>
+                  </li>
+                ))}
+              {!detailedPods?.insights?.modelDescription && (
+                <li className="text-xs text-gray-400">
+                  Strategic model application details will appear here.
                 </li>
-              ))}
-              {!detailedPods?.insights?.modelDescription && <li className="text-xs text-gray-400">Strategic model application details will appear here.</li>}
+              )}
             </ul>
             <div></div>
           </div>

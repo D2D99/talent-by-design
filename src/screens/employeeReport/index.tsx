@@ -97,7 +97,6 @@ const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
 };
 
 const EmployeeReport = () => {
-
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -121,7 +120,6 @@ const EmployeeReport = () => {
   const [loading, setLoading] = useState(true);
   const [detailedPods, setDetailedPods] = useState<any>(null);
 
-
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] =
     useState<string>("People Potential");
@@ -131,7 +129,9 @@ const EmployeeReport = () => {
 
   useEffect(() => {
     if (isSuperAdmin) {
-      api.get("/auth/organizations").then((res) => setOrgs(res.data.organizations));
+      api
+        .get("/auth/organizations")
+        .then((res) => setOrgs(res.data.organizations));
     }
   }, [isSuperAdmin]);
 
@@ -154,50 +154,50 @@ const EmployeeReport = () => {
     return matchesDept && isAllowedRole;
   });
 
-  const customSelectStyles = {
-    control: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#EDF5FD',
-      border: 'none',
-      borderRadius: '4px',
-      fontSize: '12px',
-      minHeight: '32px',
-      width: '180px',
-      boxShadow: 'none',
-      '&:hover': {
-        backgroundColor: '#E4F0FC'
-      }
-    }),
-    valueContainer: (provided: any) => ({
-      ...provided,
-      padding: '0 8px'
-    }),
-    singleValue: (provided: any) => ({
-      ...provided,
-      color: '#676767',
-      fontWeight: '500'
-    }),
-    placeholder: (provided: any) => ({
-      ...provided,
-      color: '#676767',
-      fontWeight: '500'
-    }),
-    dropdownIndicator: (provided: any) => ({
-      ...provided,
-      color: '#676767',
-      padding: '4px',
-      '&:hover': {
-        color: '#448CD2'
-      }
-    }),
-    indicatorSeparator: () => ({
-      display: 'none'
-    }),
-    menu: (provided: any) => ({
-      ...provided,
-      zIndex: 9999
-    })
-  };
+  // const customSelectStyles = {
+  //   control: (provided: any) => ({
+  //     ...provided,
+  //     backgroundColor: '#EDF5FD',
+  //     border: 'none',
+  //     borderRadius: '4px',
+  //     fontSize: '12px',
+  //     minHeight: '32px',
+  //     width: '180px',
+  //     boxShadow: 'none',
+  //     '&:hover': {
+  //       backgroundColor: '#E4F0FC'
+  //     }
+  //   }),
+  //   valueContainer: (provided: any) => ({
+  //     ...provided,
+  //     padding: '0 8px'
+  //   }),
+  //   singleValue: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     fontWeight: '500'
+  //   }),
+  //   placeholder: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     fontWeight: '500'
+  //   }),
+  //   dropdownIndicator: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     padding: '4px',
+  //     '&:hover': {
+  //       color: '#448CD2'
+  //     }
+  //   }),
+  //   indicatorSeparator: () => ({
+  //     display: 'none'
+  //   }),
+  //   menu: (provided: any) => ({
+  //     ...provided,
+  //     zIndex: 9999
+  //   })
+  // };
 
   useEffect(() => {
     initTWE({ Ripple, Offcanvas, Dropdown });
@@ -237,7 +237,6 @@ const EmployeeReport = () => {
   // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
   useEffect(() => {
     const fetchDetailedPods = async () => {
-
       try {
         // Build URL: pass email for guest employees, and include subdomain
         let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
@@ -251,7 +250,6 @@ const EmployeeReport = () => {
       } catch (error) {
         console.error("Failed to fetch detailed pods:", error);
       } finally {
-
       }
     };
 
@@ -299,7 +297,7 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
@@ -307,17 +305,16 @@ const EmployeeReport = () => {
     ? [detailedPods.insights.mainText]
     : ["Processing insights..."];
 
-  const displayKRs = detailedPods?.objectives?.items?.map(
-    (text: string, i: number) => ({
+  const displayKRs =
+    detailedPods?.objectives?.items?.map((text: string, i: number) => ({
       label: `KR${i + 1}`,
       text: text,
       value: detailedPods.objectives.progress || 0,
-    }),
-  ) || [];
+    })) || [];
 
-  const displayRecommendations =
-    detailedPods?.recommendations?.items ||
-    ["No specific recommendations available for this domain yet."];
+  const displayRecommendations = detailedPods?.recommendations?.items || [
+    "No specific recommendations available for this domain yet.",
+  ];
 
   return (
     <div>
@@ -358,36 +355,40 @@ const EmployeeReport = () => {
       </div>
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_4px_20px_-5px_rgba(75,155,233,0.15)] sm:p-6 p-3 rounded-[12px]">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
-              {reportData?.userDetails?.firstName || "Employee"}'s Report Highlights
+              {reportData?.userDetails?.firstName || "Employee"}'s Report
+              Highlights
             </h3>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="group text-white rounded-full py-2.5 sm:scale-100 scale-75 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
-            >
-              Export report
-              <Icon
-                icon="mynaui:arrow-right-circle-solid"
-                width="24"
-                height="24"
-                className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-              />
-            </button>
-          </div>
+          <button
+            type="button"
+            className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-5 pe-2.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+          >
+            Export report
+            <Icon
+              icon="mynaui:arrow-right-circle-solid"
+              width="24"
+              height="24"
+              className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+            />
+          </button>
         </div>
 
         {/* Filters Section */}
-        <div className="flex flex-wrap gap-2 justify-end mt-4 mb-2">
+        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
+          <div className="xl:block hidden"></div>
+
           {isSuperAdmin && (
             <Select
-              styles={customSelectStyles}
+              // styles={customSelectStyles}
+              className="select-search"
               placeholder="Organization"
-              options={orgs.map(o => ({ value: o, label: o }))}
-              value={selectedOrg ? { value: selectedOrg, label: selectedOrg } : null}
+              options={orgs.map((o) => ({ value: o, label: o }))}
+              value={
+                selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
+              }
               onChange={(option: any) => {
                 setSelectedOrg(option?.value || "");
                 setSelectedDept("");
@@ -400,13 +401,18 @@ const EmployeeReport = () => {
             <>
               {(isSuperAdmin || isAdmin) && (
                 <Select
-                  styles={customSelectStyles}
+                  // styles={customSelectStyles}
+                  className="select-search"
                   placeholder="Business Unit | Department"
                   options={[
                     { value: "", label: "All Departments" },
-                    ...depts.map(d => ({ value: d, label: d }))
+                    ...depts.map((d) => ({ value: d, label: d })),
                   ]}
-                  value={selectedDept ? { value: selectedDept, label: selectedDept } : null}
+                  value={
+                    selectedDept
+                      ? { value: selectedDept, label: selectedDept }
+                      : null
+                  }
                   onChange={(option: any) => {
                     setSelectedDept(option?.value || "");
                     setSelectedMember(null);
@@ -418,14 +424,22 @@ const EmployeeReport = () => {
 
           {(isSuperAdmin || isAdmin || isReportPage) && (
             <Select
-              styles={customSelectStyles}
+              // styles={customSelectStyles}
+              className="select-search"
               placeholder="Select Member"
-              options={filteredMembers.map(m => ({
+              options={filteredMembers.map((m) => ({
                 value: m._id,
                 label: `${m.name} (${m.role})`,
-                data: m
+                data: m,
               }))}
-              value={selectedMember ? { value: selectedMember._id, label: `${selectedMember.name} (${selectedMember.role})` } : null}
+              value={
+                selectedMember
+                  ? {
+                      value: selectedMember._id,
+                      label: `${selectedMember.name} (${selectedMember.role})`,
+                    }
+                  : null
+              }
               onChange={(option: any) => {
                 const m = option?.data;
                 if (m) {
@@ -438,8 +452,11 @@ const EmployeeReport = () => {
                     manager: "manager",
                     employee: "employee",
                   };
-                  const reportType = roleMapping[m.role.toLowerCase()] || "employee";
-                  navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`);
+                  const reportType =
+                    roleMapping[m.role.toLowerCase()] || "employee";
+                  navigate(
+                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`,
+                  );
                 }
               }}
             />
@@ -626,7 +643,11 @@ const EmployeeReport = () => {
                       .filter((item: string) => item.length > 0)
                       .map((bullet: string, idx: number) => (
                         <div key={idx} className="flex items-start gap-2">
-                          <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0 mt-0.5" />
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0 mt-0.5"
+                          />
                           <span className="text-sm font-medium text-[#64748B] leading-snug">
                             {bullet}
                           </span>
@@ -635,20 +656,44 @@ const EmployeeReport = () => {
                   ) : (
                     <>
                       <div className="flex items-center gap-2">
-                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                        <span className="text-sm font-medium text-[#64748B]">Capability</span>
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Capability
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                        <span className="text-sm font-medium text-[#64748B]">Engagement</span>
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Engagement
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                        <span className="text-sm font-medium text-[#64748B]">Confidence</span>
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Confidence
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0" />
-                        <span className="text-sm font-medium text-[#64748B]">Change resilience</span>
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Change resilience
+                        </span>
                       </div>
                     </>
                   )}
@@ -718,7 +763,8 @@ const EmployeeReport = () => {
                   Objectives and Key Results
                 </h3>
                 <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  {detailedPods?.objectives?.subtitle || "Develop essential leadership and EI skills"}
+                  {detailedPods?.objectives?.subtitle ||
+                    "Develop essential leadership and EI skills"}
                 </p>
               </div>
               <div>
@@ -747,7 +793,11 @@ const EmployeeReport = () => {
                   </div>
                 </div>
               ))}
-              {displayKRs.length === 0 && <p className="text-sm text-gray-400 italic">No specific key results available for this score level.</p>}
+              {displayKRs.length === 0 && (
+                <p className="text-sm text-gray-400 italic">
+                  No specific key results available for this score level.
+                </p>
+              )}
             </div>
             <div></div>
           </div>
