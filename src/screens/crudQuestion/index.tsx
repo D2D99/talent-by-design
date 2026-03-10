@@ -5,6 +5,8 @@ import { Collapse, Tab, Modal, Ripple, initTWE } from "tw-elements";
 import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { questionService } from "../../services/questionService";
+import { organizationService } from "../../services/organizationService";
+import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
 
 const ProgressIcon = "/static/img/home/progress-icon.png";
@@ -226,9 +228,15 @@ const getGeneratedCodePreview = (
 };
 
 const CrudQuestion = () => {
+  const { user } = useAuth();
+  // const isAdmin = user?.role === "admin";
+  const isSuperAdmin = user?.role === "superAdmin";
+
   // 1. STATE MANAGEMENT
   const [allQuestions, setAllQuestions] = useState<Question[]>([]); // Store all fetched questions
   const [loading, setLoading] = useState(false);
+  const [organizations, setOrganizations] = useState<string[]>([]);
+  const [selectedOrg, setSelectedOrg] = useState<string | null>(null); // null means Master Template
 
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null,
@@ -499,8 +507,13 @@ const CrudQuestion = () => {
   const fetchQuestions = async () => {
     setLoading(true);
     try {
-      const data = await questionService.getAllQuestions();
+      const data = await questionService.getAllQuestions({
+        orgName: selectedOrg
+      });
       setAllQuestions(data);
+      if (!filterRole) {
+        setFilterRole("leader");
+      }
     } catch (err) {
       // Optional: Don't show global error if not critical
     } finally {
@@ -510,7 +523,14 @@ const CrudQuestion = () => {
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, [selectedOrg]);
+
+  // Fetch organizations for SuperAdmin
+  useEffect(() => {
+    if (isSuperAdmin) {
+      organizationService.getAllOrganizations().then(setOrganizations).catch(console.error);
+    }
+  }, [isSuperAdmin]);
 
   useEffect(() => {
     if (displayGroups.length > 0) {
@@ -729,21 +749,21 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                  optionA: {
-                    label: form.optionALabel,
-                    insightPrompt: form.optionAPrompt,
-                  },
-                  optionB: {
-                    label: form.optionBLabel,
-                    insightPrompt: form.optionBPrompt,
-                  },
-                  higherValueOption: form.higherValueOption as "A" | "B",
-                }
+                optionA: {
+                  label: form.optionALabel,
+                  insightPrompt: form.optionAPrompt,
+                },
+                optionB: {
+                  label: form.optionBLabel,
+                  insightPrompt: form.optionBPrompt,
+                },
+                higherValueOption: form.higherValueOption as "A" | "B",
+              }
               : undefined,
         };
       });
 
-      await questionService.createQuestions(payload);
+      await questionService.createQuestions(payload, selectedOrg);
       toast.success("Questions created successfully!");
       await fetchQuestions();
       Modal.getInstance(
@@ -767,9 +787,11 @@ const CrudQuestion = () => {
     setLoading(true);
     try {
       await questionService.updateQuestion(selectedQuestion._id, {
+        ...editFormData, // Use spread for convenience if structure matches
         questionType: editFormData.type,
         questionStem: editFormData.question,
         scale: editFormData.scale,
+        orgName: selectedOrg,
         insightPrompt:
           editFormData.scale !== "FORCED_CHOICE"
             ? editFormData.prompt
@@ -777,16 +799,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-                optionA: {
-                  label: editFormData.optionALabel,
-                  insightPrompt: editFormData.optionAPrompt,
-                },
-                optionB: {
-                  label: editFormData.optionBLabel,
-                  insightPrompt: editFormData.optionBPrompt,
-                },
-                higherValueOption: editFormData.higherValueOption as "A" | "B",
-              }
+              optionA: {
+                label: editFormData.optionALabel,
+                insightPrompt: editFormData.optionAPrompt,
+              },
+              optionB: {
+                label: editFormData.optionBLabel,
+                insightPrompt: editFormData.optionBPrompt,
+              },
+              higherValueOption: editFormData.higherValueOption as "A" | "B",
+            }
             : undefined,
       });
       await fetchQuestions();
@@ -811,7 +833,7 @@ const CrudQuestion = () => {
     if (!selectedQuestion) return;
     setLoading(true);
     try {
-      await questionService.deleteQuestion(selectedQuestion._id);
+      await questionService.deleteQuestion(selectedQuestion._id, selectedOrg);
       setAllQuestions((prev: Question[]) =>
         prev.filter((q: Question) => q._id !== selectedQuestion._id),
       );
@@ -832,13 +854,28 @@ const CrudQuestion = () => {
     }
   };
 
+  const handleCloneTemplate = async () => {
+    if (!selectedOrg) return;
+    setLoading(true);
+    try {
+      const result = await questionService.cloneTemplate(selectedOrg);
+      toast.success(result.message);
+      await fetchQuestions();
+    } catch (err) {
+      const error = err as Error;
+      toast.error(error.message || "Failed to clone template");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleOnDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
 
     const { source, destination, draggableId } = result;
     if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
+      source.droppableId !== destination.droppableId ||
+      (source.droppableId === destination.droppableId && source.index === destination.index)
     )
       return;
 
@@ -859,21 +896,25 @@ const CrudQuestion = () => {
         draggedItem.subdomain = destination.droppableId;
       }
 
-      // Find insertion point
-      const questionsInTargetSub = newQuestions.filter(
-        (q) => q.subdomain === destination.droppableId,
-      );
+      const targetGroup = newQuestions.filter((q) => {
+        if (q.stakeholder !== filterRole) return false;
+        if (filterDomains.length > 0 && !filterDomains.includes(q.domain)) return false;
+        if (filterSubdomains.length > 0 && !filterSubdomains.includes(q.subdomain)) return false;
+        if (filterTypes.length > 0 && !filterTypes.includes(q.questionType)) return false;
+        if (filterScales.length > 0 && !filterScales.includes(q.scale)) return false;
+        return q.subdomain === destination.droppableId;
+      });
 
       let insertionIdx;
-      if (questionsInTargetSub.length === 0) {
+      if (targetGroup.length === 0) {
         insertionIdx = newQuestions.length;
-      } else if (destination.index >= questionsInTargetSub.length) {
+      } else if (destination.index >= targetGroup.length) {
         const lastQuestionIdx = newQuestions.lastIndexOf(
-          questionsInTargetSub[questionsInTargetSub.length - 1],
+          targetGroup[targetGroup.length - 1],
         );
         insertionIdx = lastQuestionIdx + 1;
       } else {
-        const targetRefQuestion = questionsInTargetSub[destination.index];
+        const targetRefQuestion = targetGroup[destination.index];
         insertionIdx = newQuestions.indexOf(targetRefQuestion);
       }
 
@@ -896,7 +937,7 @@ const CrudQuestion = () => {
         subdomain: q.subdomain, // Also sync subdomain in case it changed
       }));
 
-      await questionService.reorderQuestions(updates);
+      await questionService.reorderQuestions(updates, selectedOrg);
       // toast.success("Order saved");
     } catch (err) {
       console.error("Failed to persist reorder:", err);
@@ -1063,6 +1104,65 @@ const CrudQuestion = () => {
 
       {/* --- MAIN CONTENT AREA --- */}
       <div className="flex-1 w-full bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] min-h-[calc(100vh-162px)]">
+        {/* --- UNIFIED HEADER BANNER (MINIMALIST) --- */}
+        <div className={`mb-6 p-4 rounded-[12px] border flex flex-col md:flex-row items-center gap-4 transition-all
+          ${(!loading && selectedOrg && allQuestions.length === 0) ? 'bg-[#448CD208] border-[#448CD233]' : 'bg-[#f8f9fa] border-gray-100'}`}>
+
+          {/* Organization Selector (SuperAdmin only) */}
+          {isSuperAdmin && (
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto flex-1">
+              <div className="flex items-center gap-2 shrink-0">
+                <Icon icon="lucide:building-2" className="text-[#1A3652]" width="18" />
+                <span className="font-semibold text-sm text-[#1A3652]">Managing Organization:</span>
+              </div>
+              <div className="relative w-full sm:w-auto">
+                <select
+                  value={selectedOrg || ""}
+                  onChange={(e) => setSelectedOrg(e.target.value || null)}
+                  className="font-medium text-sm appearance-none text-[#1A3652] outline-none shadow-sm w-full sm:w-[260px] p-2 pr-8 border rounded-md transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50"
+                >
+                  <option value="">Master Question Template</option>
+                  {organizations.map((org) => (
+                    <option key={org} value={org}>
+                      {org}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-4 w-4 text-[#5D5D5D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Action / Status Section */}
+          <div className="flex items-center gap-4 md:w-auto w-full justify-between md:justify-end shrink-0">
+            {/* Show clone button if no questions found */}
+            {!loading && selectedOrg && allQuestions.length === 0 ? (
+              <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                <div className="hidden lg:flex flex-col text-right">
+                  <span className="text-sm font-bold text-[#1A3652]">No questions yet</span>
+                  <span className="text-xs text-[#5D5D5D]">Clone Master Template to begin</span>
+                </div>
+                <button
+                  onClick={handleCloneTemplate}
+                  disabled={loading}
+                  className="relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-2 font-bold text-sm uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 disabled:opacity-50"
+                >
+                  <Icon icon="lucide:copy" strokeWidth="2.5" width="16" />
+                  {loading ? "Initializing..." : "Clone Template"}
+                </button>
+              </div>
+            ) : (
+              <p className="text-xs text-[#5D5D5D] font-medium tracking-wide">
+                {selectedOrg ? `Editing questions for "${selectedOrg}"` : "Viewing global master template"}
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* HEADER: Title left, Add Button right */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <h2 className="md:text-2xl text-xl font-bold text-gray-800">
@@ -1071,7 +1171,7 @@ const CrudQuestion = () => {
           <button
             type="button"
             onClick={openAddModal}
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            className={`relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10`}
           >
             <Icon icon="material-symbols:add" width="20" height="20" />
             Add new question
@@ -1094,11 +1194,10 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain to ensure immediate updates
                     }}
                     className={`px-6 py-2.5 text-sm  uppercase rounded-full transition-all whitespace-nowrap
-                            ${
-                              filterDomains.includes(domain)
-                                ? "bg-white text-gray-900 shadow-sm font-semibold"
-                                : "text-neutral-500 font-semibold"
-                            }`}
+                            ${filterDomains.includes(domain)
+                        ? "bg-white text-gray-900 shadow-sm font-semibold"
+                        : "text-neutral-500 font-semibold"
+                      }`}
                   >
                     {domain}
                   </button>
@@ -1112,11 +1211,10 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${
-                      showFilters
-                        ? "bg-[var(--primary-color)] text-white"
-                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
-                    }`}
+                    ${showFilters
+                ? "bg-[var(--primary-color)] text-white"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+              }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -1220,11 +1318,10 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
-                              openSubdomains.includes(subdomainTitle)
-                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
-                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                            }`}
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
+                              ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                              : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
+                              }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -1232,14 +1329,13 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${
-                          openSubdomains.includes(subdomainTitle)
-                            ? ""
-                            : "hidden"
-                        }`}
+                        className={`!visible ${openSubdomains.includes(subdomainTitle)
+                          ? ""
+                          : "hidden"
+                          }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
-                        <Droppable droppableId={subdomainTitle}>
+                        <Droppable droppableId={subdomainTitle} type={subdomainTitle}>
                           {(provided) => (
                             <div
                               className="px-4 text-sm sm:px-6 pb-6 pt-2"
@@ -1269,10 +1365,10 @@ const CrudQuestion = () => {
                                               {q.questionStem}
                                             </p>
                                           </div>
-                                          <div className="flex sm:gap-3 gap-1.5 lg:gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0 justify-end sm:w-fit w-full">
+                                          <div className={`flex sm:gap-3 gap-1.5 lg:gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0 justify-end sm:w-fit w-full`}>
                                             <button
                                               onClick={() => openEditModal(q)}
-                                              className="text-blue-400 hover:text-blue-600 transition-colors p-1"
+                                              className={`text-blue-400 hover:text-blue-600 transition-colors p-1`}
                                               title="Edit"
                                             >
                                               <Icon
@@ -1282,7 +1378,7 @@ const CrudQuestion = () => {
                                             </button>
                                             <button
                                               onClick={() => openDeleteModal(q)}
-                                              className="text-red-400 hover:text-red-600 transition-colors p-1"
+                                              className={`text-red-400 hover:text-red-600 transition-colors p-1`}
                                               title="Delete"
                                             >
                                               <Icon
@@ -1292,7 +1388,7 @@ const CrudQuestion = () => {
                                             </button>
                                             <div
                                               {...provided.dragHandleProps}
-                                              className="text-gray-400 hover:text-gray-600 cursor-grab p-1"
+                                              className={`text-gray-400 hover:text-gray-600 p-1 cursor-grab`}
                                               title="Drag to reorder"
                                             >
                                               <Icon

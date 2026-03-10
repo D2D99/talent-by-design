@@ -23,6 +23,7 @@ export interface Question {
   };
   subdomainWeight: number;
   isDeleted: boolean;
+  orgName?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,25 +48,34 @@ class QuestionService {
     stakeholder?: string;
     domain?: string;
     subdomain?: string;
+    orgName?: string | null;
   }): Promise<Question[]> {
     const params = new URLSearchParams();
     if (filters?.stakeholder) params.append('stakeholder', filters.stakeholder);
     if (filters?.domain) params.append('domain', filters.domain);
     if (filters?.subdomain) params.append('subdomain', filters.subdomain);
+    if (filters?.orgName !== undefined) {
+      params.append('orgName', filters.orgName === null ? "" : filters.orgName);
+    }
 
     const response = await api.get(`${this.endpoint}/all`, { params });
     return response.data.data;
   }
 
   // Get single question by ID
-  async getQuestionById(id: string): Promise<Question> {
-    const response = await api.get(`${this.endpoint}/${id}`);
+  async getQuestionById(id: string, orgName?: string | null): Promise<Question> {
+    const params = new URLSearchParams();
+    if (orgName !== undefined) {
+      params.append('orgName', orgName === null ? "" : orgName);
+    }
+    const response = await api.get(`${this.endpoint}/${id}`, { params });
     return response.data.data;
   }
 
   // Create multiple questions
-  async createQuestions(questions: Record<string, CreateQuestionData>): Promise<Question[]> {
-    const response = await api.post(`${this.endpoint}/multiple`, questions);
+  async createQuestions(questions: Record<string, CreateQuestionData>, orgName?: string | null): Promise<Question[]> {
+    const payload = orgName !== undefined ? { orgName, questions } : questions;
+    const response = await api.post(`${this.endpoint}/multiple`, payload);
     return response.data.data;
   }
 
@@ -76,19 +86,36 @@ class QuestionService {
     scale: string;
     insightPrompt?: string;
     forcedChoice?: any;
+    orgName?: string | null;
   }): Promise<Question> {
-    const response = await api.put(`${this.endpoint}/${id}`, updateData);
+    const { orgName, ...rest } = updateData;
+    const params = new URLSearchParams();
+    if (orgName !== undefined) {
+      params.append('orgName', orgName === null ? "" : orgName);
+    }
+    const response = await api.put(`${this.endpoint}/${id}`, rest, { params });
     return response.data.data;
   }
 
   // Delete question (soft delete)
-  async deleteQuestion(id: string): Promise<void> {
-    await api.delete(`${this.endpoint}/${id}`);
+  async deleteQuestion(id: string, orgName?: string | null): Promise<void> {
+    const params = new URLSearchParams();
+    if (orgName !== undefined) {
+      params.append('orgName', orgName === null ? "" : orgName);
+    }
+    await api.delete(`${this.endpoint}/${id}`, { params });
   }
 
   // Batch reorder questions after drag and drop
-  async reorderQuestions(updates: { id: string; order: number; subdomain?: string }[]): Promise<void> {
-    await api.put(`${this.endpoint}/reorder`, updates);
+  async reorderQuestions(updates: { id: string; order: number; subdomain?: string }[], orgName?: string | null): Promise<void> {
+    const payload = orgName !== undefined ? { orgName, updates } : updates;
+    await api.put(`${this.endpoint}/reorder`, payload);
+  }
+
+  // Clone master template to organization
+  async cloneTemplate(orgName: string): Promise<{ success: boolean; message: string; count: number }> {
+    const response = await api.post(`${this.endpoint}/clone`, { orgName });
+    return response.data;
   }
 }
 
