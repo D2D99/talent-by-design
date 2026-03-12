@@ -303,7 +303,7 @@ const AssessmentQuestion = () => {
                 />
                 <h2 className="sm:text-2xl text-xl text-center font-bold text-[var(--secondary-color)] mb-4">
                   Thank You{" "}
-                  <span className="text-[var(--dark-primary-color)]">
+                  <span className="text-[var(--dark-primary-color)] capitalize">
                     {finalForm.firstName} {finalForm.lastName}.
                   </span>
                 </h2>
