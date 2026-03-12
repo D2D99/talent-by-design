@@ -250,8 +250,8 @@ const AssessmentQuestion = () => {
   const progressPercentage =
     questions.length > 0
       ? ((currentIndex + (showFinalForm || userRole !== "employee" ? 1 : 0)) /
-        questions.length) *
-      100
+          questions.length) *
+        100
       : 0;
 
   const isContinueDisabled =
@@ -267,7 +267,7 @@ const AssessmentQuestion = () => {
 
   return (
     <div className="min-h-screen bg-[var(--light-primary-color)]">
-      <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 pb-10 px-3">
+      <div className="w-full mx-auto sm:pt-20 pt-10 pb-10 px-3">
         <div className="text-center mb-8 mx-auto">
           <button type="button">
             <img src={Logo} className="w-[150px] mx-auto" alt="Logo" />
@@ -324,14 +324,18 @@ const AssessmentQuestion = () => {
             ) : (
               <>
                 <div className="flex justify-between items-center">
-                  <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide">
+                  <h2
+                    className={`text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide ${showFinalForm ? "hidden" : "block"}`}
+                  >
                     {showFinalForm
                       ? "Final Step"
                       : `Question ${currentIndex + 1} of ${questions.length}`}
                   </h2>
                 </div>
 
-                <div className="w-full bg-[var(--light-primary-color)] rounded-full h-2 mt-3">
+                <div
+                  className={`w-full bg-[var(--light-primary-color)] rounded-full h-2 mt-3 mb-6 ${showFinalForm ? "hidden" : "block"}`}
+                >
                   <div
                     className="bg-[var(--dark-primary-color)] h-2 rounded-full transition-all duration-500"
                     style={{ width: `${progressPercentage}%` }}
@@ -352,10 +356,11 @@ const AssessmentQuestion = () => {
                         {[1, 2, 3, 4, 5].map((num) => (
                           <div key={num} className="flex flex-col items-center">
                             <label
-                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
-                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                                : "text-[var(--secondary-color)] hover:bg-blue-50"
-                                }`}
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
+                                selectedValue === num
+                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
+                              }`}
                             >
                               {num}
                               <input
@@ -394,10 +399,11 @@ const AssessmentQuestion = () => {
                         {(["A", "B"] as const).map((opt) => (
                           <label
                             key={opt}
-                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all ${selectedValue === opt
-                              ? "border-[var(--primary-color)] bg-blue-50"
-                              : ""
-                              }`}
+                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${
+                              selectedValue === opt
+                                ? "border-[var(--primary-color)] bg-blue-50"
+                                : ""
+                            }`}
                           >
                             <input
                               className="w-4 h-4 accent-blue-500"
@@ -416,23 +422,24 @@ const AssessmentQuestion = () => {
                     )}
 
                     <div
-                      className={`transition-all duration-300 ${(!isForcedChoice &&
-                        typeof selectedValue === "number" &&
-                        selectedValue <= 2) ||
+                      className={`transition-all duration-300 ${
+                        (!isForcedChoice &&
+                          typeof selectedValue === "number" &&
+                          selectedValue <= 2) ||
                         (isForcedChoice && selectedValue === higherValueOption)
-                        ? "opacity-100 h-auto"
-                        : "opacity-0 h-0 overflow-hidden"
-                        }`}
+                          ? "opacity-100 h-auto"
+                          : "opacity-0 h-0 overflow-hidden"
+                      }`}
                     >
                       <label className="text-sm font-bold block mb-2">
                         {isForcedChoice
                           ? selectedValue === "A"
                             ? currentQuestion?.forcedChoice?.optionA
-                              .insightPrompt
+                                .insightPrompt
                             : currentQuestion?.forcedChoice?.optionB
-                              .insightPrompt
+                                .insightPrompt
                           : currentQuestion?.insightPrompt ||
-                          "Why did you choose this score?"}
+                            "Why did you choose this score?"}
                         <span className="text-black"> *</span>
                       </label>
                       <textarea
@@ -444,12 +451,17 @@ const AssessmentQuestion = () => {
                     </div>
                   </>
                 ) : (
-                  <div className="sm:my-6 my-4">
+                  <div className="sm:mb-6 mb-4">
                     <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
                       Finalizing Your Confidential Submission
                     </h2>
-                    <div className="sm:mb-4 mb-2">
-                      <label className="font-bold text-sm">First Name</label>
+                    <p className="text-neutral-500 mt-1 text-sm">
+                      Please provide these details to securely validate your
+                      input and ensure direct email delivery of your summary
+                      report once it is finalized.
+                    </p>
+                    <div className="mt-4 sm:mb-4 mb-2">
+                      <label className="font-bold text-sm">First Name *</label>
                       <input
                         value={finalForm.firstName}
                         onChange={(e) =>
@@ -458,11 +470,12 @@ const AssessmentQuestion = () => {
                             firstName: e.target.value,
                           })
                         }
-                        className="w-full p-3 mt-2 border rounded-lg"
+                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                        placeholder="Your first name"
                       />
                     </div>
                     <div className="sm:mb-4 mb-2">
-                      <label className="font-bold text-sm">Last Name</label>
+                      <label className="font-bold text-sm">Last Name *</label>
                       <input
                         value={finalForm.lastName}
                         onChange={(e) =>
@@ -471,7 +484,8 @@ const AssessmentQuestion = () => {
                             lastName: e.target.value,
                           })
                         }
-                        className="w-full p-3 mt-2 border rounded-lg"
+                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                        placeholder="Your last name"
                       />
                     </div>
                     <div className="sm:mb-4 mb-2">
@@ -480,32 +494,52 @@ const AssessmentQuestion = () => {
                         type="email"
                         value={finalForm.email}
                         readOnly={!!finalForm.email}
-                        className={`w-full p-3 mt-2 border rounded-lg ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
+                        className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] pointer-events-none ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
+                        placeholder="Your email"
                       />
                     </div>
                     <div className="sm:mb-6 mb-5">
-                      <label className="font-bold text-sm">Department</label>
-                      <select
-                        value={finalForm.department}
-                        onChange={(e) =>
-                          setFinalForm({
-                            ...finalForm,
-                            department: e.target.value,
-                          })
-                        }
-                        className="w-full p-3 mt-2 border rounded-lg appearance-none"
-                      >
-                        <option value="">Select your department</option>
-                        <option value="hr">HR</option>
-                        <option value="engineering">Engineering</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="operations">Operations</option>
-                      </select>
+                      <label className="font-bold text-sm">Department *</label>
+
+                      <div className="relative w-full">
+                        <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                          <svg
+                            className="h-4 w-4 text-[#5D5D5D]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </div>
+
+                        <select
+                          value={finalForm.department}
+                          onChange={(e) =>
+                            setFinalForm({
+                              ...finalForm,
+                              department: e.target.value,
+                            })
+                          }
+                          className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none"
+                        >
+                          <option value="">Select your department</option>
+                          <option value="hr">HR</option>
+                          <option value="engineering">Engineering</option>
+                          <option value="marketing">Marketing</option>
+                          <option value="operations">Operations</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 )}
 
-                <div className="sm:mt-12 mt-8 flex justify-between items-center">
+                <div className="sm:mt-12 mt-8 flex flex-wrap gap-5 sm:justify-between sm:items-center">
                   <button
                     type="button"
                     disabled={
@@ -517,7 +551,7 @@ const AssessmentQuestion = () => {
                         : setCurrentIndex((p) => p - 1)
                     }
                     className={`group text-[var(--primary-color)] rounded-full ps-2.5 pe-3.5 h-10 flex items-center gap-1.5 font-semibold  text-base uppercase 
-               bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] border ${currentIndex === 0 && !showFinalForm ? "invisible" : "visible"}`}
+               bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] sm:w-fit w-full sm:justify-start justify-center border ${currentIndex === 0 && !showFinalForm ? "invisible" : "visible"}`}
                   >
                     <Icon icon="mynaui:arrow-left-circle-solid" width="22" />
                     Previous
@@ -531,14 +565,14 @@ const AssessmentQuestion = () => {
                         ? () => handleFinalSubmit()
                         : () => handleNext()
                     }
-                    className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white pe-2.5 ps-3.5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40"
+                    className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white pe-2.5 ps-3.5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40  sm:w-fit w-full sm:justify-start justify-center"
                   >
                     {isSubmitting
                       ? "Processing..."
                       : showFinalForm
                         ? "Finish Assessment"
                         : currentIndex === questions.length - 1 &&
-                          userRole !== "employee"
+                            userRole !== "employee"
                           ? "Finish Assessment"
                           : "Continue"}
                     {!isSubmitting && (
