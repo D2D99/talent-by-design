@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import api from "../../services/axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, Ripple, initTWE } from "tw-elements";
 
@@ -40,7 +40,7 @@ const OrgUsers = ({
   hideAdmin = true,
 }: OrgUsersProps) => {
   const { orgName: routeOrgName } = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
@@ -226,7 +226,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                currentUser?.role === "manager"
+                  currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -440,7 +440,6 @@ const OrgUsers = ({
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold">Status</th>
               {/* <th className="px-6 py-4 font-semibold">Score</th> */}
-              <th className="px-6 py-4 text-center font-semibold">Report</th>
             </tr>
           </thead>
           <tbody>
@@ -516,52 +515,11 @@ const OrgUsers = ({
                       <span className="text-gray-300">—</span>
                     )}
                   </td> */}
-                  <td className="px-6 py-4 text-center">
-                    {member.assessmentStatus === "Completed" ? (
-                      <button
-                        onClick={() => {
-                          const roleMapping: Record<string, string> = {
-                            superAdmin: "org-head",
-                            admin: "org-head",
-                            leader: "senior-leader",
-                            manager: "manager",
-                            employee: "employee",
-                          };
-                          const reportType =
-                            roleMapping[member.role.toLowerCase()] ||
-                            "employee";
-                          // Pass email so backend can find guest employees (no User account)
-                          navigate(
-                            `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`,
-                          );
-                        }}
-                        className="text-gray-400 hover:text-[#448CD2] transition-colors"
-                        title="View Report"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                      </button>
-                    ) : (
-                      <span className="text-gray-300">—</span>
-                    )}
-                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="py-20 text-center text-gray-400">
+                <td colSpan={6} className="py-20 text-center text-gray-400">
                   {isLoading ? "Loading directory..." : "No members found."}
                 </td>
               </tr>
