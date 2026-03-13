@@ -1651,62 +1651,55 @@ const CrudQuestion = () => {
         <div className="fixed inset-0 z-[1060] flex items-center justify-center">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setShowDeleteAllModal(false)}
           />
           {/* Modal */}
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-[fadeInUp_0.3s_ease-out]">
-            {/* Header */}
-            <div className="flex items-center justify-between p-5 pb-0">
-              <span />
+          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none animate-[fadeInUp_0.3s_ease-out] z-[1070]">
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
+              <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold">
+                Delete All
+              </h5>
               <button
+                type="button"
                 onClick={() => setShowDeleteAllModal(false)}
-                className="text-neutral-400 hover:text-neutral-700 transition-colors"
+                className="text-neutral-500 hover:text-neutral-800"
               >
-                <Icon icon="material-symbols:close" width="22" />
+                <Icon icon="material-symbols:close" width="24" />
               </button>
             </div>
-            {/* Body */}
-            <div className="px-6 py-6 flex flex-col items-center gap-4 text-center">
-              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-                <Icon
-                  icon="lucide:trash-2"
-                  width="30"
-                  className="text-red-500"
-                />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-[#1A3652] mb-1">
+
+            <div className="relative sm:py-8 py-4 px-4 grid place-items-center gap-4">
+              <img src={ProgressIcon} alt="Progress Icon" width={80} />
+              <div className="text-center">
+                <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
                   Delete All Questions?
-                </h3>
-                <p className="text-sm text-neutral-500 leading-relaxed">
+                </h5>
+                <p className="text-sm text-neutral-600 mt-2">
                   You are about to permanently delete{" "}
                   <strong>all {allQuestions.length} questions</strong> for{" "}
-                  <strong className="text-[#1A3652]">{selectedOrg}</strong>.
+                  <strong className="text-[var(--secondary-color)]">{selectedOrg}</strong>.
                   <br />
-                  This action{" "}
-                  <span className="text-red-500 font-semibold">
-                    cannot be undone
-                  </span>
-                  .
+                  This action is permanent and the data cannot be retrieved.
                 </p>
               </div>
             </div>
-            {/* Footer */}
-            <div className="flex items-center justify-end gap-3 border-t border-neutral-100 p-4">
+
+            <div className="flex items-center justify-end gap-3 border-t border-neutral-200 py-4 px-4">
               <button
+                type="button"
                 onClick={() => setShowDeleteAllModal(false)}
-                className="px-5 py-2 rounded-full border-2 border-neutral-200 text-neutral-600 font-bold text-sm uppercase hover:bg-neutral-50 transition-all"
+                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={confirmDeleteAll}
                 disabled={loading}
-                className="px-5 py-2 rounded-full bg-red-500 text-white font-bold text-sm uppercase hover:bg-red-600 transition-all disabled:opacity-50 flex items-center gap-2"
+                className="group relative overflow-hidden z-0 bg-red-500 px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase text-white duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
-                <Icon icon="lucide:trash-2" width="16" />
-                {loading ? "Deleting..." : "Yes, Delete All"}
+                {loading ? "Deleting..." : "Delete All"}
               </button>
             </div>
           </div>
