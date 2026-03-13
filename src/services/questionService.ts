@@ -117,6 +117,41 @@ class QuestionService {
     const response = await api.post(`${this.endpoint}/clone`, { orgName });
     return response.data;
   }
+
+  // Upload questions from Excel
+  async uploadQuestions(file: File, orgName?: string | null): Promise<Question[]> {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (orgName) formData.append("orgName", orgName);
+
+    const response = await api.post(`${this.endpoint}/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data.data;
+  }
+
+  // Delete all questions for an organization
+  async deleteOrganizationQuestions(orgName?: string | null): Promise<void> {
+    await api.delete(`${this.endpoint}/organization/all`, {
+      data: { orgName: orgName === null ? "" : orgName }
+    });
+  }
+
+  // Download Excel template
+  async downloadTemplate(): Promise<void> {
+    const response = await api.get(`${this.endpoint}/template/download`, {
+      responseType: 'blob'
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'Question_Upload_Template.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
 }
 
 export const questionService = new QuestionService();

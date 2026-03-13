@@ -235,6 +235,8 @@ const CrudQuestion = () => {
   // 1. STATE MANAGEMENT
   const [allQuestions, setAllQuestions] = useState<Question[]>([]); // Store all fetched questions
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [organizations, setOrganizations] = useState<string[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null); // null means Master Template
 
@@ -513,6 +515,53 @@ const CrudQuestion = () => {
       setLoading(false);
     }
 
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      await questionService.uploadQuestions(file, selectedOrg);
+      toast.success("Questions uploaded successfully!");
+      fetchQuestions();
+    } catch (err) {
+      toast.error("Failed to upload questions");
+      console.error(err);
+    } finally {
+      setUploading(false);
+      e.target.value = ""; // Reset input
+    }
+  };
+
+  const handleDeleteAll = () => {
+    setShowDeleteAllModal(true);
+  };
+
+  const confirmDeleteAll = async () => {
+    setShowDeleteAllModal(false);
+    setLoading(true);
+    try {
+      await questionService.deleteOrganizationQuestions(selectedOrg);
+      toast.success("All questions deleted successfully!");
+      fetchQuestions();
+    } catch (err) {
+      toast.error("Failed to delete questions");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      await questionService.downloadTemplate();
+      toast.success("Template downloaded!");
+    } catch (err) {
+      toast.error("Failed to download template");
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -1158,7 +1207,7 @@ const CrudQuestion = () => {
 
           {/* Action / Status Section */}
           <div className="flex items-center gap-4 md:w-auto w-full justify-between md:justify-end shrink-0">
-            {/* Show clone button if no questions found */}
+            {/* Show clone/upload if no questions found */}
             {!loading && selectedOrg && allQuestions.length === 0 ? (
               <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                 <div className="hidden lg:flex flex-col text-right">
@@ -1172,18 +1221,59 @@ const CrudQuestion = () => {
                 <button
                   onClick={handleCloneTemplate}
                   disabled={loading}
-                  className="group text-[var(--primary-color)] ps-3 pe-4 py-2 text-xs rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase bg-white overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 relative"
+                  className="group text-[#448bd2] px-5 py-2 text-sm rounded-full border-2 border-[#448bd2] flex justify-center items-center gap-2 font-bold uppercase bg-white hover:bg-[#448bd210] transition-all disabled:opacity-40"
                 >
-                  <Icon icon="lucide:copy" strokeWidth="2.5" width="14" />
+                  <Icon icon="lucide:copy" strokeWidth="2.5" width="18" />
                   {loading ? "Initializing..." : "Clone Template"}
                 </button>
+
+                {/* Upload Option even if not cloned */}
+                <div className="flex border-l pl-4 border-gray-200 ml-2 items-center gap-4">
+                  <div className="flex flex-col items-center">
+                    <label className="cursor-pointer group bg-[#448bd2] text-white px-5 py-2 text-sm rounded-full flex items-center gap-2 font-bold uppercase hover:bg-[#1a3652] transition-all shadow-sm">
+                      <Icon icon="lucide:upload" width="18" />
+                      {uploading ? "Uploading..." : "Upload Excel File"}
+                      <input
+                        type="file"
+                        accept=".xlsx, .xls"
+                        onChange={handleUpload}
+                        className="hidden"
+                        disabled={uploading}
+                      />
+                    </label>
+                    <button
+                      onClick={handleDownloadTemplate}
+                      className="mt-1 text-[10px] text-[#448bd2] hover:underline flex items-center gap-1 font-semibold uppercase tracking-wider"
+                    >
+                      <Icon icon="lucide:download" width="10" />
+                      Download Template
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
-              <p className="text-sm text-[#5D5D5D] font-medium tracking-wide">
-                {selectedOrg
-                  ? `Editing questions for "${selectedOrg}"`
-                  : "Viewing global master template"}
-              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-sm text-[#5D5D5D] font-medium tracking-wide">
+                  {selectedOrg
+                    ? `Editing questions for "${selectedOrg}"`
+                    : "Viewing global master template"}
+                </p>
+
+                {/* Batch Actions Group */}
+                <div className="flex items-center gap-6">
+                  {/* Delete All Button (Only if questions exist and NOT Master Template) */}
+                  {selectedOrg && allQuestions.length > 0 && (
+                    <button
+                      onClick={handleDeleteAll}
+                      disabled={loading}
+                      className="group text-red-500 px-5 py-2 text-sm rounded-full border-2 border-red-200 flex items-center gap-2 font-bold uppercase bg-white hover:bg-red-50 transition-all hover:border-red-500"
+                    >
+                      <Icon icon="lucide:trash-2" width="18" />
+                      Delete All QUESTION
+                    </button>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -1254,10 +1344,10 @@ const CrudQuestion = () => {
               </span>
             )}
           </button>
-        </div>
+        </div >
 
         {/* --- CONTENT AREA (Accordions + Role Prompt) --- */}
-        <div className="space-y-6">
+        < div className="space-y-6" >
           {!filterRole && (
             <div className="p-8 text-center flex flex-col items-center">
               <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
@@ -1309,152 +1399,154 @@ const CrudQuestion = () => {
             </div>
           )}
 
-          {filterRole ? (
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-              <div className="space-y-4">
-                {displayGroups.map((subdomainTitle) => {
-                  const questionsInGroup = filteredQuestions.filter(
-                    (q) => q.subdomain === subdomainTitle,
-                  );
-                  const safeId = subdomainTitle
-                    .replace(/[^a-zA-Z0-9]/g, "-")
-                    .toLowerCase();
+          {
+            filterRole ? (
+              <DragDropContext onDragEnd={handleOnDragEnd}>
+                <div className="space-y-4">
+                  {displayGroups.map((subdomainTitle) => {
+                    const questionsInGroup = filteredQuestions.filter(
+                      (q) => q.subdomain === subdomainTitle,
+                    );
+                    const safeId = subdomainTitle
+                      .replace(/[^a-zA-Z0-9]/g, "-")
+                      .toLowerCase();
 
-                  return (
-                    <div
-                      key={subdomainTitle}
-                      className="rounded-xl border border-gray-100 bg-white overflow-hidden"
-                    >
-                      <h2 className="mb-0" id={`heading-${safeId}`}>
-                        <button
-                          className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
-                          type="button"
-                          onClick={() => {
-                            setOpenSubdomains((prev) =>
-                              prev.includes(subdomainTitle)
-                                ? prev.filter((t) => t !== subdomainTitle)
-                                : [...prev, subdomainTitle],
-                            );
-                          }}
-                          aria-expanded={openSubdomains.includes(
-                            subdomainTitle,
-                          )}
-                          aria-controls={`collapse-${safeId}`}
-                        >
-                          <span className="pr-4">{subdomainTitle}</span>
-                          <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
-                              ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
-                              : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                              }`}
-                          >
-                            <Icon icon="mdi:chevron-up" width="18" />
-                          </span>
-                        </button>
-                      </h2>
+                    return (
                       <div
-                        id={`collapse-${safeId}`}
-                        className={`!visible ${openSubdomains.includes(subdomainTitle)
-                          ? ""
-                          : "hidden"
-                          }`}
-                        aria-labelledby={`heading-${safeId}`}
+                        key={subdomainTitle}
+                        className="rounded-xl border border-gray-100 bg-white overflow-hidden"
                       >
-                        <Droppable
-                          droppableId={subdomainTitle}
-                          type={subdomainTitle}
-                        >
-                          {(provided) => (
-                            <div
-                              className="px-4 text-sm sm:px-6 pb-6 pt-2"
-                              {...provided.droppableProps}
-                              ref={provided.innerRef}
+                        <h2 className="mb-0" id={`heading-${safeId}`}>
+                          <button
+                            className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
+                            type="button"
+                            onClick={() => {
+                              setOpenSubdomains((prev) =>
+                                prev.includes(subdomainTitle)
+                                  ? prev.filter((t) => t !== subdomainTitle)
+                                  : [...prev, subdomainTitle],
+                              );
+                            }}
+                            aria-expanded={openSubdomains.includes(
+                              subdomainTitle,
+                            )}
+                            aria-controls={`collapse-${safeId}`}
+                          >
+                            <span className="pr-4">{subdomainTitle}</span>
+                            <span
+                              className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
+                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
+                                }`}
                             >
-                              {questionsInGroup.length > 0 ? (
-                                <div className="space-y-1">
-                                  {questionsInGroup.map((q, qIdx) => (
-                                    <Draggable
-                                      key={q._id}
-                                      draggableId={q._id}
-                                      index={qIdx}
-                                    >
-                                      {(provided) => (
-                                        <div
-                                          ref={provided.innerRef}
-                                          {...provided.draggableProps}
-                                          className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100
-                                           sm:flex-row flex-col gap-y-2.5"
-                                        >
-                                          <div className="flex gap-3 pr-2 min-w-0">
-                                            <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">
-                                              Q{qIdx + 1}.
-                                            </span>
-                                            <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">
-                                              {q.questionStem}
-                                            </p>
-                                          </div>
+                              <Icon icon="mdi:chevron-up" width="18" />
+                            </span>
+                          </button>
+                        </h2>
+                        <div
+                          id={`collapse-${safeId}`}
+                          className={`!visible ${openSubdomains.includes(subdomainTitle)
+                            ? ""
+                            : "hidden"
+                            }`}
+                          aria-labelledby={`heading-${safeId}`}
+                        >
+                          <Droppable
+                            droppableId={subdomainTitle}
+                            type={subdomainTitle}
+                          >
+                            {(provided) => (
+                              <div
+                                className="px-4 text-sm sm:px-6 pb-6 pt-2"
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                              >
+                                {questionsInGroup.length > 0 ? (
+                                  <div className="space-y-1">
+                                    {questionsInGroup.map((q, qIdx) => (
+                                      <Draggable
+                                        key={q._id}
+                                        draggableId={q._id}
+                                        index={qIdx}
+                                      >
+                                        {(provided) => (
                                           <div
-                                            className={`flex sm:gap-3 gap-1.5 lg:gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0 justify-end sm:w-fit w-full`}
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100
+                                           sm:flex-row flex-col gap-y-2.5"
                                           >
-                                            <button
-                                              onClick={() => openEditModal(q)}
-                                              className={`text-blue-400 hover:text-blue-600 transition-colors p-1`}
-                                              title="Edit"
-                                            >
-                                              <Icon
-                                                icon="lucide:pencil"
-                                                width="16"
-                                              />
-                                            </button>
-                                            <button
-                                              onClick={() => openDeleteModal(q)}
-                                              className={`text-red-400 hover:text-red-600 transition-colors p-1`}
-                                              title="Delete"
-                                            >
-                                              <Icon
-                                                icon="lucide:trash-2"
-                                                width="16"
-                                              />
-                                            </button>
+                                            <div className="flex gap-3 pr-2 min-w-0">
+                                              <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">
+                                                Q{qIdx + 1}.
+                                              </span>
+                                              <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">
+                                                {q.questionStem}
+                                              </p>
+                                            </div>
                                             <div
-                                              {...provided.dragHandleProps}
-                                              className={`text-gray-400 hover:text-gray-600 p-1 cursor-grab`}
-                                              title="Drag to reorder"
+                                              className={`flex sm:gap-3 gap-1.5 lg:gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0 justify-end sm:w-fit w-full`}
                                             >
-                                              <Icon
-                                                icon="lucide:menu"
-                                                width="16"
-                                              />
+                                              <button
+                                                onClick={() => openEditModal(q)}
+                                                className={`text-blue-400 hover:text-blue-600 transition-colors p-1`}
+                                                title="Edit"
+                                              >
+                                                <Icon
+                                                  icon="lucide:pencil"
+                                                  width="16"
+                                                />
+                                              </button>
+                                              <button
+                                                onClick={() => openDeleteModal(q)}
+                                                className={`text-red-400 hover:text-red-600 transition-colors p-1`}
+                                                title="Delete"
+                                              >
+                                                <Icon
+                                                  icon="lucide:trash-2"
+                                                  width="16"
+                                                />
+                                              </button>
+                                              <div
+                                                {...provided.dragHandleProps}
+                                                className={`text-gray-400 hover:text-gray-600 p-1 cursor-grab`}
+                                                title="Drag to reorder"
+                                              >
+                                                <Icon
+                                                  icon="lucide:menu"
+                                                  width="16"
+                                                />
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      )}
-                                    </Draggable>
-                                  ))}
-                                  {provided.placeholder}
-                                </div>
-                              ) : (
-                                <div className="text-gray-400 text-sm italic py-2">
-                                  {filterRole
-                                    ? "No questions added yet."
-                                    : "Select a filter to view questions."}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </Droppable>
+                                        )}
+                                      </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                  </div>
+                                ) : (
+                                  <div className="text-gray-400 text-sm italic py-2">
+                                    {filterRole
+                                      ? "No questions added yet."
+                                      : "Select a filter to view questions."}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </Droppable>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </DragDropContext>
-          ) : null}
-        </div>
-      </div>
+                    );
+                  })}
+                </div>
+              </DragDropContext>
+            ) : null
+          }
+        </div >
+      </div >
 
       {/* --- MODALS (Add/Edit/Delete) --- */}
-      <CrudModals
+      < CrudModals
         // ADD FORM PROPS
         addForms={addForms}
         updateAddForm={updateAddForm}
@@ -1472,7 +1564,65 @@ const CrudQuestion = () => {
         isAddBatchValid={isAddBatchValid}
         isEditValid={isEditValid}
       />
-    </div>
+
+      {/* Delete All Confirmation Popup */}
+      {showDeleteAllModal && (
+        <div className="fixed inset-0 z-[1060] flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDeleteAllModal(false)}
+          />
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-[fadeInUp_0.3s_ease-out]">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 pb-0">
+              <span />
+              <button
+                onClick={() => setShowDeleteAllModal(false)}
+                className="text-neutral-400 hover:text-neutral-700 transition-colors"
+              >
+                <Icon icon="material-symbols:close" width="22" />
+              </button>
+            </div>
+            {/* Body */}
+            <div className="px-6 py-6 flex flex-col items-center gap-4 text-center">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                <Icon icon="lucide:trash-2" width="30" className="text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-[#1A3652] mb-1">
+                  Delete All Questions?
+                </h3>
+                <p className="text-sm text-neutral-500 leading-relaxed">
+                  You are about to permanently delete <strong>all {allQuestions.length} questions</strong> for{" "}
+                  <strong className="text-[#1A3652]">{selectedOrg}</strong>.
+                  <br />
+                  This action <span className="text-red-500 font-semibold">cannot be undone</span>.
+                </p>
+              </div>
+            </div>
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 border-t border-neutral-100 p-4">
+              <button
+                onClick={() => setShowDeleteAllModal(false)}
+                className="px-5 py-2 rounded-full border-2 border-neutral-200 text-neutral-600 font-bold text-sm uppercase hover:bg-neutral-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteAll}
+                disabled={loading}
+                className="px-5 py-2 rounded-full bg-red-500 text-white font-bold text-sm uppercase hover:bg-red-600 transition-all disabled:opacity-50 flex items-center gap-2"
+              >
+                <Icon icon="lucide:trash-2" width="16" />
+                {loading ? "Deleting..." : "Yes, Delete All"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div >
   );
 };
 
