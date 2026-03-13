@@ -227,6 +227,45 @@ const getGeneratedCodePreview = (
   return `${prefix}${maxNum + batchIncrement + 1}`;
 };
 
+const FilterSection = ({
+  title,
+  children,
+  open = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  open?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(open);
+
+  return (
+    <div className="border-b border-gray-100/50 last:border-0 pb-6">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full group/head pt-2 focus:outline-none"
+      >
+        <span className="text-xs font-black text-[#1A3652] uppercase tracking-[0.2em]">
+          {title}
+        </span>
+        <Icon
+          icon="solar:alt-arrow-down-bold-duotone"
+          className={`text-blue-300 transition-transform duration-500 ${
+            isOpen ? "rotate-180 text-blue-500" : ""
+          }`}
+          width="18"
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-500 ${
+          isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
+        }`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const CrudQuestion = () => {
   const { user } = useAuth();
   // const isAdmin = user?.role === "admin";
@@ -514,7 +553,6 @@ const CrudQuestion = () => {
     } finally {
       setLoading(false);
     }
-
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -795,16 +833,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                optionA: {
-                  label: form.optionALabel,
-                  insightPrompt: form.optionAPrompt,
-                },
-                optionB: {
-                  label: form.optionBLabel,
-                  insightPrompt: form.optionBPrompt,
-                },
-                higherValueOption: form.higherValueOption as "A" | "B",
-              }
+                  optionA: {
+                    label: form.optionALabel,
+                    insightPrompt: form.optionAPrompt,
+                  },
+                  optionB: {
+                    label: form.optionBLabel,
+                    insightPrompt: form.optionBPrompt,
+                  },
+                  higherValueOption: form.higherValueOption as "A" | "B",
+                }
               : undefined,
         };
       });
@@ -845,16 +883,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-              optionA: {
-                label: editFormData.optionALabel,
-                insightPrompt: editFormData.optionAPrompt,
-              },
-              optionB: {
-                label: editFormData.optionBLabel,
-                insightPrompt: editFormData.optionBPrompt,
-              },
-              higherValueOption: editFormData.higherValueOption as "A" | "B",
-            }
+                optionA: {
+                  label: editFormData.optionALabel,
+                  insightPrompt: editFormData.optionAPrompt,
+                },
+                optionB: {
+                  label: editFormData.optionBLabel,
+                  insightPrompt: editFormData.optionBPrompt,
+                },
+                higherValueOption: editFormData.higherValueOption as "A" | "B",
+              }
             : undefined,
       });
       await fetchQuestions();
@@ -1158,123 +1196,167 @@ const CrudQuestion = () => {
 
       {/* --- MAIN CONTENT AREA --- */}
       <div className="flex-1 w-full bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] min-h-[calc(100vh-162px)]">
-        {/* --- UNIFIED HEADER BANNER (MINIMALIST) --- */}
-        <div
-          className={`mb-6 p-6 rounded-[12px] border flex flex-col md:flex-row items-center gap-4 transition-all border-neutral-200
-          ${!loading && selectedOrg && allQuestions.length === 0 ? "bg-[#448CD208] border-[#448CD233]" : "bg-[#f8f9fa] border-gray-100"}`}
-        >
-          {/* Organization Selector (SuperAdmin only) */}
-          {isSuperAdmin && (
-            <div className="flex flex-col items-start gap-2 w-full md:w-auto flex-1">
-              <div className="flex items-center gap-2 shrink-0">
-                <Icon icon="solar:buildings-3-broken" width="18" height="18" />
-
-                <span className="font-semibold text-black">
-                  Managing Organization
-                </span>
-              </div>
-              <div className="relative w-full md:w-auto">
-                <select
-                  value={selectedOrg || ""}
-                  onChange={(e) => setSelectedOrg(e.target.value || null)}
-                  className="font-medium text-sm appearance-none text-[#1A3652] outline-none shadow-sm w-full md:w-[260px] p-2 pr-8 border rounded-md transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer"
-                >
-                  <option value="">Master Question Template</option>
-                  {organizations.map((org) => (
-                    <option key={org} value={org}>
-                      {org}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg
-                    className="h-4 w-4 text-[#5D5D5D]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
+        {/* --- ORGANIZATION BANNER --- */}
+        <div className="mb-8">
+          <div className="bg-blue-500/5 border border-gray-100 rounded-2xl p-6 lg:p-8">
+            <div className="flex flex-col xxl:flex-row items-stretch gap-8">
+              {/* Organization Selector */}
+              {isSuperAdmin && (
+                <div className="flex flex-col gap-4 sm:min-w-[300px]">
+                  <div className="flex items-start gap-3">
+                    {/* <div className="w-10 h-10 rounded-xl bg-[var(--primary-color)] flex items-center justify-center text-white"> */}
+                    <Icon
+                      icon="solar:buildings-2-broken"
+                      width="24"
+                      height="24"
                     />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          )}
+                    {/* </div> */}
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium">
+                        Organization
+                      </p>
+                      <h3 className="text-base capitalize font-bold text-gray-800">
+                        Select workspace
+                      </h3>
+                    </div>
+                  </div>
 
-          {/* Action / Status Section */}
-          <div className="flex items-center gap-4 md:w-auto w-full justify-between md:justify-end shrink-0">
-            {/* Show clone/upload if no questions found */}
-            {!loading && selectedOrg && allQuestions.length === 0 ? (
-              <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-                <div className="hidden lg:flex flex-col text-right">
-                  <span className="text-sm font-bold capitalize">
-                    No questions yet
-                  </span>
-                  <span className="text-xs text-neutral-500">
-                    Clone Master Template to begin
-                  </span>
-                </div>
-                <button
-                  onClick={handleCloneTemplate}
-                  disabled={loading}
-                  className="group text-[#448bd2] px-5 py-2 text-sm rounded-full border-2 border-[#448bd2] flex justify-center items-center gap-2 font-bold uppercase bg-white hover:bg-[#448bd210] transition-all disabled:opacity-40"
-                >
-                  <Icon icon="lucide:copy" strokeWidth="2.5" width="18" />
-                  {loading ? "Initializing..." : "Clone Template"}
-                </button>
-
-                {/* Upload Option even if not cloned */}
-                <div className="flex border-l pl-4 border-gray-200 ml-2 items-center gap-4">
-                  <div className="flex flex-col items-center">
-                    <label className="cursor-pointer group bg-[#448bd2] text-white px-5 py-2 text-sm rounded-full flex items-center gap-2 font-bold uppercase hover:bg-[#1a3652] transition-all shadow-sm">
-                      <Icon icon="lucide:upload" width="18" />
-                      {uploading ? "Uploading..." : "Upload Excel File"}
-                      <input
-                        type="file"
-                        accept=".xlsx, .xls"
-                        onChange={handleUpload}
-                        className="hidden"
-                        disabled={uploading}
-                      />
-                    </label>
-                    <button
-                      onClick={handleDownloadTemplate}
-                      className="mt-1 text-[10px] text-[#448bd2] hover:underline flex items-center gap-1 font-semibold uppercase tracking-wider"
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                      <svg
+                        className="h-4 w-4 text-[#5D5D5D]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                    <select
+                      value={selectedOrg || ""}
+                      onChange={(e) => setSelectedOrg(e.target.value || null)}
+                      className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] bg-white"
                     >
-                      <Icon icon="lucide:download" width="10" />
-                      Download Template
-                    </button>
+                      <option value="">Global Master Template</option>
+                      {organizations.map((org) => (
+                        <option key={org} value={org}>
+                          {org}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex flex-wrap items-center gap-3">
-                <p className="text-sm text-[#5D5D5D] font-medium tracking-wide">
-                  {selectedOrg
-                    ? `Editing questions for "${selectedOrg}"`
-                    : "Viewing global master template"}
-                </p>
+              )}
 
-                {/* Batch Actions Group */}
-                <div className="flex items-center gap-6">
-                  {/* Delete All Button (Only if questions exist and NOT Master Template) */}
-                  {selectedOrg && allQuestions.length > 0 && (
+              {/* Divider */}
+              {isSuperAdmin && (
+                <div className="hidden xxl:block w-px bg-gray-100" />
+              )}
+
+              {/* Action Area */}
+              <div className="flex-1 flex flex-col justify-center">
+                {!loading && selectedOrg && allQuestions.length === 0 ? (
+                  <div className="flex flex-col md:flex-row gap-5">
+                    {/* Clone Card */}
                     <button
-                      onClick={handleDeleteAll}
+                      onClick={handleCloneTemplate}
                       disabled={loading}
-                      className="group text-red-500 px-5 py-2 text-sm rounded-full border-2 border-red-200 flex items-center gap-2 font-bold uppercase bg-white hover:bg-red-50 transition-all hover:border-red-500"
+                      className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50 border border-blue-100/60 transition-all duration-300 hover:bg-blue-100 hover:border-blue-200 hover:shadow-md text-left bg-white sm:flex-row flex-col cursor-pointer"
                     >
-                      <Icon icon="lucide:trash-2" width="18" />
-                      Delete All QUESTION
+                      <div className="w-11 h-11 rounded-xl bg-[var(--primary-color)] flex items-center justify-center text-white flex-shrink-0 group-hover:scale-105 transition-transform">
+                        <Icon icon="lucide:copy" width="20" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold text-gray-800 mb-1">
+                          Clone from Master
+                        </h4>
+                        <p className="text-xs text-gray-500 leading-relaxed">
+                          Copy all questions from the master template to this
+                          organization.
+                        </p>
+                      </div>
+                      <Icon
+                        icon="lucide:arrow-right"
+                        width="16"
+                        className="text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all mt-1 flex-shrink-0 sm:block hidden"
+                      />
                     </button>
-                  )}
-                </div>
+
+                    {/* Upload Card */}
+                    <label className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-neutral-50 border border-gray-100 transition-all duration-300 hover:bg-white hover:border-gray-200 sm:flex-row flex-col hover:shadow-md cursor-pointer">
+                      <div className="w-11 h-11 rounded-xl bg-gray-800 flex items-center justify-center text-white flex-shrink-0 cursor-pointer group-hover:scale-105 transition-transform">
+                        <Icon icon="lucide:upload" width="20" />
+                        <input
+                          type="file"
+                          accept=".xlsx, .xls"
+                          onChange={handleUpload}
+                          className="hidden absolute inset-0"
+                          disabled={uploading}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-full sm:min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="text-sm font-bold text-gray-800">
+                            Upload Excel
+                          </h4>
+                          <button
+                            onClick={handleDownloadTemplate}
+                            className="text-xs text-blue-500 hover:text-blue-700 font-medium transition-colors underline capitalize"
+                          >
+                            Get template
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-500 leading-relaxed">
+                          Import questions from a spreadsheet file.
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center border bg-white ${selectedOrg ? "bg-green-100 border-green-600/25 text-green-600" : "text-blue-600 border-blue-600/25"}`}
+                      >
+                        <Icon
+                          icon={
+                            selectedOrg
+                              ? "lucide:check-circle-2"
+                              : "lucide:globe"
+                          }
+                          width="20"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-gray-800">
+                          {selectedOrg || "Master Template"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {allQuestions.length} question
+                          {allQuestions.length !== 1 ? "s" : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    {selectedOrg && allQuestions.length > 0 && (
+                      <button
+                        onClick={handleDeleteAll}
+                        disabled={loading}
+                        className="group relative overflow-hidden z-0 border-red-500 border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-red-500 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
+                      >
+                        <Icon icon="lucide:trash-2" width="14" />
+                        Delete all
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -1295,9 +1377,6 @@ const CrudQuestion = () => {
 
         {/* TABS ROW: Centered Tabs, Filter Button on Right */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-end mb-8 gap-4">
-          {/* Spacer - Flexible Width (Hidden on Mobile) */}
-          {/* <div className="flex-1 hidden md:block"></div> */}
-
           {/* Centered Tabs */}
           <div className="flex md:justify-end justify-start items-start w-full overflow-x-auto pb-2 md:pb-0 no-scrollbar">
             <ul className="flex list-none flex-row bg-[var(--light-primary-color)] rounded-full p-1 border border-gray-100 gap-1 md:min-w-max">
@@ -1306,13 +1385,14 @@ const CrudQuestion = () => {
                   <button
                     onClick={() => {
                       setFilterDomains([domain]);
-                      setFilterSubdomains([]); // Reset subdomains when changing domain to ensure immediate updates
+                      setFilterSubdomains([]); // Reset subdomains when changing domain
                     }}
-                    className={`px-6 py-2.5 text-sm  uppercase rounded-full transition-all whitespace-nowrap
-                            ${filterDomains.includes(domain)
-                        ? "bg-white text-gray-900 shadow-sm font-semibold"
-                        : "text-neutral-500 font-semibold"
-                      }`}
+                    className={`px-6 py-2.5 text-sm uppercase rounded-full transition-all whitespace-nowrap
+                            ${
+                              filterDomains.includes(domain)
+                                ? "bg-white text-gray-900 shadow-sm font-semibold"
+                                : "text-neutral-500 font-semibold"
+                            }`}
                   >
                     {domain}
                   </button>
@@ -1321,15 +1401,16 @@ const CrudQuestion = () => {
             </ul>
           </div>
 
-          {/* Filter Button - Right Aligned with flexible space */}
+          {/* Filter Button - Right Aligned */}
           <button
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${showFilters
-                ? "bg-[var(--primary-color)] text-white"
-                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
-              }`}
+                    ${
+                      showFilters
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+                    }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -1344,10 +1425,10 @@ const CrudQuestion = () => {
               </span>
             )}
           </button>
-        </div >
+        </div>
 
         {/* --- CONTENT AREA (Accordions + Role Prompt) --- */}
-        < div className="space-y-6" >
+        <div className="space-y-6">
           {!filterRole && (
             <div className="p-8 text-center flex flex-col items-center">
               <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
@@ -1399,154 +1480,154 @@ const CrudQuestion = () => {
             </div>
           )}
 
-          {
-            filterRole ? (
-              <DragDropContext onDragEnd={handleOnDragEnd}>
-                <div className="space-y-4">
-                  {displayGroups.map((subdomainTitle) => {
-                    const questionsInGroup = filteredQuestions.filter(
-                      (q) => q.subdomain === subdomainTitle,
-                    );
-                    const safeId = subdomainTitle
-                      .replace(/[^a-zA-Z0-9]/g, "-")
-                      .toLowerCase();
+          {filterRole ? (
+            <DragDropContext onDragEnd={handleOnDragEnd}>
+              <div className="space-y-4">
+                {displayGroups.map((subdomainTitle) => {
+                  const questionsInGroup = filteredQuestions.filter(
+                    (q) => q.subdomain === subdomainTitle,
+                  );
+                  const safeId = subdomainTitle
+                    .replace(/[^a-zA-Z0-9]/g, "-")
+                    .toLowerCase();
 
-                    return (
-                      <div
-                        key={subdomainTitle}
-                        className="rounded-xl border border-gray-100 bg-white overflow-hidden"
-                      >
-                        <h2 className="mb-0" id={`heading-${safeId}`}>
-                          <button
-                            className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
-                            type="button"
-                            onClick={() => {
-                              setOpenSubdomains((prev) =>
-                                prev.includes(subdomainTitle)
-                                  ? prev.filter((t) => t !== subdomainTitle)
-                                  : [...prev, subdomainTitle],
-                              );
-                            }}
-                            aria-expanded={openSubdomains.includes(
-                              subdomainTitle,
-                            )}
-                            aria-controls={`collapse-${safeId}`}
-                          >
-                            <span className="pr-4">{subdomainTitle}</span>
-                            <span
-                              className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
+                  return (
+                    <div
+                      key={subdomainTitle}
+                      className="rounded-xl border border-gray-100 bg-white overflow-hidden"
+                    >
+                      <h2 className="mb-0" id={`heading-${safeId}`}>
+                        <button
+                          className="group relative flex w-full items-center justify-between px-6 py-5 text-left text-lg font-bold text-gray-800 transition hover:bg-gray-50 focus:outline-none"
+                          type="button"
+                          onClick={() => {
+                            setOpenSubdomains((prev) =>
+                              prev.includes(subdomainTitle)
+                                ? prev.filter((t) => t !== subdomainTitle)
+                                : [...prev, subdomainTitle],
+                            );
+                          }}
+                          aria-expanded={openSubdomains.includes(
+                            subdomainTitle,
+                          )}
+                          aria-controls={`collapse-${safeId}`}
+                        >
+                          <span className="pr-4">{subdomainTitle}</span>
+                          <span
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
+                              openSubdomains.includes(subdomainTitle)
                                 ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
                                 : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                                }`}
-                            >
-                              <Icon icon="mdi:chevron-up" width="18" />
-                            </span>
-                          </button>
-                        </h2>
-                        <div
-                          id={`collapse-${safeId}`}
-                          className={`!visible ${openSubdomains.includes(subdomainTitle)
+                            }`}
+                          >
+                            <Icon icon="mdi:chevron-up" width="18" />
+                          </span>
+                        </button>
+                      </h2>
+                      <div
+                        id={`collapse-${safeId}`}
+                        className={`!visible ${
+                          openSubdomains.includes(subdomainTitle)
                             ? ""
                             : "hidden"
-                            }`}
-                          aria-labelledby={`heading-${safeId}`}
+                        }`}
+                        aria-labelledby={`heading-${safeId}`}
+                      >
+                        <Droppable
+                          droppableId={subdomainTitle}
+                          type={subdomainTitle}
                         >
-                          <Droppable
-                            droppableId={subdomainTitle}
-                            type={subdomainTitle}
-                          >
-                            {(provided) => (
-                              <div
-                                className="px-4 text-sm sm:px-6 pb-6 pt-2"
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                              >
-                                {questionsInGroup.length > 0 ? (
-                                  <div className="space-y-1">
-                                    {questionsInGroup.map((q, qIdx) => (
-                                      <Draggable
-                                        key={q._id}
-                                        draggableId={q._id}
-                                        index={qIdx}
-                                      >
-                                        {(provided) => (
-                                          <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100
+                          {(provided) => (
+                            <div
+                              className="px-4 text-sm sm:px-6 pb-6 pt-2"
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
+                              {questionsInGroup.length > 0 ? (
+                                <div className="space-y-1">
+                                  {questionsInGroup.map((q, qIdx) => (
+                                    <Draggable
+                                      key={q._id}
+                                      draggableId={q._id}
+                                      index={qIdx}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          className="flex justify-between items-start group bg-white p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100
                                            sm:flex-row flex-col gap-y-2.5"
+                                        >
+                                          <div className="flex gap-3 pr-2 min-w-0">
+                                            <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">
+                                              Q{qIdx + 1}.
+                                            </span>
+                                            <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">
+                                              {q.questionStem}
+                                            </p>
+                                          </div>
+                                          <div
+                                            className={`flex sm:gap-3 gap-1.5 lg:gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0 justify-end sm:w-fit w-full`}
                                           >
-                                            <div className="flex gap-3 pr-2 min-w-0">
-                                              <span className="font-bold text-gray-800 text-sm whitespace-nowrap min-w-[24px]">
-                                                Q{qIdx + 1}.
-                                              </span>
-                                              <p className="text-gray-700 text-sm font-medium leading-relaxed break-words">
-                                                {q.questionStem}
-                                              </p>
-                                            </div>
-                                            <div
-                                              className={`flex sm:gap-3 gap-1.5 lg:gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap pt-1 lg:pt-0 self-start shrink-0 justify-end sm:w-fit w-full`}
+                                            <button
+                                              onClick={() => openEditModal(q)}
+                                              className={`text-blue-400 hover:text-blue-600 transition-colors p-1`}
+                                              title="Edit"
                                             >
-                                              <button
-                                                onClick={() => openEditModal(q)}
-                                                className={`text-blue-400 hover:text-blue-600 transition-colors p-1`}
-                                                title="Edit"
-                                              >
-                                                <Icon
-                                                  icon="lucide:pencil"
-                                                  width="16"
-                                                />
-                                              </button>
-                                              <button
-                                                onClick={() => openDeleteModal(q)}
-                                                className={`text-red-400 hover:text-red-600 transition-colors p-1`}
-                                                title="Delete"
-                                              >
-                                                <Icon
-                                                  icon="lucide:trash-2"
-                                                  width="16"
-                                                />
-                                              </button>
-                                              <div
-                                                {...provided.dragHandleProps}
-                                                className={`text-gray-400 hover:text-gray-600 p-1 cursor-grab`}
-                                                title="Drag to reorder"
-                                              >
-                                                <Icon
-                                                  icon="lucide:menu"
-                                                  width="16"
-                                                />
-                                              </div>
+                                              <Icon
+                                                icon="lucide:pencil"
+                                                width="16"
+                                              />
+                                            </button>
+                                            <button
+                                              onClick={() => openDeleteModal(q)}
+                                              className={`text-red-400 hover:text-red-600 transition-colors p-1`}
+                                              title="Delete"
+                                            >
+                                              <Icon
+                                                icon="lucide:trash-2"
+                                                width="16"
+                                              />
+                                            </button>
+                                            <div
+                                              {...provided.dragHandleProps}
+                                              className={`text-gray-400 hover:text-gray-600 p-1 cursor-grab`}
+                                              title="Drag to reorder"
+                                            >
+                                              <Icon
+                                                icon="lucide:menu"
+                                                width="16"
+                                              />
                                             </div>
                                           </div>
-                                        )}
-                                      </Draggable>
-                                    ))}
-                                    {provided.placeholder}
-                                  </div>
-                                ) : (
-                                  <div className="text-gray-400 text-sm italic py-2">
-                                    {filterRole
-                                      ? "No questions added yet."
-                                      : "Select a filter to view questions."}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </Droppable>
-                        </div>
+                                        </div>
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {provided.placeholder}
+                                </div>
+                              ) : (
+                                <div className="text-gray-400 text-sm italic py-2">
+                                  {filterRole
+                                    ? "No questions added yet."
+                                    : "Select a filter to view questions."}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Droppable>
                       </div>
-                    );
-                  })}
-                </div>
-              </DragDropContext>
-            ) : null
-          }
-        </div >
-      </div >
+                    </div>
+                  );
+                })}
+              </div>
+            </DragDropContext>
+          ) : null}
+        </div>
+      </div>
 
       {/* --- MODALS (Add/Edit/Delete) --- */}
-      < CrudModals
+      <CrudModals
         // ADD FORM PROPS
         addForms={addForms}
         updateAddForm={updateAddForm}
@@ -1588,17 +1669,26 @@ const CrudQuestion = () => {
             {/* Body */}
             <div className="px-6 py-6 flex flex-col items-center gap-4 text-center">
               <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-                <Icon icon="lucide:trash-2" width="30" className="text-red-500" />
+                <Icon
+                  icon="lucide:trash-2"
+                  width="30"
+                  className="text-red-500"
+                />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-[#1A3652] mb-1">
                   Delete All Questions?
                 </h3>
                 <p className="text-sm text-neutral-500 leading-relaxed">
-                  You are about to permanently delete <strong>all {allQuestions.length} questions</strong> for{" "}
+                  You are about to permanently delete{" "}
+                  <strong>all {allQuestions.length} questions</strong> for{" "}
                   <strong className="text-[#1A3652]">{selectedOrg}</strong>.
                   <br />
-                  This action <span className="text-red-500 font-semibold">cannot be undone</span>.
+                  This action{" "}
+                  <span className="text-red-500 font-semibold">
+                    cannot be undone
+                  </span>
+                  .
                 </p>
               </div>
             </div>
@@ -1622,34 +1712,6 @@ const CrudQuestion = () => {
           </div>
         </div>
       )}
-    </div >
-  );
-};
-
-// -- SUBCOMPONENTS --
-const FilterSection = ({
-  title,
-  children,
-  open = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  open?: boolean;
-}) => {
-  const [isOpen, setIsOpen] = useState(open);
-  return (
-    <div className="mb-4 border-b pb-2 last:border-0 border-gray-100">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full font-semibold text-gray-700 text-sm mb-2"
-      >
-        {title}
-        <Icon
-          icon="mdi:chevron-down"
-          className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      {isOpen && <div className="pl-1 space-y-1">{children}</div>}
     </div>
   );
 };
