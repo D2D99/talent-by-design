@@ -415,10 +415,10 @@ const ManagerReport = () => {
             style={{ backgroundColor: "#1a3652" }}
           >
             <Icon
-                icon="lucide:arrow-down-to-line"
-                width="18"
-                className="transition-transform duration-300 group-hover:translate-y-0.5"
-              />
+              icon="lucide:arrow-down-to-line"
+              width="18"
+              className="transition-transform duration-300 group-hover:translate-y-0.5"
+            />
             <span className="relative z-10 flex items-center gap-2">
               Export Analysis
             </span>
@@ -453,16 +453,15 @@ const ManagerReport = () => {
                 <Select
                   // styles={customSelectStyles}
                   className="select-search"
-                  placeholder="Business Unit | Department"
+                  placeholder="Select Department"
                   options={[
                     { value: "", label: "All Departments" },
                     ...depts.map((d) => ({ value: d, label: d })),
                   ]}
-                  value={
-                    selectedDept
-                      ? { value: selectedDept, label: selectedDept }
-                      : null
-                  }
+                  value={[
+                    { value: "", label: "All Departments" },
+                    ...depts.map((d) => ({ value: d, label: d })),
+                  ].find((o) => o.value === selectedDept) || null}
                   onChange={(option: any) => {
                     setSelectedDept(option?.value || "");
                     setSelectedMember(null);

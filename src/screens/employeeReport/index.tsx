@@ -411,12 +411,15 @@ const EmployeeReport = () => {
               {(isSuperAdmin || isAdmin) && (
                 <Select
                   className="select-search"
-                  placeholder="Business Unit | Department"
+                  placeholder="Select Department"
                   options={[
                     { value: "", label: "All Departments" },
                     ...depts.map((d) => ({ value: d, label: d })),
                   ]}
-                  value={selectedDept ? { value: selectedDept, label: selectedDept } : null}
+                  value={[
+                    { value: "", label: "All Departments" },
+                    ...depts.map((d) => ({ value: d, label: d })),
+                  ].find((o) => o.value === selectedDept) || null}
                   onChange={(option: any) => {
                     setSelectedDept(option?.value || "");
                     setSelectedMember(null);
