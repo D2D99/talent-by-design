@@ -433,20 +433,6 @@ const AdminReport = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="relative group">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-blue-500/20 shadow-lg transition-transform duration-300 group-hover:scale-105">
-                {userData?.profileImage || reportData?.user?.profileImage ? (
-                  <img
-                    src={userData?.profileImage || reportData?.user?.profileImage}
-                    alt="profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#1a3652] to-[#448bd2] flex items-center justify-center text-white text-2xl font-bold">
-                    {(userData?.firstName?.[0] || reportData?.user?.firstName?.[0] || reportData?.userDetails?.firstName?.[0] || "A").toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full shadow-sm" title="Active Assessment"></div>
             </div>
             <div>
               <h3 className="text-2xl font-black text-[#1A3652] tracking-tight">
@@ -467,24 +453,25 @@ const AdminReport = () => {
 
           <button
             type="button"
-            className="group relative overflow-hidden z-0 text-[var(--white-color)] px-8 h-12 rounded-2xl flex justify-center items-center gap-2 font-bold text-sm uppercase bg-current-color shadow-[0_10px_20px_-5px_rgba(68,139,210,0.3)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
+            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             style={{ backgroundColor: "#1a3652" }}
           >
-            <span className="relative z-10 flex items-center gap-2">
-              Export Analysis
-              <Icon
+             <Icon
                 icon="lucide:arrow-down-to-line"
                 width="18"
                 className="transition-transform duration-300 group-hover:translate-y-0.5"
               />
+            <span className="">
+              Export Analysis
             </span>
+
+             
             <div className="absolute inset-0 bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
         </div>
 
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
-          <div className="xl:block hidden"></div>
           <div className="xl:block hidden"></div>
           <div className="xl:block hidden"></div>
           {isSuperAdmin && (

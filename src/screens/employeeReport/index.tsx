@@ -358,22 +358,6 @@ const EmployeeReport = () => {
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_4px_20px_-5px_rgba(75,155,233,0.15)] sm:p-6 p-3 rounded-[12px]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className="relative group">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-blue-500/20 shadow-lg transition-transform duration-300 group-hover:scale-105">
-                {userData?.profileImage || reportData?.user?.profileImage ? (
-                  <img
-                    src={userData?.profileImage || reportData?.user?.profileImage}
-                    alt="profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#1a3652] to-[#448bd2] flex items-center justify-center text-white text-2xl font-bold">
-                    {(userData?.firstName?.[0] || reportData?.user?.firstName?.[0] || reportData?.userDetails?.firstName?.[0] || "E").toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full shadow-sm" title="Active Assessment"></div>
-            </div>
             <div>
               <h3 className="text-2xl font-black text-[#1A3652] tracking-tight">
                 {userData?.firstName || reportData?.user?.firstName || reportData?.userDetails?.firstName || "Employee"}{" "}
@@ -391,35 +375,14 @@ const EmployeeReport = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex -space-x-4">
-              {[
-                { role: "Manager", color: "bg-blue-500", icon: "solar:user-bold-duotone" },
-                { role: "Peer", color: "bg-emerald-500", icon: "solar:users-group-two-rounded-bold-duotone" },
-                { role: "Team", color: "bg-amber-500", icon: "solar:ranking-bold-duotone" },
-              ].map((s, i) => (
-                <div key={i} className={`w-10 h-10 rounded-full ${s.color} border-4 border-white flex items-center justify-center text-white shadow-sm hover:-translate-y-1 transition-transform cursor-help group/avatar relative`} title={`${s.role} Feedback Complete`}>
-                  <Icon icon={s.icon} width="18" />
-                  <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-[#1A3652] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap z-50">
-                    {s.role} Verified
-                  </div>
-                </div>
-              ))}
-              <div className="w-10 h-10 rounded-full bg-neutral-100 border-4 border-white flex items-center justify-center text-neutral-400 text-xs font-bold">+2</div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-[#448CD2] uppercase tracking-[0.2em]">Assessment Hive</span>
-              <span className="text-xs font-bold text-neutral-500">5/5 Participants Complete</span>
-            </div>
-          </div>
 
           <button
             type="button"
-            className="group relative overflow-hidden z-0 text-white px-8 h-12 rounded-2xl flex justify-center items-center gap-2 font-bold text-sm uppercase bg-[#1a3652] shadow-[0_10px_20px_-5px_rgba(68,139,210,0.3)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
+            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
           >
+            <Icon icon="lucide:arrow-down-to-line" width="18" className="transition-transform duration-300 group-hover:translate-y-0.5" />
             <span className="relative z-10 flex items-center gap-2">
               Export Analysis
-              <Icon icon="lucide:arrow-down-to-line" width="18" className="transition-transform duration-300 group-hover:translate-y-0.5" />
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
