@@ -101,11 +101,12 @@ const Sidebar = ({ onClose }: SidebarProps) => {
 
   // Get the first report route based on user role
   const getFirstReportRoute = () => {
-    if (user.role === "superAdmin" || user.role === "admin") {
+    const role = user.role?.toLowerCase();
+    if (role === "superadmin" || role === "super_admin" || role === "admin") {
       return "/dashboard/reports/org-head";
-    } else if (user.role === "leader") {
+    } else if (role === "leader") {
       return "/dashboard/reports/senior-leader";
-    } else if (user.role === "manager") {
+    } else if (role === "manager") {
       return "/dashboard/reports/manager";
     }
     return "/dashboard/reports/employee"; // Default for employees
@@ -264,42 +265,50 @@ const Sidebar = ({ onClose }: SidebarProps) => {
 
             {openReports && (
               <ul className="pl-6 mt-2 space-y-1" id="sub-menu">
+                {(() => {
+                  const role = user.role?.toLowerCase();
+                  const isAdminOrSuper =
+                    role === "superadmin" ||
+                    role === "super_admin" ||
+                    role === "admin";
+                  const isLeader = role === "leader";
+                  const isManager = role === "manager";
 
-                {(user.role === "superAdmin" || user.role === "admin") && (
-                  <ReportLink
-                    to="org-head"
-                    label="Org Head / Coach"
-                    icon="fluent:organization-20-regular"
-                    onClose={onClose}
-                  />
-                )}
-                {(user.role === "superAdmin" ||
-                  user.role === "admin" ||
-                  user.role === "leader") && (
-                    <ReportLink
-                      to="senior-leader"
-                      label="Senior Leader"
-                      icon="solar:user-rounded-outline"
-                      onClose={onClose}
-                    />
-                  )}
-                {(user.role === "superAdmin" ||
-                  user.role === "admin" ||
-                  user.role === "leader" ||
-                  user.role === "manager") && (
-                    <ReportLink
-                      to="manager"
-                      label="Manager"
-                      icon="solar:users-group-rounded-outline"
-                      onClose={onClose}
-                    />
-                  )}
-                <ReportLink
-                  to="employee"
-                  label="Employee"
-                  icon="solar:users-group-two-rounded-linear"
-                  onClose={onClose}
-                />
+                  return (
+                    <>
+                      {isAdminOrSuper && (
+                        <ReportLink
+                          to="org-head"
+                          label="Org Head / Coach"
+                          icon="fluent:organization-20-regular"
+                          onClose={onClose}
+                        />
+                      )}
+                      {(isAdminOrSuper || isLeader) && (
+                        <ReportLink
+                          to="senior-leader"
+                          label="Senior Leader"
+                          icon="solar:user-rounded-outline"
+                          onClose={onClose}
+                        />
+                      )}
+                      {(isAdminOrSuper || isLeader || isManager) && (
+                        <ReportLink
+                          to="manager"
+                          label="Manager"
+                          icon="solar:users-group-rounded-outline"
+                          onClose={onClose}
+                        />
+                      )}
+                      <ReportLink
+                        to="employee"
+                        label="Employee"
+                        icon="solar:users-group-two-rounded-linear"
+                        onClose={onClose}
+                      />
+                    </>
+                  );
+                })()}
               </ul>
             )}
           </li>

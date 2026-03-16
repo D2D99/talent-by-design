@@ -104,7 +104,7 @@ const EmployeeReport = () => {
   const userId = searchParams.get("userId");
   const userEmail = searchParams.get("email");
   const userRole = user?.role?.toLowerCase() || "";
-  const isSuperAdmin = userRole === "superadmin";
+  const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
   const isReportPage = location.pathname.includes("reports");
 
@@ -147,9 +147,13 @@ const EmployeeReport = () => {
   }, [selectedOrg]);
 
   const filteredMembers = members.filter((m) => {
-    const roleLower = m.role.toLowerCase();
-    const matchesDept = !selectedDept || m.department === selectedDept;
-    return matchesDept && roleLower === "employee";
+    const roleLower = m.role?.toLowerCase();
+    const memberDept = m.department?.toString().trim().toLowerCase();
+    const searchDept = selectedDept?.toString().trim().toLowerCase();
+
+    const matchesDept = !searchDept || memberDept === searchDept;
+
+    return roleLower === "employee" && !!matchesDept;
   });
 
   // const customSelectStyles = {
@@ -389,7 +393,7 @@ const EmployeeReport = () => {
         </div>
 
         {/* Filters Section */}
-        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-4 gap-4 items-center">
+        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
 
           {isSuperAdmin && (
@@ -407,58 +411,59 @@ const EmployeeReport = () => {
           )}
 
           {(isSuperAdmin || isAdmin || isReportPage) && (
-            <>
-              {(isSuperAdmin || isAdmin) && (
-                <Select
-                  className="select-search"
-                  placeholder="Select Department"
-                  options={[
-                    { value: "", label: "All Departments" },
-                    ...depts.map((d) => ({ value: d, label: d })),
-                  ]}
-                  value={[
-                    { value: "", label: "All Departments" },
-                    ...depts.map((d) => ({ value: d, label: d })),
-                  ].find((o) => o.value === selectedDept) || null}
-                  onChange={(option: any) => {
-                    setSelectedDept(option?.value || "");
-                    setSelectedMember(null);
-                  }}
-                />
-              )}
-              <Select
-                className="select-search"
-                placeholder="Select Member"
-                options={filteredMembers.map((m) => ({
-                  value: m._id,
-                  label: `${m.name} (${m.role}) [${m.assessmentStatus}]`,
-                  data: m,
-                }))}
-                value={selectedMember ? {
-                  value: selectedMember._id,
-                  label: `${selectedMember.name} (${selectedMember.role}) [${selectedMember.assessmentStatus}]`,
-                } : null}
-                onChange={(option: any) => {
-                  const m = option?.data;
-                  if (m) {
-                    setSelectedMember(m);
-                    const roleMapping: Record<string, string> = {
-                      superadmin: "org-head",
-                      super_admin: "org-head",
-                      admin: "org-head",
-                      "senior-leader": "senior-leader",
-                      leader: "senior-leader",
-                      manager: "manager",
-                      employee: "employee",
-                    };
-                    const reportType = roleMapping[m.role.toLowerCase()] || "employee";
-                    const currentOrg = searchParams.get("orgName") || "";
-                    const orgQuery = currentOrg ? `&orgName=${encodeURIComponent(currentOrg)}` : "";
-                    navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`);
-                  }
-                }}
-              />
-            </>
+            <Select
+              className="select-search"
+              placeholder="Select Department"
+              options={[
+                { value: "", label: "All Departments" },
+                ...depts.map((d) => ({ value: d, label: d })),
+              ]}
+              value={
+                [
+                  { value: "", label: "All Departments" },
+                  ...depts.map((d) => ({ value: d, label: d })),
+                ].find((o) => o.value === selectedDept) || null
+              }
+              onChange={(option: any) => {
+                setSelectedDept(option?.value || "");
+                setSelectedMember(null);
+              }}
+            />
+          )}
+
+          {(isSuperAdmin || isAdmin || isReportPage) && (
+            <Select
+              className="select-search"
+              placeholder="Select Employee"
+              options={filteredMembers.map((m) => ({
+                value: m._id,
+                label: m.name,
+                data: m,
+              }))}
+              value={selectedMember ? {
+                value: selectedMember._id,
+                label: selectedMember.name,
+              } : null}
+              onChange={(option: any) => {
+                const m = option?.data;
+                if (m) {
+                  setSelectedMember(m);
+                  const roleMapping: Record<string, string> = {
+                    superadmin: "org-head",
+                    super_admin: "org-head",
+                    admin: "org-head",
+                    "senior-leader": "senior-leader",
+                    leader: "senior-leader",
+                    manager: "manager",
+                    employee: "employee",
+                  };
+                  const reportType = roleMapping[m.role.toLowerCase()] || "employee";
+                  const currentOrg = searchParams.get("orgName") || "";
+                  const orgQuery = currentOrg ? `&orgName=${encodeURIComponent(currentOrg)}` : "";
+                  navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`);
+                }
+              }}
+            />
           )}
         </div>
       </div>

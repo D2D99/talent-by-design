@@ -43,7 +43,7 @@ const ManagerReport = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const userRole = user?.role?.toLowerCase() || "";
-  const isSuperAdmin = userRole === "superadmin";
+  const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
   const isReportPage = location.pathname.includes("reports");
 
@@ -73,9 +73,14 @@ const ManagerReport = () => {
   }, [selectedOrg]);
 
   const filteredMembers = members.filter((m) => {
-    const roleLower = m.role.toLowerCase();
-    const matchesDept = !selectedDept || m.department === selectedDept;
-    return matchesDept && roleLower === "manager";
+    const roleLower = m.role?.toLowerCase();
+    const memberDept = m.department?.toString().trim().toLowerCase();
+    const searchDept = selectedDept?.toString().trim().toLowerCase();
+
+    const matchesDept = !searchDept || memberDept === searchDept;
+
+    // Strictly show only managers on this page
+    return roleLower === "manager" && !!matchesDept;
   });
 
   // const customSelectStyles = {
@@ -448,44 +453,41 @@ const ManagerReport = () => {
           )}
 
           {(isSuperAdmin || isAdmin || isReportPage) && (
-            <>
-              {(isSuperAdmin || isAdmin) && (
-                <Select
-                  // styles={customSelectStyles}
-                  className="select-search"
-                  placeholder="Select Department"
-                  options={[
-                    { value: "", label: "All Departments" },
-                    ...depts.map((d) => ({ value: d, label: d })),
-                  ]}
-                  value={[
-                    { value: "", label: "All Departments" },
-                    ...depts.map((d) => ({ value: d, label: d })),
-                  ].find((o) => o.value === selectedDept) || null}
-                  onChange={(option: any) => {
-                    setSelectedDept(option?.value || "");
-                    setSelectedMember(null);
-                  }}
-                />
-              )}
-            </>
+            <Select
+              className="select-search"
+              placeholder="Select Department"
+              options={[
+                { value: "", label: "All Departments" },
+                ...depts.map((d) => ({ value: d, label: d })),
+              ]}
+              value={
+                [
+                  { value: "", label: "All Departments" },
+                  ...depts.map((d) => ({ value: d, label: d })),
+                ].find((o) => o.value === selectedDept) || null
+              }
+              onChange={(option: any) => {
+                setSelectedDept(option?.value || "");
+                setSelectedMember(null);
+              }}
+            />
           )}
 
           {(isSuperAdmin || isAdmin || isReportPage) && (
             <Select
               // styles={customSelectStyles}
               className="select-search"
-              placeholder="Select Member"
+              placeholder="Select Manager"
               options={filteredMembers.map((m) => ({
                 value: m._id,
-                label: `${m.name} (${m.role}) [${m.assessmentStatus}]`,
+                label: m.name,
                 data: m,
               }))}
               value={
                 selectedMember
                   ? {
                     value: selectedMember._id,
-                    label: `${selectedMember.name} (${selectedMember.role}) [${selectedMember.assessmentStatus}]`,
+                    label: selectedMember.name,
                   }
                   : null
               }

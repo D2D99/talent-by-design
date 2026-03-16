@@ -43,6 +43,7 @@ const AdminReport = () => {
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
 
+  const isAdmin = userRole === "admin";
   const [orgs, setOrgs] = useState<string[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
 
@@ -66,8 +67,21 @@ const AdminReport = () => {
   }, [selectedOrg]);
 
   const filteredMembers = members.filter((m) => {
-    const roleLower = m.role.toLowerCase();
-    return roleLower === "admin" || roleLower === "superadmin" || roleLower === "super_admin";
+    const roleLower = m.role?.toLowerCase();
+    const isTargetRole = roleLower === "admin" || roleLower === "superadmin" || roleLower === "super_admin";
+
+    // Only show target role (Admins/SuperAdmins) on this page
+    if (!isTargetRole) return false;
+
+    // Hierarchy filter for visibility
+    if (isSuperAdmin) return true;
+
+    const canSeeMember =
+      (isAdmin && ["leader", "manager", "employee"].includes(roleLower)) ||
+      (userRole === "leader" && ["manager", "employee"].includes(roleLower)) ||
+      (userRole === "manager" && roleLower === "employee");
+
+    return canSeeMember;
   });
 
   // const customSelectStyles = {
@@ -456,16 +470,16 @@ const AdminReport = () => {
             className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             style={{ backgroundColor: "#1a3652" }}
           >
-             <Icon
-                icon="lucide:arrow-down-to-line"
-                width="18"
-                className="transition-transform duration-300 group-hover:translate-y-0.5"
-              />
+            <Icon
+              icon="lucide:arrow-down-to-line"
+              width="18"
+              className="transition-transform duration-300 group-hover:translate-y-0.5"
+            />
             <span className="">
               Export Analysis
             </span>
 
-             
+
             <div className="absolute inset-0 bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
         </div>
@@ -494,14 +508,14 @@ const AdminReport = () => {
             placeholder="Select Org Head / Coach"
             options={filteredMembers.map((m) => ({
               value: m._id,
-              label: `${m.name} (${m.role}) [${m.assessmentStatus}]`,
+              label: m.name,
               data: m,
             }))}
             value={
               selectedMember
                 ? {
                   value: selectedMember._id,
-                  label: `${selectedMember.name} (${selectedMember.role}) [${selectedMember.assessmentStatus}]`,
+                  label: selectedMember.name,
                 }
                 : null
             }
