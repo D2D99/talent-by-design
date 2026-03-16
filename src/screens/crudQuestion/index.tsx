@@ -248,11 +248,11 @@ const FilterSection = ({
           {title}
         </span>
         <Icon
-          icon="solar:alt-arrow-down-bold-duotone"
-          className={`text-blue-300 transition-transform duration-500 ${
-            isOpen ? "rotate-180 text-blue-500" : ""
+          icon="iconoir:nav-arrow-down"
+          className={`transition-transform duration-500 ${
+            isOpen ? "rotate-180" : ""
           }`}
-          width="18"
+          width="16"
         />
       </button>
       <div
@@ -1048,7 +1048,7 @@ const CrudQuestion = () => {
     <div className="crud-question-screen relative flex flex-col lg:flex-row gap-4 items-start">
       {/* --- FILTER SIDEBAR --- */}
       {showFilters && (
-        <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-[55] md:absolute fixed md:top-40 md:right-7 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full">
+        <div className="w-full md:w-96 bg-white shadow-[0_0_5px_rgba(68,140,210,0.5)] md:rounded-xl py-5 flex-shrink-0 z-[55] md:absolute fixed md:top-40 md:right-36 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full">
           <div className="flex justify-between items-center mb-6 px-5">
             <div className="flex items-center gap-3">
               <h3 className="font-bold text-lg text-gray-800">Filters</h3>
