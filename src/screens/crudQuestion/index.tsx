@@ -592,15 +592,15 @@ const CrudQuestion = () => {
     }
   };
 
-  const handleDownloadTemplate = async () => {
-    try {
-      await questionService.downloadTemplate();
-      toast.success("Template downloaded!");
-    } catch (err) {
-      toast.error("Failed to download template");
-      console.error(err);
-    }
-  };
+  // const handleDownloadTemplate = async () => {
+  //   try {
+  //     await questionService.downloadTemplate();
+  //     toast.success("Template downloaded!");
+  //   } catch (err) {
+  //     toast.error("Failed to download template");
+  //     console.error(err);
+  //   }
+  // };
 
   useEffect(() => {
     fetchQuestions();
@@ -1304,12 +1304,19 @@ const CrudQuestion = () => {
                           <h4 className="text-sm font-bold text-gray-800">
                             Upload Excel
                           </h4>
-                          <button
-                            onClick={handleDownloadTemplate}
+                          {/* <a
+                            href="https://res.cloudinary.com/dfpkn8g8h/raw/upload/v1773636647/Question_Upload_Template_zmqwjp.xlsx"
+                            className="text-xs text-blue-500 https://res.cloudinary.com/dfpkn8g8h/raw/upload/v1773636647/Question_Upload_Template_zmqwjp.xlsxtransition-colors underline capitalize"
+                          >
+                            Download template
+                          </a> */}
+                          <a
+                            href="https://res.cloudinary.com/dfpkn8g8h/raw/upload/v1773636647/Question_Upload_Template_zmqwjp.xlsx"
+                            // onClick={handleDownloadTemplate}a
                             className="text-xs text-blue-500 hover:text-blue-700 font-medium transition-colors underline capitalize"
                           >
                             Get template
-                          </button>
+                          </a>
                         </div>
                         <p className="text-xs text-gray-500 leading-relaxed">
                           Import questions from a spreadsheet file.
@@ -1678,7 +1685,10 @@ const CrudQuestion = () => {
                 <p className="text-sm text-neutral-600 mt-2">
                   You are about to permanently delete{" "}
                   <strong>all {allQuestions.length} questions</strong> for{" "}
-                  <strong className="text-[var(--secondary-color)]">{selectedOrg}</strong>.
+                  <strong className="text-[var(--secondary-color)]">
+                    {selectedOrg}
+                  </strong>
+                  .
                   <br />
                   This action is permanent and the data cannot be retrieved.
                 </p>
