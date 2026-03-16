@@ -117,7 +117,9 @@ const EmployeeReport = () => {
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
   const [reportData, setReportData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [hasNoReport, setHasNoReport] = useState(false);
   const [detailedPods, setDetailedPods] = useState<any>(null);
 
   // Dynamic selection states
@@ -147,11 +149,7 @@ const EmployeeReport = () => {
   const filteredMembers = members.filter((m) => {
     const roleLower = m.role.toLowerCase();
     const matchesDept = !selectedDept || m.department === selectedDept;
-
-    // For Employee report, we only show members with role 'employee'
-    const isAllowedRole = roleLower === "employee";
-
-    return matchesDept && isAllowedRole;
+    return matchesDept && roleLower === "employee";
   });
 
   // const customSelectStyles = {
@@ -203,8 +201,17 @@ const EmployeeReport = () => {
     initTWE({ Ripple, Offcanvas, Dropdown });
 
     const fetchReport = async () => {
+      // Early exit if no target user specified in URL and no logged in user fallback needed
+      // (Admin viewing report needs a target)
+      if (!userId && !userEmail) {
+        setLoading(false);
+        setHasNoReport(false);
+        return;
+      }
+
+      setLoading(true);
+      setHasNoReport(false);
       try {
-        // Build URL: if we have an email (guest employee), use it; else use userId
         let url = `dashboard/employee`;
         if (userEmail) {
           url = `dashboard/employee?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
@@ -212,8 +219,9 @@ const EmployeeReport = () => {
           url = `dashboard/employee?userId=${userId}`;
         }
         const res = await api.get(url);
-        const data = res.data.report;
-        setReportData(data);
+        setReportData(res.data.report);
+        setUserData(res.data.user);
+        setHasNoReport(false);
 
         const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
         const defaultDomain =
@@ -224,8 +232,11 @@ const EmployeeReport = () => {
         const possibleSubs =
           ROLE_DOMAIN_SUBDOMAINS.employee[defaultDomain] || [];
         if (possibleSubs.length > 0) setSelectedSubdomain(possibleSubs[0]);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch report:", error);
+        if (error.response?.status === 404) {
+          setHasNoReport(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -294,10 +305,10 @@ const EmployeeReport = () => {
     digitalFluency: findDomainScore("digital"),
   };
 
-  const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
+  const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
-    reportData?.scores?.domains[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+    selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
@@ -317,78 +328,113 @@ const EmployeeReport = () => {
   ];
 
   return (
-    <div>
-      <div>
-        <div
-          className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
-          tabIndex={-1}
-          id="offcanvasExample"
-          aria-labelledby="offcanvasExampleLabel"
-          data-twe-offcanvas-init
-        >
-          <div className="flex items-center justify-end p-4">
-            <button
-              type="button"
-              className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-              data-twe-offcanvas-dismiss
-              aria-label="Close"
-            >
-              <span className="[&>svg]:h-6 [&>svg]:w-6">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </span>
-            </button>
-          </div>
-          <Sidebar />
-        </div>
-      </div>
-
-      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_4px_20px_-5px_rgba(75,155,233,0.15)] sm:p-6 p-3 rounded-[12px]">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
-              {reportData?.userDetails?.firstName || "Employee"}'s Report
-              Highlights
-            </h3>
-          </div>
+    <div className="flex flex-col gap-6">
+      {/* Offcanvas Sidebar for Mobile */}
+      <div
+        className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
+        tabIndex={-1}
+        id="offcanvasExample"
+        aria-labelledby="offcanvasExampleLabel"
+        data-twe-offcanvas-init
+      >
+        <div className="flex items-center justify-end p-4">
           <button
             type="button"
-            className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-5 pe-2.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
+            data-twe-offcanvas-dismiss
+            aria-label="Close"
           >
-            Export report
-            <Icon
-              icon="mynaui:arrow-right-circle-solid"
-              width="24"
-              height="24"
-              className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
-            />
+            <span className="[&>svg]:h-6 [&>svg]:w-6">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </span>
+          </button>
+        </div>
+        <Sidebar />
+      </div>
+
+      {/* Main Header & Filters Card */}
+      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_4px_20px_-5px_rgba(75,155,233,0.15)] sm:p-6 p-3 rounded-[12px]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="relative group">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-blue-500/20 shadow-lg transition-transform duration-300 group-hover:scale-105">
+                {userData?.profileImage || reportData?.user?.profileImage ? (
+                  <img
+                    src={userData?.profileImage || reportData?.user?.profileImage}
+                    alt="profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-[#1a3652] to-[#448bd2] flex items-center justify-center text-white text-2xl font-bold">
+                    {(userData?.firstName?.[0] || reportData?.user?.firstName?.[0] || reportData?.userDetails?.firstName?.[0] || "E").toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full shadow-sm" title="Active Assessment"></div>
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-[#1A3652] tracking-tight">
+                {userData?.firstName || reportData?.user?.firstName || reportData?.userDetails?.firstName || "Employee"}{" "}
+                {userData?.lastName || reportData?.user?.lastName || reportData?.userDetails?.lastName || ""}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-[10px] font-black text-[#448CD2] uppercase tracking-wider border border-blue-100">
+                  {userData?.role || reportData?.user?.role || reportData?.userDetails?.role || "Team Member"}
+                </span>
+                <span className="w-1 h-1 bg-neutral-300 rounded-full"></span>
+                <span className="text-xs font-bold text-neutral-400">
+                  {userData?.department || reportData?.user?.department || reportData?.userDetails?.department || "General"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex -space-x-4">
+              {[
+                { role: "Manager", color: "bg-blue-500", icon: "solar:user-bold-duotone" },
+                { role: "Peer", color: "bg-emerald-500", icon: "solar:users-group-two-rounded-bold-duotone" },
+                { role: "Team", color: "bg-amber-500", icon: "solar:ranking-bold-duotone" },
+              ].map((s, i) => (
+                <div key={i} className={`w-10 h-10 rounded-full ${s.color} border-4 border-white flex items-center justify-center text-white shadow-sm hover:-translate-y-1 transition-transform cursor-help group/avatar relative`} title={`${s.role} Feedback Complete`}>
+                  <Icon icon={s.icon} width="18" />
+                  <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-[#1A3652] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap z-50">
+                    {s.role} Verified
+                  </div>
+                </div>
+              ))}
+              <div className="w-10 h-10 rounded-full bg-neutral-100 border-4 border-white flex items-center justify-center text-neutral-400 text-xs font-bold">+2</div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black text-[#448CD2] uppercase tracking-[0.2em]">Assessment Hive</span>
+              <span className="text-xs font-bold text-neutral-500">5/5 Participants Complete</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="group relative overflow-hidden z-0 text-white px-8 h-12 rounded-2xl flex justify-center items-center gap-2 font-bold text-sm uppercase bg-[#1a3652] shadow-[0_10px_20px_-5px_rgba(68,139,210,0.3)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              Export Analysis
+              <Icon icon="lucide:arrow-down-to-line" width="18" className="transition-transform duration-300 group-hover:translate-y-0.5" />
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
         </div>
 
         {/* Filters Section */}
-        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
+        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-4 gap-4 items-center">
           <div className="xl:block hidden"></div>
 
           {isSuperAdmin && (
             <Select
-              // styles={customSelectStyles}
               className="select-search"
               placeholder="Organization"
               options={orgs.map((o) => ({ value: o, label: o }))}
-              value={
-                selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
-              }
+              value={selectedOrg ? { value: selectedOrg, label: selectedOrg } : null}
               onChange={(option: any) => {
                 setSelectedOrg(option?.value || "");
                 setSelectedDept("");
@@ -401,439 +447,288 @@ const EmployeeReport = () => {
             <>
               {(isSuperAdmin || isAdmin) && (
                 <Select
-                  // styles={customSelectStyles}
                   className="select-search"
                   placeholder="Business Unit | Department"
                   options={[
                     { value: "", label: "All Departments" },
                     ...depts.map((d) => ({ value: d, label: d })),
                   ]}
-                  value={
-                    selectedDept
-                      ? { value: selectedDept, label: selectedDept }
-                      : null
-                  }
+                  value={selectedDept ? { value: selectedDept, label: selectedDept } : null}
                   onChange={(option: any) => {
                     setSelectedDept(option?.value || "");
                     setSelectedMember(null);
                   }}
                 />
               )}
+              <Select
+                className="select-search"
+                placeholder="Select Member"
+                options={filteredMembers.map((m) => ({
+                  value: m._id,
+                  label: `${m.name} (${m.role}) [${m.assessmentStatus}]`,
+                  data: m,
+                }))}
+                value={selectedMember ? {
+                  value: selectedMember._id,
+                  label: `${selectedMember.name} (${selectedMember.role}) [${selectedMember.assessmentStatus}]`,
+                } : null}
+                onChange={(option: any) => {
+                  const m = option?.data;
+                  if (m) {
+                    setSelectedMember(m);
+                    const roleMapping: Record<string, string> = {
+                      superadmin: "org-head",
+                      super_admin: "org-head",
+                      admin: "org-head",
+                      "senior-leader": "senior-leader",
+                      leader: "senior-leader",
+                      manager: "manager",
+                      employee: "employee",
+                    };
+                    const reportType = roleMapping[m.role.toLowerCase()] || "employee";
+                    const currentOrg = searchParams.get("orgName") || "";
+                    const orgQuery = currentOrg ? `&orgName=${encodeURIComponent(currentOrg)}` : "";
+                    navigate(`/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`);
+                  }
+                }}
+              />
             </>
           )}
-
-          {(isSuperAdmin || isAdmin || isReportPage) && (
-            <Select
-              // styles={customSelectStyles}
-              className="select-search"
-              placeholder="Select Member"
-              options={filteredMembers.map((m) => ({
-                value: m._id,
-                label: `${m.name} (${m.role})`,
-                data: m,
-              }))}
-              value={
-                selectedMember
-                  ? {
-                      value: selectedMember._id,
-                      label: `${selectedMember.name} (${selectedMember.role})`,
-                    }
-                  : null
-              }
-              onChange={(option: any) => {
-                const m = option?.data;
-                if (m) {
-                  setSelectedMember(m);
-                  const roleMapping: Record<string, string> = {
-                    superadmin: "org-head",
-                    super_admin: "org-head",
-                    admin: "org-head",
-                    leader: "senior-leader",
-                    manager: "manager",
-                    employee: "employee",
-                  };
-                  const reportType =
-                    roleMapping[m.role.toLowerCase()] || "employee";
-                  navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`,
-                  );
-                }
-              }}
-            />
-          )}
         </div>
-        <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Score by domain
-            </h2>
-            <div className="relative mt-2" data-twe-dropdown-ref>
-              <button
-                className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                type="button"
-                id="dropdownMenuButtonDomain"
-                data-twe-dropdown-toggle-ref
-                aria-expanded="false"
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-              >
-                {selectedDomain}
-                <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                aria-labelledby="dropdownMenuButtonDomain"
-                data-twe-dropdown-menu-ref
-              >
-                {Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee).map((d) => (
-                  <li key={d}>
-                    <button
-                      onClick={() => handleDomainChange(d)}
-                      className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-black text-neutral-700 hover:bg-[#EDF5FD]"
-                      data-twe-dropdown-item-ref
-                    >
-                      {d}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex justify-center gap-4 mt-6">
-              <div className="flex items-center gap-1">
-                <div>
+      </div>
+
+      {hasNoReport ? (
+        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-4 text-center flex flex-col items-center gap-6">
+          <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
+            <Icon icon="solar:clipboard-list-broken-bold-duotone" width="48" className="text-[#448CD2]" />
+          </div>
+          <h2 className="text-3xl font-black text-[#1A3652]">No Assessment Results Yet</h2>
+          <p className="text-neutral-500 max-w-md text-lg">
+            This person has been invited to take the assessment, but they haven't completed it yet. Once they finish, you'll see their full performance report here.
+          </p>
+          <div className="flex gap-4 mt-4">
+            <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">Status: Pending Completion</div>
+          </div>
+        </div>
+      ) : reportData && (
+        <>
+          <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+            {/* Domain Score Section */}
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
+              <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
+                Score by domain
+              </h2>
+              <div className="relative mt-2" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
+                  type="button"
+                  id="dropdownMenuButtonDomain"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  {selectedDomain}
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                </button>
+                <ul className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block" aria-labelledby="dropdownMenuButtonDomain" data-twe-dropdown-menu-ref>
+                  {Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee).map((d) => (
+                    <li key={d}>
+                      <button onClick={() => handleDomainChange(d)} className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-bold text-neutral-700 hover:bg-[#EDF5FD]" data-twe-dropdown-item-ref>
+                        {d}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
                   <p className="w-6 h-2 bg-[#FF5656]"></p>
-                </div>
-                <div>
                   <p className="text-sm font-normal text-[#474747]">Low</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
+                <div className="flex items-center gap-1">
                   <p className="w-6 h-2 bg-[#FEE114]"></p>
-                </div>
-                <div>
                   <p className="text-sm font-normal text-[#474747]">Medium</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
+                <div className="flex items-center gap-1">
                   <p className="w-6 h-2 bg-[#30AD43]"></p>
-                </div>
-                <div>
                   <p className="text-sm font-normal text-[#474747]">High</p>
                 </div>
               </div>
+              <div className="p-10 flex justify-center">
+                <SpeedMeter value={domainScore} />
+              </div>
             </div>
-            <div className="p-10">
-              <SpeedMeter value={domainScore} />
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Score by sub-domain
-            </h2>
-            <div className="relative mt-2" data-twe-dropdown-ref>
-              <button
-                className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                type="button"
-                id="dropdownMenuButtonSub"
-                data-twe-dropdown-toggle-ref
-                aria-expanded="false"
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-              >
-                {selectedSubdomain}
-                <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                aria-labelledby="dropdownMenuButtonSub"
-                data-twe-dropdown-menu-ref
-              >
-                {(ROLE_DOMAIN_SUBDOMAINS.employee[selectedDomain] || []).map(
-                  (s) => (
+
+            {/* Subdomain Score Section */}
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
+              <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
+                Score by sub-domain
+              </h2>
+              <div className="relative mt-2" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
+                  type="button"
+                  id="dropdownMenuButtonSub"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  {selectedSubdomain}
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                </button>
+                <ul className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block" aria-labelledby="dropdownMenuButtonSub" data-twe-dropdown-menu-ref>
+                  {(ROLE_DOMAIN_SUBDOMAINS.employee[selectedDomain] || []).map((s) => (
                     <li key={s}>
-                      <button
-                        onClick={() => setSelectedSubdomain(s)}
-                        className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                        data-twe-dropdown-item-ref
-                      >
+                      <button onClick={() => setSelectedSubdomain(s)} className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]" data-twe-dropdown-item-ref>
                         {s}
                       </button>
                     </li>
-                  ),
-                )}
-              </ul>
-            </div>
-            <div className="flex justify-center gap-4 mt-6">
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
-                </div>
-                <div>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <p className="w-6 h-2 bg-[#FF5656]"></p>
                   <p className="text-sm font-normal text-[#474747]">Low</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
-                </div>
-                <div>
+                <div className="flex items-center gap-1">
+                  <p className="w-6 h-2 bg-[#FEE114]"></p>
                   <p className="text-sm font-normal text-[#474747]">Medium</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
-                </div>
-                <div>
+                <div className="flex items-center gap-1">
+                  <p className="w-6 h-2 bg-[#30AD43]"></p>
                   <p className="text-sm font-normal text-[#474747]">High</p>
                 </div>
               </div>
+              <div className="p-10 flex justify-center">
+                <SpeedMeter value={subdomainScore} />
+              </div>
             </div>
-            <div className="p-10">
-              <SpeedMeter value={subdomainScore} />
+
+            {/* Triangle Model Section */}
+            <div className="xl:col-span-1 lg:col-span-2">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
+                <div className="flex items-center justify-between w-full mb-2 text-left">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
+                      POD-360™ Model
+                    </h3>
+                    <p className="text-xs text-[#64748B] font-medium">Interconnectivity of focus areas</p>
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col items-center justify-center py-4 w-full gap-6">
+                  <div className="max-w-[240px]">
+                    <Triangle data={triangleData} />
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 w-full px-4">
+                    {(detailedPods?.insights?.modelDescription ? (
+                      detailedPods.insights.modelDescription
+                        .split(/[•\n\r]/)
+                        .map((item: string) => item.trim())
+                        .filter((item: string) => item.length > 0)
+                    ) : (
+                      ["Capability", "Engagement", "Confidence", "Resilience"]
+                    )).map((bullet: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <img src={IconStar} alt="icon" className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span className="text-sm font-medium text-[#64748B] text-left">{bullet}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="w-full mt-4 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">People</p>
+                    <p className="text-sm font-black text-[#1A3652]">{Math.round(triangleData.peoplePotential)}%</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Operational</p>
+                    <p className="text-sm font-black text-[#1A3652]">{Math.round(triangleData.operationalSteadiness)}%</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">Digital</p>
+                    <p className="text-sm font-black text-[#1A3652]">{Math.round(triangleData.digitalFluency)}%</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="xl:col-span-1 lg:col-span-2">
-            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
-              <div className="flex items-center justify-between w-full mb-2">
+
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-[#EDF5FD]">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    POD-360™ Model
+                  <h3 className="text-xl font-bold text-[#1A3652] capitalize">
+                    Insight for {selectedDomain}
                   </h3>
-                  <p className="text-xs text-[#64748B] font-medium">
-                    Interconnectivity of focus areas
-                  </p>
+                  <p className="text-xs text-[#64748B] font-medium">Overall analysis based on your responses</p>
                 </div>
+                <img src={Streamline} alt="images" className="w-8 h-8" />
               </div>
-              <div className="flex-1 flex flex-col items-start justify-start py-4 w-full gap-4">
-                <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
-                  <Triangle data={triangleData} />
-                </div>
-                <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                  {detailedPods?.insights?.modelDescription ? (
-                    detailedPods.insights.modelDescription
-                      .split(/[•\n\r]/)
-                      .map((item: string) => item.trim())
-                      .filter((item: string) => item.length > 0)
-                      .map((bullet: string, idx: number) => (
-                        <div key={idx} className="flex items-start gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0 mt-0.5"
-                          />
-                          <span className="text-sm font-medium text-[#64748B] leading-snug">
-                            {bullet}
-                          </span>
-                        </div>
-                      ))
-                  ) : (
-                    <>
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm font-medium text-[#64748B]">
-                          Capability
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm font-medium text-[#64748B]">
-                          Engagement
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm font-medium text-[#64748B]">
-                          Confidence
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm font-medium text-[#64748B]">
-                          Change resilience
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-                <div className="text-center">
-                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                    People
-                  </p>
-                  <p className="text-sm font-black text-[var(--secondary-color)]">
-                    {Math.round(findDomainScore("people"))}%
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                    Operational
-                  </p>
-                  <p className="text-sm font-black text-[var(--secondary-color)]">
-                    {Math.round(findDomainScore("operational"))}%
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                    Digital
-                  </p>
-                  <p className="text-sm font-black text-[var(--secondary-color)]">
-                    {Math.round(findDomainScore("digital"))}%
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Insight for {selectedDomain}
-                </h3>
-                <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  Overall analysis based on your responses
-                </p>
-              </div>
-              <div>
-                <img src={Streamline} alt="images" />
-              </div>
-            </div>
-            <div>
-              <ul className="mt-4 space-y-2">
+              <ul className="space-y-3">
                 {displayInsights.map((insight: string, idx: number) => (
-                  <li key={idx} className="feature-list">
-                    <img src={IconStar} alt="icon" className="mt-1" />
-                    <span className="text-sm text-[var(--secondary-color)] font-normal">
-                      {insight}
-                    </span>
+                  <li key={idx} className="flex gap-2">
+                    <img src={IconStar} alt="icon" className="w-4 h-4 mt-1 shrink-0" />
+                    <span className="text-sm text-[#1A3652] font-medium leading-relaxed">{insight}</span>
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Objectives and Key Results
-                </h3>
-                <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  {detailedPods?.objectives?.subtitle ||
-                    "Develop essential leadership and EI skills"}
-                </p>
-              </div>
-              <div>
-                <img src={Hugeicons} alt="images" />
-              </div>
-            </div>
-            <div className="space-y-6">
-              {displayKRs.map((kr: any, idx: number) => (
-                <div key={idx} className="flex items-center gap-3 mt-4">
-                  <div className="text-lg-progress">
-                    <CircularProgress
-                      value={kr.value}
-                      width={60}
-                      textColor="#36454F"
-                      pathColor="#1A3652"
-                      trailColor="#D9D9D9"
-                    />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                      {kr.label}
-                    </h2>
-                    <p className="text-sm font-normal text-[var(--secondary-color)]">
-                      {kr.text}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {displayKRs.length === 0 && (
-                <p className="text-sm text-gray-400 italic">
-                  No specific key results available for this score level.
-                </p>
-              )}
-            </div>
-            <div></div>
-          </div>
-        </div>
-        {/*  */}
 
-        {/*  */}
-        <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-          <div className="flex items-center justify-between ">
-            <div>
-              <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                Talent By Design <br />
-                Recommended Offering
-              </h3>
-            </div>
-            <div>
-              <img src={Healthicons} alt="images" />
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-[#1A3652] capitalize">Objectives and Key Results</h3>
+                  <p className="text-xs text-[#64748B] font-medium">{detailedPods?.objectives?.subtitle || "Develop essential leadership and EI skills"}</p>
+                </div>
+                <img src={Hugeicons} alt="images" className="w-8 h-8" />
+              </div>
+              <div className="space-y-5">
+                {displayKRs.map((kr: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-4">
+                    <div className="shrink-0">
+                      <CircularProgress value={kr.value} width={50} textColor="#1A3652" pathColor="#1A3652" trailColor="#E2E8F0" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-[#1A3652]">{kr.label}</h4>
+                      <p className="text-xs text-[#64748B] font-medium">{kr.text}</p>
+                    </div>
+                  </div>
+                ))}
+                {displayKRs.length === 0 && <p className="text-sm text-gray-400 italic">No specific key results available.</p>}
+              </div>
             </div>
           </div>
-          <ul className="mt-4 space-y-2">
-            {displayRecommendations.map((rec: string, idx: number) => (
-              <li key={idx} className="feature-list flex gap-2">
-                <img
-                  src={IconStar}
-                  alt="icon"
-                  className="mt-1 w-4 h-4 shrink-0"
-                />
-                <span className="text-sm text-[var(--secondary-color)] font-normal">
-                  {rec}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <div></div>
-        </div>
-      </div>
+
+          <div className="mt-6 border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-bold text-[#1A3652] capitalize">Talent By Design Recommended Offering</h3>
+                <p className="text-xs text-[#64748B] font-medium">Selected growth opportunities</p>
+              </div>
+              <img src={Healthicons} alt="images" className="w-8 h-8" />
+            </div>
+            <ul className="space-y-2">
+              {displayRecommendations.map((rec: string, idx: number) => (
+                <li key={idx} className="flex gap-2 text-left">
+                  <img src={IconStar} alt="icon" className="w-4 h-4 mt-1 shrink-0" />
+                  <span className="text-sm text-[#64748B] font-medium">{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   );
 };

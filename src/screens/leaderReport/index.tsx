@@ -36,8 +36,9 @@ const LeaderReport = () => {
   const userEmail = searchParams.get("email"); // Guest employee support
   const [reportData, setReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [detailedPods, setDetailedPods] = useState<any>(null);
+  const [hasNoReport, setHasNoReport] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
@@ -72,10 +73,7 @@ const LeaderReport = () => {
   const filteredMembers = members.filter((m) => {
     const roleLower = m.role.toLowerCase();
     const matchesDept = !selectedDept || m.department === selectedDept;
-    // For Senior Leader report, we only show members with role 'leader'
-    const isAllowedRole = roleLower === "leader";
-
-    return matchesDept && isAllowedRole;
+    return matchesDept && roleLower === "leader";
   });
 
   // const customSelectStyles = {
@@ -129,6 +127,11 @@ const LeaderReport = () => {
     initTWE({ Ripple, Offcanvas, Dropdown });
 
     const fetchReport = async () => {
+      if (!userId && !userEmail) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
       try {
         let url = `dashboard/leader`;
         if (userEmail) {
@@ -137,11 +140,14 @@ const LeaderReport = () => {
           url = `dashboard/leader?userId=${userId}`;
         }
         const res = await api.get(url);
-        const data = res.data.report;
-        setReportData(data);
-        if (res.data.user) setUserData(res.data.user);
-      } catch (error) {
+        setReportData(res.data.report);
+        setUserData(res.data.user);
+        setHasNoReport(false);
+      } catch (error: any) {
         console.error("Failed to fetch report:", error);
+        if (error.response?.status === 404) {
+          setHasNoReport(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -155,7 +161,7 @@ const LeaderReport = () => {
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
   useEffect(() => {
-    if (reportData?.scores?.domains[selectedDomain]?.subdomains) {
+    if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
       const firstSub = Object.keys(
         reportData.scores.domains[selectedDomain].subdomains,
       )[0];
@@ -201,10 +207,10 @@ const LeaderReport = () => {
     digitalFluency: findDomainScore("digital"),
   };
 
-  const domainScore = reportData?.scores?.domains[selectedDomain]?.score || 0;
+  const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
-    reportData?.scores?.domains[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+    selectedSubdomain
     ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
@@ -232,7 +238,7 @@ const LeaderReport = () => {
 
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);
-    if (reportData?.scores?.domains[domain]?.subdomains) {
+    if (reportData?.scores?.domains?.[domain]?.subdomains) {
       const firstSub = Object.keys(
         reportData.scores.domains[domain].subdomains,
       )[0];
@@ -285,7 +291,7 @@ const LeaderReport = () => {
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
-      reportData?.scores?.domains[selectedDomain]?.subdomains || {},
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains;
     const mScores: number[] = [];
@@ -302,9 +308,9 @@ const LeaderReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -312,9 +318,9 @@ const LeaderReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -322,9 +328,9 @@ const LeaderReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -344,9 +350,9 @@ const LeaderReport = () => {
       const score =
         responses.length > 0
           ? responses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / responses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / responses.length
           : 0;
 
       const labelMap: any = {
@@ -432,26 +438,78 @@ const LeaderReport = () => {
       </div>
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[0px_0px_5px_0px_#4B9BE980] sm:p-6 p-3 rounded-[12px] mt-6">
-        <div className="flex items-center flex-wrap gap-2 md:justify-between justify-center">
-          <div>
-            <h3 className="sm:text-2xl text-lg font-bold text-[var(--secondary-color)] ">
-              {userData?.firstName}'s Organizational Health
-            </h3>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="relative group">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-blue-500/20 shadow-lg transition-transform duration-300 group-hover:scale-105">
+                {userData?.profileImage ? (
+                  <img
+                    src={userData.profileImage}
+                    alt="profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-[#1a3652] to-[#448bd2] flex items-center justify-center text-white text-2xl font-bold">
+                    {(userData?.firstName?.[0] || reportData?.user?.firstName?.[0] || "L").toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full shadow-sm" title="Active Account"></div>
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-[#1A3652] tracking-tight">
+                {userData?.firstName || reportData?.user?.firstName || "Leader"}{" "}
+                {userData?.lastName || reportData?.user?.lastName || ""}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-[10px] font-black text-[#448CD2] uppercase tracking-wider border border-blue-100">
+                  {userData?.role || reportData?.user?.role || "Senior Leader"}
+                </span>
+                <span className="w-1 h-1 bg-neutral-300 rounded-full"></span>
+                <span className="text-xs font-bold text-neutral-400">
+                  {userData?.department || reportData?.user?.department || "General"}
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <button
-              type="button"
-              className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-5 pe-2.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            >
-              Export report
+
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex -space-x-4">
+              {[
+                { role: "Board", color: "bg-indigo-500", icon: "solar:star-fall-bold-duotone" },
+                { role: "Stakeholders", color: "bg-emerald-500", icon: "solar:multiple-forward-left-bold-duotone" },
+                { role: "Directors", color: "bg-rose-500", icon: "solar:medal-star-bold-duotone" },
+              ].map((s, i) => (
+                <div key={i} className={`w-10 h-10 rounded-full ${s.color} border-4 border-white flex items-center justify-center text-white shadow-sm hover:-translate-y-1 transition-transform cursor-help group/avatar relative`} title={`${s.role} Feedback Complete`}>
+                  <Icon icon={s.icon} width="18" />
+                  <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-[#1A3652] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap z-50">
+                    {s.role} Verified
+                  </div>
+                </div>
+              ))}
+              <div className="w-10 h-10 rounded-full bg-neutral-100 border-4 border-white flex items-center justify-center text-neutral-400 text-xs font-bold">+4</div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black text-[#448CD2] uppercase tracking-[0.2em]">Leadership Hive</span>
+              <span className="text-xs font-bold text-neutral-500">7/7 Participants Complete</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="group relative overflow-hidden z-0 text-[var(--white-color)] px-8 h-12 rounded-2xl flex justify-center items-center gap-2 font-bold text-sm uppercase bg-current-color shadow-[0_10px_20px_-5px_rgba(68,139,210,0.3)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
+            style={{ backgroundColor: "#1a3652" }}
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              Export Analysis
               <Icon
-                icon="mynaui:arrow-right-circle-solid"
-                width="24"
-                height="24"
-                className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+                icon="lucide:arrow-down-to-line"
+                width="18"
+                className="transition-transform duration-300 group-hover:translate-y-0.5"
               />
-            </button>
-          </div>
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1a3652] to-[#448bd2] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </button>
         </div>
 
         {/* Filters Section */}
@@ -507,15 +565,15 @@ const LeaderReport = () => {
               placeholder="Select Member"
               options={filteredMembers.map((m) => ({
                 value: m._id,
-                label: `${m.name} (${m.role})`,
+                label: `${m.name} (${m.role}) [${m.assessmentStatus}]`,
                 data: m,
               }))}
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: `${selectedMember.name} (${selectedMember.role})`,
-                    }
+                    value: selectedMember._id,
+                    label: `${selectedMember.name} (${selectedMember.role}) [${selectedMember.assessmentStatus}]`,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -526,321 +584,492 @@ const LeaderReport = () => {
                     superadmin: "org-head",
                     super_admin: "org-head",
                     admin: "org-head",
+                    "senior-leader": "senior-leader",
                     leader: "senior-leader",
                     manager: "manager",
                     employee: "employee",
                   };
                   const reportType =
                     roleMapping[m.role.toLowerCase()] || "employee";
+
+                  // Use orgName from searchParams if available
+                  const currentOrg = searchParams.get("orgName") || "";
+                  const orgQuery = currentOrg ? `&orgName=${encodeURIComponent(currentOrg)}` : "";
+
                   navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}`,
+                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
                   );
                 }
               }}
             />
           )}
         </div>
+      </div>
 
-        <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Organizational Health
-            </h2>
-            <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "40px",
-                }}
-              >
-                <CircularProgress
-                  value={Math.round(overallScore)}
-                  width={180}
-                  pathColor={currentStatus.color}
-                  trailColor={currentStatus.trail}
-                  textColor={currentStatus.color}
-                />
-              </div>
-              <div>
-                {" "}
-                <div className="flex justify-center flex-col gap-1 ">
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <p className="w-6 h-2 bg-[#FF5656]"></p>
+      {hasNoReport ? (
+        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-6 text-center flex flex-col items-center gap-6">
+          <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
+            <Icon icon="solar:clipboard-list-broken-bold-duotone" width="48" className="text-[#448CD2]" />
+          </div>
+          <h2 className="text-3xl font-black text-[#1A3652]">No Assessment Results Yet</h2>
+          <p className="text-neutral-500 max-w-md text-lg">
+            This senior leader has been invited to take the assessment, but they haven't completed it yet. Once they finish, you'll see their full performance report here.
+          </p>
+          <div className="flex gap-4 mt-4">
+            <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">Status: Pending Completion</div>
+          </div>
+        </div>
+      ) : reportData && (
+        <>
+          <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Organizational Health
+              </h2>
+              <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "40px",
+                  }}
+                >
+                  <CircularProgress
+                    value={Math.round(overallScore)}
+                    width={180}
+                    pathColor={currentStatus.color}
+                    trailColor={currentStatus.trail}
+                    textColor={currentStatus.color}
+                  />
+                </div>
+                <div>
+                  {" "}
+                  <div className="flex justify-center flex-col gap-1 ">
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="w-6 h-2 bg-[#FF5656]"></p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-normal text-[#474747]">
+                          Needs Attention
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Needs Attention
-                      </p>
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="w-6 h-2 bg-[#FEE114]"></p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-normal text-[#474747]">
+                          At Risk
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <p className="w-6 h-2 bg-[#FEE114]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        At Risk
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <p className="w-6 h-2 bg-[#30AD43]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        On Track
-                      </p>
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="w-6 h-2 bg-[#30AD43]"></p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-normal text-[#474747]">
+                          On Track
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
-            <div className="flex items-center justify-between w-full mb-2">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  POD-360™ Model
-                </h3>
-                <p className="text-xs text-[#64748B] font-medium">
-                  Interconnectivity of focus areas
-                </p>
+            <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
+              <div className="flex items-center justify-between w-full mb-2">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    POD-360™ Model
+                  </h3>
+                  <p className="text-xs text-[#64748B] font-medium">
+                    Interconnectivity of focus areas
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
-              <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
-                <Triangle data={triangleData} />
-              </div>
-              <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                {detailedPods?.insights?.modelDescription ? (
-                  detailedPods.insights.modelDescription
-                    .split(/[•\n\r]/)
-                    .map((item: string) => item.trim())
-                    .filter((item: string) => item.length > 0)
-                    .map((bullet: string, idx: number) => (
-                      <div key={idx} className="flex items-start gap-2">
+              <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
+                <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                  <Triangle data={triangleData} />
+                </div>
+                <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                  {detailedPods?.insights?.modelDescription ? (
+                    detailedPods.insights.modelDescription
+                      .split(/[•\n\r]/)
+                      .map((item: string) => item.trim())
+                      .filter((item: string) => item.length > 0)
+                      .map((bullet: string, idx: number) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0 mt-0.5"
+                          />
+                          <span className="text-sm font-medium text-[#64748B] leading-snug">
+                            {bullet}
+                          </span>
+                        </div>
+                      ))
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
                         <img
                           src={IconStar}
                           alt="icon"
-                          className="w-4 h-4 shrink-0 mt-0.5"
+                          className="w-4 h-4 shrink-0"
                         />
-                        <span className="text-sm font-medium text-[#64748B] leading-snug">
-                          {bullet}
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Capability
                         </span>
                       </div>
-                    ))
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm font-medium text-[#64748B]">
-                        Capability
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm font-medium text-[#64748B]">
-                        Engagement
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm font-medium text-[#64748B]">
-                        Confidence
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm font-medium text-[#64748B]">
-                        Change resilience
-                      </span>
-                    </div>
-                  </>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Engagement
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Confidence
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm font-medium text-[#64748B]">
+                          Change resilience
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                    People
+                  </p>
+                  <p className="text-sm font-black text-[var(--secondary-color)]">
+                    {Math.round(findDomainScore("people"))}%
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                    Operational
+                  </p>
+                  <p className="text-sm font-black text-[var(--secondary-color)]">
+                    {Math.round(findDomainScore("operational"))}%
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                    Digital
+                  </p>
+                  <p className="text-sm font-black text-[var(--secondary-color)]">
+                    {Math.round(findDomainScore("digital"))}%
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Trends Analysis
+              </h2>
+              <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Wellbeing
+                  </span>
+                  <img src={DownArrow} alt="arrow" />
+                </li>
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Improving fast enough
+                  </span>
+                  <img src={UpArrow} alt="arrow" />
+                </li>
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Improving fast enough
+                  </span>
+                  <img src={UpArrow} alt="arrow" />
+                </li>
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Lorem Ipsum
+                  </span>
+                  <img src={UpArrow} alt="arrow" />
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
+              <div>
+                <div className="flex items-center justify-between mb-4 ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Alignment Status
+                    </h3>
+                    <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
+                      <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
+                      Blind Spot Detected
+                    </p>
+                  </div>
+
+                  <div>
+                    <img src={OuiSecurity} alt="images" />
+                  </div>
+                </div>
+                <div className="sm:w-[400px] w-full my-10">
+                  <RoleProgressChart data={roleData} />
+                </div>
+                <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
+                  <b className="">Largest Gap:</b> {maxGapInfo.text} (+
+                  {maxGapInfo.value})
+                </p>
+                <div className="sm:mt-16 mt-6 ">
+                  <button
+                    type="button"
+                    className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
+                  >
+                    {maxGapInfo.value > 15
+                      ? "Perception Risk Detected"
+                      : "Alignment On Track"}
+                  </button>
+                </div>
+                <div></div>
+              </div>
+            </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Priorities Attention
+                  </h3>
+                  <p className="text-sm font-normal text-[#000000] mt-1">
+                    Top 3 priorities based on current data
+                  </p>
+                </div>
+                <div>
+                  <img src={Iconamoon} alt="images" />
+                </div>
+              </div>
+              <div className="mt-4 space-y-4">
+                {topPriorities.map((item, _idx) => (
+                  <div
+                    key={item.name}
+                    className="flex items-center justify-between"
+                  >
+                    <p
+                      className="text-sm font-semibold flex items-center gap-2"
+                      style={{ color: item.color }}
+                    >
+                      <span
+                        className="w-2.5 h-2.5 flex rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      ></span>
+                      {item.name}
+                    </p>
+                    <p
+                      className="text-sm font-bold"
+                      style={{ color: item.color }}
+                    >
+                      {item.score}%
+                    </p>
+                  </div>
+                ))}
+                {topPriorities.length === 0 && (
+                  <p className="text-sm text-gray-500 italic">
+                    No priorities identified yet.
+                  </p>
                 )}
               </div>
             </div>
-            <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                  People
-                </p>
-                <p className="text-sm font-black text-[var(--secondary-color)]">
-                  {Math.round(findDomainScore("people"))}%
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                  Operational
-                </p>
-                <p className="text-sm font-black text-[var(--secondary-color)]">
-                  {Math.round(findDomainScore("operational"))}%
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                  Digital
-                </p>
-                <p className="text-sm font-black text-[var(--secondary-color)]">
-                  {Math.round(findDomainScore("digital"))}%
-                </p>
-              </div>
-            </div>
           </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Trends Analysis
-            </h2>
-            <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
-              <li className="flex gap-2 items-center ">
-                <span className="text-base font-medium text-[var(--secondary-color)]">
-                  Wellbeing
-                </span>
-                <img src={DownArrow} alt="arrow" />
-              </li>
-              <li className="flex gap-2 items-center ">
-                <span className="text-base font-medium text-[var(--secondary-color)]">
-                  Improving fast enough
-                </span>
-                <img src={UpArrow} alt="arrow" />
-              </li>
-              <li className="flex gap-2 items-center ">
-                <span className="text-base font-medium text-[var(--secondary-color)]">
-                  Improving fast enough
-                </span>
-                <img src={UpArrow} alt="arrow" />
-              </li>
-              <li className="flex gap-2 items-center ">
-                <span className="text-base font-medium text-[var(--secondary-color)]">
-                  Lorem Ipsum
-                </span>
-                <img src={UpArrow} alt="arrow" />
-              </li>
-            </ul>
-          </div>
-        </div>
 
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
-            <div>
-              <div className="flex items-center justify-between mb-4 ">
-                <div>
-                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Alignment Status
-                  </h3>
-                  <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
-                    <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
-                    Blind Spot Detected
-                  </p>
-                </div>
-
-                <div>
-                  <img src={OuiSecurity} alt="images" />
-                </div>
-              </div>
-              <div className="sm:w-[400px] w-full my-10">
-                <RoleProgressChart data={roleData} />
-              </div>
-              <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                <b className="">Largest Gap:</b> {maxGapInfo.text} (+
-                {maxGapInfo.value})
-              </p>
-              <div className="sm:mt-16 mt-6 ">
-                <button
-                  type="button"
-                  className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
-                >
-                  {maxGapInfo.value > 15
-                    ? "Perception Risk Detected"
-                    : "Alignment On Track"}
-                </button>
-              </div>
-              <div></div>
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-            <div className="flex items-center justify-between ">
-              <div>
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+              <div className="flex flex-wrap justify-between items-center gap-2">
                 <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Priorities Attention
+                  Overall Departmental POD Score
                 </h3>
-                <p className="text-sm font-normal text-[#000000] mt-1">
-                  Top 3 priorities based on current data
-                </p>
+                <div className="relative" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[14px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    Organization
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                    aria-labelledby="dropdownMenuButton1"
+                    data-twe-dropdown-menu-ref
+                  >
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Another action
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        href="#"
+                        data-twe-dropdown-item-ref
+                      >
+                        Something else here
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
               <div>
-                <img src={Iconamoon} alt="images" />
+                <MultiRadarChart data={radarData} />
               </div>
             </div>
-            <div className="mt-4 space-y-4">
-              {topPriorities.map((item, _idx) => (
-                <div
-                  key={item.name}
-                  className="flex items-center justify-between"
-                >
-                  <p
-                    className="text-sm font-semibold flex items-center gap-2"
-                    style={{ color: item.color }}
-                  >
-                    <span
-                      className="w-2.5 h-2.5 flex rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    ></span>
-                    {item.name}
-                  </p>
-                  <p
-                    className="text-sm font-bold"
-                    style={{ color: item.color }}
-                  >
-                    {item.score}%
-                  </p>
-                </div>
-              ))}
-              {topPriorities.length === 0 && (
-                <p className="text-sm text-gray-500 italic">
-                  No priorities identified yet.
-                </p>
-              )}
-            </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
           </div>
-        </div>
 
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-            <div className="flex flex-wrap justify-between items-center gap-2">
-              <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                Overall Departmental POD Score
-              </h3>
-              <div className="relative" data-twe-dropdown-ref>
+          <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Score by domain
+              </h2>
+              <div className="relative mt-2" data-twe-dropdown-ref>
                 <button
-                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[14px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
                   type="button"
-                  id="dropdownMenuButton1"
+                  id="dropdownDomain"
                   data-twe-dropdown-toggle-ref
                   aria-expanded="false"
                   data-twe-ripple-init
                   data-twe-ripple-color="light"
                 >
-                  Organization
+                  {selectedDomain}
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
+                  aria-labelledby="dropdownDomain"
+                  data-twe-dropdown-menu-ref
+                >
+                  {reportData?.scores?.domains &&
+                    Object.keys(reportData.scores.domains).map((domain) => (
+                      <li key={domain}>
+                        <button
+                          onClick={() => handleDomainChange(domain)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        >
+                          {domain}
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#FF5656]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#FEE114]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#30AD43]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-10">
+                <SpeedMeter value={domainScore} />
+              </div>
+            </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Score by sub-domain
+              </h2>
+              <div className="relative mt-2" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownSubdomain"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  {selectedSubdomain || "Select Sub-domain"}
                   <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -857,329 +1086,212 @@ const LeaderReport = () => {
                 </button>
                 <ul
                   className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                  aria-labelledby="dropdownMenuButton1"
+                  aria-labelledby="dropdownSubdomain"
                   data-twe-dropdown-menu-ref
                 >
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      href="#"
-                      data-twe-dropdown-item-ref
-                    >
-                      Something else here
-                    </a>
-                  </li>
+                  {reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
+                    Object.keys(
+                      reportData.scores.domains[selectedDomain].subdomains,
+                    ).map((sub) => (
+                      <li key={sub}>
+                        <button
+                          onClick={() => handleSubdomainChange(sub)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        >
+                          {sub}
+                        </button>
+                      </li>
+                    ))}
                 </ul>
               </div>
-            </div>
-            <div>
-              <MultiRadarChart data={radarData} />
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
-        </div>
-
-        <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Score by domain
-            </h2>
-            <div className="relative mt-2" data-twe-dropdown-ref>
-              <button
-                className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                type="button"
-                id="dropdownDomain"
-                data-twe-dropdown-toggle-ref
-                aria-expanded="false"
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-              >
-                {selectedDomain}
-                <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
-                aria-labelledby="dropdownDomain"
-                data-twe-dropdown-menu-ref
-              >
-                {reportData?.scores?.domains &&
-                  Object.keys(reportData.scores.domains).map((domain) => (
-                    <li key={domain}>
-                      <button
-                        onClick={() => handleDomainChange(domain)}
-                        className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      >
-                        {domain}
-                      </button>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-            <div className="flex justify-center gap-4 mt-6">
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="w-6 h-2 bg-[#FF5656]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">Low</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="w-6 h-2 bg-[#FEE114]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">Medium</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="w-6 h-2 bg-[#30AD43]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">High</p>
-                </div>
-              </div>
-            </div>
-            <div className="p-10">
-              <SpeedMeter value={domainScore} />
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Score by sub-domain
-            </h2>
-            <div className="relative mt-2" data-twe-dropdown-ref>
-              <button
-                className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                type="button"
-                id="dropdownSubdomain"
-                data-twe-dropdown-toggle-ref
-                aria-expanded="false"
-                data-twe-ripple-init
-                data-twe-ripple-color="light"
-              >
-                {selectedSubdomain || "Select Sub-domain"}
-                <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <ul
-                className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                aria-labelledby="dropdownSubdomain"
-                data-twe-dropdown-menu-ref
-              >
-                {reportData?.scores?.domains[selectedDomain]?.subdomains &&
-                  Object.keys(
-                    reportData.scores.domains[selectedDomain].subdomains,
-                  ).map((sub) => (
-                    <li key={sub}>
-                      <button
-                        onClick={() => handleSubdomainChange(sub)}
-                        className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                      >
-                        {sub}
-                      </button>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-            <div className="flex justify-center gap-4 mt-6">
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">Low</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">Medium</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">High</p>
-                </div>
-              </div>
-            </div>
-            <div className="p-10">
-              <SpeedMeter value={subdomainScore} />
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
-            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-              Performance Analysis
-            </h2>
-            <div className="flex justify-center gap-4 mt-6">
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">
-                    Previous Test
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div>
-                  <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
-                </div>
-                <div>
-                  <p className="text-sm font-normal text-[#474747]">
-                    Current Test
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="mt-10">
-              <MultiLineChart data={trendData} />
-            </div>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Insight for {selectedDomain}
-                </h3>
-                <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  Analysis based on organizational health assessment
-                </p>
-              </div>
-              <div>
-                <img src={Streamline} alt="images" />
-              </div>
-            </div>
-            <div>
-              <ul className="mt-4 space-y-2">
-                {displayInsights.map((insight: string, idx: number) => (
-                  <li key={idx} className="feature-list flex gap-2">
-                    <img
-                      src={IconStar}
-                      alt="icon"
-                      className="mt-1 w-4 h-4 shrink-0"
-                    />
-                    <span className="text-sm text-[var(--secondary-color)] font-normal italic">
-                      {insight}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Objectives and Key Results
-                </h3>
-                <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                  {detailedPods?.objectives?.subtitle ||
-                    "Cultivate high-trust, psychologically safe leadership"}
-                </p>
-              </div>
-              <div>
-                <img src={Hugeicons} alt="images" />
-              </div>
-            </div>
-            <div className="space-y-6">
-              {displayKRs.map((kr: any, idx: number) => (
-                <div key={idx} className="flex items-center gap-3 mt-4">
-                  <div className="text-lg-progress">
-                    <CircularProgress
-                      value={kr.value}
-                      width={60}
-                      textColor="#36454F"
-                      pathColor="#1A3652"
-                      trailColor="#D9D9D9"
-                    />
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                      {kr.label}
-                    </h2>
-                    <p className="text-sm font-normal text-[var(--secondary-color)]">
-                      {kr.text}
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-10">
+                <SpeedMeter value={subdomainScore} />
+              </div>
+            </div>
+            <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Performance Analysis
+              </h2>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Previous Test
                     </p>
                   </div>
                 </div>
-              ))}
-              {displayKRs.length === 0 && (
-                <p className="text-sm text-gray-400 italic">
-                  Strategic key results are being generated.
-                </p>
-              )}
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Current Test
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-10">
+                <MultiLineChart data={trendData} />
+              </div>
             </div>
           </div>
-        </div>
-        {/*  */}
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Leader Coaching Tips
-                </h3>
+
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Insight for {selectedDomain}
+                  </h3>
+                  <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                    Analysis based on organizational health assessment
+                  </p>
+                </div>
+                <div>
+                  <img src={Streamline} alt="images" />
+                </div>
               </div>
               <div>
-                <img src={StreamlinePlump} alt="images" />
+                <ul className="mt-4 space-y-2">
+                  {displayInsights.map((insight: string, idx: number) => (
+                    <li key={idx} className="feature-list flex gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="mt-1 w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                        {insight}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-            <ul className="mt-4 space-y-2">
-              {[detailedPods?.insights?.modelDescription]
-                .filter(Boolean)
-                .map((tip: string, idx: number) => (
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Objectives and Key Results
+                  </h3>
+                  <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                    {detailedPods?.objectives?.subtitle ||
+                      "Cultivate high-trust, psychologically safe leadership"}
+                  </p>
+                </div>
+                <div>
+                  <img src={Hugeicons} alt="images" />
+                </div>
+              </div>
+              <div className="space-y-6">
+                {displayKRs.map((kr: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-3 mt-4">
+                    <div className="text-lg-progress">
+                      <CircularProgress
+                        value={kr.value}
+                        width={60}
+                        textColor="#36454F"
+                        pathColor="#1A3652"
+                        trailColor="#D9D9D9"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                        {kr.label}
+                      </h2>
+                      <p className="text-sm font-normal text-[var(--secondary-color)]">
+                        {kr.text}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {displayKRs.length === 0 && (
+                  <p className="text-sm text-gray-400 italic">
+                    Strategic key results are being generated.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+          {/*  */}
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Leader Coaching Tips
+                  </h3>
+                </div>
+                <div>
+                  <img src={StreamlinePlump} alt="images" />
+                </div>
+              </div>
+              <ul className="mt-4 space-y-2">
+                {[detailedPods?.insights?.modelDescription]
+                  .filter(Boolean)
+                  .map((tip: string, idx: number) => (
+                    <li key={idx} className="feature-list flex gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="mt-1 w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm text-[var(--secondary-color)] font-normal">
+                        {tip}
+                      </span>
+                    </li>
+                  ))}
+                {!detailedPods?.insights?.modelDescription && (
+                  <li className="text-xs text-gray-400">
+                    Strategic model application details will appear here.
+                  </li>
+                )}
+              </ul>
+              <div></div>
+            </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Key Recommendations
+                  </h3>
+                </div>
+                <div>
+                  <img src={Healthicons} alt="images" />
+                </div>
+              </div>
+              <ul className="mt-4 space-y-2">
+                {displayRecommendations.map((rec: string, idx: number) => (
                   <li key={idx} className="feature-list flex gap-2">
                     <img
                       src={IconStar}
@@ -1187,46 +1299,15 @@ const LeaderReport = () => {
                       className="mt-1 w-4 h-4 shrink-0"
                     />
                     <span className="text-sm text-[var(--secondary-color)] font-normal">
-                      {tip}
+                      {rec}
                     </span>
                   </li>
                 ))}
-              {!detailedPods?.insights?.modelDescription && (
-                <li className="text-xs text-gray-400">
-                  Strategic model application details will appear here.
-                </li>
-              )}
-            </ul>
-            <div></div>
-          </div>
-          <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-            <div className="flex items-center justify-between ">
-              <div>
-                <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Key Recommendations
-                </h3>
-              </div>
-              <div>
-                <img src={Healthicons} alt="images" />
-              </div>
+              </ul>
             </div>
-            <ul className="mt-4 space-y-2">
-              {displayRecommendations.map((rec: string, idx: number) => (
-                <li key={idx} className="feature-list flex gap-2">
-                  <img
-                    src={IconStar}
-                    alt="icon"
-                    className="mt-1 w-4 h-4 shrink-0"
-                  />
-                  <span className="text-sm text-[var(--secondary-color)] font-normal">
-                    {rec}
-                  </span>
-                </li>
-              ))}
-            </ul>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

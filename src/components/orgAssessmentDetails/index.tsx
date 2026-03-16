@@ -529,7 +529,10 @@ const OrgAssessmentDetails = () => {
                         onClick={() => {
                           const roleMapping: Record<string, string> = {
                             superAdmin: "org-head",
+                            superadmin: "org-head",
+                            super_admin: "org-head",
                             admin: "org-head",
+                            "senior-leader": "senior-leader",
                             leader: "senior-leader",
                             manager: "manager",
                             employee: "employee",
