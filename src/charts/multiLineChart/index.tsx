@@ -10,6 +10,7 @@ import {
   CategoryScale,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
 
 // Register the components in Chart.js
@@ -20,13 +21,15 @@ Chart.register(
   LinearScale,
   CategoryScale,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 export interface TrendData {
   labels: string[];
-  manager: number[];
-  team: number[];
+  manager: number[]; // Previous Test
+  team: number[];    // Current Test
+  descriptions?: string[]; // Actual question text or subdomain info for tooltips
 }
 
 interface MultiLineChartProps {
@@ -51,34 +54,80 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
           labels: data.labels,
           datasets: [
             {
-              label: "Manager",
-              data: data.manager,
-              borderColor: "#4A90E2",
-              backgroundColor: "rgba(74,144,226,0.15)",
+              label: "Current Test",
+              data: data.team,
+              borderColor: "#1A3652",
+              backgroundColor: "rgba(26,54,82,0.1)",
+              borderWidth: 3,
               tension: 0.4,
-              pointRadius: 5,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: "#1A3652",
+              fill: true,
             },
             {
-              label: "Team Average",
-              data: data.team,
-              borderColor: "#7ED321",
-              backgroundColor: "rgba(126,211,33,0.15)",
+              label: "Previous Test",
+              data: data.manager,
+              borderColor: "#4A90E2",
+              backgroundColor: "rgba(74,144,226,0.05)",
+              borderWidth: 2,
+              borderDash: [5, 5],
               tension: 0.4,
-              pointRadius: 5,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: "#4A90E2",
+              fill: true,
             },
           ],
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               min: 0,
               max: 10,
+              ticks: {
+                stepSize: 2,
+                font: { size: 10 }
+              },
+              grid: {
+                color: "rgba(0,0,0,0.05)"
+              }
             },
+            x: {
+              ticks: {
+                font: { size: 10, weight: 'bold' }
+              },
+              grid: {
+                display: false
+              }
+            }
           },
           plugins: {
             legend: {
               display: false
+            },
+            tooltip: {
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              titleColor: "#1A3652",
+              bodyColor: "#474747",
+              borderColor: "#E8E8E8",
+              borderWidth: 1,
+              padding: 12,
+              displayColors: true,
+              cornerRadius: 8,
+              callbacks: {
+                title: (context) => {
+                  const index = context[0].dataIndex;
+                  return data.descriptions && data.descriptions[index]
+                    ? data.descriptions[index]
+                    : context[0].label;
+                },
+                label: (context) => {
+                  return `${context.dataset.label}: ${context.parsed.y}/10`;
+                }
+              }
             }
           },
         },
@@ -91,7 +140,7 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
         chartRef.current.destroy();
       }
     };
-  }, [data]); // Re-run effect when `data` changes
+  }, [data]);
 
   return <canvas ref={canvasRef} />;
 };

@@ -36,6 +36,7 @@ const LeaderReport = () => {
   const userId = searchParams.get("userId");
   const userEmail = searchParams.get("email"); // Guest employee support
   const [reportData, setReportData] = useState<any>(null);
+  const [firstReportData, setFirstReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [hasNoReport, setHasNoReport] = useState(false);
@@ -146,6 +147,7 @@ const LeaderReport = () => {
         }
         const res = await api.get(url);
         setReportData(res.data.report);
+        setFirstReportData(res.data.firstReport || res.data.report);
         setUserData(res.data.user);
         setHasNoReport(false);
       } catch (error: any) {
@@ -282,16 +284,6 @@ const LeaderReport = () => {
       color: data.score < 50 ? "#D71818" : "#FF8D28",
     }));
 
-  // Helper to get numeric score from response
-  const getNumericScore = (res: any) => {
-    if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
-      return (Number(res.value) || 1) * 20;
-    }
-    if (res.scale === "FORCED_CHOICE") {
-      return res.selectedOption === res.higherValueOption ? 100 : 20;
-    }
-    return 20;
-  };
 
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
@@ -396,11 +388,64 @@ const LeaderReport = () => {
     return { text: rolesText, value: largest };
   })();
 
-  const trendData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-    manager: [8.5, 0.1, 6.8, 0.1, 9.3],
-    team: [5.8, 0.2, 5.5, 0.0, 5.4],
+  // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
+  const getNumericScore = (res: any): number => {
+    if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
+      return (Number(res.value) || 1) * 20;
+    }
+    if (res.scale === "FORCED_CHOICE") {
+      return res.selectedOption === res.higherValueOption ? 100 : 20;
+    }
+    return 20;
   };
+
+  const trendData = (() => {
+    if (!reportData) return { labels: [], manager: [], team: [], descriptions: [] };
+
+    // Convert 0-100 score to /10 scale
+    const getScoreForChart = (val: any) => Number((getNumericScore(val) / 10).toFixed(1));
+
+    // If a subdomain is selected, show question-level trend
+    if (selectedSubdomain) {
+      const qCurrent = reportData?.responses?.filter((r: any) =>
+        r.domain === selectedDomain && r.subdomain === selectedSubdomain
+      ) || [];
+
+      const qFirst = firstReportData?.responses?.filter((r: any) =>
+        r.domain === selectedDomain && r.subdomain === selectedSubdomain
+      ) || [];
+
+      const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
+      const descriptions = qCurrent.map((q: any) => q.text);
+
+      const latestScores = qCurrent.map((q: any) => getScoreForChart(q));
+      const firstScores = qCurrent.map((q: any) => {
+        const matched = qFirst.find((fq: any) => fq.text === q.text);
+        return matched ? getScoreForChart(matched) : 0;
+      });
+
+      return { labels, manager: firstScores, team: latestScores, descriptions };
+    }
+
+    // Default: subdomain averages
+    const subdomains = Object.keys(reportData?.scores?.domains?.[selectedDomain]?.subdomains || {});
+    const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
+    const descriptions = subdomains.map(sub => sub);
+
+    const currentScores = subdomains.map(sub => {
+      const scoreData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    const firstScores = subdomains.map(sub => {
+      const scoreData = firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    return { labels, manager: firstScores, team: currentScores, descriptions };
+  })();
 
   const roleData = roleAverages;
 
