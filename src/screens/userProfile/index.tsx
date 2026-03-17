@@ -122,6 +122,16 @@ const UserProfile = () => {
     };
 
     const fieldName = fieldMapping[id] || id;
+
+    if (fieldName === "phoneNumber") {
+    const phoneRegex = /^[0-9+\-()\s]*$/;
+
+    if (!phoneRegex.test(value)) {
+      toast.error("Phone number can only contain numbers and special characters (+ - ( ) )");
+      return;
+    }
+  }
+
     setFormData((prev) => ({ ...prev, [fieldName]: value }));
   };
 
@@ -143,6 +153,13 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     setSaving(true);
+
+    if (!/^[0-9+\-()\s]+$/.test(formData.phoneNumber)) {
+    toast.error("Invalid phone number format");
+    setSaving(false);
+    return;
+  }
+
     try {
       const data = new FormData();
       data.append("firstName", formData.firstName);
@@ -489,6 +506,12 @@ const UserProfile = () => {
                 id="phno"
                 value={formData.phoneNumber}
                 onChange={handleChange}
+                onKeyPress={(e) => {
+                  const allowed = /[0-9+\-()\s]/;
+                  if (!allowed.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your phone number"
