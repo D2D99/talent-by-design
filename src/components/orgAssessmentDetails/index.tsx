@@ -151,7 +151,7 @@ const OrgAssessmentDetails = () => {
     totalMembers > 0 ? Math.round((completedMembers / totalMembers) * 100) : 0;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid">
       {/* Header Section */}
       <div className="mb-8 bg-white relative overflow-hidden">
         <div
@@ -169,7 +169,7 @@ const OrgAssessmentDetails = () => {
         </p>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xxl:grid-cols-5 gap-4 mb-6">
           <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4">
             <div className="flex items-center justify-between">
               <div>
