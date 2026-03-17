@@ -114,15 +114,25 @@ const OrgInvitation = () => {
     fetchData();
   }, [fetchData]);
 
+  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   const handleSendInvite = async () => {
     if (!email || !role) {
       setErrorMessage("Please fill all fields.");
       return;
     }
 
+    if (!EMAIL_REGEX.test(email)) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      await api.post("auth/send-invitation", { email, role });
+      await api.post("auth/send-invitation", {
+        email: email.trim().toLowerCase(),
+        role,
+      });
 
       setEmail("");
       setRole("");
@@ -376,7 +386,7 @@ const OrgInvitation = () => {
             <div className="mb-6 bg-white border border-gray-100 rounded-[20px] p-4 shadow-[0_8px_30px_rgba(0,0,0,0.015)] relative overflow-hidden group">
               <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-50/40 rounded-full blur-3xl opacity-50"></div>
 
-              <div className="flex flex-col xl:flex-row items-stretch gap-5 relative z-10">
+              <div className="flex flex-col lg:flex-row items-stretch gap-5 relative z-10">
                 <div className="flex-1 lg:max-w-[340px] bg-[#f9fafc] border border-gray-100 rounded-[20px] p-4 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/20"></div>
 
@@ -463,25 +473,28 @@ const OrgInvitation = () => {
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
-                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
+                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${
+                        isDragging
                           ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
                           : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
-                        }`}
+                      }`}
                     >
                       <div className="relative mb-3 flex flex-col items-center pointer-events-none">
                         <div
-                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${isDragging
+                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${
+                            isDragging
                               ? "opacity-100"
                               : "opacity-0 group-hover/upload:opacity-100"
-                            }`}
+                          }`}
                         ></div>
                         <Icon
                           icon="logos:csv"
                           width="36"
-                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${isDragging
+                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${
+                            isDragging
                               ? "scale-110"
                               : "group-hover/upload:scale-110"
-                            }`}
+                          }`}
                         />
                       </div>
 
@@ -757,10 +770,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
                                   ? "text-red-600 hover:bg-red-50"
                                   : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -812,9 +826,9 @@ const OrgInvitation = () => {
         >
           <div
             data-twe-modal-dialog-ref
-            className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
+            className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto px-4"
           >
-            <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+            <div className="pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
               <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
                 <h5
                   className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold"
@@ -848,6 +862,7 @@ const OrgInvitation = () => {
                       autoComplete="off"
                       onChange={(e) => {
                         setEmail(e.target.value);
+                        if (errorMessage) setErrorMessage(null);
                       }}
                       className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
                       placeholder="Enter email"
@@ -895,13 +910,13 @@ const OrgInvitation = () => {
                           )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader") && (
-                              <option value="manager">Manager</option>
-                            )}
+                            <option value="manager">Manager</option>
+                          )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader" ||
                             currentUserRole === "manager") && (
-                              <option value="employee">Employee</option>
-                            )}
+                            <option value="employee">Employee</option>
+                          )}
                         </>
                       )}
                     </select>
@@ -943,9 +958,9 @@ const OrgInvitation = () => {
         >
           <div
             data-twe-modal-dialog-ref
-            className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-xl mx-auto"
+            className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-xl mx-auto px-4"
           >
-            <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+            <div className="pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
               <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
                 <h5
                   className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold"

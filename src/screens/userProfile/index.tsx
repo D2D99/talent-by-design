@@ -267,7 +267,7 @@ const UserProfile = () => {
                 className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
                   isEditing
                     ? "cursor-pointer bg-white hover:bg-neutral-50"
-                    : "bg-gray-100 cursor-not-allowed pointer-events-none"
+                    : "bg-gray-50 cursor-not-allowed pointer-events-none"
                 }`}
               >
                 <svg
@@ -472,7 +472,7 @@ const UserProfile = () => {
                 id="email"
                 value={formData.email}
                 readOnly
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed read-only:bg-gray-50"
                 placeholder="Enter your email"
               />
             </div>
@@ -508,7 +508,7 @@ const UserProfile = () => {
                 id="userRole"
                 value={formData.role}
                 readOnly
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed capitalize"
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed capitalize read-only:bg-gray-50"
                 placeholder="User role"
               />
             </div>

@@ -295,7 +295,7 @@ const AccountSetting = () => {
               role="tabpanel"
               aria-labelledby="tabs-password-tab"
             >
-              <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-5">
+              <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-5">
                 <div>
                   <label
                     htmlFor="oldPassword"

@@ -143,7 +143,10 @@ const TopBar = () => {
 
   return (
     <>
-      <div className="sticky top-6 z-30 flex items-center gap-4 justify-between bg-[var(--app-surface)] border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] sm:p-6 rounded-[12px] py-3 px-3 mb-6 transition-all duration-300">
+      <div
+        className="sticky top-6 z-30 flex items-center gap-4 justify-between bg-white border border-[var(--app-border-color)] shadow-[4px_4px_4px_0px_rgba(68,140,210,0.1)] sm:p-6 rounded-[12px] py-3 px-3 mb-6 transition-all duration-300 relative"
+        id="topBar"
+      >
         {/* Mobile Sidebar Toggle */}
         <div className="md:hidden visible restore-sidebar restore-sidebar-mobile absolute top-6 transform left-[-12px] cursor-pointer">
           <button

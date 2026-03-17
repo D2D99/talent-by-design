@@ -151,7 +151,7 @@ const OrgInvitationDetails = () => {
   ).length;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid">
       {/* Header Section */}
       <div className="mb-8 bg-white relative overflow-hidden">
         <div
@@ -394,9 +394,9 @@ const OrgInvitationDetails = () => {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border border-gray-100">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full whitespace-nowrap border-collapse">
           <thead>
-            <tr className="bg-gray-50/50 border-b border-gray-100">
+            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
               <th className="px-6 py-4 font-semibold">#</th>
               <th
                 className="px-6 py-4 font-semibold"
