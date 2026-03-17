@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
+import ReportEmptyState from "../../components/reportEmptyState";
 import Sidebar from "../../components/sidebar";
 import { useAuth } from "../../context/useAuth";
 import ScoreBar from "../../components/scoreBar";
@@ -281,9 +282,9 @@ const ManagerReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -291,9 +292,9 @@ const ManagerReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -301,9 +302,9 @@ const ManagerReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -438,9 +439,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -497,512 +498,512 @@ const ManagerReport = () => {
               </div>
             </div>
           </div>
-        ) : (
-          reportData && (
-            <>
-              <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Score by domain
-                  </h2>
-                  <div className="relative mt-2" data-twe-dropdown-ref>
-                    <button
-                      className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                      type="button"
-                      id="dropdownMenuButton1"
-                      data-twe-dropdown-toggle-ref
-                      aria-expanded="false"
-                      data-twe-ripple-init
-                      data-twe-ripple-color="light"
-                    >
-                      {selectedDomain}
-                      <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <ul
-                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                      aria-labelledby="dropdownMenuButton1"
-                      data-twe-dropdown-menu-ref
-                    >
-                      {Object.keys(reportData?.scores?.domains || {}).map(
-                        (d) => (
-                          <li key={d}>
-                            <button
-                              onClick={() => handleDomainChange(d)}
-                              className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                              data-twe-dropdown-item-ref
-                            >
-                              {d}
-                            </button>
-                          </li>
-                        ),
-                      )}
-                    </ul>
-                  </div>
-                  <div className="flex justify-center gap-4 mt-6">
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="w-6 h-2 bg-[#FF5656]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          Low
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="w-6 h-2 bg-[#FEE114]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          Medium
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="w-6 h-2 bg-[#30AD43]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          High
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-10">
-                    <SpeedMeter value={domainScore} />
-                  </div>
-                </div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Score by sub-domain
-                  </h2>
-                  <div className="relative mt-2" data-twe-dropdown-ref>
-                    <button
-                      className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                      type="button"
-                      id="dropdownMenuButton1"
-                      data-twe-dropdown-toggle-ref
-                      aria-expanded="false"
-                      data-twe-ripple-init
-                      data-twe-ripple-color="light"
-                    >
-                      {selectedSubdomain || "Select Sub-domain"}
-                      <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <ul
-                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                      aria-labelledby="dropdownMenuButton1"
-                      data-twe-dropdown-menu-ref
-                    >
-                      {Object.keys(
-                        reportData?.scores?.domains?.[selectedDomain]
-                          ?.subdomains || {},
-                      ).map((s) => (
-                        <li key={s}>
+        ) : reportData ? (
+          <>
+            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Score by domain
+                </h2>
+                <div className="relative mt-2" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    {selectedDomain}
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                    aria-labelledby="dropdownMenuButton1"
+                    data-twe-dropdown-menu-ref
+                  >
+                    {Object.keys(reportData?.scores?.domains || {}).map(
+                      (d) => (
+                        <li key={d}>
                           <button
-                            onClick={() => setSelectedSubdomain(s)}
+                            onClick={() => handleDomainChange(d)}
                             className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
                             data-twe-dropdown-item-ref
                           >
-                            {s}
+                            {d}
                           </button>
                         </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="flex justify-center gap-4 mt-6">
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          Low
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          Medium
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          High
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-10">
-                    <SpeedMeter value={subdomainScore} />
-                  </div>
-                </div>
-                <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
-                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Performance Analysis
-                  </h2>
-                  <div className="flex justify-center gap-4 mt-6">
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          Previous Test
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div>
-                        <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-normal text-[#474747]">
-                          Current Test
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-10">
-                    <MultiLineChart data={trendData} />
-                  </div>
-                </div>
-              </div>
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Insight for {selectedDomain}
-                      </h3>
-                      <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                        Overall analysis for this domain
-                      </p>
-                    </div>
-                    <div>
-                      <img src={Streamline} alt="images" />
-                    </div>
-                  </div>
-                  <div>
-                    <ul className="mt-4 space-y-2">
-                      {displayInsights.map((insight: string, idx: number) => (
-                        <li key={idx} className="feature-list flex gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="mt-1 w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm text-[var(--secondary-color)] font-normal italic">
-                            {insight}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Objectives and Key Results
-                      </h3>
-                      <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                        {detailedPods?.objectives?.subtitle ||
-                          "Lead team improvements in this domain area"}
-                      </p>
-                    </div>
-                    <div>
-                      <img src={Hugeicons} alt="images" />
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    {displayKRs.map((kr: any, idx: number) => (
-                      <div key={idx} className="flex items-center gap-3 mt-4">
-                        <div className="text-lg-progress">
-                          <CircularProgress
-                            value={kr.value}
-                            width={60}
-                            textColor="#36454F"
-                            pathColor="#1A3652"
-                            trailColor="#D9D9D9"
-                          />
-                        </div>
-                        <div>
-                          <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                            {kr.label}
-                          </h2>
-                          <p className="text-sm font-normal text-[var(--secondary-color)]">
-                            {kr.text}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    {displayKRs.length === 0 && (
-                      <p className="text-sm text-gray-400 italic">
-                        No specific team key results available.
-                      </p>
-                    )}
-                  </div>
-                  <div></div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
-                  <div className="flex items-center justify-between w-full mb-2">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        POD-360™ Model
-                      </h3>
-                      <p className="text-xs text-[#64748B] font-medium">
-                        Interconnectivity of focus areas
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
-                    <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
-                      <Triangle data={triangleData} />
-                    </div>
-                    <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                      {detailedPods?.insights?.modelDescription ? (
-                        detailedPods.insights.modelDescription
-                          .split(/[•\n\r]/)
-                          .map((item: string) => item.trim())
-                          .filter((item: string) => item.length > 0)
-                          .map((bullet: string, idx: number) => (
-                            <div key={idx} className="flex items-start gap-2">
-                              <img
-                                src={IconStar}
-                                alt="icon"
-                                className="w-4 h-4 shrink-0 mt-0.5"
-                              />
-                              <span className="text-sm font-medium text-[#64748B] leading-snug">
-                                {bullet}
-                              </span>
-                            </div>
-                          ))
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Capability
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Engagement
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Confidence
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Change resilience
-                            </span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                        People
-                      </p>
-                      <p className="text-sm font-black text-[var(--secondary-color)]">
-                        {Math.round(findDomainScore("people"))}%
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                        Operational
-                      </p>
-                      <p className="text-sm font-black text-[var(--secondary-color)]">
-                        {Math.round(findDomainScore("operational"))}%
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                        Digital
-                      </p>
-                      <p className="text-sm font-black text-[var(--secondary-color)]">
-                        {Math.round(findDomainScore("digital"))}%
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Manager Coaching Tips
-                      </h3>
-                    </div>
-                    <div>
-                      <img src={StreamlinePlump} alt="images" />
-                    </div>
-                  </div>
-                  <ul className="mt-4 space-y-2">
-                    {[detailedPods?.insights?.modelDescription]
-                      .filter(Boolean)
-                      .map((tip: string, idx: number) => (
-                        <li key={idx} className="feature-list flex gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="mt-1 w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm text-[var(--secondary-color)] font-normal">
-                            {tip}
-                          </span>
-                        </li>
-                      ))}
-                    {!detailedPods?.insights?.modelDescription && (
-                      <li className="text-xs text-gray-400">
-                        Strategic model application details will appear here.
-                      </li>
+                      ),
                     )}
                   </ul>
-                  <div></div>
                 </div>
-              </div>
-              {/*  */}
-              <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Talent By Design <br />
-                      Recommended Offering
-                    </h3>
-                  </div>
-                  <div>
-                    <img src={Healthicons} alt="images" />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {displayRecommendations.map((rec: string, idx: number) => (
-                    <li key={idx} className="feature-list flex gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="mt-1 w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {rec}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <div></div>
-              </div>
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                  <div className="flex items-center justify-between  ">
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
                     <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Manager VS Team Gap
-                      </h3>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-center gap-1 mt-6">
-                    <div>
-                      <p className="w-9 h-4 bg-[#448bd26c]"></p>
+                      <p className="w-6 h-2 bg-[#FF5656]"></p>
                     </div>
                     <div>
                       <p className="text-sm font-normal text-[#474747]">
-                        Manager Self Assessment
+                        Low
                       </p>
                     </div>
                   </div>
-                  <div>
-                    <RadarChart
-                      data={radarData}
-                      selectedLabel={selectedLabel}
-                      onLabelSelect={handleRadarChartSelection}
-                    />
-                  </div>
-                </div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                  <div className="flex items-center justify-between ">
+                  <div className="flex items-center gap-1">
                     <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Delta Breakdown
-                      </h3>
+                      <p className="w-6 h-2 bg-[#FEE114]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Medium
+                      </p>
                     </div>
                   </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="w-6 h-2 bg-[#30AD43]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        High
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-10">
+                  <SpeedMeter value={domainScore} />
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Score by sub-domain
+                </h2>
+                <div className="relative mt-2" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    {selectedSubdomain || "Select Sub-domain"}
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                    aria-labelledby="dropdownMenuButton1"
+                    data-twe-dropdown-menu-ref
+                  >
+                    {Object.keys(
+                      reportData?.scores?.domains?.[selectedDomain]
+                        ?.subdomains || {},
+                    ).map((s) => (
+                      <li key={s}>
+                        <button
+                          onClick={() => setSelectedSubdomain(s)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                          data-twe-dropdown-item-ref
+                        >
+                          {s}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Low
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Medium
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        High
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-10">
+                  <SpeedMeter value={subdomainScore} />
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Performance Analysis
+                </h2>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Previous Test
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Current Test
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-10">
+                  <MultiLineChart data={trendData} />
+                </div>
+              </div>
+            </div>
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                <div className="flex items-center justify-between ">
                   <div>
-                    <GapBarChart
-                      labels={radarData.labels}
-                      deltaScores={deltaScores}
-                      selectedLabel={selectedLabel}
-                    />
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Insight for {selectedDomain}
+                    </h3>
+                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                      Overall analysis for this domain
+                    </p>
+                  </div>
+                  <div>
+                    <img src={Streamline} alt="images" />
+                  </div>
+                </div>
+                <div>
+                  <ul className="mt-4 space-y-2">
+                    {displayInsights.map((insight: string, idx: number) => (
+                      <li key={idx} className="feature-list flex gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="mt-1 w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                          {insight}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Objectives and Key Results
+                    </h3>
+                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                      {detailedPods?.objectives?.subtitle ||
+                        "Lead team improvements in this domain area"}
+                    </p>
+                  </div>
+                  <div>
+                    <img src={Hugeicons} alt="images" />
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 mt-4">
+                      <div className="text-lg-progress">
+                        <CircularProgress
+                          value={kr.value}
+                          width={60}
+                          textColor="#36454F"
+                          pathColor="#1A3652"
+                          trailColor="#D9D9D9"
+                        />
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                          {kr.label}
+                        </h2>
+                        <p className="text-sm font-normal text-[var(--secondary-color)]">
+                          {kr.text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  {displayKRs.length === 0 && (
+                    <p className="text-sm text-gray-400 italic">
+                      No specific team key results available.
+                    </p>
+                  )}
+                </div>
+                <div></div>
+              </div>
+            </div>
+            {/*  */}
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
+                <div className="flex items-center justify-between w-full mb-2">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      POD-360™ Model
+                    </h3>
+                    <p className="text-xs text-[#64748B] font-medium">
+                      Interconnectivity of focus areas
+                    </p>
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
+                  <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                    <Triangle data={triangleData} />
+                  </div>
+                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                    {detailedPods?.insights?.modelDescription ? (
+                      detailedPods.insights.modelDescription
+                        .split(/[•\n\r]/)
+                        .map((item: string) => item.trim())
+                        .filter((item: string) => item.length > 0)
+                        .map((bullet: string, idx: number) => (
+                          <div key={idx} className="flex items-start gap-2">
+                            <img
+                              src={IconStar}
+                              alt="icon"
+                              className="w-4 h-4 shrink-0 mt-0.5"
+                            />
+                            <span className="text-sm font-medium text-[#64748B] leading-snug">
+                              {bullet}
+                            </span>
+                          </div>
+                        ))
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Capability
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Engagement
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Confidence
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Change resilience
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      People
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("people"))}%
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      Operational
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("operational"))}%
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      Digital
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("digital"))}%
+                    </p>
                   </div>
                 </div>
               </div>
-
-              <div className="last-graph mt-8">
-                <ScoreBar score={50} label="hello world" />
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Manager Coaching Tips
+                    </h3>
+                  </div>
+                  <div>
+                    <img src={StreamlinePlump} alt="images" />
+                  </div>
+                </div>
+                <ul className="mt-4 space-y-2">
+                  {[detailedPods?.insights?.modelDescription]
+                    .filter(Boolean)
+                    .map((tip: string, idx: number) => (
+                      <li key={idx} className="feature-list flex gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="mt-1 w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm text-[var(--secondary-color)] font-normal">
+                          {tip}
+                        </span>
+                      </li>
+                    ))}
+                  {!detailedPods?.insights?.modelDescription && (
+                    <li className="text-xs text-gray-400">
+                      Strategic model application details will appear here.
+                    </li>
+                  )}
+                </ul>
+                <div></div>
               </div>
-            </>
-          )
+            </div>
+            {/*  */}
+            <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Talent By Design <br />
+                    Recommended Offering
+                  </h3>
+                </div>
+                <div>
+                  <img src={Healthicons} alt="images" />
+                </div>
+              </div>
+              <ul className="mt-4 space-y-2">
+                {displayRecommendations.map((rec: string, idx: number) => (
+                  <li key={idx} className="feature-list flex gap-2">
+                    <img
+                      src={IconStar}
+                      alt="icon"
+                      className="mt-1 w-4 h-4 shrink-0"
+                    />
+                    <span className="text-sm text-[var(--secondary-color)] font-normal">
+                      {rec}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div></div>
+            </div>
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                <div className="flex items-center justify-between  ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Manager VS Team Gap
+                    </h3>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-1 mt-6">
+                  <div>
+                    <p className="w-9 h-4 bg-[#448bd26c]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Manager Self Assessment
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <RadarChart
+                    data={radarData}
+                    selectedLabel={selectedLabel}
+                    onLabelSelect={handleRadarChartSelection}
+                  />
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Delta Breakdown
+                    </h3>
+                  </div>
+                </div>
+                <div>
+                  <GapBarChart
+                    labels={radarData.labels}
+                    deltaScores={deltaScores}
+                    selectedLabel={selectedLabel}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="last-graph mt-8">
+              <ScoreBar score={50} label="hello world" />
+            </div>
+          </>
+        ) : (
+          <ReportEmptyState role="Manager" />
         )}
       </div>
     </div>

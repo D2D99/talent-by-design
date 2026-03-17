@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
+import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import Select from "react-select";
@@ -219,7 +220,7 @@ const AdminReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
@@ -317,9 +318,9 @@ const AdminReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -327,9 +328,9 @@ const AdminReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -337,9 +338,9 @@ const AdminReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -359,9 +360,9 @@ const AdminReport = () => {
       const score =
         responses.length > 0
           ? responses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / responses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / responses.length
           : 0;
 
       const labelMap: any = {
@@ -501,9 +502,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                  value: selectedMember._id,
+                  label: selectedMember.name,
+                }
                 : null
             }
             onChange={(option: any) => {
@@ -535,33 +536,31 @@ const AdminReport = () => {
             }}
           />
         </div>
-      </div>
 
-      {hasNoReport ? (
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-6 text-center flex flex-col items-center gap-6">
-          <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
-            <Icon
-              icon="solar:clipboard-list-broken-bold-duotone"
-              width="48"
-              className="text-[#448CD2]"
-            />
-          </div>
-          <h2 className="text-3xl font-black text-[#1A3652]">
-            No Assessment Results Yet
-          </h2>
-          <p className="text-neutral-500 max-w-md text-lg">
-            This administrator has been invited to take the assessment, but they
-            haven't completed it yet. Once they finish, you'll see their full
-            performance report here.
-          </p>
-          <div className="flex gap-4 mt-4">
-            <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">
-              Status: Pending Completion
+        {hasNoReport ? (
+          <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-6 text-center flex flex-col items-center gap-6">
+            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
+              <Icon
+                icon="solar:clipboard-list-broken-bold-duotone"
+                width="48"
+                className="text-[#448CD2]"
+              />
+            </div>
+            <h2 className="text-3xl font-black text-[#1A3652]">
+              No Assessment Results Yet
+            </h2>
+            <p className="text-neutral-500 max-w-md text-lg">
+              This administrator has been invited to take the assessment, but they
+              haven't completed it yet. Once they finish, you'll see their full
+              performance report here.
+            </p>
+            <div className="flex gap-4 mt-4">
+              <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">
+                Status: Pending Completion
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        reportData && (
+        ) : reportData ? (
           <>
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
@@ -1253,8 +1252,10 @@ const AdminReport = () => {
               </div>
             </div>
           </>
-        )
-      )}
+        ) : (
+          <ReportEmptyState role="Org Head / Coach" />
+        )}
+      </div>
     </div>
   );
 };

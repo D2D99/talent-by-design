@@ -19,6 +19,7 @@ import { Icon } from "@iconify/react";
 import SpeedMeter from "../../components/speedMeter";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
+import ReportEmptyState from "../../components/reportEmptyState";
 
 // ------ CONSTANTS ------
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
@@ -312,7 +313,7 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
@@ -448,9 +449,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -504,325 +505,325 @@ const EmployeeReport = () => {
               </div>
             </div>
           </div>
-        ) : (
-          reportData && (
-            <>
-              <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
-                {/* Domain Score Section */}
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
-                  <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                    Score by domain
-                  </h2>
-                  <div className="relative mt-2" data-twe-dropdown-ref>
-                    <button
-                      className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
-                      type="button"
-                      id="dropdownMenuButtonDomain"
-                      data-twe-dropdown-toggle-ref
-                      aria-expanded="false"
-                      data-twe-ripple-init
-                      data-twe-ripple-color="light"
-                    >
-                      {selectedDomain}
-                      <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <ul
-                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                      aria-labelledby="dropdownMenuButtonDomain"
-                      data-twe-dropdown-menu-ref
-                    >
-                      {Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee).map((d) => (
-                        <li key={d}>
-                          <button
-                            onClick={() => handleDomainChange(d)}
-                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-bold text-neutral-700 hover:bg-[#EDF5FD]"
-                            data-twe-dropdown-item-ref
-                          >
-                            {d}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="flex justify-center gap-4 mt-6">
-                    <div className="flex items-center gap-1">
-                      <p className="w-6 h-2 bg-[#FF5656]"></p>
-                      <p className="text-sm font-normal text-[#474747]">Low</p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <p className="w-6 h-2 bg-[#FEE114]"></p>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Medium
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <p className="w-6 h-2 bg-[#30AD43]"></p>
-                      <p className="text-sm font-normal text-[#474747]">High</p>
-                    </div>
-                  </div>
-                  <div className="p-10 flex justify-center">
-                    <SpeedMeter value={domainScore} />
-                  </div>
-                </div>
-
-                {/* Subdomain Score Section */}
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
-                  <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                    Score by sub-domain
-                  </h2>
-                  <div className="relative mt-2" data-twe-dropdown-ref>
-                    <button
-                      className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
-                      type="button"
-                      id="dropdownMenuButtonSub"
-                      data-twe-dropdown-toggle-ref
-                      aria-expanded="false"
-                      data-twe-ripple-init
-                      data-twe-ripple-color="light"
-                    >
-                      {selectedSubdomain}
-                      <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <ul
-                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                      aria-labelledby="dropdownMenuButtonSub"
-                      data-twe-dropdown-menu-ref
-                    >
-                      {(
-                        ROLE_DOMAIN_SUBDOMAINS.employee[selectedDomain] || []
-                      ).map((s) => (
-                        <li key={s}>
-                          <button
-                            onClick={() => setSelectedSubdomain(s)}
-                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                            data-twe-dropdown-item-ref
-                          >
-                            {s}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="flex justify-center gap-4 mt-6">
-                    <div className="flex items-center gap-1">
-                      <p className="w-6 h-2 bg-[#FF5656]"></p>
-                      <p className="text-sm font-normal text-[#474747]">Low</p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <p className="w-6 h-2 bg-[#FEE114]"></p>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Medium
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <p className="w-6 h-2 bg-[#30AD43]"></p>
-                      <p className="text-sm font-normal text-[#474747]">High</p>
-                    </div>
-                  </div>
-                  <div className="p-10 flex justify-center">
-                    <SpeedMeter value={subdomainScore} />
-                  </div>
-                </div>
-
-                {/* Triangle Model Section */}
-                <div className="xl:col-span-1 lg:col-span-2">
-                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
-                    <div className="flex items-center justify-between w-full mb-2 text-left">
-                      <div>
-                        <h3 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                          POD-360™ Model
-                        </h3>
-                        <p className="text-xs text-[#64748B] font-medium">
-                          Interconnectivity of focus areas
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex-1 flex flex-col items-center justify-center py-4 w-full gap-6">
-                      <div className="max-w-[240px]">
-                        <Triangle data={triangleData} />
-                      </div>
-                      <div className="grid grid-cols-1 gap-3 w-full px-4">
-                        {(detailedPods?.insights?.modelDescription
-                          ? detailedPods.insights.modelDescription
-                              .split(/[•\n\r]/)
-                              .map((item: string) => item.trim())
-                              .filter((item: string) => item.length > 0)
-                          : [
-                              "Capability",
-                              "Engagement",
-                              "Confidence",
-                              "Resilience",
-                            ]
-                        ).map((bullet: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0 mt-0.5"
-                            />
-                            <span className="text-sm font-medium text-[#64748B] text-left">
-                              {bullet}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="w-full mt-4 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-                      <div className="text-center">
-                        <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                          People
-                        </p>
-                        <p className="text-sm font-black text-[#1A3652]">
-                          {Math.round(triangleData.peoplePotential)}%
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                          Operational
-                        </p>
-                        <p className="text-sm font-black text-[#1A3652]">
-                          {Math.round(triangleData.operationalSteadiness)}%
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                          Digital
-                        </p>
-                        <p className="text-sm font-black text-[#1A3652]">
-                          {Math.round(triangleData.digitalFluency)}%
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-[#EDF5FD]">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                        Insight for {selectedDomain}
-                      </h3>
-                      <p className="text-xs text-[#64748B] font-medium">
-                        Overall analysis based on your responses
-                      </p>
-                    </div>
-                    <img src={Streamline} alt="images" className="w-8 h-8" />
-                  </div>
-                  <ul className="space-y-3">
-                    {displayInsights.map((insight: string, idx: number) => (
-                      <li key={idx} className="flex gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="w-4 h-4 mt-1 shrink-0"
+        ) : reportData ? (
+          <>
+            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+              {/* Domain Score Section */}
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
+                <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
+                  Score by domain
+                </h2>
+                <div className="relative mt-2" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
+                    type="button"
+                    id="dropdownMenuButtonDomain"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    {selectedDomain}
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
                         />
-                        <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
-                          {insight}
-                        </span>
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                    aria-labelledby="dropdownMenuButtonDomain"
+                    data-twe-dropdown-menu-ref
+                  >
+                    {Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee).map((d) => (
+                      <li key={d}>
+                        <button
+                          onClick={() => handleDomainChange(d)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-bold text-neutral-700 hover:bg-[#EDF5FD]"
+                          data-twe-dropdown-item-ref
+                        >
+                          {d}
+                        </button>
                       </li>
                     ))}
                   </ul>
                 </div>
-
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                        Objectives and Key Results
-                      </h3>
-                      <p className="text-xs text-[#64748B] font-medium">
-                        {detailedPods?.objectives?.subtitle ||
-                          "Develop essential leadership and EI skills"}
-                      </p>
-                    </div>
-                    <img src={Hugeicons} alt="images" className="w-8 h-8" />
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <p className="w-6 h-2 bg-[#FF5656]"></p>
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
                   </div>
-                  <div className="space-y-5">
-                    {displayKRs.map((kr: any, idx: number) => (
-                      <div key={idx} className="flex items-center gap-4">
-                        <div className="shrink-0">
-                          <CircularProgress
-                            value={kr.value}
-                            width={50}
-                            textColor="#1A3652"
-                            pathColor="#1A3652"
-                            trailColor="#E2E8F0"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-[#1A3652]">
-                            {kr.label}
-                          </h4>
-                          <p className="text-xs text-[#64748B] font-medium">
-                            {kr.text}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    {displayKRs.length === 0 && (
-                      <p className="text-sm text-gray-400 italic">
-                        No specific key results available.
-                      </p>
-                    )}
+                  <div className="flex items-center gap-1">
+                    <p className="w-6 h-2 bg-[#FEE114]"></p>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Medium
+                    </p>
                   </div>
+                  <div className="flex items-center gap-1">
+                    <p className="w-6 h-2 bg-[#30AD43]"></p>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
+                </div>
+                <div className="p-10 flex justify-center">
+                  <SpeedMeter value={domainScore} />
                 </div>
               </div>
 
-              <div className="mt-6 border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+              {/* Subdomain Score Section */}
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
+                <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
+                  Score by sub-domain
+                </h2>
+                <div className="relative mt-2" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
+                    type="button"
+                    id="dropdownMenuButtonSub"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    {selectedSubdomain}
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                    aria-labelledby="dropdownMenuButtonSub"
+                    data-twe-dropdown-menu-ref
+                  >
+                    {(
+                      ROLE_DOMAIN_SUBDOMAINS.employee[selectedDomain] || []
+                    ).map((s) => (
+                      <li key={s}>
+                        <button
+                          onClick={() => setSelectedSubdomain(s)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                          data-twe-dropdown-item-ref
+                        >
+                          {s}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <p className="w-6 h-2 bg-[#FF5656]"></p>
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <p className="w-6 h-2 bg-[#FEE114]"></p>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Medium
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <p className="w-6 h-2 bg-[#30AD43]"></p>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
+                </div>
+                <div className="p-10 flex justify-center">
+                  <SpeedMeter value={subdomainScore} />
+                </div>
+              </div>
+
+              {/* Triangle Model Section */}
+              <div className="xl:col-span-1 lg:col-span-2">
+                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
+                  <div className="flex items-center justify-between w-full mb-2 text-left">
+                    <div>
+                      <h3 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
+                        POD-360™ Model
+                      </h3>
+                      <p className="text-xs text-[#64748B] font-medium">
+                        Interconnectivity of focus areas
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex flex-col items-center justify-center py-4 w-full gap-6">
+                    <div className="max-w-[240px]">
+                      <Triangle data={triangleData} />
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 w-full px-4">
+                      {(detailedPods?.insights?.modelDescription
+                        ? detailedPods.insights.modelDescription
+                          .split(/[•\n\r]/)
+                          .map((item: string) => item.trim())
+                          .filter((item: string) => item.length > 0)
+                        : [
+                          "Capability",
+                          "Engagement",
+                          "Confidence",
+                          "Resilience",
+                        ]
+                      ).map((bullet: string, idx: number) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0 mt-0.5"
+                          />
+                          <span className="text-sm font-medium text-[#64748B] text-left">
+                            {bullet}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="w-full mt-4 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                    <div className="text-center">
+                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                        People
+                      </p>
+                      <p className="text-sm font-black text-[#1A3652]">
+                        {Math.round(triangleData.peoplePotential)}%
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                        Operational
+                      </p>
+                      <p className="text-sm font-black text-[#1A3652]">
+                        {Math.round(triangleData.operationalSteadiness)}%
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                        Digital
+                      </p>
+                      <p className="text-sm font-black text-[#1A3652]">
+                        {Math.round(triangleData.digitalFluency)}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-[#EDF5FD]">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                      Talent By Design Recommended Offering
+                      Insight for {selectedDomain}
                     </h3>
                     <p className="text-xs text-[#64748B] font-medium">
-                      Selected growth opportunities
+                      Overall analysis based on your responses
                     </p>
                   </div>
-                  <img src={Healthicons} alt="images" className="w-8 h-8" />
+                  <img src={Streamline} alt="images" className="w-8 h-8" />
                 </div>
-                <ul className="space-y-2">
-                  {displayRecommendations.map((rec: string, idx: number) => (
-                    <li key={idx} className="flex gap-2 text-left">
+                <ul className="space-y-3">
+                  {displayInsights.map((insight: string, idx: number) => (
+                    <li key={idx} className="flex gap-2">
                       <img
                         src={IconStar}
                         alt="icon"
                         className="w-4 h-4 mt-1 shrink-0"
                       />
-                      <span className="text-sm text-[#64748B] font-medium">
-                        {rec}
+                      <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
+                        {insight}
                       </span>
                     </li>
                   ))}
                 </ul>
               </div>
-            </>
-          )
+
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#1A3652] capitalize">
+                      Objectives and Key Results
+                    </h3>
+                    <p className="text-xs text-[#64748B] font-medium">
+                      {detailedPods?.objectives?.subtitle ||
+                        "Develop essential leadership and EI skills"}
+                    </p>
+                  </div>
+                  <img src={Hugeicons} alt="images" className="w-8 h-8" />
+                </div>
+                <div className="space-y-5">
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <div className="shrink-0">
+                        <CircularProgress
+                          value={kr.value}
+                          width={50}
+                          textColor="#1A3652"
+                          pathColor="#1A3652"
+                          trailColor="#E2E8F0"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-[#1A3652]">
+                          {kr.label}
+                        </h4>
+                        <p className="text-xs text-[#64748B] font-medium">
+                          {kr.text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  {displayKRs.length === 0 && (
+                    <p className="text-sm text-gray-400 italic">
+                      No specific key results available.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-[#1A3652] capitalize">
+                    Talent By Design Recommended Offering
+                  </h3>
+                  <p className="text-xs text-[#64748B] font-medium">
+                    Selected growth opportunities
+                  </p>
+                </div>
+                <img src={Healthicons} alt="images" className="w-8 h-8" />
+              </div>
+              <ul className="space-y-2">
+                {displayRecommendations.map((rec: string, idx: number) => (
+                  <li key={idx} className="flex gap-2 text-left">
+                    <img
+                      src={IconStar}
+                      alt="icon"
+                      className="w-4 h-4 mt-1 shrink-0"
+                    />
+                    <span className="text-sm text-[#64748B] font-medium">
+                      {rec}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        ) : (
+          <ReportEmptyState role="Employee" />
         )}
       </div>
     </div>
