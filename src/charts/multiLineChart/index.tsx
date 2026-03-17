@@ -13,7 +13,6 @@ import {
   Filler,
 } from "chart.js";
 
-// Register the components in Chart.js
 Chart.register(
   LineController,
   LineElement,
@@ -29,7 +28,7 @@ export interface TrendData {
   labels: string[];
   manager: number[]; // Previous Test
   team: number[];    // Current Test
-  descriptions?: string[]; // Actual question text or subdomain info for tooltips
+  descriptions?: string[];
 }
 
 interface MultiLineChartProps {
@@ -41,12 +40,11 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
   const chartRef = useRef<Chart<"line", number[], string> | null>(null);
 
   useEffect(() => {
-    // Cleanup the previous chart if it exists
+    // Destroy previous chart
     if (chartRef.current) {
       chartRef.current.destroy();
     }
 
-    // Create a new chart
     if (canvasRef.current) {
       chartRef.current = new Chart(canvasRef.current, {
         type: "line",
@@ -57,56 +55,67 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
               label: "Current Test",
               data: data.team,
               borderColor: "#1A3652",
-              backgroundColor: "rgba(26,54,82,0.1)",
-              borderWidth: 3,
+              backgroundColor: "transparent",
+              borderWidth: 2,
               tension: 0.4,
-              pointRadius: 4,
+              pointRadius: 3,
               pointHoverRadius: 6,
               pointBackgroundColor: "#1A3652",
-              fill: true,
+              fill: false,
             },
             {
               label: "Previous Test",
               data: data.manager,
               borderColor: "#4A90E2",
-              backgroundColor: "rgba(74,144,226,0.05)",
+              backgroundColor: "transparent",
               borderWidth: 2,
               borderDash: [5, 5],
               tension: 0.4,
-              pointRadius: 4,
+              pointRadius: 3,
               pointHoverRadius: 6,
               pointBackgroundColor: "#4A90E2",
-              fill: true,
+              fill: false,
             },
           ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          layout: {
+            padding: {
+              top: 10, // slight visual breathing space
+            },
+          },
           scales: {
             y: {
               min: 0,
-              max: 10,
+              max: 12, // 👈 creates top space
               ticks: {
                 stepSize: 2,
-                font: { size: 10 }
+                font: { size: 10 },
+                callback: (value) => (value === 12 ? "" : value), // 👈 hide top label
               },
               grid: {
-                color: "rgba(0,0,0,0.05)"
-              }
+                // drawBorder: false,
+                color: (ctx) =>
+                  ctx.tick.value === 12
+                    ? "transparent" // 👈 remove top line
+                    : "rgba(0,0,0,0.05)",
+              },
             },
             x: {
               ticks: {
-                font: { size: 10, weight: 'bold' }
+                font: { size: 10, weight: "bold" },
               },
               grid: {
-                display: false
-              }
-            }
+                display: false,
+                // drawBorder: false,
+              },
+            },
           },
           plugins: {
             legend: {
-              display: false
+              display: false,
             },
             tooltip: {
               backgroundColor: "rgba(255, 255, 255, 0.95)",
@@ -124,17 +133,15 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
                     ? data.descriptions[index]
                     : context[0].label;
                 },
-                label: (context) => {
-                  return `${context.dataset.label}: ${context.parsed.y}/10`;
-                }
-              }
-            }
+                label: (context) =>
+                  `${context.dataset.label}: ${context.parsed.y}/10`,
+              },
+            },
           },
         },
       });
     }
 
-    // Cleanup the chart when the component unmounts
     return () => {
       if (chartRef.current) {
         chartRef.current.destroy();
