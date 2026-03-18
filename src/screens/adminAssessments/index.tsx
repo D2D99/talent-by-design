@@ -164,7 +164,7 @@ const AdminAssessments = () => {
               <th className="px-6 py-4 font-semibold text-nowrap">
                 Assessment Status
               </th>
-              <th className="px-6 py-4 font-semibold ">Progress</th>
+              <th className="px-6 py-4 font-semibold">Progress</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -182,7 +182,7 @@ const AdminAssessments = () => {
               return (
                 <tr
                   key={member._id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors "
+                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
                 >
                   <td className="px-6 py-4 text-sm font-semibold text-gray-700">
                     {indexOfFirstItem + idx + 1}

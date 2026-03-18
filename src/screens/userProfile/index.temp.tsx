@@ -1,5 +1,4 @@
 import { useState, useEffect, type ChangeEvent } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -29,33 +28,23 @@ interface ProfileFormData {
 const OrgLogoPlaceholder = "/static/img/POD-logo.svg";
 
 const UserProfile = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    formState: { errors },
-  } = useForm<ProfileFormData>({
-    defaultValues: {
-      firstName: "",
-      middleInitial: "",
-      lastName: "",
-      dob: "",
-      gender: "",
-      email: "",
-      phoneNumber: "",
-      role: "",
-      country: "",
-      state: "",
-      zipCode: "",
-      profileImage: "",
-      orgName: "",
-      orgLogo: "",
-      department: "",
-    },
+  const [formData, setFormData] = useState<ProfileFormData>({
+    firstName: "",
+    middleInitial: "",
+    lastName: "",
+    dob: "",
+    gender: "",
+    email: "",
+    phoneNumber: "",
+    role: "",
+    country: "",
+    state: "",
+    zipCode: "",
+    profileImage: "",
+    orgName: "",
+    orgLogo: "",
+    department: "",
   });
-
-  const formData = watch();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -82,7 +71,7 @@ const UserProfile = () => {
         }
       }
 
-      reset({
+      setFormData({
         firstName: data.firstName || "",
         middleInitial: data.middleInitial || "",
         lastName: data.lastName || "",
@@ -113,7 +102,38 @@ const UserProfile = () => {
     fetchProfile();
   }, []);
 
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { id, value } = e.target;
+    // Map IDs to state keys
+    const fieldMapping: { [key: string]: string } = {
+      fname: "firstName",
+      mname: "middleInitial",
+      lname: "lastName",
+      dob: "dob",
+      gender: "gender",
+      email: "email",
+      phno: "phoneNumber",
+      userRole: "role",
+      country: "country",
+      city: "state", // Mapping 'city' ID to 'state' field as requested
+      zipCode: "zipCode",
+    };
 
+    const fieldName = fieldMapping[id] || id;
+
+    if (fieldName === "phoneNumber") {
+    const phoneRegex = /^[0-9+\-()\s]*$/;
+
+    if (!phoneRegex.test(value)) {
+      toast.error("Phone number can only contain numbers and special characters (+ - ( ) )");
+      return;
+    }
+  }
+
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+  };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -131,21 +151,27 @@ const UserProfile = () => {
     }
   };
 
-  const onSubmit: SubmitHandler<ProfileFormData> = async (dataForm) => {
+  const handleSave = async () => {
     setSaving(true);
+
+    if (!/^[0-9+\-()\s]+$/.test(formData.phoneNumber)) {
+    toast.error("Invalid phone number format");
+    setSaving(false);
+    return;
+  }
 
     try {
       const data = new FormData();
-      data.append("firstName", dataForm.firstName);
-      data.append("middleInitial", dataForm.middleInitial);
-      data.append("lastName", dataForm.lastName);
-      data.append("dob", dataForm.dob);
-      data.append("gender", dataForm.gender);
-      data.append("phoneNumber", dataForm.phoneNumber);
-      data.append("country", dataForm.country);
-      data.append("state", dataForm.state);
-      data.append("zipCode", dataForm.zipCode);
-      data.append("department", dataForm.department);
+      data.append("firstName", formData.firstName);
+      data.append("middleInitial", formData.middleInitial);
+      data.append("lastName", formData.lastName);
+      data.append("dob", formData.dob);
+      data.append("gender", formData.gender);
+      data.append("phoneNumber", formData.phoneNumber);
+      data.append("country", formData.country);
+      data.append("state", formData.state);
+      data.append("zipCode", formData.zipCode);
+      data.append("department", formData.department);
 
       if (selectedFile) {
         data.append("profileImage", selectedFile);
@@ -198,21 +224,31 @@ const UserProfile = () => {
     return <SpinnerLoader />;
   }
 
+  const isFormValid =
+    formData.firstName.trim() !== "" &&
+    formData.lastName.trim() !== "" &&
+    formData.dob.trim() !== "" &&
+    formData.phoneNumber.trim() !== "" &&
+    formData.country.trim() !== "" &&
+    formData.state.trim() !== "" &&
+    formData.zipCode.trim() !== "";
+
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
+      <div className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
         <div className="flex items-center justify-between gap-4 flex-wrap mb-8">
           <h2 className="md:text-2xl text-xl font-bold">My Profile</h2>
 
           <button
-            type={isEditing ? "submit" : "button"}
-            onClick={(e) => {
-              if (!isEditing) {
-                e.preventDefault();
+            type="button"
+            onClick={() => {
+              if (isEditing) {
+                handleSave();
+              } else {
                 setIsEditing(true);
               }
             }}
-            disabled={saving}
+            disabled={saving || (isEditing && !isFormValid)}
             className="relative overflow-hidden z-0 text-white px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 disabled:pointer-events-none disabled:before:content-[''] disabled:before:bg-transparent"
           >
             {saving ? (
@@ -339,12 +375,13 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="fname"
+                value={formData.firstName}
+                onChange={handleChange}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.firstName ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your first name"
-                {...register("firstName", { required: "First name is required" })}
+                required
               />
-              {errors.firstName && (<span className="text-red-500 text-xs mt-1 block">{errors.firstName.message}</span>)}
             </div>
 
             <div>
@@ -357,10 +394,11 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="mname"
+                value={formData.middleInitial}
+                onChange={handleChange}
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your middle initial"
-                {...register("middleInitial")}
               />
             </div>
 
@@ -374,12 +412,13 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="lname"
+                value={formData.lastName}
+                onChange={handleChange}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.lastName ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your last name"
-                {...register("lastName", { required: "Last name is required" })}
+                required
               />
-              {errors.lastName && (<span className="text-red-500 text-xs mt-1 block">{errors.lastName.message}</span>)}
             </div>
 
             <div>
@@ -392,11 +431,12 @@ const UserProfile = () => {
               <input
                 type="date"
                 id="dob"
+                value={formData.dob}
+                onChange={handleChange}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.dob ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
-                {...register("dob", { required: "Date of birth is required" })}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
+                required
               />
-              {errors.dob && (<span className="text-red-500 text-xs mt-1 block">{errors.dob.message}</span>)}
             </div>
 
             <div>
@@ -424,9 +464,10 @@ const UserProfile = () => {
                 </div>
                 <select
                   id="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
                   disabled={!isEditing}
                   className="font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
-                  {...register("gender")}
                 >
                   <option value="">Select</option>
                   <option value="male">Male</option>
@@ -446,10 +487,10 @@ const UserProfile = () => {
               <input
                 type="email"
                 id="email"
+                value={formData.email}
                 readOnly
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed read-only:bg-gray-50"
                 placeholder="Enter your email"
-                {...register("email")}
               />
             </div>
 
@@ -463,6 +504,8 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="phno"
+                value={formData.phoneNumber}
+                onChange={handleChange}
                 onKeyPress={(e) => {
                   const allowed = /[0-9+\-()\s]/;
                   if (!allowed.test(e.key)) {
@@ -470,11 +513,10 @@ const UserProfile = () => {
                   }
                 }}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.phoneNumber ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your phone number"
-                {...register("phoneNumber", { required: "Phone number is required", pattern: { value: /^[0-9+\-()\s]+$/, message: "Invalid format" } })}
+                required
               />
-              {errors.phoneNumber && (<span className="text-red-500 text-xs mt-1 block">{errors.phoneNumber.message}</span>)}
             </div>
 
             <div>
@@ -487,10 +529,10 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="userRole"
+                value={formData.role}
                 readOnly
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed capitalize read-only:bg-gray-50"
                 placeholder="User role"
-                {...register("role")}
               />
             </div>
 
@@ -505,10 +547,10 @@ const UserProfile = () => {
                 <input
                   type="text"
                   id="orgName"
+                  value={formData.orgName}
                   readOnly
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
                   placeholder="Organization name"
-                  {...register("orgName")}
                 />
               </div>
             )}
@@ -526,7 +568,8 @@ const UserProfile = () => {
                 <input
                   type="text"
                   id="department"
-                  {...register("department")}
+                  value={formData.department}
+                  onChange={handleChange}
                   disabled={
                     !isEditing ||
                     formData.role?.toLowerCase() === "leader" ||
@@ -621,12 +664,13 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="country"
+                value={formData.country}
+                onChange={handleChange}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.country ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your country"
-                {...register("country", { required: "Country is required" })}
+                required
               />
-              {errors.country && (<span className="text-red-500 text-xs mt-1 block">{errors.country.message}</span>)}
             </div>
 
             <div>
@@ -639,12 +683,13 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="city"
+                value={formData.state}
+                onChange={handleChange}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.state ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your state"
-                {...register("state", { required: "State is required" })}
+                required
               />
-              {errors.state && (<span className="text-red-500 text-xs mt-1 block">{errors.state.message}</span>)}
             </div>
 
             <div>
@@ -657,16 +702,17 @@ const UserProfile = () => {
               <input
                 type="text"
                 id="zipCode"
+                value={formData.zipCode}
+                onChange={handleChange}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.zipCode ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your zip code"
-                {...register("zipCode", { required: "Zip code is required" })}
+                required
               />
-              {errors.zipCode && (<span className="text-red-500 text-xs mt-1 block">{errors.zipCode.message}</span>)}
             </div>
           </div>
         </div>
-      </form>
+      </div>
 
       {showLogoModal && (
         <div
