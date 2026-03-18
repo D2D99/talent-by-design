@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react";
+import generatePDF from "react-to-pdf";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
@@ -11,7 +12,7 @@ import OuiSecurity from "../../../public/static/img/home/oui_security-signal-det
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
 import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
@@ -28,25 +29,208 @@ import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
 
+
+
+
+// const FullReportPDF = ({ reportData }: any) => {
+//   if (!reportData) return null;
+
+//   return (
+//     <div className="p-6 bg-white text-black">
+//       <h1 className="text-xl font-bold mb-4">Full Report</h1>
+
+//       {Object.entries(reportData?.scores?.domains || {}).map(
+//         ([domainName, domainData]: any) => (
+//           <div key={domainName} className="mb-4">
+//             <h2 className="font-bold">
+//               {domainName} ({Math.round(domainData.score)}%)
+//             </h2>
+
+//             {Object.entries(domainData.subdomains || {}).map(
+//               ([subName, subScore]: any) => (
+//                 <p key={subName}>
+//                   {subName}: {Math.round(subScore)}%
+//                 </p>
+//               ),
+//             )}
+//           </div>
+//         ),
+//       )}
+//     </div>
+//   );
+// };
+
+
+
+const FullReportPDF = ({ reportData }: any) => {
+  if (!reportData) return null;
+
+  const domains = reportData?.scores?.domains || {};
+
+  return (
+    <div className="p-6 bg-white text-black w-[800px]">
+
+      <h1 className="text-2xl font-bold mb-6">
+        Full Organization Report
+      </h1>
+
+      {Object.entries(domains).map(([domainName, domainData]: any) => (
+        <div key={domainName} className="mb-8 border-b pb-4">
+
+          {/* DOMAIN */}
+          <h2 className="text-lg font-bold mb-2">
+            {domainName} ({Math.round(domainData.score)}%)
+          </h2>
+
+          {/* SUBDOMAINS */}
+          <div className="ml-4">
+            {Object.entries(domainData.subdomains || {}).map(
+              ([subName, subScore]: any) => (
+                <div key={subName} className="mb-1">
+                  <span className="font-medium">{subName}</span>:{" "}
+                  {Math.round(subScore)}%
+                </div>
+              )
+            )}
+          </div>
+
+        </div>
+      ))}
+
+    </div>
+  );
+};
+
 const AdminReport = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const fullReportRef = useRef(null); // PDF ref
+  const reportRef = useRef(null);
+
   const userId = searchParams.get("userId");
   const userEmail = searchParams.get("email"); // Guest employee support
   const [reportData, setReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [downloading, setDownloading] = useState(false);
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
+ 
+  const [showExportModal, setShowExportModal] = useState(false);
+
+
+  const allSections = [
+    "Organizational Health",
+    "POD-360™ Model",
+    "Trends Analysis",
+    "Alignment Status",
+    "Priorities Attention",
+    "Overall Departmental POD Score",
+    "Score by domain",
+    "Score by sub-domain",
+    "Performance Analysis",
+    "Insight for People Potential",
+    "Objectives and Key Results",
+    "Leader Coaching Tips",
+    "Key Recommendations",
+  ];
+
+
+  const [selectedSections, setSelectedSections] = useState<string[]>(allSections);
+ 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
 
   const isAdmin = userRole === "admin";
   const [orgs, setOrgs] = useState<string[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
+
+
+// const handleExportPDF = () => {
+//   if (!fullReportRef.current) return;
+
+//   generatePDF(() => fullReportRef.current, {
+//     // filename: `${userData?.firstName || "report"}-analysis.pdf`,
+//     filename: "full-report.pdf",
+//     page: {
+//       margin: 10,
+//       format: "A4",
+//       orientation: "portrait",
+//     },
+//     canvas: {
+//       scale: 2,
+//       useCORS: true,
+//       logging: true
+//     },
+//   });
+// };
+
+// const handleExportPDF = async () => {
+//   if (!reportRef.current) return;
+
+//   setDownloading(true);
+
+//   await generatePDF(() => reportRef.current, {
+//     filename: "full-report.pdf",
+//     page: {
+//       margin: 10,
+//       format: "A4",
+//       orientation: "portrait",
+//     },
+//     canvas: {
+//       scale: 2,
+//       useCORS: true,
+//     },
+//   });
+
+//   setDownloading(false);
+// };
+
+
+
+const handleExportPDF = async () => {
+  if (!reportRef.current) return;
+
+  setDownloading(true);
+
+  const container = reportRef.current;
+
+  // 🔹 hide unselected sections
+  const allNodes = container.querySelectorAll("[data-section]");
+
+  allNodes.forEach((node: any) => {
+    const sectionName = node.getAttribute("data-section");
+
+    if (!selectedSections.includes(sectionName)) {
+      node.style.display = "none";
+    }
+  });
+
+  // 🔹 generate PDF
+  await generatePDF(() => container, {
+    filename: "custom-report.pdf",
+    page: {
+      margin: 10,
+      format: "A4",
+      orientation: "portrait",
+    },
+    canvas: {
+      scale: 2,
+      useCORS: true,
+    },
+  });
+
+  // 🔹 restore UI
+  allNodes.forEach((node: any) => {
+    node.style.display = "";
+  });
+
+  setDownloading(false);
+};
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -445,7 +629,9 @@ const AdminReport = () => {
         <Sidebar />
       </div>
 
-      <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
+      <div
+        ref={reportRef}
+        className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
             {userData?.firstName ||
@@ -457,9 +643,10 @@ const AdminReport = () => {
               reportData?.userDetails?.lastName ||
               ""}
           </h3>
-
+ 
           <button
             type="button"
+            onClick={() => setShowExportModal(true)}
             className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             style={{ backgroundColor: "#1a3652" }}
           >
@@ -538,7 +725,9 @@ const AdminReport = () => {
         </div>
 
         {hasNoReport ? (
-          <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-6 text-center flex flex-col items-center gap-6">
+          <div
+            ref={reportRef}
+            className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-6 text-center flex flex-col items-center gap-6">
             <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
               <Icon
                 icon="solar:clipboard-list-broken-bold-duotone"
@@ -562,11 +751,9 @@ const AdminReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Organizational Health
-                </h2>
+           <div data-section="Organizational Health"></div>
+             <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+               <h2>Organizational Health</h2>
                 <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
                   <div
                     style={{
@@ -620,17 +807,13 @@ const AdminReport = () => {
                   </div>
                 </div>
               </div>
-              <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
-                <div className="flex items-center justify-between w-full mb-2">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      POD-360™ Model
-                    </h3>
+              <div data-section="POD-360™ Model"></div>
+                <div className="row-span-2 border-[1px] border-[#448CD2] ...">
+                  <h3>POD-360™ Model</h3>
                     <p className="text-xs text-[#64748B] font-medium">
                       Interconnectivity of focus areas
                     </p>
                   </div>
-                </div>
                 <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
                   <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
                     <Triangle data={triangleData} />
@@ -725,48 +908,42 @@ const AdminReport = () => {
                     </p>
                   </div>
                 </div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Trends Analysis
-                </h2>
-                <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Wellbeing
-                    </span>
-                    <img src={DownArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Improving fast enough
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Improving fast enough
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Lorem Ipsum
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                </ul>
+              <div data-section="Trends Analysis">
+                <div className="border-[1px] border-[#448CD2] ...">
+                  <h2>Trends Analysis</h2>
+<ul className="mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
+  {topPriorities.map((priority) => {
+    const isDeclining = priority.score < 50;
+    return (
+      <li key={priority.name} className="flex gap-2 items-center">
+        <span className="text-base font-medium text-[var(--secondary-color)]">
+          {priority.name}
+        </span>
+        <img 
+          src={isDeclining ? DownArrow : UpArrow} 
+          alt={isDeclining ? 'Declining' : 'Improving'} 
+        />
+      </li>
+    );
+  })}
+  {topPriorities.length === 0 && (
+    <li className="col-span-full text-center text-gray-500 py-4">
+      No trends data available
+    </li>
+  )}
+</ul>
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
-                <div>
-                  <div className="flex items-center justify-between mb-4 ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Alignment Status
-                      </h3>
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8"></div>
+              <div data-section="Alignment Status"></div>
+                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
+                  <div>
+                    <div className="flex items-center justify-between mb-4 ">
+                      <div>
+                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                          Alignment Status
+                        </h3>
                       <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
                         <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
                         Blind Spot Detected
@@ -797,6 +974,7 @@ const AdminReport = () => {
                   <div></div>
                 </div>
               </div>
+             <div data-section="Priorities Attention">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -844,12 +1022,14 @@ const AdminReport = () => {
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Overall Departmental POD Score
-                  </h3>
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8"></div>
+              <div data-section="Overall Departmental POD Score">
+                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                  
+                  <div className="flex flex-wrap justify-between items-center gap-2">
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Overall Departmental POD Score
+                    </h3>
                   <div className="relative" data-twe-dropdown-ref>
                     <button
                       className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[14px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -917,7 +1097,8 @@ const AdminReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
             </div>
 
-            <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+           <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5"></div>
+            <div data-section="Score by domain"></div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Score by domain
@@ -997,7 +1178,9 @@ const AdminReport = () => {
                   <SpeedMeter value={domainScore} />
                 </div>
               </div>
+             <div data-section="Score by sub-domain"></div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+                
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Score by sub-domain
                 </h2>
@@ -1079,10 +1262,13 @@ const AdminReport = () => {
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Performance Analysis
-                </h2>
+             
+              <div data-section="Performance Analysis">
+                <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
+                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Performance Analysis
+                  </h2>
+
                 <div className="flex justify-center gap-4 mt-6">
                   <div className="flex items-center gap-1">
                     <div>
@@ -1110,14 +1296,14 @@ const AdminReport = () => {
                 </div>
               </div>
             </div>
-
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Insight for {selectedDomain}
-                    </h3>
+              <div data-section="Insight for People Potential"></div>
+                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                  <div className="flex items-center justify-between ">
+                    <div>
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        Insight for {selectedDomain}
+                      </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
                       Analysis based on organizational health assessment
                     </p>
@@ -1143,6 +1329,7 @@ const AdminReport = () => {
                   </ul>
                 </div>
               </div>
+             <div data-section="Objectives and Key Results"></div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1189,7 +1376,7 @@ const AdminReport = () => {
               </div>
             </div>
             {/*  */}
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+            <div data-section="Leader Coaching Tips"></div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1224,6 +1411,7 @@ const AdminReport = () => {
                 </ul>
                 <div></div>
               </div>
+             <div data-section="Key Recommendations"></div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1251,13 +1439,14 @@ const AdminReport = () => {
                 </ul>
               </div>
             </div>
-          </>
-        ) : (
-          <ReportEmptyState role="Org Head / Coach" />
-        )}
-      </div>
-    </div>
-  );
-};
+            
+            ) : (
+              <ReportEmptyState role="Org Head / Coach" />
+            )}
+            </div>
+            </div>
+            );
+           
 
 export default AdminReport;
+
