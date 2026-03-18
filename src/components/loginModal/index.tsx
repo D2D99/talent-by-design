@@ -43,9 +43,9 @@ const LoginModal = () => {
       >
         <div
           data-twe-modal-dialog-ref
-          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
+          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto px-4"
         >
-          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+          <div className="pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
             <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b border-neutral-200 p-4">
               <h5
                 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold"
@@ -82,10 +82,11 @@ const LoginModal = () => {
               <div className="grid sm:grid-cols-2 grid-cols-1 sm:gap-6 gap-4">
                 <label
                   htmlFor="dashboard1"
-                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${selectedDashboard === "dashboard1"
+                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${
+                    selectedDashboard === "dashboard1"
                       ? "bg-primary-100"
                       : "bg-white"
-                    }`}
+                  }`}
                 >
                   <div className="text-right">
                     <input
@@ -107,10 +108,11 @@ const LoginModal = () => {
 
                 <label
                   htmlFor="dashboard2"
-                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${selectedDashboard === "dashboard2"
+                  className={`cursor-pointer shadow-[4px_4px_4px_0px_#448CD21A] border pt-3 pr-3 pb-6 pl-3 rounded-lg transition-all border-[#448CD233] ${
+                    selectedDashboard === "dashboard2"
                       ? "bg-primary-100"
                       : "bg-white"
-                    }`}
+                  }`}
                 >
                   <div className="text-right">
                     <input

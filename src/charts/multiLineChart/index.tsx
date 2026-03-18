@@ -10,9 +10,9 @@ import {
   CategoryScale,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
 
-// Register the components in Chart.js
 Chart.register(
   LineController,
   LineElement,
@@ -20,13 +20,15 @@ Chart.register(
   LinearScale,
   CategoryScale,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 export interface TrendData {
   labels: string[];
-  manager: number[];
-  team: number[];
+  manager: number[]; // Previous Test
+  team: number[];    // Current Test
+  descriptions?: string[];
 }
 
 interface MultiLineChartProps {
@@ -38,12 +40,11 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
   const chartRef = useRef<Chart<"line", number[], string> | null>(null);
 
   useEffect(() => {
-    // Cleanup the previous chart if it exists
+    // Destroy previous chart
     if (chartRef.current) {
       chartRef.current.destroy();
     }
 
-    // Create a new chart
     if (canvasRef.current) {
       chartRef.current = new Chart(canvasRef.current, {
         type: "line",
@@ -51,47 +52,102 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
           labels: data.labels,
           datasets: [
             {
-              label: "Manager",
-              data: data.manager,
-              borderColor: "#4A90E2",
-              backgroundColor: "rgba(74,144,226,0.15)",
+              label: "Current Test",
+              data: data.team,
+              borderColor: "#1A3652",
+              backgroundColor: "transparent",
+              borderWidth: 2,
               tension: 0.4,
-              pointRadius: 5,
+              pointRadius: 3,
+              pointHoverRadius: 6,
+              pointBackgroundColor: "#1A3652",
+              fill: false,
             },
             {
-              label: "Team Average",
-              data: data.team,
-              borderColor: "#7ED321",
-              backgroundColor: "rgba(126,211,33,0.15)",
+              label: "Previous Test",
+              data: data.manager,
+              borderColor: "#4A90E2",
+              backgroundColor: "transparent",
+              borderWidth: 2,
+              borderDash: [5, 5],
               tension: 0.4,
-              pointRadius: 5,
+              pointRadius: 3,
+              pointHoverRadius: 6,
+              pointBackgroundColor: "#4A90E2",
+              fill: false,
             },
           ],
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              top: 10, // slight visual breathing space
+            },
+          },
           scales: {
             y: {
               min: 0,
-              max: 10,
+              max: 12, // 👈 creates top space
+              ticks: {
+                stepSize: 2,
+                font: { size: 10 },
+                callback: (value) => (value === 12 ? "" : value), // 👈 hide top label
+              },
+              grid: {
+                // drawBorder: false,
+                color: (ctx) =>
+                  ctx.tick.value === 12
+                    ? "transparent" // 👈 remove top line
+                    : "rgba(0,0,0,0.05)",
+              },
+            },
+            x: {
+              ticks: {
+                font: { size: 10, weight: "bold" },
+              },
+              grid: {
+                display: false,
+                // drawBorder: false,
+              },
             },
           },
           plugins: {
             legend: {
-              display: false
-            }
+              display: false,
+            },
+            tooltip: {
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              titleColor: "#1A3652",
+              bodyColor: "#474747",
+              borderColor: "#E8E8E8",
+              borderWidth: 1,
+              padding: 12,
+              displayColors: true,
+              cornerRadius: 8,
+              callbacks: {
+                title: (context) => {
+                  const index = context[0].dataIndex;
+                  return data.descriptions && data.descriptions[index]
+                    ? data.descriptions[index]
+                    : context[0].label;
+                },
+                label: (context) =>
+                  `${context.dataset.label}: ${context.parsed.y}/10`,
+              },
+            },
           },
         },
       });
     }
 
-    // Cleanup the chart when the component unmounts
     return () => {
       if (chartRef.current) {
         chartRef.current.destroy();
       }
     };
-  }, [data]); // Re-run effect when `data` changes
+  }, [data]);
 
   return <canvas ref={canvasRef} />;
 };

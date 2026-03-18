@@ -13,13 +13,13 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
-import Sidebar from "../../components/sidebar";
 import { useAuth } from "../../context/useAuth";
 import { Icon } from "@iconify/react";
 import SpeedMeter from "../../components/speedMeter";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
 import ReportEmptyState from "../../components/reportEmptyState";
+import FeedbackEditorModal from "../../components/feedbackEditorModal";
 
 // ------ CONSTANTS ------
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
@@ -117,11 +117,20 @@ const EmployeeReport = () => {
   const [selectedDept, setSelectedDept] = useState<string>("");
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
+  useEffect(() => {
+    if (user?.department && !isAdmin && !isSuperAdmin) {
+      setSelectedDept(user.department);
+    }
+  }, [user, isAdmin, isSuperAdmin]);
+
   const [reportData, setReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [detailedPods, setDetailedPods] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null); // Kept state but will hide UI
 
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] =
@@ -151,8 +160,13 @@ const EmployeeReport = () => {
     const roleLower = m.role?.toLowerCase();
     const memberDept = m.department?.toString().trim().toLowerCase();
     const searchDept = selectedDept?.toString().trim().toLowerCase();
-
     const matchesDept = !searchDept || memberDept === searchDept;
+
+    // Security: Non-Admins only see their own department
+    if (!isAdmin && !isSuperAdmin) {
+      const uDept = String(user?.department || "").trim().toLowerCase();
+      if (memberDept !== uDept) return false;
+    }
 
     return roleLower === "employee" && !!matchesDept;
   });
@@ -226,6 +240,7 @@ const EmployeeReport = () => {
         const res = await api.get(url);
         setReportData(res.data.report);
         setUserData(res.data.user);
+        setAiInsight(res.data.aiInsight);
         setHasNoReport(false);
 
         const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
@@ -248,7 +263,7 @@ const EmployeeReport = () => {
     };
 
     fetchReport();
-  }, [userId, userEmail]);
+  }, [userId, userEmail, refreshKey]);
 
   // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
   useEffect(() => {
@@ -272,7 +287,7 @@ const EmployeeReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
+  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
 
   // Re-initialize TW-Elements after data is loaded and components are rendered
   // This useEffect is now redundant as initTWE is called in the main fetchReport useEffect
@@ -318,7 +333,7 @@ const EmployeeReport = () => {
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? [detailedPods.insights.mainText]
+    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
     : ["Processing insights..."];
 
   const displayKRs =
@@ -334,40 +349,6 @@ const EmployeeReport = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Offcanvas Sidebar for Mobile */}
-      <div
-        className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
-        tabIndex={-1}
-        id="offcanvasExample"
-        aria-labelledby="offcanvasExampleLabel"
-        data-twe-offcanvas-init
-      >
-        <div className="flex items-center justify-end p-4">
-          <button
-            type="button"
-            className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-            data-twe-offcanvas-dismiss
-            aria-label="Close"
-          >
-            <span className="[&>svg]:h-6 [&>svg]:w-6">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </span>
-          </button>
-        </div>
-        <Sidebar />
-      </div>
 
       {/* Main Header & Filters Card */}
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
@@ -383,17 +364,30 @@ const EmployeeReport = () => {
               ""}
           </h3>
 
-          <button
-            type="button"
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-          >
-            <Icon
-              icon="lucide:arrow-down-to-line"
-              width="16"
-              className="transition-transform duration-300 group-hover:translate-y-0.5"
-            />
-            Export Analysis
-          </button>
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && reportData && (
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                title="Edit AI Insights, Objectives, and Recommendations"
+              >
+                <Icon icon="lucide:edit" width="16" />
+                Edit Feedback
+              </button>
+            )}
+            <button
+              type="button"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              <Icon
+                icon="lucide:arrow-down-to-line"
+                width="16"
+                className="transition-transform duration-300 group-hover:translate-y-0.5"
+              />
+              Export Analysis
+            </button>
+          </div>
         </div>
 
         {/* Filters Section */}
@@ -416,7 +410,7 @@ const EmployeeReport = () => {
             />
           )}
 
-          {(isSuperAdmin || isAdmin || isReportPage) && (
+          {(isSuperAdmin || isAdmin) && (
             <Select
               className="select-search"
               placeholder="Select Department"
@@ -507,6 +501,8 @@ const EmployeeReport = () => {
           </div>
         ) : reportData ? (
           <>
+
+
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               {/* Domain Score Section */}
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
@@ -826,6 +822,25 @@ const EmployeeReport = () => {
           <ReportEmptyState role="Employee" />
         )}
       </div>
+
+      <FeedbackEditorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        domain={selectedDomain}
+        subdomain={selectedSubdomain}
+        userId={userId}
+        userEmail={userEmail}
+        rawFeedback={{
+          ...detailedPods?.rawFeedback,
+          pod360Title: aiInsight?.title,
+          pod360Description: aiInsight?.description
+        }}
+        onSuccess={() => {
+          setRefreshKey((prev) => prev + 1);
+          // Also refetch main report to update the header
+          // The main fetchReport will run due to refreshKey if we add it to its deps or call manually
+        }}
+      />
     </div>
   );
 };

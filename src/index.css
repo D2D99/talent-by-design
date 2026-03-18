@@ -23,7 +23,7 @@
   --hero-curve-end: #c7e0f8;
 }
 
-:root.light {
+/* :root.light {
   color-scheme: light;
 }
 
@@ -43,7 +43,7 @@
   --hero-curve-start: #2c5f90;
   --hero-curve-end: #3f79b0;
   color-scheme: dark;
-}
+} */
 
 * {
   font-family: "Quicksand", sans-serif;
@@ -399,4 +399,39 @@ a {
 
 .select-search > div {
   border: 1px solid #e8e8e8;
+}
+
+.main-wrapper.active #custom-p {
+  padding: 6px !important;
+}
+
+.main-wrapper.active #profile-picture {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+#topBar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: -25px;
+  width: 100%;
+  height: 24px;
+  background-color: rgba(237, 245, 253, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+@media screen and (max-width: 1088px) and (min-width: 769px) {
+  #crud-custom-wrap {
+    flex-wrap: wrap !important;
+  }
+}
+
+@media screen and (max-width: 980px) and (min-width: 769px) {
+  #custom-max-w {
+    max-width: 400px;
+    justify-content: flex-start;
+  }
 }

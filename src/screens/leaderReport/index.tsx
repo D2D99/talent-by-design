@@ -2,8 +2,8 @@ import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
-import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
+// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+// import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 // import Employee from "../../../public/static/img/home/employee.svg";
@@ -19,7 +19,6 @@ import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import Select from "react-select";
-import Sidebar from "../../components/sidebar";
 import Triangle from "../../components/triangle";
 import CircularProgress from "../../components/percentageCircle";
 import SpeedMeter from "../../components/speedMeter";
@@ -27,6 +26,18 @@ import MultiLineChart from "../../charts/multiLineChart";
 import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
+import FeedbackEditorModal from "../../components/feedbackEditorModal";
+
+// Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
+const getNumericScore = (res: any): number => {
+  if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
+    return (Number(res.value) || 1) * 20;
+  }
+  if (res.scale === "FORCED_CHOICE") {
+    return res.selectedOption === res.higherValueOption ? 100 : 20;
+  }
+  return 20;
+};
 
 const LeaderReport = () => {
   const { user } = useAuth();
@@ -36,10 +47,14 @@ const LeaderReport = () => {
   const userId = searchParams.get("userId");
   const userEmail = searchParams.get("email"); // Guest employee support
   const [reportData, setReportData] = useState<any>(null);
+  const [firstReportData, setFirstReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null);
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
@@ -52,6 +67,12 @@ const LeaderReport = () => {
   const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
   const [selectedDept, setSelectedDept] = useState<string>("");
   const [selectedMember, setSelectedMember] = useState<any>(null);
+
+  useEffect(() => {
+    if (user?.department && !isAdmin && !isSuperAdmin) {
+      setSelectedDept(user.department);
+    }
+  }, [user, isAdmin, isSuperAdmin]);
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -76,6 +97,12 @@ const LeaderReport = () => {
     const searchDept = selectedDept?.toString().trim().toLowerCase();
 
     const matchesDept = !searchDept || memberDept === searchDept;
+
+    // Security: Non-Admins only see their own department
+    if (!isAdmin && !isSuperAdmin) {
+      const uDept = String(user?.department || "").trim().toLowerCase();
+      if (memberDept !== uDept) return false;
+    }
 
     // Strictly show only leaders on this page
     return roleLower === "leader" && !!matchesDept;
@@ -146,7 +173,9 @@ const LeaderReport = () => {
         }
         const res = await api.get(url);
         setReportData(res.data.report);
+        setFirstReportData(res.data.firstReport || res.data.report);
         setUserData(res.data.user);
+        setAiInsight(res.data.aiInsight);
         setHasNoReport(false);
       } catch (error: any) {
         console.error("Failed to fetch report:", error);
@@ -159,7 +188,7 @@ const LeaderReport = () => {
     };
 
     fetchReport();
-  }, [userId]);
+  }, [userId, userEmail, refreshKey]);
 
   const [selectedDomain, setSelectedDomain] =
     useState<string>("People Potential");
@@ -194,7 +223,7 @@ const LeaderReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
+  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -257,9 +286,9 @@ const LeaderReport = () => {
     setSelectedSubdomain(sub);
   };
 
-  // Use dynamic pods if available
+  // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? [detailedPods.insights.mainText]
+    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
     : ["Processing insights..."];
 
   const displayKRs =
@@ -269,9 +298,9 @@ const LeaderReport = () => {
       value: detailedPods.objectives.progress || 0,
     })) || [];
 
-  const displayRecommendations = detailedPods?.recommendations?.items || [
-    "No specific recommendations available for this domain yet.",
-  ];
+  // const displayRecommendations = detailedPods?.recommendations?.items || [
+  //   "No specific recommendations available for this domain yet.",
+  // ];
 
   const topPriorities = Object.entries(reportData?.scores?.domains || {})
     .sort(([, a]: any, [, b]: any) => a.score - b.score)
@@ -282,16 +311,6 @@ const LeaderReport = () => {
       color: data.score < 50 ? "#D71818" : "#FF8D28",
     }));
 
-  // Helper to get numeric score from response
-  const getNumericScore = (res: any) => {
-    if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
-      return (Number(res.value) || 1) * 20;
-    }
-    if (res.scale === "FORCED_CHOICE") {
-      return res.selectedOption === res.higherValueOption ? 100 : 20;
-    }
-    return 20;
-  };
 
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
@@ -396,70 +415,97 @@ const LeaderReport = () => {
     return { text: rolesText, value: largest };
   })();
 
-  const trendData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-    manager: [8.5, 0.1, 6.8, 0.1, 9.3],
-    team: [5.8, 0.2, 5.5, 0.0, 5.4],
-  };
+  const trendData = (() => {
+    if (!reportData) return { labels: [], manager: [], team: [], descriptions: [] };
+
+    // Convert 0-100 score to /10 scale
+    const getScoreForChart = (val: any) => Number((getNumericScore(val) / 10).toFixed(1));
+
+    // If a subdomain is selected, show question-level trend
+    if (selectedSubdomain) {
+      const qCurrent = reportData?.responses?.filter((r: any) =>
+        r.domain === selectedDomain && r.subdomain === selectedSubdomain
+      ) || [];
+
+      const qFirst = firstReportData?.responses?.filter((r: any) =>
+        r.domain === selectedDomain && r.subdomain === selectedSubdomain
+      ) || [];
+
+      const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
+      const descriptions = qCurrent.map((q: any) => q.text);
+
+      const latestScores = qCurrent.map((q: any) => getScoreForChart(q));
+      const firstScores = qCurrent.map((q: any) => {
+        const matched = qFirst.find((fq: any) => fq.text === q.text);
+        return matched ? getScoreForChart(matched) : 0;
+      });
+
+      return { labels, manager: firstScores, team: latestScores, descriptions };
+    }
+
+    // Default: subdomain averages
+    const subdomains = Object.keys(reportData?.scores?.domains?.[selectedDomain]?.subdomains || {});
+    const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
+    const descriptions = subdomains.map(sub => sub);
+
+    const currentScores = subdomains.map(sub => {
+      const scoreData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    const firstScores = subdomains.map(sub => {
+      const scoreData = firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    return { labels, manager: firstScores, team: currentScores, descriptions };
+  })();
 
   const roleData = roleAverages;
 
   return (
     <div>
-      <div
-        className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
-        tabIndex={-1}
-        id="offcanvasExample"
-        aria-labelledby="offcanvasExampleLabel"
-        data-twe-offcanvas-init
-      >
-        <div className="flex items-center justify-end p-4">
-          <button
-            type="button"
-            className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-            data-twe-offcanvas-dismiss
-            aria-label="Close"
-          >
-            <span className="[&>svg]:h-6 [&>svg]:w-6">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </span>
-          </button>
-        </div>
-        <Sidebar />
-      </div>
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
             {userData?.firstName || reportData?.user?.firstName || "Leader"}{" "}
-            {userData?.lastName || reportData?.user?.lastName || ""}
+            {userData?.lastName ||
+              reportData?.user?.lastName ||
+              reportData?.userDetails?.lastName ||
+              ""}
           </h3>
 
-          <button
-            type="button"
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            style={{ backgroundColor: "#1a3652" }}
-          >
-            <Icon
-              icon="lucide:arrow-down-to-line"
-              width="16"
-              className="transition-transform duration-300 group-hover:translate-y-0.5"
-            />
-            Export Analysis
-          </button>
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && reportData && (
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                title="Edit AI Insights, Objectives, and Recommendations"
+              >
+                <Icon icon="lucide:edit" width="16" />
+                Edit Feedback
+              </button>
+            )}
+            <button
+              type="button"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              style={{ backgroundColor: "#1a3652" }}
+            >
+              <Icon
+                icon="lucide:arrow-down-to-line"
+                width="16"
+                className="transition-transform duration-300 group-hover:translate-y-0.5"
+              />
+              Export Analysis
+            </button>
+          </div>
         </div>
+
+
 
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
@@ -481,7 +527,7 @@ const LeaderReport = () => {
             />
           )}
 
-          {(isSuperAdmin || isAdmin || isReportPage) && (
+          {(isSuperAdmin || isAdmin) && (
             <Select
               className="select-search"
               placeholder="Select Department"
@@ -860,7 +906,7 @@ const LeaderReport = () => {
             </div>
 
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
                 <div className="flex flex-wrap justify-between items-center gap-2">
                   <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                     Overall Departmental POD Score
@@ -1212,73 +1258,27 @@ const LeaderReport = () => {
               </div>
             </div>
             {/*  */}
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Leader Coaching Tips
-                    </h3>
-                  </div>
-                  <div>
-                    <img src={StreamlinePlump} alt="images" />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {[detailedPods?.insights?.modelDescription]
-                    .filter(Boolean)
-                    .map((tip: string, idx: number) => (
-                      <li key={idx} className="feature-list flex gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="mt-1 w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal">
-                          {tip}
-                        </span>
-                      </li>
-                    ))}
-                  {!detailedPods?.insights?.modelDescription && (
-                    <li className="text-xs text-gray-400">
-                      Strategic model application details will appear here.
-                    </li>
-                  )}
-                </ul>
-                <div></div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Key Recommendations
-                    </h3>
-                  </div>
-                  <div>
-                    <img src={Healthicons} alt="images" />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {displayRecommendations.map((rec: string, idx: number) => (
-                    <li key={idx} className="feature-list flex gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="mt-1 w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {rec}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            
           </>
         ) : (
-          <ReportEmptyState role="Senior Leader" />
+          <ReportEmptyState role="Leader" />
         )}
       </div>
+
+      <FeedbackEditorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        domain={selectedDomain}
+        subdomain={selectedSubdomain}
+        userId={userId}
+        userEmail={userEmail}
+        rawFeedback={{
+          ...detailedPods?.rawFeedback,
+          pod360Title: aiInsight?.title,
+          pod360Description: aiInsight?.description
+        }}
+        onSuccess={() => setRefreshKey((prev) => prev + 1)}
+      />
     </div>
   );
 };

@@ -90,7 +90,7 @@ const AdminAssessments = () => {
   if (loading) return <SpinnerLoader />;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-3">
@@ -121,7 +121,7 @@ const AdminAssessments = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
         <StatCard
           icon="solar:users-group-rounded-linear"
           label="Total Team Members"
@@ -161,8 +161,10 @@ const AdminAssessments = () => {
               <th className="px-6 py-4 font-semibold">Name</th>
               <th className="px-6 py-4 font-semibold">Email</th>
               <th className="px-6 py-4 font-semibold">Role</th>
-              <th className="px-6 py-4 font-semibold">Assessment Status</th>
-              <th className="px-6 py-4 font-semibold ">Progress</th>
+              <th className="px-6 py-4 font-semibold text-nowrap">
+                Assessment Status
+              </th>
+              <th className="px-6 py-4 font-semibold">Progress</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -180,12 +182,12 @@ const AdminAssessments = () => {
               return (
                 <tr
                   key={member._id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors "
+                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
                 >
                   <td className="px-6 py-4 text-sm font-semibold text-gray-700">
                     {indexOfFirstItem + idx + 1}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium ">
+                  <td className="px-6 py-4 text-sm font-medium text-nowrap">
                     <div className="font-bold">
                       {member.firstName === "-" ? (
                         <span className="text-gray-300">—</span>

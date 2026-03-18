@@ -3,8 +3,8 @@ import generatePDF from "react-to-pdf";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
-import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
+// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+// import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 // import Employee from "../../../public/static/img/home/employee.svg";
@@ -20,7 +20,6 @@ import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import Select from "react-select";
-import Sidebar from "../../components/sidebar";
 import Triangle from "../../components/triangle";
 import CircularProgress from "../../components/percentageCircle";
 import SpeedMeter from "../../components/speedMeter";
@@ -28,9 +27,18 @@ import MultiLineChart from "../../charts/multiLineChart";
 import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
+import FeedbackEditorModal from "../../components/feedbackEditorModal";
 
-
-
+// Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
+const getNumericScore = (res: any): number => {
+  if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
+    return (Number(res.value) || 1) * 20;
+  }
+  if (res.scale === "FORCED_CHOICE") {
+    return res.selectedOption === res.higherValueOption ? 100 : 20;
+  }
+  return 20;
+};
 
 // const FullReportPDF = ({ reportData }: any) => {
 //   if (!reportData) return null;
@@ -60,8 +68,6 @@ import RoleProgressChart from "../../components/alignmentStatus";
 //   );
 // };
 
-
-
 const FullReportPDF = ({ reportData }: any) => {
   if (!reportData) return null;
 
@@ -69,14 +75,10 @@ const FullReportPDF = ({ reportData }: any) => {
 
   return (
     <div className="p-6 bg-white text-black w-[800px]">
-
-      <h1 className="text-2xl font-bold mb-6">
-        Full Organization Report
-      </h1>
+      <h1 className="text-2xl font-bold mb-6">Full Organization Report</h1>
 
       {Object.entries(domains).map(([domainName, domainData]: any) => (
         <div key={domainName} className="mb-8 border-b pb-4">
-
           {/* DOMAIN */}
           <h2 className="text-lg font-bold mb-2">
             {domainName} ({Math.round(domainData.score)}%)
@@ -90,13 +92,11 @@ const FullReportPDF = ({ reportData }: any) => {
                   <span className="font-medium">{subName}</span>:{" "}
                   {Math.round(subScore)}%
                 </div>
-              )
+              ),
             )}
           </div>
-
         </div>
       ))}
-
     </div>
   );
 };
@@ -112,16 +112,17 @@ const AdminReport = () => {
   const userId = searchParams.get("userId");
   const userEmail = searchParams.get("email"); // Guest employee support
   const [reportData, setReportData] = useState<any>(null);
+  const [firstReportData, setFirstReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [downloading, setDownloading] = useState(false);
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null);
 
-
- 
   const [showExportModal, setShowExportModal] = useState(false);
-
 
   const allSections = [
     "Organizational Health",
@@ -139,9 +140,9 @@ const AdminReport = () => {
     "Key Recommendations",
   ];
 
+  const [selectedSections, setSelectedSections] =
+    useState<string[]>(allSections);
 
-  const [selectedSections, setSelectedSections] = useState<string[]>(allSections);
- 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
 
@@ -149,88 +150,85 @@ const AdminReport = () => {
   const [orgs, setOrgs] = useState<string[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
 
+  // const handleExportPDF = () => {
+  //   if (!fullReportRef.current) return;
 
-// const handleExportPDF = () => {
-//   if (!fullReportRef.current) return;
+  //   generatePDF(() => fullReportRef.current, {
+  //     // filename: `${userData?.firstName || "report"}-analysis.pdf`,
+  //     filename: "full-report.pdf",
+  //     page: {
+  //       margin: 10,
+  //       format: "A4",
+  //       orientation: "portrait",
+  //     },
+  //     canvas: {
+  //       scale: 2,
+  //       useCORS: true,
+  //       logging: true
+  //     },
+  //   });
+  // };
 
-//   generatePDF(() => fullReportRef.current, {
-//     // filename: `${userData?.firstName || "report"}-analysis.pdf`,
-//     filename: "full-report.pdf",
-//     page: {
-//       margin: 10,
-//       format: "A4",
-//       orientation: "portrait",
-//     },
-//     canvas: {
-//       scale: 2,
-//       useCORS: true,
-//       logging: true
-//     },
-//   });
-// };
+  // const handleExportPDF = async () => {
+  //   if (!reportRef.current) return;
 
-// const handleExportPDF = async () => {
-//   if (!reportRef.current) return;
+  //   setDownloading(true);
 
-//   setDownloading(true);
+  //   await generatePDF(() => reportRef.current, {
+  //     filename: "full-report.pdf",
+  //     page: {
+  //       margin: 10,
+  //       format: "A4",
+  //       orientation: "portrait",
+  //     },
+  //     canvas: {
+  //       scale: 2,
+  //       useCORS: true,
+  //     },
+  //   });
 
-//   await generatePDF(() => reportRef.current, {
-//     filename: "full-report.pdf",
-//     page: {
-//       margin: 10,
-//       format: "A4",
-//       orientation: "portrait",
-//     },
-//     canvas: {
-//       scale: 2,
-//       useCORS: true,
-//     },
-//   });
+  //   setDownloading(false);
+  // };
 
-//   setDownloading(false);
-// };
+  const handleExportPDF = async () => {
+    if (!reportRef.current) return;
 
+    setDownloading(true);
 
+    const container = reportRef.current;
 
-const handleExportPDF = async () => {
-  if (!reportRef.current) return;
+    // 🔹 hide unselected sections
+    const allNodes = container.querySelectorAll("[data-section]");
 
-  setDownloading(true);
+    allNodes.forEach((node: any) => {
+      const sectionName = node.getAttribute("data-section");
 
-  const container = reportRef.current;
+      if (!selectedSections.includes(sectionName)) {
+        node.style.display = "none";
+      }
+    });
 
-  // 🔹 hide unselected sections
-  const allNodes = container.querySelectorAll("[data-section]");
+    // 🔹 generate PDF
+    await generatePDF(() => container, {
+      filename: "custom-report.pdf",
+      page: {
+        margin: 10,
+        format: "A4",
+        orientation: "portrait",
+      },
+      canvas: {
+        scale: 2,
+        useCORS: true,
+      },
+    });
 
-  allNodes.forEach((node: any) => {
-    const sectionName = node.getAttribute("data-section");
+    // 🔹 restore UI
+    allNodes.forEach((node: any) => {
+      node.style.display = "";
+    });
 
-    if (!selectedSections.includes(sectionName)) {
-      node.style.display = "none";
-    }
-  });
-
-  // 🔹 generate PDF
-  await generatePDF(() => container, {
-    filename: "custom-report.pdf",
-    page: {
-      margin: 10,
-      format: "A4",
-      orientation: "portrait",
-    },
-    canvas: {
-      scale: 2,
-      useCORS: true,
-    },
-  });
-
-  // 🔹 restore UI
-  allNodes.forEach((node: any) => {
-    node.style.display = "";
-  });
-
-  setDownloading(false);
-};
+    setDownloading(false);
+  };
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -264,12 +262,10 @@ const handleExportPDF = async () => {
     // Hierarchy filter for visibility
     if (isSuperAdmin) return true;
 
-    const canSeeMember =
-      (isAdmin && ["leader", "manager", "employee"].includes(roleLower)) ||
-      (userRole === "leader" && ["manager", "employee"].includes(roleLower)) ||
-      (userRole === "manager" && roleLower === "employee");
+    // Admin should see Admins (Org Heads) in their own organization
+    if (isAdmin && isTargetRole) return true;
 
-    return canSeeMember;
+    return false;
   });
 
   // const customSelectStyles = {
@@ -335,7 +331,9 @@ const handleExportPDF = async () => {
         }
         const res = await api.get(url);
         setReportData(res.data.report);
+        setFirstReportData(res.data.firstReport || res.data.report);
         setUserData(res.data.user);
+        setAiInsight(res.data.aiInsight);
         setHasNoReport(false);
       } catch (error: any) {
         console.error("Failed to fetch report:", error);
@@ -348,7 +346,7 @@ const handleExportPDF = async () => {
     };
 
     fetchReport();
-  }, [userId]);
+  }, [userId, userEmail, refreshKey]);
 
   const [selectedDomain, setSelectedDomain] =
     useState<string>("People Potential");
@@ -383,7 +381,14 @@ const handleExportPDF = async () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
+  }, [
+    selectedDomain,
+    selectedSubdomain,
+    userId,
+    userEmail,
+    reportData,
+    refreshKey,
+  ]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -404,7 +409,7 @@ const handleExportPDF = async () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
@@ -446,9 +451,12 @@ const handleExportPDF = async () => {
     setSelectedSubdomain(sub);
   };
 
-  // Use dynamic pods if available
+  // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? [detailedPods.insights.mainText]
+    ? detailedPods.insights.mainText
+        .split(/[•\n\r]/)
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0)
     : ["Processing insights..."];
 
   const displayKRs =
@@ -458,9 +466,9 @@ const handleExportPDF = async () => {
       value: detailedPods.objectives.progress || 0,
     })) || [];
 
-  const displayRecommendations = detailedPods?.recommendations?.items || [
-    "No specific recommendations available for this domain yet.",
-  ];
+  // const displayRecommendations = detailedPods?.recommendations?.items || [
+  //   "No specific recommendations available for this domain yet.",
+  // ];
 
   const topPriorities = Object.entries(reportData?.scores?.domains || {})
     .sort(([, a]: any, [, b]: any) => a.score - b.score)
@@ -470,17 +478,6 @@ const handleExportPDF = async () => {
       score: Math.round(data.score),
       color: data.score < 50 ? "#D71818" : "#FF8D28",
     }));
-
-  // Helper to get numeric score from response
-  const getNumericScore = (res: any) => {
-    if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
-      return (Number(res.value) || 1) * 20;
-    }
-    if (res.scale === "FORCED_CHOICE") {
-      return res.selectedOption === res.higherValueOption ? 100 : 20;
-    }
-    return 20;
-  };
 
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
@@ -502,9 +499,9 @@ const handleExportPDF = async () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / mResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -512,9 +509,9 @@ const handleExportPDF = async () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / tResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -522,9 +519,9 @@ const handleExportPDF = async () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / pResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -544,9 +541,9 @@ const handleExportPDF = async () => {
       const score =
         responses.length > 0
           ? responses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / responses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / responses.length
           : 0;
 
       const labelMap: any = {
@@ -585,53 +582,72 @@ const handleExportPDF = async () => {
     return { text: rolesText, value: largest };
   })();
 
-  const trendData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-    manager: [8.5, 0.1, 6.8, 0.1, 9.3],
-    team: [5.8, 0.2, 5.5, 0.0, 5.4],
-  };
+  const trendData = (() => {
+    if (!reportData)
+      return { labels: [], manager: [], team: [], descriptions: [] };
+
+    // Convert 0-100 score to /10 scale
+    const getScoreForChart = (val: any) =>
+      Number((getNumericScore(val) / 10).toFixed(1));
+
+    // If a subdomain is selected, show question-level trend
+    if (selectedSubdomain) {
+      const qCurrent =
+        reportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
+
+      const qFirst =
+        firstReportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
+
+      const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
+      const descriptions = qCurrent.map((q: any) => q.text);
+
+      const latestScores = qCurrent.map((q: any) => getScoreForChart(q));
+      const firstScores = qCurrent.map((q: any) => {
+        const matched = qFirst.find((fq: any) => fq.text === q.text);
+        return matched ? getScoreForChart(matched) : 0;
+      });
+
+      return { labels, manager: firstScores, team: latestScores, descriptions };
+    }
+
+    // Default: subdomain averages
+    const subdomains = Object.keys(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+    );
+    const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
+    const descriptions = subdomains.map((sub) => sub);
+
+    const currentScores = subdomains.map((sub) => {
+      const scoreData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    const firstScores = subdomains.map((sub) => {
+      const scoreData =
+        firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    return { labels, manager: firstScores, team: currentScores, descriptions };
+  })();
 
   const roleData = roleAverages;
 
   return (
     <div>
       <div
-        className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
-        tabIndex={-1}
-        id="offcanvasExample"
-        aria-labelledby="offcanvasExampleLabel"
-        data-twe-offcanvas-init
-      >
-        <div className="flex items-center justify-end p-4">
-          <button
-            type="button"
-            className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-            data-twe-offcanvas-dismiss
-            aria-label="Close"
-          >
-            <span className="[&>svg]:h-6 [&>svg]:w-6">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </span>
-          </button>
-        </div>
-        <Sidebar />
-      </div>
-
-      <div
         ref={reportRef}
-        className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
+        className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]"
+      >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
             {userData?.firstName ||
@@ -643,20 +659,32 @@ const handleExportPDF = async () => {
               reportData?.userDetails?.lastName ||
               ""}
           </h3>
- 
-          <button
-            type="button"
-            onClick={() => setShowExportModal(true)}
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            style={{ backgroundColor: "#1a3652" }}
-          >
-            <Icon
-              icon="lucide:arrow-down-to-line"
-              width="16"
-              className="transition-transform duration-300 group-hover:translate-y-0.5"
-            />
-            Export Analysis
-          </button>
+
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && reportData && (
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                title="Edit AI Insights, Objectives, and Recommendations"
+              >
+                <Icon icon="lucide:edit" width="16" />
+                Edit Feedback
+              </button>
+            )}
+            <button
+              type="button"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              style={{ backgroundColor: "#1a3652" }}
+            >
+              <Icon
+                icon="lucide:arrow-down-to-line"
+                width="16"
+                className="transition-transform duration-300 group-hover:translate-y-0.5"
+              />
+              Export Analysis
+            </button>
+          </div>
         </div>
 
         {/* Filters Section */}
@@ -689,9 +717,9 @@ const handleExportPDF = async () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -727,7 +755,8 @@ const handleExportPDF = async () => {
         {hasNoReport ? (
           <div
             ref={reportRef}
-            className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-6 text-center flex flex-col items-center gap-6">
+            className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-6 text-center flex flex-col items-center gap-6"
+          >
             <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
               <Icon
                 icon="solar:clipboard-list-broken-bold-duotone"
@@ -739,9 +768,9 @@ const handleExportPDF = async () => {
               No Assessment Results Yet
             </h2>
             <p className="text-neutral-500 max-w-md text-lg">
-              This administrator has been invited to take the assessment, but they
-              haven't completed it yet. Once they finish, you'll see their full
-              performance report here.
+              This administrator has been invited to take the assessment, but
+              they haven't completed it yet. Once they finish, you'll see their
+              full performance report here.
             </p>
             <div className="flex gap-4 mt-4">
               <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">
@@ -751,230 +780,233 @@ const handleExportPDF = async () => {
           </div>
         ) : reportData ? (
           <>
-           <div data-section="Organizational Health"></div>
-             <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-               <h2>Organizational Health</h2>
-                <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: "40px",
-                    }}
-                  >
-                    <CircularProgress
-                      value={Math.round(overallScore)}
-                      width={180}
-                      pathColor={currentStatus.color}
-                      trailColor={currentStatus.trail}
-                      textColor={currentStatus.color}
-                    />
-                  </div>
-                  <div>
-                    <div className="flex justify-center flex-col gap-1 ">
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className="w-6 h-2 bg-[#FF5656]"></p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-normal text-[#474747]">
-                            Needs Attention
-                          </p>
-                        </div>
+            <div data-section="Organizational Health"></div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+              <h2>Organizational Health</h2>
+              <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "40px",
+                  }}
+                >
+                  <CircularProgress
+                    value={Math.round(overallScore)}
+                    width={180}
+                    pathColor={currentStatus.color}
+                    trailColor={currentStatus.trail}
+                    textColor={currentStatus.color}
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-center flex-col gap-1 ">
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="w-6 h-2 bg-[#FF5656]"></p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className="w-6 h-2 bg-[#FEE114]"></p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-normal text-[#474747]">
-                            At Risk
-                          </p>
-                        </div>
+                      <div>
+                        <p className="text-sm font-normal text-[#474747]">
+                          Needs Attention
+                        </p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className="w-6 h-2 bg-[#30AD43]"></p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-normal text-[#474747]">
-                            On Track
-                          </p>
-                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="w-6 h-2 bg-[#FEE114]"></p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-normal text-[#474747]">
+                          At Risk
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="w-6 h-2 bg-[#30AD43]"></p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-normal text-[#474747]">
+                          On Track
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div data-section="POD-360™ Model"></div>
-                <div className="row-span-2 border-[1px] border-[#448CD2] ...">
-                  <h3>POD-360™ Model</h3>
-                    <p className="text-xs text-[#64748B] font-medium">
-                      Interconnectivity of focus areas
-                    </p>
-                  </div>
-                <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
-                  <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
-                    <Triangle data={triangleData} />
-                  </div>
-                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                    {detailedPods?.insights?.modelDescription ? (
-                      detailedPods.insights.modelDescription
-                        .split(/[•\n\r]/)
-                        .map((item: string) => item.trim())
-                        .filter((item: string) => item.length > 0)
-                        .map((bullet: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0 mt-0.5"
-                            />
-                            <span className="text-sm font-medium text-[#64748B] leading-snug">
-                              {bullet}
-                            </span>
-                          </div>
-                        ))
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Capability
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Engagement
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Confidence
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Change resilience
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-                <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-                  <div className="text-center">
-                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                      People
-                    </p>
-                    <p className="text-sm font-black text-[var(--secondary-color)]">
-                      {Math.round(findDomainScore("people"))}%
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                      Operational
-                    </p>
-                    <p className="text-sm font-black text-[var(--secondary-color)]">
-                      {Math.round(findDomainScore("operational"))}%
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                      Digital
-                    </p>
-                    <p className="text-sm font-black text-[var(--secondary-color)]">
-                      {Math.round(findDomainScore("digital"))}%
-                    </p>
-                  </div>
-                </div>
-              <div data-section="Trends Analysis">
-                <div className="border-[1px] border-[#448CD2] ...">
-                  <h2>Trends Analysis</h2>
-<ul className="mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
-  {topPriorities.map((priority) => {
-    const isDeclining = priority.score < 50;
-    return (
-      <li key={priority.name} className="flex gap-2 items-center">
-        <span className="text-base font-medium text-[var(--secondary-color)]">
-          {priority.name}
-        </span>
-        <img 
-          src={isDeclining ? DownArrow : UpArrow} 
-          alt={isDeclining ? 'Declining' : 'Improving'} 
-        />
-      </li>
-    );
-  })}
-  {topPriorities.length === 0 && (
-    <li className="col-span-full text-center text-gray-500 py-4">
-      No trends data available
-    </li>
-  )}
-</ul>
+            </div>
+            <div data-section="POD-360™ Model"></div>
+            <div className="row-span-2 border-[1px] border-[#448CD2] ...">
+              <h3>POD-360™ Model</h3>
+              <p className="text-xs text-[#64748B] font-medium">
+                Interconnectivity of focus areas
+              </p>
+            </div>
+            <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
+              <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                <Triangle data={triangleData} />
+              </div>
+              <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                {detailedPods?.insights?.modelDescription ? (
+                  detailedPods.insights.modelDescription
+                    .split(/[•\n\r]/)
+                    .map((item: string) => item.trim())
+                    .filter((item: string) => item.length > 0)
+                    .map((bullet: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0 mt-0.5"
+                        />
+                        <span className="text-sm font-medium text-[#64748B] leading-snug">
+                          {bullet}
+                        </span>
+                      </div>
+                    ))
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Capability
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Engagement
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Confidence
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-[#64748B]">
+                        Change resilience
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  People
+                </p>
+                <p className="text-sm font-black text-[var(--secondary-color)]">
+                  {Math.round(findDomainScore("people"))}%
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  Operational
+                </p>
+                <p className="text-sm font-black text-[var(--secondary-color)]">
+                  {Math.round(findDomainScore("operational"))}%
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                  Digital
+                </p>
+                <p className="text-sm font-black text-[var(--secondary-color)]">
+                  {Math.round(findDomainScore("digital"))}%
+                </p>
+              </div>
+            </div>
+            <div data-section="Trends Analysis">
+              <div className="border-[1px] border-[#448CD2] ...">
+                <h2>Trends Analysis</h2>
+                <ul className="mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
+                  {topPriorities.map((priority) => {
+                    const isDeclining = priority.score < 50;
+                    return (
+                      <li
+                        key={priority.name}
+                        className="flex gap-2 items-center"
+                      >
+                        <span className="text-base font-medium text-[var(--secondary-color)]">
+                          {priority.name}
+                        </span>
+                        <img
+                          src={isDeclining ? DownArrow : UpArrow}
+                          alt={isDeclining ? "Declining" : "Improving"}
+                        />
+                      </li>
+                    );
+                  })}
+                  {topPriorities.length === 0 && (
+                    <li className="col-span-full text-center text-gray-500 py-4">
+                      No trends data available
+                    </li>
+                  )}
+                </ul>
               </div>
             </div>
 
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8"></div>
-              <div data-section="Alignment Status"></div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
+            <div data-section="Alignment Status"></div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
+              <div>
+                <div className="flex items-center justify-between mb-4 ">
                   <div>
-                    <div className="flex items-center justify-between mb-4 ">
-                      <div>
-                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                          Alignment Status
-                        </h3>
-                      <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
-                        Blind Spot Detected
-                      </p>
-                    </div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Alignment Status
+                    </h3>
+                    <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
+                      <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
+                      Blind Spot Detected
+                    </p>
+                  </div>
 
-                    <div>
-                      <img src={OuiSecurity} alt="images" />
-                    </div>
+                  <div>
+                    <img src={OuiSecurity} alt="images" />
                   </div>
-                  <div className="sm:w-[400px] w-full my-10">
-                    <RoleProgressChart data={roleData} />
-                  </div>
-                  <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> {maxGapInfo.text} (+
-                    {maxGapInfo.value})
-                  </p>
-                  <div className="sm:mt-16 mt-6 ">
-                    <button
-                      type="button"
-                      className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
-                    >
-                      {maxGapInfo.value > 15
-                        ? "Perception Risk Detected"
-                        : "Alignment On Track"}
-                    </button>
-                  </div>
-                  <div></div>
                 </div>
+                <div className="sm:w-[400px] w-full my-10">
+                  <RoleProgressChart data={roleData} />
+                </div>
+                <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
+                  <b className="">Largest Gap:</b> {maxGapInfo.text} (+
+                  {maxGapInfo.value})
+                </p>
+                <div className="sm:mt-16 mt-6 ">
+                  <button
+                    type="button"
+                    className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
+                  >
+                    {maxGapInfo.value > 15
+                      ? "Perception Risk Detected"
+                      : "Alignment On Track"}
+                  </button>
+                </div>
+                <div></div>
               </div>
-             <div data-section="Priorities Attention">
+            </div>
+            <div data-section="Priorities Attention">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1023,13 +1055,12 @@ const handleExportPDF = async () => {
             </div>
 
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8"></div>
-              <div data-section="Overall Departmental POD Score">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                  
-                  <div className="flex flex-wrap justify-between items-center gap-2">
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Overall Departmental POD Score
-                    </h3>
+            <div data-section="Overall Departmental POD Score">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Overall Departmental POD Score
+                  </h3>
                   <div className="relative" data-twe-dropdown-ref>
                     <button
                       className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[14px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -1097,177 +1128,171 @@ const handleExportPDF = async () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
             </div>
 
-           <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5"></div>
+            <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5"></div>
             <div data-section="Score by domain"></div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Score by domain
-                </h2>
-                <div className="relative mt-2" data-twe-dropdown-ref>
-                  <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                    type="button"
-                    id="dropdownDomain"
-                    data-twe-dropdown-toggle-ref
-                    aria-expanded="false"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
-                  >
-                    {selectedDomain}
-                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                  <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
-                    aria-labelledby="dropdownDomain"
-                    data-twe-dropdown-menu-ref
-                  >
-                    {reportData?.scores?.domains &&
-                      Object.keys(reportData.scores.domains).map((domain) => (
-                        <li key={domain}>
-                          <button
-                            onClick={() => handleDomainChange(domain)}
-                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          >
-                            {domain}
-                          </button>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                <div className="flex justify-center gap-4 mt-6">
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="w-6 h-2 bg-[#FF5656]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">Low</p>
-                    </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Score by domain
+              </h2>
+              <div className="relative mt-2" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownDomain"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  {selectedDomain}
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
+                  aria-labelledby="dropdownDomain"
+                  data-twe-dropdown-menu-ref
+                >
+                  {reportData?.scores?.domains &&
+                    Object.keys(reportData.scores.domains).map((domain) => (
+                      <li key={domain}>
+                        <button
+                          onClick={() => handleDomainChange(domain)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        >
+                          {domain}
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#FF5656]"></p>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="w-6 h-2 bg-[#FEE114]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Medium
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="w-6 h-2 bg-[#30AD43]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">High</p>
-                    </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
                   </div>
                 </div>
-                <div className="p-10">
-                  <SpeedMeter value={domainScore} />
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#FEE114]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#30AD43]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
                 </div>
               </div>
-             <div data-section="Score by sub-domain"></div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Score by sub-domain
-                </h2>
-                <div className="relative mt-2" data-twe-dropdown-ref>
-                  <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                    type="button"
-                    id="dropdownSubdomain"
-                    data-twe-dropdown-toggle-ref
-                    aria-expanded="false"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
-                  >
-                    {selectedSubdomain || "Select Sub-domain"}
-                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                  <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                    aria-labelledby="dropdownSubdomain"
-                    data-twe-dropdown-menu-ref
-                  >
-                    {reportData?.scores?.domains?.[selectedDomain]
-                      ?.subdomains &&
-                      Object.keys(
-                        reportData.scores.domains[selectedDomain].subdomains,
-                      ).map((sub) => (
-                        <li key={sub}>
-                          <button
-                            onClick={() => handleSubdomainChange(sub)}
-                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          >
-                            {sub}
-                          </button>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                <div className="flex justify-center gap-4 mt-6">
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">Low</p>
-                    </div>
+              <div className="p-10">
+                <SpeedMeter value={domainScore} />
+              </div>
+            </div>
+            <div data-section="Score by sub-domain"></div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Score by sub-domain
+              </h2>
+              <div className="relative mt-2" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownSubdomain"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  {selectedSubdomain || "Select Sub-domain"}
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                  aria-labelledby="dropdownSubdomain"
+                  data-twe-dropdown-menu-ref
+                >
+                  {reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
+                    Object.keys(
+                      reportData.scores.domains[selectedDomain].subdomains,
+                    ).map((sub) => (
+                      <li key={sub}>
+                        <button
+                          onClick={() => handleSubdomainChange(sub)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        >
+                          {sub}
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Medium
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">High</p>
-                    </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
                   </div>
                 </div>
-                <div className="p-10">
-                  <SpeedMeter value={subdomainScore} />
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
                 </div>
               </div>
-             
-              <div data-section="Performance Analysis">
-                <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
-                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Performance Analysis
-                  </h2>
+              <div className="p-10">
+                <SpeedMeter value={subdomainScore} />
+              </div>
+            </div>
+
+            <div data-section="Performance Analysis">
+              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Performance Analysis
+                </h2>
 
                 <div className="flex justify-center gap-4 mt-6">
                   <div className="flex items-center gap-1">
@@ -1298,12 +1323,12 @@ const handleExportPDF = async () => {
             </div>
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
               <div data-section="Insight for People Potential"></div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Insight for {selectedDomain}
-                      </h3>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Insight for {selectedDomain}
+                    </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
                       Analysis based on organizational health assessment
                     </p>
@@ -1329,7 +1354,7 @@ const handleExportPDF = async () => {
                   </ul>
                 </div>
               </div>
-             <div data-section="Objectives and Key Results"></div>
+              <div data-section="Objectives and Key Results"></div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1375,78 +1400,28 @@ const handleExportPDF = async () => {
                 </div>
               </div>
             </div>
-            {/*  */}
-            <div data-section="Leader Coaching Tips"></div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Leader Coaching Tips
-                    </h3>
-                  </div>
-                  <div>
-                    <img src={StreamlinePlump} alt="images" />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {[detailedPods?.insights?.modelDescription]
-                    .filter(Boolean)
-                    .map((tip: string, idx: number) => (
-                      <li key={idx} className="feature-list flex gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="mt-1 w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal">
-                          {tip}
-                        </span>
-                      </li>
-                    ))}
-                  {!detailedPods?.insights?.modelDescription && (
-                    <li className="text-xs text-gray-400">
-                      Strategic model application details will appear here.
-                    </li>
-                  )}
-                </ul>
-                <div></div>
-              </div>
-             <div data-section="Key Recommendations"></div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Key Recommendations
-                    </h3>
-                  </div>
-                  <div>
-                    <img src={Healthicons} alt="images" />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {displayRecommendations.map((rec: string, idx: number) => (
-                    <li key={idx} className="feature-list flex gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="mt-1 w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {rec}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            
-            ) : (
-              <ReportEmptyState role="Org Head / Coach" />
-            )}
-            </div>
-            </div>
-            );
-           
+          </>
+        ) : (
+          <ReportEmptyState role="Org Head" />
+        )}
+      </div>
+
+      <FeedbackEditorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        domain={selectedDomain}
+        subdomain={selectedSubdomain}
+        userId={userId}
+        userEmail={userEmail}
+        rawFeedback={{
+          ...detailedPods?.rawFeedback,
+          pod360Title: aiInsight?.title,
+          pod360Description: aiInsight?.description,
+        }}
+        onSuccess={() => setRefreshKey((prev) => prev + 1)}
+      />
+    </div>
+  );
+};
 
 export default AdminReport;
-

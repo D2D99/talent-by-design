@@ -241,8 +241,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                   navigate(getFirstReportRoute());
                 }
               }}
-              className={`${base} w-full justify-between ${isReportsRoute ? active : inactive
-                }`}
+              className={`${base} w-full justify-between ${
+                isReportsRoute ? active : inactive
+              }`}
               data-tooltip-id="menu-item2"
               data-tooltip-content="Reports"
             >
@@ -258,8 +259,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
               <Icon
                 icon="weui:arrow-filled"
                 width="10"
-                className={`transition-transform ${openReports ? "rotate-90" : ""
-                  }`}
+                className={`transition-transform ${
+                  openReports ? "rotate-90" : ""
+                }`}
               />
             </button>
 
@@ -363,26 +365,26 @@ const Sidebar = ({ onClose }: SidebarProps) => {
           {(user.role === "admin" ||
             user.role === "leader" ||
             user.role === "manager") && (
-              <li className="mb-2">
-                <NavLink
-                  to="/dashboard/users"
-                  onClick={handleLinkClick}
-                  className={({ isActive }) =>
-                    `${base} ${isActive ? active : inactive}`
-                  }
-                  data-tooltip-id="menu-item-users"
-                  data-tooltip-content="Users"
-                >
-                  <Icon icon="solar:users-group-rounded-linear" width="22" />
-                  <span>Users</span>
-                  <Tooltip
-                    id="menu-item-users"
-                    className="md:hidden block"
-                    place="right"
-                  />
-                </NavLink>
-              </li>
-            )}
+            <li className="mb-2">
+              <NavLink
+                to="/dashboard/users"
+                onClick={handleLinkClick}
+                className={({ isActive }) =>
+                  `${base} ${isActive ? active : inactive}`
+                }
+                data-tooltip-id="menu-item-users"
+                data-tooltip-content="Users"
+              >
+                <Icon icon="solar:users-group-rounded-linear" width="22" />
+                <span>Users</span>
+                <Tooltip
+                  id="menu-item-users"
+                  className="md:hidden block"
+                  place="right"
+                />
+              </NavLink>
+            </li>
+          )}
 
           {/* Settings */}
           <li className="mb-2">
@@ -415,9 +417,13 @@ const Sidebar = ({ onClose }: SidebarProps) => {
           id="dropdownMenuButton1"
           data-twe-dropdown-toggle-ref
         >
-          <div className="md:mx-0 manager-popup flex items-center justify-between bg-[var(--app-surface-soft)] md:p-4 !p-3 rounded-[12px] text-left transition-all duration-300">
+          <div
+            className="md:mx-0 manager-popup flex items-center justify-between bg-[var(--app-surface-soft)] md:p-4 !p-3 rounded-[12px] text-left transition-all duration-300"
+            id="custom-p"
+          >
             <div className="flex items-center gap-2 w-full">
               <img
+                id="profile-picture"
                 key={user.profileImage || "placeholder"}
                 src={user.profileImage || ProfilePlaceholderImg}
                 alt={`${user.firstName || "User"}'s profile`}
@@ -515,9 +521,10 @@ const ReportLink = ({
         to={`/dashboard/reports/${to}`}
         onClick={() => onClose && onClose()}
         className={({ isActive }) =>
-          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold transition-all duration-300 ${isActive
-            ? "bg-[var(--app-surface-soft)] text-[var(--primary-color)]"
-            : "text-[var(--app-text-muted)] hover:bg-[var(--app-surface-soft)]"
+          `flex items-center gap-2 py-2 px-3 rounded text-sm font-semibold transition-all duration-300 ${
+            isActive
+              ? "bg-[var(--app-surface-soft)] text-[var(--primary-color)]"
+              : "text-[var(--app-text-muted)] hover:bg-[var(--app-surface-soft)]"
           }`
         }
         data-tooltip-id="menu-item6"

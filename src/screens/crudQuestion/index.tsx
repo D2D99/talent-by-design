@@ -1368,7 +1368,7 @@ const CrudQuestion = () => {
         </div>
 
         {/* HEADER: Title left, Add Button right */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 flex-wrap">
           <h2 className="md:text-2xl text-xl font-bold text-gray-800">
             Assessment Questions
           </h2>
@@ -1383,9 +1383,15 @@ const CrudQuestion = () => {
         </div>
 
         {/* TABS ROW: Centered Tabs, Filter Button on Right */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-end mb-8 gap-4">
+        <div
+          className="flex flex-col md:flex-row md:items-center md:justify-end mb-8 gap-4 lg:flex-nowrap flex-wrap"
+          id="crud-custom-wrap"
+        >
           {/* Centered Tabs */}
-          <div className="flex md:justify-end justify-start items-start w-full overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+          <div
+            className="flex md:justify-end justify-start items-start w-full overflow-x-auto pb-2 md:pb-0 no-scrollbar"
+            id="custom-max-w"
+          >
             <ul className="flex list-none flex-row bg-[var(--light-primary-color)] rounded-full p-1 border border-gray-100 gap-1 md:min-w-max">
               {DOMAINS.map((domain, index) => (
                 <li key={index}>
@@ -1469,7 +1475,7 @@ const CrudQuestion = () => {
                   </svg>
                 </div>
                 <select
-                  className="font-semibold text-sm appearance-none text-[#1A3652] outline-none shadow-sm sm:w-full w-fit p-3 border rounded-md transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50"
+                  className="font-semibold text-sm appearance-none text-[#1A3652] outline-none shadow-sm w-full p-3 border rounded-md transition-all border-[#448CD233] focus:border-[var(--primary-color)] bg-white cursor-pointer hover:bg-gray-50"
                   value={filterRole}
                   onChange={(e) => {
                     setFilterRole(e.target.value);
@@ -1662,7 +1668,7 @@ const CrudQuestion = () => {
             onClick={() => setShowDeleteAllModal(false)}
           />
           {/* Modal */}
-          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none animate-[fadeInUp_0.3s_ease-out] z-[1070]">
+          <div className="mx-4 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none animate-[fadeInUp_0.3s_ease-out] z-[1070]">
             <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
               <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold">
                 Delete All
@@ -2090,7 +2096,7 @@ const CrudModals = (props: CrudModalsProps) => {
       >
         <div
           data-twe-modal-dialog-ref
-          className="pointer-events-none relative flex min-h-full w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-3xl mx-auto"
+          className="pointer-events-none relative flex min-h-full w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-3xl mx-auto px-4"
         >
           <div className="pointer-events-auto relative flex w-full flex-col rounded-xl border-none bg-white bg-clip-padding text-current shadow-lg outline-none max-h-[90vh] overflow-hidden">
             <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
@@ -2166,9 +2172,9 @@ const CrudModals = (props: CrudModalsProps) => {
       >
         <div
           data-twe-modal-dialog-ref
-          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto"
+          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto px-4"
         >
-          <div className="mx-3 pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+          <div className="pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
             <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
               <h5
                 className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold"
@@ -2228,7 +2234,7 @@ const CrudModals = (props: CrudModalsProps) => {
       >
         <div
           data-twe-modal-dialog-ref
-          className="pointer-events-none relative flex min-h-full w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-3xl mx-auto"
+          className="pointer-events-none relative flex min-h-full w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-3xl mx-auto px-4"
         >
           <div className="pointer-events-auto relative flex w-full flex-col rounded-xl border-none bg-white bg-clip-padding text-current shadow-lg outline-none max-h-[90vh] overflow-hidden">
             <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
