@@ -28,6 +28,17 @@ import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
 
+// Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
+const getNumericScore = (res: any): number => {
+  if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
+    return (Number(res.value) || 1) * 20;
+  }
+  if (res.scale === "FORCED_CHOICE") {
+    return res.selectedOption === res.higherValueOption ? 100 : 20;
+  }
+  return 20;
+};
+
 const LeaderReport = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -55,6 +66,12 @@ const LeaderReport = () => {
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
   useEffect(() => {
+    if (user?.department && !isAdmin && !isSuperAdmin) {
+      setSelectedDept(user.department);
+    }
+  }, [user, isAdmin, isSuperAdmin]);
+
+  useEffect(() => {
     if (isSuperAdmin) {
       api
         .get("/auth/organizations")
@@ -77,6 +94,12 @@ const LeaderReport = () => {
     const searchDept = selectedDept?.toString().trim().toLowerCase();
 
     const matchesDept = !searchDept || memberDept === searchDept;
+
+    // Security: Non-Admins only see their own department
+    if (!isAdmin && !isSuperAdmin) {
+      const uDept = String(user?.department || "").trim().toLowerCase();
+      if (memberDept !== uDept) return false;
+    }
 
     // Strictly show only leaders on this page
     return roleLower === "leader" && !!matchesDept;
@@ -388,17 +411,6 @@ const LeaderReport = () => {
     return { text: rolesText, value: largest };
   })();
 
-  // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
-  const getNumericScore = (res: any): number => {
-    if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
-      return (Number(res.value) || 1) * 20;
-    }
-    if (res.scale === "FORCED_CHOICE") {
-      return res.selectedOption === res.higherValueOption ? 100 : 20;
-    }
-    return 20;
-  };
-
   const trendData = (() => {
     if (!reportData) return { labels: [], manager: [], team: [], descriptions: [] };
 
@@ -451,39 +463,6 @@ const LeaderReport = () => {
 
   return (
     <div>
-      <div
-        className="invisible fixed bottom-0 left-0 top-0 z-[1045] flex w-96 max-w-full -translate-x-full flex-col border-none bg-white bg-clip-padding text-neutral-700 shadow-sm outline-none transition duration-300 ease-in-out data-[twe-offcanvas-show]:transform-none"
-        tabIndex={-1}
-        id="offcanvasExample"
-        aria-labelledby="offcanvasExampleLabel"
-        data-twe-offcanvas-init
-      >
-        <div className="flex items-center justify-end p-4">
-          <button
-            type="button"
-            className="box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none"
-            data-twe-offcanvas-dismiss
-            aria-label="Close"
-          >
-            <span className="[&>svg]:h-6 [&>svg]:w-6">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </span>
-          </button>
-        </div>
-        <Sidebar />
-      </div>
 
       <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -526,7 +505,7 @@ const LeaderReport = () => {
             />
           )}
 
-          {(isSuperAdmin || isAdmin || isReportPage) && (
+          {(isSuperAdmin || isAdmin) && (
             <Select
               className="select-search"
               placeholder="Select Department"
