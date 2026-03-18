@@ -208,7 +208,7 @@ const OrgUsers = ({
 
   return (
     <div
-      className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid"}`}
+      className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start"}`}
     >
       {!isEmbedded && (
         <div className="mb-8 bg-white relative overflow-hidden">

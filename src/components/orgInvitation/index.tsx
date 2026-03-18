@@ -357,7 +357,7 @@ const OrgInvitation = () => {
     <>
       <div>
         <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
-          <div className="grid">
+          <div className="grid items-start">
             <div className="flex items-center justify-between gap-4 flex-wrap mb-8">
               <div>
                 <h2 className="md:text-2xl text-xl font-bold">

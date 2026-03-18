@@ -151,7 +151,7 @@ const OrgAssessmentDetails = () => {
     totalMembers > 0 ? Math.round((completedMembers / totalMembers) * 100) : 0;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start">
       {/* Header Section */}
       <div className="mb-8 bg-white relative overflow-hidden">
         <div
