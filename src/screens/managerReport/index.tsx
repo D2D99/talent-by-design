@@ -22,6 +22,7 @@ import MultiLineChart from "../../charts/multiLineChart";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
 // // import { useDynamicTriangleData } from "../../components/triangle/useDynamicTriangleData";
+import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import RadarChart from "../../charts/radarChart";
 import type { RadarData } from "../../charts/radarChart";
 import GapBarChart from "../../charts/gapBarChart";
@@ -48,6 +49,9 @@ const ManagerReport = () => {
   const [loading, setLoading] = useState(true);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [detailedPods, setDetailedPods] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null);
 
   // setChartData
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
@@ -175,6 +179,7 @@ const ManagerReport = () => {
         setReportData(res.data.report);
         setFirstReportData(res.data.firstReport || res.data.report);
         setUserData(res.data.user);
+        setAiInsight(res.data.aiInsight);
         setHasNoReport(false);
       } catch (error: any) {
         if (error.response?.status === 404) {
@@ -187,7 +192,7 @@ const ManagerReport = () => {
     };
 
     fetchReport();
-  }, [userId, userEmail]);
+  }, [userId, userEmail, refreshKey]);
 
   // Handle label selection from Radar Chart
   const handleRadarChartSelection = (label: string) => {
@@ -277,7 +282,7 @@ const ManagerReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
+  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -395,19 +400,34 @@ const ManagerReport = () => {
               ""}
           </h3>
 
-          <button
-            type="button"
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            style={{ backgroundColor: "#1a3652" }}
-          >
-            <Icon
-              icon="lucide:arrow-down-to-line"
-              width="16"
-              className="transition-transform duration-300 group-hover:translate-y-0.5"
-            />
-            Export Analysis
-          </button>
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && reportData && (
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                title="Edit AI Insights, Objectives, and Recommendations"
+              >
+                <Icon icon="lucide:edit" width="16" />
+                Edit Feedback
+              </button>
+            )}
+            <button
+              type="button"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              style={{ backgroundColor: "#1a3652" }}
+            >
+              <Icon
+                icon="lucide:arrow-down-to-line"
+                width="16"
+                className="transition-transform duration-300 group-hover:translate-y-0.5"
+              />
+              Export Analysis
+            </button>
+          </div>
         </div>
+
+
 
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
@@ -752,7 +772,7 @@ const ManagerReport = () => {
                             alt="icon"
                             className="mt-1 w-4 h-4 shrink-0"
                           />
-                          <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                          <span className="text-sm text-[var(--secondary-color)] font-normal italic whitespace-pre-wrap">
                             {insight}
                           </span>
                         </li>
@@ -812,10 +832,10 @@ const ManagerReport = () => {
                   <div className="flex items-center justify-between w-full mb-2">
                     <div>
                       <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        POD-360™ Model
+                        {detailedPods?.insights?.title || "POD-360™ Model"}
                       </h3>
                       <p className="text-xs text-[#64748B] font-medium">
-                        Interconnectivity of focus areas
+                        {detailedPods?.insights?.subtitle || "Interconnectivity of focus areas"}
                       </p>
                     </div>
                   </div>
@@ -1031,8 +1051,22 @@ const ManagerReport = () => {
           <ReportEmptyState role="Manager" />
         )}
       </div>
+
+      <FeedbackEditorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        domain={selectedDomain}
+        subdomain={selectedSubdomain}
+        userId={userId}
+        userEmail={userEmail}
+        rawFeedback={{
+          ...detailedPods?.rawFeedback,
+          pod360Title: aiInsight?.title,
+          pod360Description: aiInsight?.description
+        }}
+        onSuccess={() => setRefreshKey((prev) => prev + 1)}
+      />
     </div>
   );
 };
-
 export default ManagerReport;

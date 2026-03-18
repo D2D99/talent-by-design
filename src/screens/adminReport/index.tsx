@@ -19,7 +19,6 @@ import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import Select from "react-select";
-import Sidebar from "../../components/sidebar";
 import Triangle from "../../components/triangle";
 import CircularProgress from "../../components/percentageCircle";
 import SpeedMeter from "../../components/speedMeter";
@@ -27,6 +26,7 @@ import MultiLineChart from "../../charts/multiLineChart";
 import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
+import FeedbackEditorModal from "../../components/feedbackEditorModal";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -52,6 +52,9 @@ const AdminReport = () => {
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null);
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
@@ -163,6 +166,7 @@ const AdminReport = () => {
         setReportData(res.data.report);
         setFirstReportData(res.data.firstReport || res.data.report);
         setUserData(res.data.user);
+        setAiInsight(res.data.aiInsight);
         setHasNoReport(false);
       } catch (error: any) {
         console.error("Failed to fetch report:", error);
@@ -175,7 +179,7 @@ const AdminReport = () => {
     };
 
     fetchReport();
-  }, [userId]);
+  }, [userId, userEmail, refreshKey]);
 
   const [selectedDomain, setSelectedDomain] =
     useState<string>("People Potential");
@@ -210,7 +214,7 @@ const AdminReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
+  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -468,19 +472,34 @@ const AdminReport = () => {
               ""}
           </h3>
 
-          <button
-            type="button"
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            style={{ backgroundColor: "#1a3652" }}
-          >
-            <Icon
-              icon="lucide:arrow-down-to-line"
-              width="16"
-              className="transition-transform duration-300 group-hover:translate-y-0.5"
-            />
-            Export Analysis
-          </button>
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && reportData && (
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                title="Edit AI Insights, Objectives, and Recommendations"
+              >
+                <Icon icon="lucide:edit" width="16" />
+                Edit Feedback
+              </button>
+            )}
+            <button
+              type="button"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              style={{ backgroundColor: "#1a3652" }}
+            >
+              <Icon
+                icon="lucide:arrow-down-to-line"
+                width="16"
+                className="transition-transform duration-300 group-hover:translate-y-0.5"
+              />
+              Export Analysis
+            </button>
+          </div>
         </div>
+
+
 
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
@@ -775,11 +794,11 @@ const AdminReport = () => {
                   <div className="flex items-center justify-between mb-4 ">
                     <div>
                       <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Alignment Status
+                        {detailedPods?.insights?.title || "Alignment Status"}
                       </h3>
                       <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
                         <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
-                        Blind Spot Detected
+                        {detailedPods?.insights?.subtitle || "Blind Spot Detected"}
                       </p>
                     </div>
 
@@ -1145,7 +1164,7 @@ const AdminReport = () => {
                           alt="icon"
                           className="mt-1 w-4 h-4 shrink-0"
                         />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                        <span className="text-sm text-[var(--secondary-color)] font-normal italic whitespace-pre-wrap">
                           {insight}
                         </span>
                       </li>
@@ -1263,9 +1282,24 @@ const AdminReport = () => {
             </div>
           </>
         ) : (
-          <ReportEmptyState role="Org Head / Coach" />
+          <ReportEmptyState role="Org Head" />
         )}
       </div>
+
+      <FeedbackEditorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        domain={selectedDomain}
+        subdomain={selectedSubdomain}
+        userId={userId}
+        userEmail={userEmail}
+        rawFeedback={{
+          ...detailedPods?.rawFeedback,
+          pod360Title: aiInsight?.title,
+          pod360Description: aiInsight?.description
+        }}
+        onSuccess={() => setRefreshKey((prev) => prev + 1)}
+      />
     </div>
   );
 };

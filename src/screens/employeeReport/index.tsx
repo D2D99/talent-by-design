@@ -19,6 +19,7 @@ import SpeedMeter from "../../components/speedMeter";
 import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
 import ReportEmptyState from "../../components/reportEmptyState";
+import FeedbackEditorModal from "../../components/feedbackEditorModal";
 
 // ------ CONSTANTS ------
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
@@ -127,6 +128,9 @@ const EmployeeReport = () => {
   const [loading, setLoading] = useState(true);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [detailedPods, setDetailedPods] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null);
 
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] =
@@ -236,6 +240,7 @@ const EmployeeReport = () => {
         const res = await api.get(url);
         setReportData(res.data.report);
         setUserData(res.data.user);
+        setAiInsight(res.data.aiInsight);
         setHasNoReport(false);
 
         const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
@@ -258,7 +263,7 @@ const EmployeeReport = () => {
     };
 
     fetchReport();
-  }, [userId, userEmail]);
+  }, [userId, userEmail, refreshKey]);
 
   // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
   useEffect(() => {
@@ -282,7 +287,7 @@ const EmployeeReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData]);
+  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
 
   // Re-initialize TW-Elements after data is loaded and components are rendered
   // This useEffect is now redundant as initTWE is called in the main fetchReport useEffect
@@ -359,17 +364,30 @@ const EmployeeReport = () => {
               ""}
           </h3>
 
-          <button
-            type="button"
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-          >
-            <Icon
-              icon="lucide:arrow-down-to-line"
-              width="16"
-              className="transition-transform duration-300 group-hover:translate-y-0.5"
-            />
-            Export Analysis
-          </button>
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && reportData && (
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                title="Edit AI Insights, Objectives, and Recommendations"
+              >
+                <Icon icon="lucide:edit" width="16" />
+                Edit Feedback
+              </button>
+            )}
+            <button
+              type="button"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              <Icon
+                icon="lucide:arrow-down-to-line"
+                width="16"
+                className="transition-transform duration-300 group-hover:translate-y-0.5"
+              />
+              Export Analysis
+            </button>
+          </div>
         </div>
 
         {/* Filters Section */}
@@ -483,6 +501,8 @@ const EmployeeReport = () => {
           </div>
         ) : reportData ? (
           <>
+
+
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               {/* Domain Score Section */}
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
@@ -630,10 +650,10 @@ const EmployeeReport = () => {
                   <div className="flex items-center justify-between w-full mb-2 text-left">
                     <div>
                       <h3 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                        POD-360™ Model
+                        {detailedPods?.insights?.title || "POD-360™ Model"}
                       </h3>
                       <p className="text-xs text-[#64748B] font-medium">
-                        Interconnectivity of focus areas
+                        {detailedPods?.insights?.subtitle || "Interconnectivity of focus areas"}
                       </p>
                     </div>
                   </div>
@@ -718,7 +738,7 @@ const EmployeeReport = () => {
                         alt="icon"
                         className="w-4 h-4 mt-1 shrink-0"
                       />
-                      <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
+                      <span className="text-sm text-[#1A3652] font-medium leading-relaxed whitespace-pre-wrap">
                         {insight}
                       </span>
                     </li>
@@ -802,6 +822,25 @@ const EmployeeReport = () => {
           <ReportEmptyState role="Employee" />
         )}
       </div>
+
+      <FeedbackEditorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        domain={selectedDomain}
+        subdomain={selectedSubdomain}
+        userId={userId}
+        userEmail={userEmail}
+        rawFeedback={{
+          ...detailedPods?.rawFeedback,
+          pod360Title: aiInsight?.title,
+          pod360Description: aiInsight?.description
+        }}
+        onSuccess={() => {
+          setRefreshKey((prev) => prev + 1);
+          // Also refetch main report to update the header
+          // The main fetchReport will run due to refreshKey if we add it to its deps or call manually
+        }}
+      />
     </div>
   );
 };
