@@ -113,8 +113,6 @@ const UserProfile = () => {
     fetchProfile();
   }, []);
 
-
-
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -200,7 +198,11 @@ const UserProfile = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]"
+      >
         <div className="flex items-center justify-between gap-4 flex-wrap mb-8">
           <h2 className="md:text-2xl text-xl font-bold">My Profile</h2>
 
@@ -340,11 +342,17 @@ const UserProfile = () => {
                 type="text"
                 id="fname"
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.firstName ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.firstName ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
                 placeholder="Enter your first name"
-                {...register("firstName", { required: "First name is required" })}
+                {...register("firstName", {
+                  required: "First name is required",
+                })}
               />
-              {errors.firstName && (<span className="text-red-500 text-xs mt-1 block">{errors.firstName.message}</span>)}
+              {errors.firstName && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.firstName.message}
+                </span>
+              )}
             </div>
 
             <div>
@@ -375,11 +383,15 @@ const UserProfile = () => {
                 type="text"
                 id="lname"
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.lastName ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.lastName ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
                 placeholder="Enter your last name"
                 {...register("lastName", { required: "Last name is required" })}
               />
-              {errors.lastName && (<span className="text-red-500 text-xs mt-1 block">{errors.lastName.message}</span>)}
+              {errors.lastName && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.lastName.message}
+                </span>
+              )}
             </div>
 
             <div>
@@ -393,10 +405,14 @@ const UserProfile = () => {
                 type="date"
                 id="dob"
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.dob ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.dob ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
                 {...register("dob", { required: "Date of birth is required" })}
               />
-              {errors.dob && (<span className="text-red-500 text-xs mt-1 block">{errors.dob.message}</span>)}
+              {errors.dob && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.dob.message}
+                </span>
+              )}
             </div>
 
             <div>
@@ -470,11 +486,21 @@ const UserProfile = () => {
                   }
                 }}
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.phoneNumber ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.phoneNumber ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
                 placeholder="Enter your phone number"
-                {...register("phoneNumber", { required: "Phone number is required", pattern: { value: /^[0-9+\-()\s]+$/, message: "Invalid format" } })}
+                {...register("phoneNumber", {
+                  required: "Phone number is required",
+                  pattern: {
+                    value: /^[0-9+\-()\s]+$/,
+                    message: "Invalid format",
+                  },
+                })}
               />
-              {errors.phoneNumber && (<span className="text-red-500 text-xs mt-1 block">{errors.phoneNumber.message}</span>)}
+              {errors.phoneNumber && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.phoneNumber.message}
+                </span>
+              )}
             </div>
 
             <div>
@@ -506,7 +532,7 @@ const UserProfile = () => {
                   type="text"
                   id="orgName"
                   readOnly
-                  className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
+                  className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] read-only:bg-gray-50 read-only:cursor-not-allowed"
                   placeholder="Organization name"
                   {...register("orgName")}
                 />
@@ -536,7 +562,7 @@ const UserProfile = () => {
                     !isEditing ||
                     formData.role?.toLowerCase() === "leader" ||
                     formData.role?.toLowerCase() === "manager"
-                      ? "bg-neutral-100 cursor-not-allowed"
+                      ? "read-only:bg-gray-50 read-only:cursor-not-allowed"
                       : "focus:border-[var(--primary-color)]"
                   }`}
                   placeholder="No Department Assigned"
@@ -561,7 +587,7 @@ const UserProfile = () => {
                           : "No Logo Uploaded Yet"
                     }
                     readOnly
-                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed pr-[80px]"
+                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none border-[#E8E8E8] read-only:bg-gray-50 read-only:cursor-not-allowed pr-[80px]"
                     placeholder="Organization Logo"
                   />
                   <p className="text-xs text-gray-600 mt-1.5 uppercase">
@@ -622,11 +648,15 @@ const UserProfile = () => {
                 type="text"
                 id="country"
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.country ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.country ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
                 placeholder="Enter your country"
                 {...register("country", { required: "Country is required" })}
               />
-              {errors.country && (<span className="text-red-500 text-xs mt-1 block">{errors.country.message}</span>)}
+              {errors.country && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.country.message}
+                </span>
+              )}
             </div>
 
             <div>
@@ -640,11 +670,15 @@ const UserProfile = () => {
                 type="text"
                 id="city"
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.state ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.state ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
                 placeholder="Enter your state"
                 {...register("state", { required: "State is required" })}
               />
-              {errors.state && (<span className="text-red-500 text-xs mt-1 block">{errors.state.message}</span>)}
+              {errors.state && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.state.message}
+                </span>
+              )}
             </div>
 
             <div>
@@ -658,11 +692,15 @@ const UserProfile = () => {
                 type="text"
                 id="zipCode"
                 disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.zipCode ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.zipCode ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
                 placeholder="Enter your zip code"
                 {...register("zipCode", { required: "Zip code is required" })}
               />
-              {errors.zipCode && (<span className="text-red-500 text-xs mt-1 block">{errors.zipCode.message}</span>)}
+              {errors.zipCode && (
+                <span className="text-red-500 text-xs mt-1 block">
+                  {errors.zipCode.message}
+                </span>
+              )}
             </div>
           </div>
         </div>

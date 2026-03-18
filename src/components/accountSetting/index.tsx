@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Tooltip } from "react-tooltip";
 import { Tab, initTWE } from "tw-elements";
 
@@ -10,6 +11,8 @@ import { toast } from "react-toastify";
 // import { useTheme } from "../../context/useTheme";
 
 const AccountSetting = () => {
+  const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState<any>(null);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -18,20 +21,28 @@ const AccountSetting = () => {
   >("info");
   // const { theme, setTheme } = useTheme();
 
-  const [loading, setLoading] = useState(false);
-  const [profileData, setProfileData] = useState<any>(null);
-  const [passwordData, setPasswordData] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
   });
 
+  const newPassword = watch("newPassword");
+
   const validation = {
-    minLength: passwordData.newPassword.length >= 8,
-    hasUpper: /[A-Z]/.test(passwordData.newPassword),
-    hasLower: /[a-z]/.test(passwordData.newPassword),
-    hasNumber: /[0-9]/.test(passwordData.newPassword),
-    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(passwordData.newPassword),
+    minLength: newPassword.length >= 8,
+    hasUpper: /[A-Z]/.test(newPassword),
+    hasLower: /[a-z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
   };
 
   const strengthCount = Object.values(validation).filter(Boolean).length;
@@ -56,62 +67,29 @@ const AccountSetting = () => {
     }
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setPasswordData((prev) => ({ ...prev, [name]: value }));
-  };
+  const onSubmit = async (data: any) => {
+    const allValid = Object.values(validation).every(Boolean);
+    if (!allValid) {
+      toast.error("Please meet all password requirements");
+      return;
+    }
 
-  const handleSave = async () => {
-    // Check which tab is active (this is a bit tricky with TWE without controlled state,
-    // but we can check the URL or just always try to save password if there's data)
+    if (data.newPassword === data.oldPassword) {
+      toast.error("New password cannot be the same as current password");
+      return;
+    }
 
-    if (
-      passwordData.oldPassword ||
-      passwordData.newPassword ||
-      passwordData.confirmPassword
-    ) {
-      if (
-        !passwordData.oldPassword ||
-        !passwordData.newPassword ||
-        !passwordData.confirmPassword
-      ) {
-        toast.error("Please fill all password fields");
-        return;
-      }
-      if (passwordData.newPassword !== passwordData.confirmPassword) {
-        toast.error("New passwords do not match");
-        return;
-      }
-
-      if (passwordData.newPassword === passwordData.oldPassword) {
-        toast.error("New password cannot be the same as current password");
-        return;
-      }
-
-      const allValid = Object.values(validation).every(Boolean);
-      if (!allValid) {
-        toast.error("Please meet all password requirements");
-        return;
-      }
-
-      try {
-        setLoading(true);
-        await api.post("auth/change-password", passwordData);
-        toast.success("Password updated successfully!");
-        setPasswordData({
-          oldPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-      } catch (error: any) {
-        const message =
-          error.response?.data?.message || "Failed to update password";
-        toast.error(message);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      toast.info("Nothing to save");
+    try {
+      setLoading(true);
+      await api.post("auth/change-password", data);
+      toast.success("Password updated successfully!");
+      reset();
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message || "Failed to update password";
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,8 +102,8 @@ const AccountSetting = () => {
 
           {activeTab === "password" && (
             <button
-              type="button"
-              onClick={handleSave}
+              type="submit"
+              form="password-form"
               disabled={loading}
               className="relative overflow-hidden z-0 text-[var(--white-color)] px-6 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             >
@@ -295,7 +273,7 @@ const AccountSetting = () => {
               role="tabpanel"
               aria-labelledby="tabs-password-tab"
             >
-              <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-5">
+              <form id="password-form" onSubmit={handleSubmit(onSubmit)} noValidate className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-5">
                 <div>
                   <label
                     htmlFor="oldPassword"
@@ -307,12 +285,9 @@ const AccountSetting = () => {
                     <input
                       type={showOldPassword ? "text" : "password"}
                       id="oldPassword"
-                      name="oldPassword"
-                      value={passwordData.oldPassword}
-                      onChange={handlePasswordChange}
+                      {...register("oldPassword", { required: "Current password is required" })}
                       autoComplete="current-password"
-                      className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)]  border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                      required
+                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.oldPassword ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'}`}
                       placeholder="Enter your current password"
                     />
                     <button
@@ -329,6 +304,7 @@ const AccountSetting = () => {
                       />
                     </button>
                   </div>
+                  {errors.oldPassword && <span className="text-red-500 text-xs mt-1 block">{(errors.oldPassword as any).message}</span>}
                 </div>
 
                 <div>
@@ -342,11 +318,12 @@ const AccountSetting = () => {
                     <input
                       type={showPassword ? "text" : "password"}
                       id="newPassword"
-                      name="newPassword"
-                      value={passwordData.newPassword}
-                      onChange={handlePasswordChange}
+                      {...register("newPassword", {
+                        required: "New password is required",
+                        minLength: { value: 8, message: "Minimum 8 characters" }
+                      })}
                       autoComplete="new-password"
-                      className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)]  border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.newPassword ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'}`}
                       placeholder="Enter your new password"
                     />
                     <button
@@ -361,8 +338,9 @@ const AccountSetting = () => {
                       />
                     </button>
                   </div>
+                  {errors.newPassword && <span className="text-red-500 text-xs mt-1 block">{(errors.newPassword as any).message}</span>}
 
-                  {passwordData.newPassword.length > 0 && (
+                  {newPassword.length > 0 && (
                     <div className="mt-4">
                       <div className="flex gap-1 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                         {[...Array(5)].map((_, i) => (
@@ -393,7 +371,7 @@ const AccountSetting = () => {
                     </div>
                   )}
 
-                  {passwordData.newPassword.length > 0 && (
+                  {newPassword.length > 0 && (
                     <ul className="mt-4 space-y-1">
                       {[
                         {
@@ -450,12 +428,12 @@ const AccountSetting = () => {
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       id="confirmPassword"
-                      name="confirmPassword"
-                      value={passwordData.confirmPassword}
-                      onChange={handlePasswordChange}
+                      {...register("confirmPassword", {
+                        required: "Please confirm your password",
+                        validate: (value) => value === newPassword || "Passwords do not match"
+                      })}
                       autoComplete="new-password"
-                      className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)]  border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                      required
+                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.confirmPassword ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'}`}
                       placeholder="Confirm your new password"
                     />
                     <button
@@ -476,8 +454,9 @@ const AccountSetting = () => {
                       />
                     </button>
                   </div>
+                  {errors.confirmPassword && <span className="text-red-500 text-xs mt-1 block">{(errors.confirmPassword as any).message}</span>}
                 </div>
-              </div>
+              </form>
             </div>
             <div
               className="hidden opacity-0 transition-opacity duration-150 ease-linear data-[twe-tab-active]:block"
