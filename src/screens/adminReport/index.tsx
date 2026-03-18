@@ -277,9 +277,9 @@ const AdminReport = () => {
     setSelectedSubdomain(sub);
   };
 
-  // Use dynamic pods if available
+  // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? [detailedPods.insights.mainText]
+    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
     : ["Processing insights..."];
 
   const displayKRs =
@@ -794,11 +794,11 @@ const AdminReport = () => {
                   <div className="flex items-center justify-between mb-4 ">
                     <div>
                       <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        {detailedPods?.insights?.title || "Alignment Status"}
+                        Alignment Status
                       </h3>
                       <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
                         <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
-                        {detailedPods?.insights?.subtitle || "Blind Spot Detected"}
+                        Blind Spot Detected
                       </p>
                     </div>
 
@@ -1164,7 +1164,7 @@ const AdminReport = () => {
                           alt="icon"
                           className="mt-1 w-4 h-4 shrink-0"
                         />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal italic whitespace-pre-wrap">
+                        <span className="text-sm text-[var(--secondary-color)] font-normal italic">
                           {insight}
                         </span>
                       </li>

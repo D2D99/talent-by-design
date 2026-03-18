@@ -130,7 +130,7 @@ const EmployeeReport = () => {
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [aiInsight, setAiInsight] = useState<any>(null);
+  const [aiInsight, setAiInsight] = useState<any>(null); // Kept state but will hide UI
 
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] =
@@ -333,7 +333,7 @@ const EmployeeReport = () => {
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? [detailedPods.insights.mainText]
+    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
     : ["Processing insights..."];
 
   const displayKRs =
@@ -650,10 +650,10 @@ const EmployeeReport = () => {
                   <div className="flex items-center justify-between w-full mb-2 text-left">
                     <div>
                       <h3 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                        {detailedPods?.insights?.title || "POD-360™ Model"}
+                        POD-360™ Model
                       </h3>
                       <p className="text-xs text-[#64748B] font-medium">
-                        {detailedPods?.insights?.subtitle || "Interconnectivity of focus areas"}
+                        Interconnectivity of focus areas
                       </p>
                     </div>
                   </div>
@@ -738,7 +738,7 @@ const EmployeeReport = () => {
                         alt="icon"
                         className="w-4 h-4 mt-1 shrink-0"
                       />
-                      <span className="text-sm text-[#1A3652] font-medium leading-relaxed whitespace-pre-wrap">
+                      <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
                         {insight}
                       </span>
                     </li>

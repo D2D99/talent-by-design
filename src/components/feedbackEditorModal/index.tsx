@@ -14,8 +14,6 @@ interface FeedbackEditorModalProps {
         insight: string;
         coachingTips: string;
         recommendedPrograms: string;
-        pod360Title?: string;
-        pod360Description?: string;
         modelDescription?: string;
     };
     onSuccess: () => void;
@@ -34,8 +32,6 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     const [insight, setInsight] = useState("");
     const [coachingTips, setCoachingTips] = useState("");
     const [recommendedPrograms, setRecommendedPrograms] = useState("");
-    const [pod360Title, setPod360Title] = useState("");
-    const [pod360Description, setPod360Description] = useState("");
     const [modelDescription, setModelDescription] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -44,8 +40,6 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             setInsight(rawFeedback?.insight || "");
             setCoachingTips(rawFeedback?.coachingTips || "");
             setRecommendedPrograms(rawFeedback?.recommendedPrograms || "");
-            setPod360Title(rawFeedback?.pod360Title || "");
-            setPod360Description(rawFeedback?.pod360Description || "");
             setModelDescription(rawFeedback?.modelDescription || "");
         }
     }, [isOpen, rawFeedback]);
@@ -89,8 +83,6 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 insight,
                 coachingTips,
                 recommendedPrograms,
-                pod360Title,
-                pod360Description,
                 modelDescription
             });
             toast.success("Feedback updated successfully!");
@@ -122,35 +114,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 </div>
 
                 <div className="p-6 overflow-y-auto flex flex-col gap-6 hide-scrollbar flex-1">
-                    <div className="grid grid-cols-2 gap-4 border-b pb-6">
-                        <div className="col-span-2">
-                            <h3 className="text-sm font-black text-[#1a3652] uppercase tracking-wider mb-2">Pod 360 Header (Overall Analytics)</h3>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1">
-                                Pod 360 Title
-                            </label>
-                            <input
-                                type="text"
-                                value={pod360Title}
-                                onChange={(e) => setPod360Title(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:border-[#448cd2]"
-                                placeholder="Performance Trajectory..."
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1">
-                                Pod 360 Description
-                            </label>
-                            <input
-                                type="text"
-                                value={pod360Description}
-                                onChange={(e) => setPod360Description(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:border-[#448cd2]"
-                                placeholder="Analysis summary..."
-                            />
-                        </div>
-                    </div>
+
 
                     <div>
                         <label className="block text-sm font-bold text-[#1a3652] mb-2">
@@ -171,11 +135,11 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                         <label className="block text-sm font-bold text-[#1a3652] mb-2">
                             Insight for Domain (Main Text)
                         </label>
-                        <p className="text-[10px] text-gray-400 mb-1">Plain text allowed. Press Enter for new lines.</p>
+                        <p className="text-[10px] text-gray-400 mb-1">Press Enter to automatically add a bullet (•).</p>
                         <textarea
                             value={insight}
                             onChange={(e) => setInsight(e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(e, setInsight, insight, false)}
+                            onKeyDown={(e) => handleKeyDown(e, setInsight, insight, true)}
                             rows={4}
                             className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-[#448cd2] focus:ring-1 focus:ring-[#448cd2]"
                             placeholder="Enter insights here..."

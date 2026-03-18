@@ -14,7 +14,7 @@ import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ReportEmptyState from "../../components/reportEmptyState";
-import Sidebar from "../../components/sidebar";
+// import Sidebar from "../../components/sidebar";
 import { useAuth } from "../../context/useAuth";
 import ScoreBar from "../../components/scoreBar";
 import SpeedMeter from "../../components/speedMeter";
@@ -329,9 +329,9 @@ const ManagerReport = () => {
       selectedSubdomain
     ]?.score || 0;
 
-  // Use dynamic pods if available
+  // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? [detailedPods.insights.mainText]
+    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
     : ["Processing insights..."];
 
   const displayKRs =
@@ -365,9 +365,9 @@ const ManagerReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -375,9 +375,9 @@ const ManagerReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -385,9 +385,9 @@ const ManagerReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
+            (acc: number, curr: any) => acc + getNumericScore(curr),
+            0,
+          ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -499,9 +499,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -778,7 +778,7 @@ const ManagerReport = () => {
                           alt="icon"
                           className="mt-1 w-4 h-4 shrink-0"
                         />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal italic whitespace-pre-wrap">
+                        <span className="text-sm text-[var(--secondary-color)] font-normal italic">
                           {insight}
                         </span>
                       </li>
@@ -793,8 +793,7 @@ const ManagerReport = () => {
                       Objectives and Key Results
                     </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      {detailedPods?.objectives?.subtitle ||
-                        "Lead team improvements in this domain area"}
+                      Lead team improvements in this domain area
                     </p>
                   </div>
                   <div>
@@ -838,11 +837,10 @@ const ManagerReport = () => {
                 <div className="flex items-center justify-between w-full mb-2">
                   <div>
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      {detailedPods?.insights?.title || "POD-360™ Model"}
+                      POD-360™ Model
                     </h3>
                     <p className="text-xs text-[#64748B] font-medium">
-                      {detailedPods?.insights?.subtitle ||
-                        "Interconnectivity of focus areas"}
+                      Interconnectivity of focus areas
                     </p>
                   </div>
                 </div>
