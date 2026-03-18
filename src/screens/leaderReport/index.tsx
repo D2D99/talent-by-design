@@ -2,8 +2,8 @@ import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
-import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
+// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+// import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
 // import Employee from "../../../public/static/img/home/employee.svg";
@@ -298,9 +298,9 @@ const LeaderReport = () => {
       value: detailedPods.objectives.progress || 0,
     })) || [];
 
-  const displayRecommendations = detailedPods?.recommendations?.items || [
-    "No specific recommendations available for this domain yet.",
-  ];
+  // const displayRecommendations = detailedPods?.recommendations?.items || [
+  //   "No specific recommendations available for this domain yet.",
+  // ];
 
   const topPriorities = Object.entries(reportData?.scores?.domains || {})
     .sort(([, a]: any, [, b]: any) => a.score - b.score)
@@ -1258,68 +1258,7 @@ const LeaderReport = () => {
               </div>
             </div>
             {/*  */}
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Leader Coaching Tips
-                    </h3>
-                  </div>
-                  <div>
-                    <img src={StreamlinePlump} alt="images" />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {[detailedPods?.insights?.modelDescription]
-                    .filter(Boolean)
-                    .map((tip: string, idx: number) => (
-                      <li key={idx} className="feature-list flex gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="mt-1 w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal">
-                          {tip}
-                        </span>
-                      </li>
-                    ))}
-                  {!detailedPods?.insights?.modelDescription && (
-                    <li className="text-xs text-gray-400">
-                      Strategic model application details will appear here.
-                    </li>
-                  )}
-                </ul>
-                <div></div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Key Recommendations
-                    </h3>
-                  </div>
-                  <div>
-                    <img src={Healthicons} alt="images" />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {displayRecommendations.map((rec: string, idx: number) => (
-                    <li key={idx} className="feature-list flex gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="mt-1 w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {rec}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            
           </>
         ) : (
           <ReportEmptyState role="Leader" />
