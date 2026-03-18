@@ -104,7 +104,9 @@ const ManagerReport = () => {
 
     // Security: Non-Admins only see their own department
     if (!isAdmin && !isSuperAdmin) {
-      const uDept = String(user?.department || "").trim().toLowerCase();
+      const uDept = String(user?.department || "")
+        .trim()
+        .toLowerCase();
       if (memberDept !== uDept) return false;
     }
 
@@ -205,20 +207,26 @@ const ManagerReport = () => {
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
   const trendData = (() => {
-    if (!reportData) return { labels: [], manager: [], team: [], descriptions: [] };
+    if (!reportData)
+      return { labels: [], manager: [], team: [], descriptions: [] };
 
     // Convert 0-100 score to /10 scale
-    const getScoreForChart = (val: any) => Number((getNumericScore(val) / 10).toFixed(1));
+    const getScoreForChart = (val: any) =>
+      Number((getNumericScore(val) / 10).toFixed(1));
 
     // If a subdomain is selected, show question-level trend
     if (selectedSubdomain) {
-      const qCurrent = reportData?.responses?.filter((r: any) =>
-        r.domain === selectedDomain && r.subdomain === selectedSubdomain
-      ) || [];
+      const qCurrent =
+        reportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
 
-      const qFirst = firstReportData?.responses?.filter((r: any) =>
-        r.domain === selectedDomain && r.subdomain === selectedSubdomain
-      ) || [];
+      const qFirst =
+        firstReportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
 
       // Sort questions to ensure consistent order
       const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
@@ -234,19 +242,23 @@ const ManagerReport = () => {
     }
 
     // Default: subdomain averages
-    const subdomains = Object.keys(reportData?.scores?.domains?.[selectedDomain]?.subdomains || {});
+    const subdomains = Object.keys(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+    );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
-    const descriptions = subdomains.map(sub => sub);
+    const descriptions = subdomains.map((sub) => sub);
 
-    const currentScores = subdomains.map(sub => {
-      const scoreData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
-      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+    const currentScores = subdomains.map((sub) => {
+      const scoreData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
       return Number(((score || 0) / 10).toFixed(1));
     });
 
-    const firstScores = subdomains.map(sub => {
-      const scoreData = firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
-      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+    const firstScores = subdomains.map((sub) => {
+      const scoreData =
+        firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
       return Number(((score || 0) / 10).toFixed(1));
     });
 
@@ -282,7 +294,14 @@ const ManagerReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
+  }, [
+    selectedDomain,
+    selectedSubdomain,
+    userId,
+    userEmail,
+    reportData,
+    refreshKey,
+  ]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -326,7 +345,6 @@ const ManagerReport = () => {
     "No specific recommendations available for this domain yet.",
   ];
 
-
   // Calculate radar data dynamically from responses
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
@@ -347,9 +365,9 @@ const ManagerReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / mResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -357,9 +375,9 @@ const ManagerReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / tResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -367,9 +385,9 @@ const ManagerReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / pResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -386,7 +404,6 @@ const ManagerReport = () => {
 
   return (
     <div>
-
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
@@ -426,8 +443,6 @@ const ManagerReport = () => {
             </button>
           </div>
         </div>
-
-
 
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
@@ -484,9 +499,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -580,19 +595,17 @@ const ManagerReport = () => {
                     aria-labelledby="dropdownMenuButton1"
                     data-twe-dropdown-menu-ref
                   >
-                    {Object.keys(reportData?.scores?.domains || {}).map(
-                      (d) => (
-                        <li key={d}>
-                          <button
-                            onClick={() => handleDomainChange(d)}
-                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                            data-twe-dropdown-item-ref
-                          >
-                            {d}
-                          </button>
-                        </li>
-                      ),
-                    )}
+                    {Object.keys(reportData?.scores?.domains || {}).map((d) => (
+                      <li key={d}>
+                        <button
+                          onClick={() => handleDomainChange(d)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                          data-twe-dropdown-item-ref
+                        >
+                          {d}
+                        </button>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div className="flex justify-center gap-4 mt-6">
@@ -601,9 +614,7 @@ const ManagerReport = () => {
                       <p className="w-6 h-2 bg-[#FF5656]"></p>
                     </div>
                     <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Low
-                      </p>
+                      <p className="text-sm font-normal text-[#474747]">Low</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -621,9 +632,7 @@ const ManagerReport = () => {
                       <p className="w-6 h-2 bg-[#30AD43]"></p>
                     </div>
                     <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        High
-                      </p>
+                      <p className="text-sm font-normal text-[#474747]">High</p>
                     </div>
                   </div>
                 </div>
@@ -687,9 +696,7 @@ const ManagerReport = () => {
                       <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
                     </div>
                     <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Low
-                      </p>
+                      <p className="text-sm font-normal text-[#474747]">Low</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -707,9 +714,7 @@ const ManagerReport = () => {
                       <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
                     </div>
                     <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        High
-                      </p>
+                      <p className="text-sm font-normal text-[#474747]">High</p>
                     </div>
                   </div>
                 </div>
@@ -747,304 +752,305 @@ const ManagerReport = () => {
                   <MultiLineChart data={trendData} />
                 </div>
               </div>
+            </div>
 
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Insight for {selectedDomain}
-                      </h3>
-                      <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                        Overall analysis for this domain
-                      </p>
-                    </div>
-                    <div>
-                      <img src={Streamline} alt="images" />
-                    </div>
-                  </div>
-                  <div>
-                    <ul className="mt-4 space-y-2">
-                      {displayInsights.map((insight: string, idx: number) => (
-                        <li key={idx} className="feature-list flex gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="mt-1 w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm text-[var(--secondary-color)] font-normal italic whitespace-pre-wrap">
-                            {insight}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Objectives and Key Results
-                      </h3>
-                      <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                        {detailedPods?.objectives?.subtitle ||
-                          "Lead team improvements in this domain area"}
-                      </p>
-                    </div>
-                    <div>
-                      <img src={Hugeicons} alt="images" />
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    {displayKRs.map((kr: any, idx: number) => (
-                      <div key={idx} className="flex items-center gap-3 mt-4">
-                        <div className="text-lg-progress">
-                          <CircularProgress
-                            value={kr.value}
-                            width={60}
-                            textColor="#36454F"
-                            pathColor="#1A3652"
-                            trailColor="#D9D9D9"
-                          />
-                        </div>
-                        <div>
-                          <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                            {kr.label}
-                          </h2>
-                          <p className="text-sm font-normal text-[var(--secondary-color)]">
-                            {kr.text}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    {displayKRs.length === 0 && (
-                      <p className="text-sm text-gray-400 italic">
-                        No specific team key results available.
-                      </p>
-                    )}
-                  </div>
-                  <div></div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
-                  <div className="flex items-center justify-between w-full mb-2">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        {detailedPods?.insights?.title || "POD-360™ Model"}
-                      </h3>
-                      <p className="text-xs text-[#64748B] font-medium">
-                        {detailedPods?.insights?.subtitle || "Interconnectivity of focus areas"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
-                    <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
-                      <Triangle data={triangleData} />
-                    </div>
-                    <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                      {detailedPods?.insights?.modelDescription ? (
-                        detailedPods.insights.modelDescription
-                          .split(/[•\n\r]/)
-                          .map((item: string) => item.trim())
-                          .filter((item: string) => item.length > 0)
-                          .map((bullet: string, idx: number) => (
-                            <div key={idx} className="flex items-start gap-2">
-                              <img
-                                src={IconStar}
-                                alt="icon"
-                                className="w-4 h-4 shrink-0 mt-0.5"
-                              />
-                              <span className="text-sm font-medium text-[#64748B] leading-snug">
-                                {bullet}
-                              </span>
-                            </div>
-                          ))
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Capability
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Engagement
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Confidence
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm font-medium text-[#64748B]">
-                              Change resilience
-                            </span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                        People
-                      </p>
-                      <p className="text-sm font-black text-[var(--secondary-color)]">
-                        {Math.round(findDomainScore("people"))}%
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                        Operational
-                      </p>
-                      <p className="text-sm font-black text-[var(--secondary-color)]">
-                        {Math.round(findDomainScore("operational"))}%
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                        Digital
-                      </p>
-                      <p className="text-sm font-black text-[var(--secondary-color)]">
-                        {Math.round(findDomainScore("digital"))}%
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Manager Coaching Tips
-                      </h3>
-                    </div>
-                    <div>
-                      <img src={StreamlinePlump} alt="images" />
-                    </div>
-                  </div>
-                  <ul className="mt-4 space-y-2">
-                    {[detailedPods?.insights?.modelDescription]
-                      .filter(Boolean)
-                      .map((tip: string, idx: number) => (
-                        <li key={idx} className="feature-list flex gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="mt-1 w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm text-[var(--secondary-color)] font-normal">
-                            {tip}
-                          </span>
-                        </li>
-                      ))}
-                    {!detailedPods?.insights?.modelDescription && (
-                      <li className="text-xs text-gray-400">
-                        Strategic model application details will appear here.
-                      </li>
-                    )}
-                  </ul>
-                  <div></div>
-                </div>
-              </div>
-              {/*  */}
-              <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                 <div className="flex items-center justify-between ">
                   <div>
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Talent By Design <br />
-                      Recommended Offering
+                      Insight for {selectedDomain}
+                    </h3>
+                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                      Overall analysis for this domain
+                    </p>
+                  </div>
+                  <div>
+                    <img src={Streamline} alt="images" />
+                  </div>
+                </div>
+                <div>
+                  <ul className="mt-4 space-y-2">
+                    {displayInsights.map((insight: string, idx: number) => (
+                      <li key={idx} className="feature-list flex gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="mt-1 w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm text-[var(--secondary-color)] font-normal italic whitespace-pre-wrap">
+                          {insight}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Objectives and Key Results
+                    </h3>
+                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                      {detailedPods?.objectives?.subtitle ||
+                        "Lead team improvements in this domain area"}
+                    </p>
+                  </div>
+                  <div>
+                    <img src={Hugeicons} alt="images" />
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 mt-4">
+                      <div className="text-lg-progress">
+                        <CircularProgress
+                          value={kr.value}
+                          width={60}
+                          textColor="#36454F"
+                          pathColor="#1A3652"
+                          trailColor="#D9D9D9"
+                        />
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                          {kr.label}
+                        </h2>
+                        <p className="text-sm font-normal text-[var(--secondary-color)]">
+                          {kr.text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  {displayKRs.length === 0 && (
+                    <p className="text-sm text-gray-400 italic">
+                      No specific team key results available.
+                    </p>
+                  )}
+                </div>
+                <div></div>
+              </div>
+            </div>
+            {/*  */}
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
+                <div className="flex items-center justify-between w-full mb-2">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      {detailedPods?.insights?.title || "POD-360™ Model"}
+                    </h3>
+                    <p className="text-xs text-[#64748B] font-medium">
+                      {detailedPods?.insights?.subtitle ||
+                        "Interconnectivity of focus areas"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
+                  <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                    <Triangle data={triangleData} />
+                  </div>
+                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                    {detailedPods?.insights?.modelDescription ? (
+                      detailedPods.insights.modelDescription
+                        .split(/[•\n\r]/)
+                        .map((item: string) => item.trim())
+                        .filter((item: string) => item.length > 0)
+                        .map((bullet: string, idx: number) => (
+                          <div key={idx} className="flex items-start gap-2">
+                            <img
+                              src={IconStar}
+                              alt="icon"
+                              className="w-4 h-4 shrink-0 mt-0.5"
+                            />
+                            <span className="text-sm font-medium text-[#64748B] leading-snug">
+                              {bullet}
+                            </span>
+                          </div>
+                        ))
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Capability
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Engagement
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Confidence
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Change resilience
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      People
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("people"))}%
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      Operational
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("operational"))}%
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      Digital
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("digital"))}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Manager Coaching Tips
                     </h3>
                   </div>
                   <div>
-                    <img src={Healthicons} alt="images" />
+                    <img src={StreamlinePlump} alt="images" />
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2">
-                  {displayRecommendations.map((rec: string, idx: number) => (
-                    <li key={idx} className="feature-list flex gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="mt-1 w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {rec}
-                      </span>
+                  {[detailedPods?.insights?.modelDescription]
+                    .filter(Boolean)
+                    .map((tip: string, idx: number) => (
+                      <li key={idx} className="feature-list flex gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="mt-1 w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm text-[var(--secondary-color)] font-normal">
+                          {tip}
+                        </span>
+                      </li>
+                    ))}
+                  {!detailedPods?.insights?.modelDescription && (
+                    <li className="text-xs text-gray-400">
+                      Strategic model application details will appear here.
                     </li>
-                  ))}
+                  )}
                 </ul>
                 <div></div>
               </div>
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                  <div className="flex items-center justify-between  ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Manager VS Team Gap
-                      </h3>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-center gap-1 mt-6">
-                    <div>
-                      <p className="w-9 h-4 bg-[#448bd26c]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Manager Self Assessment
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <RadarChart
-                      data={radarData}
-                      selectedLabel={selectedLabel}
-                      onLabelSelect={handleRadarChartSelection}
-                    />
-                  </div>
+            </div>
+            {/*  */}
+            <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Talent By Design <br />
+                    Recommended Offering
+                  </h3>
                 </div>
-                <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Delta Breakdown
-                      </h3>
-                    </div>
-                  </div>
-                  <div>
-                    <GapBarChart
-                      labels={radarData.labels}
-                      deltaScores={deltaScores}
-                      selectedLabel={selectedLabel}
-                    />
-                  </div>
+                <div>
+                  <img src={Healthicons} alt="images" />
                 </div>
               </div>
-              <div className="last-graph mt-8">
-                <ScoreBar score={50} label="hello world" />
+              <ul className="mt-4 space-y-2">
+                {displayRecommendations.map((rec: string, idx: number) => (
+                  <li key={idx} className="feature-list flex gap-2">
+                    <img
+                      src={IconStar}
+                      alt="icon"
+                      className="mt-1 w-4 h-4 shrink-0"
+                    />
+                    <span className="text-sm text-[var(--secondary-color)] font-normal">
+                      {rec}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div></div>
+            </div>
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                <div className="flex items-center justify-between  ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Manager VS Team Gap
+                    </h3>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-1 mt-6">
+                  <div>
+                    <p className="w-9 h-4 bg-[#448bd26c]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Manager Self Assessment
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <RadarChart
+                    data={radarData}
+                    selectedLabel={selectedLabel}
+                    onLabelSelect={handleRadarChartSelection}
+                  />
+                </div>
               </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Delta Breakdown
+                    </h3>
+                  </div>
+                </div>
+                <div>
+                  <GapBarChart
+                    labels={radarData.labels}
+                    deltaScores={deltaScores}
+                    selectedLabel={selectedLabel}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="last-graph mt-8">
+              <ScoreBar score={50} label="hello world" />
             </div>
           </>
         ) : (
@@ -1062,7 +1068,7 @@ const ManagerReport = () => {
         rawFeedback={{
           ...detailedPods?.rawFeedback,
           pod360Title: aiInsight?.title,
-          pod360Description: aiInsight?.description
+          pod360Description: aiInsight?.description,
         }}
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
       />
