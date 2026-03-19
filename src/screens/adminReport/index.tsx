@@ -522,7 +522,7 @@ const AdminReport = () => {
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
-                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-sm uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
                 title="Edit AI Insights, Objectives, and Recommendations"
               >
                 <Icon icon="lucide:edit" width="16" />

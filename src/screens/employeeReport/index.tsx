@@ -12,7 +12,7 @@ import Select from "react-select";
 import { useState, useEffect } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { useAuth } from "../../context/useAuth";
 import { Icon } from "@iconify/react";
@@ -166,7 +166,9 @@ const EmployeeReport = () => {
 
     // Security: Non-Admins only see their own department
     if (!isAdmin && !isSuperAdmin) {
-      const uDept = String(user?.department || "").trim().toLowerCase();
+      const uDept = String(user?.department || "")
+        .trim()
+        .toLowerCase();
       if (memberDept !== uDept) return false;
     }
 
@@ -211,7 +213,7 @@ const EmployeeReport = () => {
   //   }),
   //   indicatorSeparator: () => ({
   //     display: 'none'
-  //   }),
+  //   }),F
   //   menu: (provided: any) => ({
   //     ...provided,
   //     zIndex: 9999
@@ -321,7 +323,14 @@ const EmployeeReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
+  }, [
+    selectedDomain,
+    selectedSubdomain,
+    userId,
+    userEmail,
+    reportData,
+    refreshKey,
+  ]);
 
   // Re-initialize TW-Elements after data is loaded and components are rendered
   // This useEffect is now redundant as initTWE is called in the main fetchReport useEffect
@@ -362,24 +371,28 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes('•'));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes('•'))
-        .map((line: string) => line.replace(/•/g, '').trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
-  const finalInsights = displayInsights.length > 0 ? displayInsights : ["No specific insights available yet."];
-
+  const finalInsights =
+    displayInsights.length > 0
+      ? displayInsights
+      : ["No specific insights available yet."];
 
   const displayKRs =
     detailedPods?.objectives?.items?.map((text: string, i: number) => ({
@@ -394,7 +407,6 @@ const EmployeeReport = () => {
 
   return (
     <div className="flex flex-col gap-6">
-
       {/* Main Header & Filters Card */}
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
@@ -414,7 +426,7 @@ const EmployeeReport = () => {
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
-                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-sm uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
                 title="Edit AI Insights, Objectives, and Recommendations"
               >
                 <Icon icon="lucide:edit" width="16" />
@@ -425,16 +437,12 @@ const EmployeeReport = () => {
               type="button"
               onClick={handleExportPDF}
               disabled={exportLoading}
-              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] px-3.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             >
               {exportLoading ? (
                 <Icon icon="eos-icons:loading" width="16" />
               ) : (
-                <Icon
-                  icon="lucide:file-text"
-                  width="16"
-                  className="transition-transform duration-300 group-hover:translate-y-0.5"
-                />
+                <Icon icon="pajamas:export" width="16" height="16" />
               )}
               {exportLoading ? "Exporting..." : "Export PDF Report"}
             </button>
@@ -494,9 +502,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -552,8 +560,6 @@ const EmployeeReport = () => {
           </div>
         ) : reportData ? (
           <>
-
-
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               {/* Domain Score Section */}
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
@@ -610,9 +616,7 @@ const EmployeeReport = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <p className="w-6 h-2 bg-[#FEE114]"></p>
-                    <p className="text-sm font-normal text-[#474747]">
-                      Medium
-                    </p>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <p className="w-6 h-2 bg-[#30AD43]"></p>
@@ -681,9 +685,7 @@ const EmployeeReport = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <p className="w-6 h-2 bg-[#FEE114]"></p>
-                    <p className="text-sm font-normal text-[#474747]">
-                      Medium
-                    </p>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <p className="w-6 h-2 bg-[#30AD43]"></p>
@@ -715,11 +717,24 @@ const EmployeeReport = () => {
                     <div className="grid grid-cols-1 gap-3 w-full px-4">
                       {(() => {
                         const mText = detailedPods?.insights?.modelDescription;
-                        if (!mText) return ["Capability", "Engagement", "Confidence", "Resilience"];
-                        const mLines = mText.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
-                        const hasBullets = mLines.some((l: string) => l.includes('•'));
+                        if (!mText)
+                          return [
+                            "Capability",
+                            "Engagement",
+                            "Confidence",
+                            "Resilience",
+                          ];
+                        const mLines = mText
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
                         if (hasBullets) {
-                          return mLines.filter((l: string) => l.includes('•')).map((l: string) => l.replace(/•/g, '').trim()).filter((l: string) => l.length > 0);
+                          return mLines
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0);
                         }
                         return mLines;
                       })().map((bullet: string, idx: number) => (
@@ -771,10 +786,14 @@ const EmployeeReport = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                      {detailedPods?.insights?.title || (`Insight for ${selectedSubdomain || selectedDomain}`)}
+                      {detailedPods?.insights?.title ||
+                        `Insight for ${selectedSubdomain || selectedDomain}`}
                     </h3>
                     <p className="text-xs text-[#64748B] font-medium">
-                      {detailedPods?.insights?.subtitle || (selectedSubdomain ? `Detailed analysis for ${selectedSubdomain}` : `Overall analysis for ${selectedDomain}`)}
+                      {detailedPods?.insights?.subtitle ||
+                        (selectedSubdomain
+                          ? `Detailed analysis for ${selectedSubdomain}`
+                          : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
                   <img src={Streamline} alt="images" className="w-8 h-8" />
@@ -882,7 +901,7 @@ const EmployeeReport = () => {
         rawFeedback={{
           ...detailedPods?.rawFeedback,
           pod360Title: aiInsight?.title,
-          pod360Description: aiInsight?.description
+          pod360Description: aiInsight?.description,
         }}
         onSuccess={() => {
           setRefreshKey((prev) => prev + 1);
