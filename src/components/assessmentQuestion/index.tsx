@@ -529,10 +529,17 @@ const AssessmentQuestion = () => {
                           className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none"
                         >
                           <option value="">Select your department</option>
-                          <option value="hr">HR</option>
-                          <option value="engineering">Engineering</option>
-                          <option value="marketing">Marketing</option>
+                          <option value="hr">HR/People & Culture</option>
+                          <option value="finance">Finance & Accounting</option>
                           <option value="operations">Operations</option>
+                          <option value="it">IT</option>
+                          <option value="sales">Sales and Marketing</option>
+                          <option value="legal">
+                            Legal, Risk & Compliance
+                          </option>
+                          <option value="corporate">
+                            Admin & Corporate Services
+                          </option>
                         </select>
                       </div>
                     </div>
