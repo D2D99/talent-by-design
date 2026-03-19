@@ -45,30 +45,42 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     }, [isOpen, rawFeedback]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>, value: string, addBulletedNewline: boolean) => {
-        if (e.key === 'Enter' && addBulletedNewline) {
+        if (!addBulletedNewline) return;
+
+        if (e.key === 'Enter') {
             e.preventDefault();
             const cursorPosition = e.currentTarget.selectionStart;
             const textBefore = value.substring(0, cursorPosition);
-            const textAfter = value.substring(cursorPosition);
 
-            // Check if current line is already empty or just a bullet
-            const lines = textBefore.split('\n');
-            const lastLine = lines[lines.length - 1].trim();
+            const linesBefore = textBefore.split('\n');
+            const currentLine = linesBefore[linesBefore.length - 1];
 
-            let insertion = '\n• ';
-            if (lastLine === '' || lastLine === '•') {
-                // If they press enter on an empty bulleted line, maybe they want to end the list? 
-                // For now, let's stick to the user's request: "automatically a dot come"
+            let newValue = value;
+            let cursorOffset = 0;
+
+            // If the current line where Enter was pressed DOESN'T have a bullet, add one to it!
+            // This prevents the line from disappearing on the frontend (since we filter for bullets).
+            if (currentLine.trim().length > 0 && !currentLine.trim().startsWith('•')) {
+                const lineStartPos = textBefore.lastIndexOf('\n') + 1;
+                newValue = value.substring(0, lineStartPos) + '• ' + value.substring(lineStartPos);
+                cursorOffset = 2;
             }
 
-            const newValue = textBefore + insertion + textAfter;
-            setter(newValue);
+            const updatedCursorPos = cursorPosition + cursorOffset;
+            const finalBefore = newValue.substring(0, updatedCursorPos);
+            const finalAfter = newValue.substring(updatedCursorPos);
+            const insertion = '\n• ';
 
-            // Set cursor position after the bullet
+            setter(finalBefore + insertion + finalAfter);
+
             setTimeout(() => {
-                const newPos = cursorPosition + insertion.length;
+                const newPos = updatedCursorPos + insertion.length;
                 e.currentTarget.setSelectionRange(newPos, newPos);
             }, 0);
+        } else if (value === '' && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            // Automatically add a bullet if typing the first character in an empty field
+            e.preventDefault();
+            setter('• ' + e.key);
         }
     };
 

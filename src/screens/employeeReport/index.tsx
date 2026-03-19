@@ -12,6 +12,7 @@ import Select from "react-select";
 import { useState, useEffect } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
+import { toast } from 'react-toastify';
 import SpinnerLoader from "../../components/spinnerLoader";
 import { useAuth } from "../../context/useAuth";
 import { Icon } from "@iconify/react";
@@ -131,6 +132,7 @@ const EmployeeReport = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null); // Kept state but will hide UI
+  const [exportLoading, setExportLoading] = useState(false);
 
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] =
@@ -265,6 +267,38 @@ const EmployeeReport = () => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
+  const handleExportPDF = async () => {
+    try {
+      setExportLoading(true);
+      const params: any = {};
+      if (userId) params.userId = userId;
+      if (userEmail) params.email = userEmail;
+
+      const response = await api.get("/dashboard/export-pdf", {
+        params,
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const fileName = `POD360_Report_${userData?.firstName || "Participant"}.pdf`;
+      link.setAttribute("download", fileName);
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF Export failed:", err);
+      toast.error("Failed to generate PDF report");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
   useEffect(() => {
     const fetchDetailedPods = async () => {
@@ -333,8 +367,19 @@ const EmployeeReport = () => {
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
+    ? (() => {
+      const lines = detailedPods.insights.mainText.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes('•'));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes('•'))
+        .map((line: string) => line.replace(/•/g, '').trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
+
+  const finalInsights = displayInsights.length > 0 ? displayInsights : ["No specific insights available yet."];
+
 
   const displayKRs =
     detailedPods?.objectives?.items?.map((text: string, i: number) => ({
@@ -378,14 +423,20 @@ const EmployeeReport = () => {
             )}
             <button
               type="button"
+              onClick={handleExportPDF}
+              disabled={exportLoading}
               className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             >
-              <Icon
-                icon="lucide:arrow-down-to-line"
-                width="16"
-                className="transition-transform duration-300 group-hover:translate-y-0.5"
-              />
-              Export Analysis
+              {exportLoading ? (
+                <Icon icon="eos-icons:loading" width="16" />
+              ) : (
+                <Icon
+                  icon="lucide:file-text"
+                  width="16"
+                  className="transition-transform duration-300 group-hover:translate-y-0.5"
+                />
+              )}
+              {exportLoading ? "Exporting..." : "Export PDF Report"}
             </button>
           </div>
         </div>
@@ -662,18 +713,16 @@ const EmployeeReport = () => {
                       <Triangle data={triangleData} />
                     </div>
                     <div className="grid grid-cols-1 gap-3 w-full px-4">
-                      {(detailedPods?.insights?.modelDescription
-                        ? detailedPods.insights.modelDescription
-                          .split(/[•\n\r]/)
-                          .map((item: string) => item.trim())
-                          .filter((item: string) => item.length > 0)
-                        : [
-                          "Capability",
-                          "Engagement",
-                          "Confidence",
-                          "Resilience",
-                        ]
-                      ).map((bullet: string, idx: number) => (
+                      {(() => {
+                        const mText = detailedPods?.insights?.modelDescription;
+                        if (!mText) return ["Capability", "Engagement", "Confidence", "Resilience"];
+                        const mLines = mText.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
+                        const hasBullets = mLines.some((l: string) => l.includes('•'));
+                        if (hasBullets) {
+                          return mLines.filter((l: string) => l.includes('•')).map((l: string) => l.replace(/•/g, '').trim()).filter((l: string) => l.length > 0);
+                        }
+                        return mLines;
+                      })().map((bullet: string, idx: number) => (
                         <div key={idx} className="flex items-start gap-2">
                           <img
                             src={IconStar}
@@ -722,16 +771,16 @@ const EmployeeReport = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                      Insight for {selectedDomain}
+                      {detailedPods?.insights?.title || (`Insight for ${selectedSubdomain || selectedDomain}`)}
                     </h3>
                     <p className="text-xs text-[#64748B] font-medium">
-                      Overall analysis based on your responses
+                      {detailedPods?.insights?.subtitle || (selectedSubdomain ? `Detailed analysis for ${selectedSubdomain}` : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
                   <img src={Streamline} alt="images" className="w-8 h-8" />
                 </div>
                 <ul className="space-y-3">
-                  {displayInsights.map((insight: string, idx: number) => (
+                  {finalInsights.map((insight: string, idx: number) => (
                     <li key={idx} className="flex gap-2">
                       <img
                         src={IconStar}
