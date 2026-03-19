@@ -248,7 +248,14 @@ const AdminReport = () => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
+  }, [
+    selectedDomain,
+    selectedSubdomain,
+    userId,
+    userEmail,
+    reportData,
+    refreshKey,
+  ]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -269,7 +276,7 @@ const AdminReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
@@ -314,18 +321,22 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes('•'));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes('•'))
-        .map((line: string) => line.replace(/•/g, '').trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
-  const finalInsights = displayInsights.length > 0 ? displayInsights : ["No specific insights available yet."];
-
+  const finalInsights =
+    displayInsights.length > 0
+      ? displayInsights
+      : ["No specific insights available yet."];
 
   const displayKRs =
     detailedPods?.objectives?.items?.map((text: string, i: number) => ({
@@ -347,7 +358,6 @@ const AdminReport = () => {
       color: data.score < 50 ? "#D71818" : "#FF8D28",
     }));
 
-
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
@@ -368,9 +378,9 @@ const AdminReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / mResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -378,9 +388,9 @@ const AdminReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / tResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -388,9 +398,9 @@ const AdminReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / pResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -410,9 +420,9 @@ const AdminReport = () => {
       const score =
         responses.length > 0
           ? responses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / responses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / responses.length
           : 0;
 
       const labelMap: any = {
@@ -452,20 +462,26 @@ const AdminReport = () => {
   })();
 
   const trendData = (() => {
-    if (!reportData) return { labels: [], manager: [], team: [], descriptions: [] };
+    if (!reportData)
+      return { labels: [], manager: [], team: [], descriptions: [] };
 
     // Convert 0-100 score to /10 scale
-    const getScoreForChart = (val: any) => Number((getNumericScore(val) / 10).toFixed(1));
+    const getScoreForChart = (val: any) =>
+      Number((getNumericScore(val) / 10).toFixed(1));
 
     // If a subdomain is selected, show question-level trend
     if (selectedSubdomain) {
-      const qCurrent = reportData?.responses?.filter((r: any) =>
-        r.domain === selectedDomain && r.subdomain === selectedSubdomain
-      ) || [];
+      const qCurrent =
+        reportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
 
-      const qFirst = firstReportData?.responses?.filter((r: any) =>
-        r.domain === selectedDomain && r.subdomain === selectedSubdomain
-      ) || [];
+      const qFirst =
+        firstReportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
 
       const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
       const descriptions = qCurrent.map((q: any) => q.text);
@@ -480,19 +496,23 @@ const AdminReport = () => {
     }
 
     // Default: subdomain averages
-    const subdomains = Object.keys(reportData?.scores?.domains?.[selectedDomain]?.subdomains || {});
+    const subdomains = Object.keys(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+    );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
-    const descriptions = subdomains.map(sub => sub);
+    const descriptions = subdomains.map((sub) => sub);
 
-    const currentScores = subdomains.map(sub => {
-      const scoreData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
-      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+    const currentScores = subdomains.map((sub) => {
+      const scoreData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
       return Number(((score || 0) / 10).toFixed(1));
     });
 
-    const firstScores = subdomains.map(sub => {
-      const scoreData = firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
-      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+    const firstScores = subdomains.map((sub) => {
+      const scoreData =
+        firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
       return Number(((score || 0) / 10).toFixed(1));
     });
 
@@ -503,7 +523,6 @@ const AdminReport = () => {
 
   return (
     <div>
-
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
@@ -522,11 +541,10 @@ const AdminReport = () => {
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
-                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-sm uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 title="Edit AI Insights, Objectives, and Recommendations"
               >
-                <Icon icon="lucide:edit" width="16" />
-                Edit Feedback
+                <Icon icon="lucide:pencil" width="16" />
               </button>
             )}
             <button
@@ -549,8 +567,6 @@ const AdminReport = () => {
             </button>
           </div>
         </div>
-
-
 
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
@@ -582,9 +598,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -630,9 +646,9 @@ const AdminReport = () => {
               No Assessment Results Yet
             </h2>
             <p className="text-neutral-500 max-w-md text-lg">
-              This administrator has been invited to take the assessment, but they
-              haven't completed it yet. Once they finish, you'll see their full
-              performance report here.
+              This administrator has been invited to take the assessment, but
+              they haven't completed it yet. Once they finish, you'll see their
+              full performance report here.
             </p>
             <div className="flex gap-4 mt-4">
               <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">
@@ -718,24 +734,33 @@ const AdminReport = () => {
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
                     {detailedPods?.insights?.modelDescription ? (
                       (() => {
-                        const mLines = detailedPods.insights.modelDescription.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
-                        const hasMBullets = mLines.some((l: string) => l.includes('•'));
+                        const mLines = detailedPods.insights.modelDescription
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
                         const finalMLines = hasMBullets
-                          ? mLines.filter((l: string) => l.includes('•')).map((l: string) => l.replace(/•/g, '').trim()).filter((l: string) => l.length > 0)
+                          ? mLines
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
-                        return finalMLines.map((bullet: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0 mt-0.5"
-                            />
-                            <span className="text-sm font-medium text-[#64748B] leading-snug">
-                              {bullet}
-                            </span>
-                          </div>
-                        ));
+                        return finalMLines.map(
+                          (bullet: string, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <img
+                                src={IconStar}
+                                alt="icon"
+                                className="w-4 h-4 shrink-0 mt-0.5"
+                              />
+                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                                {bullet}
+                              </span>
+                            </div>
+                          ),
+                        );
                       })()
                     ) : (
                       <>
@@ -1203,10 +1228,14 @@ const AdminReport = () => {
                 <div className="flex items-center justify-between ">
                   <div>
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      {detailedPods?.insights?.title || (`Insight for ${selectedSubdomain || selectedDomain}`)}
+                      {detailedPods?.insights?.title ||
+                        `Insight for ${selectedSubdomain || selectedDomain}`}
                     </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      {detailedPods?.insights?.subtitle || (selectedSubdomain ? `Detailed analysis for ${selectedSubdomain}` : `Overall analysis for ${selectedDomain}`)}
+                      {detailedPods?.insights?.subtitle ||
+                        (selectedSubdomain
+                          ? `Detailed analysis for ${selectedSubdomain}`
+                          : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
                   <div>
@@ -1275,7 +1304,6 @@ const AdminReport = () => {
                 </div>
               </div>
             </div>
-
           </>
         ) : (
           <ReportEmptyState role="Org Head" />
@@ -1292,7 +1320,7 @@ const AdminReport = () => {
         rawFeedback={{
           ...detailedPods?.rawFeedback,
           pod360Title: aiInsight?.title,
-          pod360Description: aiInsight?.description
+          pod360Description: aiInsight?.description,
         }}
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
       />

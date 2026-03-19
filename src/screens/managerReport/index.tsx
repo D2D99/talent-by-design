@@ -367,18 +367,22 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes('•'));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes('•'))
-        .map((line: string) => line.replace(/•/g, '').trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
-  const finalInsights = displayInsights.length > 0 ? displayInsights : ["No specific insights available yet."];
-
+  const finalInsights =
+    displayInsights.length > 0
+      ? displayInsights
+      : ["No specific insights available yet."];
 
   const displayKRs =
     detailedPods?.objectives?.items?.map((text: string, i: number) => ({
@@ -411,9 +415,9 @@ const ManagerReport = () => {
       const mAvg =
         mResponses.length > 0
           ? mResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / mResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / mResponses.length
           : 0;
 
       const tResponses =
@@ -421,9 +425,9 @@ const ManagerReport = () => {
       const tAvg =
         tResponses.length > 0
           ? tResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / tResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / tResponses.length
           : 0;
 
       const pResponses =
@@ -431,9 +435,9 @@ const ManagerReport = () => {
       const pAvg =
         pResponses.length > 0
           ? pResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / pResponses.length
+              (acc: number, curr: any) => acc + getNumericScore(curr),
+              0,
+            ) / pResponses.length
           : 0;
 
       mScores.push(Number((mAvg / 10).toFixed(1)));
@@ -468,11 +472,11 @@ const ManagerReport = () => {
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
-                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-sm uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 title="Edit AI Insights, Objectives, and Recommendations"
               >
-                <Icon icon="lucide:edit" width="16" />
-                Edit Feedback
+                <Icon icon="lucide:pencil" width="16" />
+                {/* Edit Feedback */}
               </button>
             )}
             <button
@@ -551,9 +555,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -811,10 +815,14 @@ const ManagerReport = () => {
                 <div className="flex items-center justify-between ">
                   <div>
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      {detailedPods?.insights?.title || (`Insight for ${selectedSubdomain || selectedDomain}`)}
+                      {detailedPods?.insights?.title ||
+                        `Insight for ${selectedSubdomain || selectedDomain}`}
                     </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      {detailedPods?.insights?.subtitle || (selectedSubdomain ? `Detailed analysis for ${selectedSubdomain}` : `Overall analysis for ${selectedDomain}`)}
+                      {detailedPods?.insights?.subtitle ||
+                        (selectedSubdomain
+                          ? `Detailed analysis for ${selectedSubdomain}`
+                          : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
                   <div>
@@ -903,24 +911,33 @@ const ManagerReport = () => {
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
                     {detailedPods?.insights?.modelDescription ? (
                       (() => {
-                        const mLines = detailedPods.insights.modelDescription.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
-                        const hasMBullets = mLines.some((l: string) => l.includes('•'));
+                        const mLines = detailedPods.insights.modelDescription
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
                         const finalMLines = hasMBullets
-                          ? mLines.filter((l: string) => l.includes('•')).map((l: string) => l.replace(/•/g, '').trim()).filter((l: string) => l.length > 0)
+                          ? mLines
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
-                        return finalMLines.map((bullet: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0 mt-0.5"
-                            />
-                            <span className="text-sm font-medium text-[#64748B] leading-snug">
-                              {bullet}
-                            </span>
-                          </div>
-                        ));
+                        return finalMLines.map(
+                          (bullet: string, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <img
+                                src={IconStar}
+                                alt="icon"
+                                className="w-4 h-4 shrink-0 mt-0.5"
+                              />
+                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                                {bullet}
+                              </span>
+                            </div>
+                          ),
+                        );
                       })()
                     ) : (
                       <>
