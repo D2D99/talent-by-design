@@ -27,9 +27,10 @@ Chart.register(
 
 interface MultiRadarChartProps {
   data: RadarData;
+  onLabelSelect?: (label: string) => void;
 }
 
-const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
+const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data, onLabelSelect }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
 
@@ -107,11 +108,30 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
           },
           plugins: {
             legend: {
-              // position: "top",
               display: false
             },
           },
+          events: ["click"],
         },
+      });
+
+      // Handle click events on the radar chart
+      canvasRef.current?.addEventListener("click", (event) => {
+        if (chartRef.current && chartRef.current.data && onLabelSelect) {
+          const points = chartRef.current.getElementsAtEventForMode(
+            event,
+            "nearest",
+            { intersect: true },
+            true
+          );
+
+          if (points.length > 0) {
+            const label = chartRef.current.data.labels?.[points[0].index];
+            if (label && typeof label === 'string') {
+              onLabelSelect(label);
+            }
+          }
+        }
       });
     }
 
@@ -121,7 +141,7 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
         chartRef.current.destroy();
       }
     };
-  }, [data]); // Re-run when data changes
+  }, [data, onLabelSelect]); // Re-run when data or onLabelSelect changes
 
   return <canvas ref={canvasRef} />;
 };

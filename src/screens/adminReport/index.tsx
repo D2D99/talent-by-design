@@ -14,6 +14,7 @@ import UpArrow from "../../../public/static/img/home/up-arrow.svg";
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
+import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
@@ -55,6 +56,7 @@ const AdminReport = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
+  const [exportLoading, setExportLoading] = useState(false);
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
@@ -181,6 +183,38 @@ const AdminReport = () => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
+  const handleExportPDF = async () => {
+    try {
+      setExportLoading(true);
+      const params: any = {};
+      if (userId) params.userId = userId;
+      if (userEmail) params.email = userEmail;
+
+      const response = await api.get("/dashboard/export-pdf", {
+        params,
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const fileName = `POD360_Report_${userData?.firstName || "Participant"}.pdf`;
+      link.setAttribute("download", fileName);
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF Export failed:", err);
+      toast.error("Failed to generate PDF report");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   const [selectedDomain, setSelectedDomain] =
     useState<string>("People Potential");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
@@ -279,8 +313,19 @@ const AdminReport = () => {
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
+    ? (() => {
+      const lines = detailedPods.insights.mainText.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes('•'));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes('•'))
+        .map((line: string) => line.replace(/•/g, '').trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
+
+  const finalInsights = displayInsights.length > 0 ? displayInsights : ["No specific insights available yet."];
+
 
   const displayKRs =
     detailedPods?.objectives?.items?.map((text: string, i: number) => ({
@@ -486,15 +531,21 @@ const AdminReport = () => {
             )}
             <button
               type="button"
+              onClick={handleExportPDF}
+              disabled={exportLoading}
               className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               style={{ backgroundColor: "#1a3652" }}
             >
-              <Icon
-                icon="lucide:arrow-down-to-line"
-                width="16"
-                className="transition-transform duration-300 group-hover:translate-y-0.5"
-              />
-              Export Analysis
+              {exportLoading ? (
+                <Icon icon="eos-icons:loading" width="16" />
+              ) : (
+                <Icon
+                  icon="lucide:file-text"
+                  width="16"
+                  className="transition-transform duration-300 group-hover:translate-y-0.5"
+                />
+              )}
+              {exportLoading ? "Exporting..." : "Export PDF Report"}
             </button>
           </div>
         </div>
@@ -666,11 +717,14 @@ const AdminReport = () => {
                   </div>
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
                     {detailedPods?.insights?.modelDescription ? (
-                      detailedPods.insights.modelDescription
-                        .split(/[•\n\r]/)
-                        .map((item: string) => item.trim())
-                        .filter((item: string) => item.length > 0)
-                        .map((bullet: string, idx: number) => (
+                      (() => {
+                        const mLines = detailedPods.insights.modelDescription.split(/\r?\n/).filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) => l.includes('•'));
+                        const finalMLines = hasMBullets
+                          ? mLines.filter((l: string) => l.includes('•')).map((l: string) => l.replace(/•/g, '').trim()).filter((l: string) => l.length > 0)
+                          : mLines;
+
+                        return finalMLines.map((bullet: string, idx: number) => (
                           <div key={idx} className="flex items-start gap-2">
                             <img
                               src={IconStar}
@@ -681,7 +735,8 @@ const AdminReport = () => {
                               {bullet}
                             </span>
                           </div>
-                        ))
+                        ));
+                      })()
                     ) : (
                       <>
                         <div className="flex items-center gap-2">
@@ -940,7 +995,10 @@ const AdminReport = () => {
                   </div>
                 </div>
                 <div>
-                  <MultiRadarChart data={radarData} />
+                  <MultiRadarChart
+                    data={radarData}
+                    onLabelSelect={handleSubdomainChange}
+                  />
                 </div>
               </div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
@@ -1145,10 +1203,10 @@ const AdminReport = () => {
                 <div className="flex items-center justify-between ">
                   <div>
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Insight for {selectedDomain}
+                      {detailedPods?.insights?.title || (`Insight for ${selectedSubdomain || selectedDomain}`)}
                     </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      Analysis based on organizational health assessment
+                      {detailedPods?.insights?.subtitle || (selectedSubdomain ? `Detailed analysis for ${selectedSubdomain}` : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
                   <div>
@@ -1157,7 +1215,7 @@ const AdminReport = () => {
                 </div>
                 <div>
                   <ul className="mt-4 space-y-2">
-                    {displayInsights.map((insight: string, idx: number) => (
+                    {finalInsights.map((insight: string, idx: number) => (
                       <li key={idx} className="feature-list flex gap-2">
                         <img
                           src={IconStar}
@@ -1217,7 +1275,7 @@ const AdminReport = () => {
                 </div>
               </div>
             </div>
-            
+
           </>
         ) : (
           <ReportEmptyState role="Org Head" />
