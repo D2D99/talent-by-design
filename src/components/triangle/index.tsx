@@ -37,10 +37,11 @@ function roundedTrianglePath(
 }
 
 export default function Triangle({ data }: Props) {
-  // ===== EQUILATERAL BIG TRIANGLE =====
-  const center = { x: 150, y: 150 };
+  // ===== GEOMETRY CONFIG =====
+  const center = { x: 150, y: 153 };
   const radius = 120;
 
+  // Base vertices
   const P = { x: center.x, y: center.y - radius };
   const O = {
     x: center.x - radius * Math.sin(Math.PI / 3),
@@ -51,82 +52,82 @@ export default function Triangle({ data }: Props) {
     y: center.y + radius * Math.cos(Math.PI / 3),
   };
 
-  const pVal = data.peoplePotential || 0;
-  const oVal = data.operationalSteadiness || 0;
-  const dVal = data.digitalFluency || 0;
+  // Scores
+  const pS = data.peoplePotential || 0;
+  const oS = data.operationalSteadiness || 0;
+  const dS = data.digitalFluency || 0;
 
-  // If all are zero, default to central point perfectly
-  const isAllZero = pVal === 0 && oVal === 0 && dVal === 0;
-  const p = isAllZero ? 33.3 : pVal;
-  const o = isAllZero ? 33.3 : oVal;
-  const d = isAllZero ? 33.3 : dVal;
+  // BARYCENTRIC NORMALIZATION
+  // We divide the triangle into 3 parts based on the relative "share" of the scores
+  const scoreTotal = pS + oS + dS || 1; // Avoid divide by zero
+  const wp = pS / scoreTotal;
+  const wo = oS / scoreTotal;
+  const wd = dS / scoreTotal;
 
-  // Inverse weights trick: We want a high value to push the intersection AWAY from its vertex,
-  // making the adjacent area larger. 
-  const invP = o + d;
-  const invO = p + d;
-  const invD = p + o;
-  const total = invP + invO + invD;
-
-  const wp = invP / total;
-  const wo = invO / total;
-  const wd = invD / total;
-
-  // DYNAMIC CENTER POINT
+  // Meeting point (C) based on weights
+  // Note: Area(O-D-C) is proportional to wp
   const C = {
     x: wp * P.x + wo * O.x + wd * D.x,
     y: wp * P.y + wo * O.y + wd * D.y,
   };
 
   const colors = {
-    left: "#E6F0FA",   // Very light blue for left section
-    right: "#BFE0F6",  // Slightly darker light blue for right section
-    bottom: "#357ABD"  // Dark blue for bottom section
+    people: "#E6F0FA",      // Top vertex context -> opposite sector
+    operational: "#BFE0F6", // Bottom-left vertex context -> opposite sector
+    digital: "#357ABD"      // Bottom-right vertex context -> opposite sector
   };
+
+  const roundedPath = roundedTrianglePath(P, O, D, 0.1);
 
   return (
     <svg viewBox="0 0 300 300" width="100%">
-      {/* BACKGROUND AND BORDER - Optional, to keep structural boundary */}
-      <path
-        d={roundedTrianglePath(P, O, D, 0.1)}
-        fill="transparent"
-      />
-
       <defs>
         <clipPath id="triangleClip">
-          <path d={roundedTrianglePath(P, O, D, 0.1)} />
+          <path d={roundedPath} />
         </clipPath>
       </defs>
 
       <g clipPath="url(#triangleClip)">
-        {/* LEFT SECTOR: Center -> Top(P) -> BottomLeft(O) */}
-        <polygon
-          points={`${C.x},${C.y} ${P.x},${P.y} ${O.x},${O.y}`}
-          fill={colors.left}
-        />
-
-        {/* RIGHT SECTOR: Center -> Top(P) -> BottomRight(D) */}
-        <polygon
-          points={`${C.x},${C.y} ${P.x},${P.y} ${D.x},${D.y}`}
-          fill={colors.right}
-        />
-
-        {/* BOTTOM SECTOR: Center -> BottomLeft(O) -> BottomRight(D) */}
+        {/* SECTOR 1: PEOPLE (Opposite to P vertex) */}
         <polygon
           points={`${C.x},${C.y} ${O.x},${O.y} ${D.x},${D.y}`}
-          fill={colors.bottom}
+          fill={colors.people}
+          className="transition-all duration-700 ease-in-out"
+        />
+
+        {/* SECTOR 2: OPERATIONAL (Opposite to O vertex) */}
+        <polygon
+          points={`${C.x},${C.y} ${P.x},${P.y} ${D.x},${D.y}`}
+          fill={colors.operational}
+          className="transition-all duration-700 ease-in-out"
+        />
+
+        {/* SECTOR 3: DIGITAL (Opposite to D vertex) */}
+        <polygon
+          points={`${C.x},${C.y} ${P.x},${P.y} ${O.x},${O.y}`}
+          fill={colors.digital}
+          className="transition-all duration-700 ease-in-out"
         />
       </g>
 
-      {/* ===== BOLD LABELS ===== */}
+      {/* RENDER BORDER */}
+      <path
+        d={roundedPath}
+        fill="none"
+        stroke="#E2E8F0"
+        strokeWidth="1"
+        strokeDasharray="4 2"
+      />
+
+      {/* LABELS */}
       <text
         x={P.x}
         y={P.y - 12}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
-        fontSize={12}
-        className="uppercase tracking-tighter"
+        fontSize={10}
+        className="uppercase"
       >
         <tspan x={P.x} dy="0">People</tspan>
         <tspan x={P.x} dy="1.1em">Potential</tspan>
@@ -134,28 +135,28 @@ export default function Triangle({ data }: Props) {
 
       <text
         x={O.x - 30}
-        y={O.y + 20}
+        y={O.y + 15}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
-        fontSize={12}
-        className="uppercase tracking-tighter"
+        fontSize={10}
+        className="uppercase"
       >
-        <tspan x={O.x + 10} dy="0">Operational</tspan>
-        <tspan x={O.x + 10} dy="1.1em">Steadiness</tspan>
+        <tspan x={O.x - 10} dy="0">Operational</tspan>
+        <tspan x={O.x - 10} dy="1.1em">Steadiness</tspan>
       </text>
 
       <text
-        x={D.x + 20}
-        y={D.y + 20}
+        x={D.x + 30}
+        y={D.y + 15}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
-        fontSize={12}
-        className="uppercase tracking-tighter"
+        fontSize={10}
+        className="uppercase"
       >
-        <tspan x={D.x - 10} dy="0">Digital</tspan>
-        <tspan x={D.x - 10} dy="1.1em">Fluency</tspan>
+        <tspan x={D.x + 10} dy="0">Digital</tspan>
+        <tspan x={D.x + 10} dy="1.1em">Fluency</tspan>
       </text>
     </svg>
   );
