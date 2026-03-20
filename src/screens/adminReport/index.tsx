@@ -11,9 +11,10 @@ import OuiSecurity from "../../../public/static/img/home/oui_security-signal-det
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
 import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
+import generatePDF, { Resolution } from "react-to-pdf";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
@@ -27,8 +28,7 @@ import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
-import PdfDownloadButton from '../../components/PdfDownloadButton'; 
-import axios from 'axios';
+import TopicSelectorModal from "../../components/TopicSelectorModal";
 
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
@@ -45,8 +45,12 @@ const getNumericScore = (res: any): number => {
 const AdminReport = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [pendingPdfTopics, setPendingPdfTopics] = useState<string[] | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string>('People Potential');
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>(''); // Default to the first subdomain if available
+  const pdfExportRef = useRef<HTMLDivElement | null>(null);
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -65,35 +69,19 @@ const AdminReport = () => {
 
 
   // Function to handle PDF generation
-// Frontend: React Example (in your handleGeneratePdf function)
-const handleGeneratePdf = async () => {
-  try {
-    const pdfData = {
-      userId: userId,
-      selectedDomain: selectedDomain,
-      selectedSubdomain: selectedSubdomain,
-    };
+const handleOpenTopicModal = () => {
+  setIsTopicModalOpen(true);
+};
 
-    // Send the POST request to generate the PDF
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}generate-report/report`, pdfData, {
-      responseType: 'arraybuffer', // Expecting a PDF file
-    });
-
-    // Convert the response data (PDF) into a Blob
-    const blob = new Blob([response.data], { type: "application/pdf" });
-    const url = window.URL.createObjectURL(blob);
-
-    // Create a link to trigger the download
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'performance_report.pdf'; // Name of the downloaded file
-    link.click(); // Trigger the download
-
-    // Clean up the object URL after download
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error('Error generating PDF:', error);
+const handleCloseTopicModal = () => {
+  if (!isLoading) {
+    setIsTopicModalOpen(false);
   }
+};
+
+const handleTopicSave = (topics: string[]) => {
+  setSelectedTopics(topics);
+  setPendingPdfTopics(topics);
 };
 
   const userRole = user?.role?.toLowerCase();
@@ -255,6 +243,50 @@ const handleGeneratePdf = async () => {
       fetchDetailedPods();
     }
   }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
+
+  useEffect(() => {
+    if (!pendingPdfTopics || !pdfExportRef.current || !reportData) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const runPdfExport = async () => {
+      setIsLoading(true);
+
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 150));
+        await generatePDF(pdfExportRef, {
+          filename: `${selectedDomain || "POD360"}_analysis.pdf`,
+          method: "save",
+          resolution: Resolution.MEDIUM,
+          page: {
+            margin: 10,
+            format: "a4",
+            orientation: "portrait",
+          },
+          canvas: {
+            mimeType: "image/png",
+            qualityRatio: 1,
+            useCORS: true,
+          },
+        });
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+      } finally {
+        if (!cancelled) {
+          setPendingPdfTopics(null);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    runPdfExport();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pendingPdfTopics, reportData, selectedDomain]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -496,6 +528,249 @@ const handleGeneratePdf = async () => {
 
   const roleData = roleAverages;
 
+  const topicsForPdf = pendingPdfTopics || selectedTopics;
+
+  const selectedDomainEntries = Object.entries(reportData?.scores?.domains || {});
+  const selectedSubdomainEntries = Object.entries(
+    reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+  );
+
+  const renderPdfTopicSection = (topic: string) => {
+    switch (topic) {
+      case "Organizational Health":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <p className="mt-2 text-sm text-[#5d6b82]">
+              Overall organizational health based on the latest submitted assessment.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <div className="flex justify-center">
+                  <CircularProgress
+                    value={Math.round(overallScore)}
+                    width={170}
+                    pathColor={currentStatus.color}
+                    trailColor={currentStatus.trail}
+                    textColor={currentStatus.color}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">Overall Score</p>
+                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(overallScore)}%</p>
+              </div>
+                <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">Status</p>
+                <p className="mt-2 text-lg font-bold text-[#1a3652]">{currentStatus.label}</p>
+              </div>
+                <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">Selected Domain</p>
+                <p className="mt-2 text-lg font-bold text-[#1a3652]">{selectedDomain}</p>
+              </div>
+              </div>
+            </div>
+          </div>
+        );
+      case "POD-360™ Model":
+      case "POD-360 Model":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">POD-360™ Model</h3>
+            <div className="mt-4 flex justify-center rounded-2xl bg-[#f8fbfe] p-5">
+              <div className="w-[240px]">
+                <Triangle data={triangleData} />
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">People Potential</p>
+                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(triangleData.peoplePotential)}%</p>
+              </div>
+              <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">Operational Steadiness</p>
+                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(triangleData.operationalSteadiness)}%</p>
+              </div>
+              <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">Digital Fluency</p>
+                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(triangleData.digitalFluency)}%</p>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2 text-sm text-[#334155]">
+              {(detailedPods?.insights?.modelDescription
+                ? detailedPods.insights.modelDescription.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
+                : ["Capability", "Engagement", "Confidence", "Change resilience"]
+              ).map((item: string, index: number) => (
+                <p key={index}>- {item}</p>
+              ))}
+            </div>
+          </div>
+        );
+      case "Trends Analysis":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
+              <div className="h-[320px] w-full">
+                <MultiLineChart data={trendData} />
+              </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              {trendData.labels.map((label: string, index: number) => (
+                <div key={label} className="rounded-xl bg-[#f8fbfe] p-4">
+                  <p className="font-semibold text-[#1a3652]">
+                    {trendData.descriptions[index] || label}
+                  </p>
+                  <p className="mt-1 text-sm text-[#475569]">
+                    Previous: {trendData.manager[index] ?? 0} | Current: {trendData.team[index] ?? 0}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "Alignment Status":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <p className="mt-2 text-sm text-[#5d6b82]">Largest gap: {maxGapInfo.text} (+{maxGapInfo.value})</p>
+            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
+              <div className="h-[240px] w-full">
+                <RoleProgressChart data={roleData} />
+              </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              {roleData.map((role) => (
+                <div key={role.label} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
+                  <p className="font-semibold text-[#1a3652]">{role.label}</p>
+                  <p className="text-lg font-bold text-[#1a3652]">{role.value}%</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "Priorities Attention":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <div className="mt-4 space-y-3">
+              {topPriorities.map((item) => (
+                <div key={item.name} className="flex items-center justify-between rounded-xl bg-[#fff7ed] p-4">
+                  <p className="font-semibold text-[#1a3652]">{item.name}</p>
+                  <p className="text-lg font-bold" style={{ color: item.color }}>{item.score}%</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "Overall Departmental POD Score":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <div className="mt-4 rounded-xl bg-[#eef6ff] p-5">
+              <p className="text-3xl font-bold text-[#1a3652]">{Math.round(overallScore)}%</p>
+              <p className="mt-2 text-sm text-[#475569]">{aiInsight?.title || "Performance Trajectory"}</p>
+              <p className="mt-2 text-sm text-[#475569]">{aiInsight?.description || "Assessment summary for this report."}</p>
+            </div>
+            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
+              <div className="h-[360px] w-full">
+                <MultiRadarChart data={radarData} />
+              </div>
+            </div>
+          </div>
+        );
+      case "Score by domain":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <div className="mt-4 flex justify-center rounded-2xl bg-[#f8fbfe] p-4">
+              <div className="h-[300px] w-full max-w-[500px]">
+                <SpeedMeter value={domainScore} />
+              </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              {selectedDomainEntries.map(([name, data]: any) => (
+                <div key={name} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
+                  <p className="font-semibold text-[#1a3652]">{name}</p>
+                  <p className="text-lg font-bold text-[#1a3652]">{Math.round(data.score || 0)}%</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "Score by sub-domain":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <p className="mt-2 text-sm text-[#5d6b82]">{selectedDomain}</p>
+            <div className="mt-4 flex justify-center rounded-2xl bg-[#f8fbfe] p-4">
+              <div className="h-[300px] w-full max-w-[500px]">
+                <SpeedMeter value={subdomainScore} />
+              </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              {selectedSubdomainEntries.map(([name, score]: any) => (
+                <div key={name} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
+                  <p className="font-semibold text-[#1a3652]">{name}</p>
+                  <p className="text-lg font-bold text-[#1a3652]">{Math.round(score || 0)}%</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "Performance Analysis":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">Domain Score</p>
+                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(domainScore)}%</p>
+              </div>
+              <div className="rounded-xl bg-[#f4f8fc] p-4">
+                <p className="text-xs uppercase text-[#5d6b82]">Sub-domain Score</p>
+                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(subdomainScore)}%</p>
+              </div>
+            </div>
+            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
+              <div className="h-[320px] w-full">
+                <MultiLineChart data={trendData} />
+              </div>
+            </div>
+          </div>
+        );
+      case "Insight for People Potential":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <div className="mt-4 space-y-2 text-sm text-[#334155]">
+              {displayInsights.map((item: string, index: number) => (
+                <p key={index}>- {item}</p>
+              ))}
+            </div>
+          </div>
+        );
+      case "Objectives and Key Results":
+        return (
+          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
+            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
+            <div className="mt-4 space-y-3">
+              {displayKRs.map((kr: any) => (
+                <div key={kr.label} className="rounded-xl bg-[#f4f8fc] p-4">
+                  <p className="font-semibold text-[#1a3652]">{kr.label}</p>
+                  <p className="mt-1 text-sm text-[#475569]">{kr.text}</p>
+                  <p className="mt-2 text-sm font-semibold text-[#1a3652]">Progress: {Math.round(kr.value)}%</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
 return (
   <>
   <div>
@@ -527,7 +802,8 @@ return (
            {/* Existing export button */}
           <button
             type="button"
-            onClick={() => console.log("User ID", userId)}
+            onClick={handleOpenTopicModal}
+            disabled={isLoading}
             className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             style={{ backgroundColor: "#1a3652" }}
           >
@@ -536,22 +812,8 @@ return (
               width="16"
               className="transition-transform duration-300 group-hover:translate-y-0.5"
             />
-            Export Analysis
+            {isLoading ? 'Generating PDF...' : 'Export Analysis'}
           </button>
-          
-
-          {/* PDF download button */}
-          <button
-            onClick={handleGeneratePdf}
-            disabled={isLoading}
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-          >
-            {isLoading ? 'Generating PDF...' : 'Download PDF'}
-          </button>
-            <div>
-            {/* Your existing report content goes here */}
-            {isLoading ? <SpinnerLoader /> : <div>Report Data</div>}
-          </div>
         </div>
       </div>
        {/* Filters Section */}
@@ -1291,6 +1553,49 @@ return (
         }}
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
       />
+
+      {isTopicModalOpen && (
+        <TopicSelectorModal
+          initialSelectedTopics={selectedTopics}
+          onClose={handleCloseTopicModal}
+          onSave={handleTopicSave}
+        />
+      )}
+
+      {topicsForPdf.length > 0 && (
+        <div className="pointer-events-none fixed left-0 top-0 -translate-x-[200vw]">
+          <div ref={pdfExportRef} className="w-[794px] bg-white p-8 text-[#1a3652]">
+            <div className="rounded-[24px] bg-gradient-to-r from-[#1a3652] to-[#448bd2] p-6 text-white">
+              <h1 className="text-3xl font-black">POD360 Report Export</h1>
+              <p className="mt-2 text-base font-medium">
+                {userData?.firstName || reportData?.userDetails?.firstName || "Org Head"}{" "}
+                {userData?.lastName || reportData?.userDetails?.lastName || ""}
+              </p>
+              <p className="mt-2 text-sm">
+                Domain: {selectedDomain} {selectedSubdomain ? `| Sub-domain: ${selectedSubdomain}` : ""}
+              </p>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-[#f4f8fc] p-5">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#5d6b82]">Selected Topics</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {topicsForPdf.map((topic) => (
+                  <span
+                    key={topic}
+                    className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#1a3652]"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6">
+              {topicsForPdf.map((topic) => renderPdfTopicSection(topic))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
 
     
