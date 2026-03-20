@@ -244,7 +244,7 @@ const OrgUsers = ({
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
             <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4 ">
               <div className="flex items-center justify-between">
                 <div>
@@ -299,6 +299,26 @@ const OrgUsers = ({
                   <Icon
                     icon="solar:clock-circle-bold"
                     className="text-yellow-600"
+                    width="24"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-red-600 uppercase tracking-wider">
+                    Expired
+                  </p>
+                  <p className="text-2xl font-bold text-red-600 mt-1">
+                    {totalUsers - acceptedUsers - pendingUsers}
+                  </p>
+                </div>
+                <div className="p-3 bg-red-200/50 rounded-lg">
+                  <Icon
+                    icon="solar:close-circle-bold"
+                    className="text-red-600"
                     width="24"
                   />
                 </div>
@@ -483,7 +503,7 @@ const OrgUsers = ({
                           Pending
                         </span>
                       ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-500 border border-red-200 uppercase tracking-wider inline-flex items-center text-xs justify-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center bg-[#FFEEEE] text-[#D71818] border-[#D71818]">
                           Expired
                         </span>
                       )}
