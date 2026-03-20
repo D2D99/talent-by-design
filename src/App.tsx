@@ -74,14 +74,8 @@ function App() {
             <Route index element={<OverviewRoute />} />
             <Route path="questions" element={<CrudQuestion />} />
             <Route path="invite" element={<OrgInvitation />} />
-            <Route
-              path="organization/:orgName"
-              element={<OrgInvitationDetails />}
-            />
-            <Route
-              path="org-assessments/:orgName"
-              element={<OrgAssessmentDetails />}
-            />
+            <Route path="organization/:orgName" element={<OrgInvitationDetails />} />
+            <Route path="org-assessments/:orgName" element={<OrgAssessmentDetails />} />
             <Route path="users" element={<OrgUsers />} />
             <Route path="notifications" element={<NotificationHistory />} />
             <Route path="assessment-history" element={<AssessmentHistory />} />
@@ -96,6 +90,7 @@ function App() {
             <Route path="reports/senior-leader" element={<LeaderOverview />} />
             <Route path="reports/manager" element={<ManagerOverview />} />
             <Route path="reports/employee" element={<EmployeeReport />} />
+
             {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
           </Route>
         </Route>

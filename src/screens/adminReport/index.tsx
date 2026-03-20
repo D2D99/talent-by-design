@@ -27,6 +27,9 @@ import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
+import PdfDownloadButton from '../../components/PdfDownloadButton'; 
+import axios from 'axios';
+
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -41,6 +44,10 @@ const getNumericScore = (res: any): number => {
 
 const AdminReport = () => {
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState<string>('People Potential');
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>(''); // Default to the first subdomain if available
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -55,6 +62,39 @@ const AdminReport = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
+
+
+  // Function to handle PDF generation
+// Frontend: React Example (in your handleGeneratePdf function)
+const handleGeneratePdf = async () => {
+  try {
+    const pdfData = {
+      userId: userId,
+      selectedDomain: selectedDomain,
+      selectedSubdomain: selectedSubdomain,
+    };
+
+    // Send the POST request to generate the PDF
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}generate-report/report`, pdfData, {
+      responseType: 'arraybuffer', // Expecting a PDF file
+    });
+
+    // Convert the response data (PDF) into a Blob
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a link to trigger the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'performance_report.pdf'; // Name of the downloaded file
+    link.click(); // Trigger the download
+
+    // Clean up the object URL after download
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+  }
+};
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
@@ -156,7 +196,7 @@ const AdminReport = () => {
       }
       setLoading(true);
       try {
-        let url = `dashboard/admin`;
+        let url = `dashboard`;
         if (userEmail) {
           url = `dashboard/admin?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
         } else if (userId) {
@@ -181,9 +221,9 @@ const AdminReport = () => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
-  const [selectedDomain, setSelectedDomain] =
-    useState<string>("People Potential");
-  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
+  // const [selectedDomain, setSelectedDomain] =
+  //   useState<string>("People Potential");
+  // const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
@@ -456,52 +496,65 @@ const AdminReport = () => {
 
   const roleData = roleAverages;
 
-  return (
-    <div>
+return (
+  <>
+  <div>
+    <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <h3 className="text-2xl font-black tracking-tight">
+          {userData?.firstName ||
+            reportData?.user?.firstName ||
+            reportData?.userDetails?.firstName ||
+            "Org Head"}{" "}
+          {userData?.lastName ||
+            reportData?.user?.lastName ||
+            reportData?.userDetails?.lastName ||
+            ""}
+        </h3>
 
-      <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <h3 className="text-2xl font-black tracking-tight">
-            {userData?.firstName ||
-              reportData?.user?.firstName ||
-              reportData?.userDetails?.firstName ||
-              "Org Head"}{" "}
-            {userData?.lastName ||
-              reportData?.user?.lastName ||
-              reportData?.userDetails?.lastName ||
-              ""}
-          </h3>
-
-          <div className="flex items-center gap-3">
-            {isSuperAdmin && reportData && (
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
-                title="Edit AI Insights, Objectives, and Recommendations"
-              >
-                <Icon icon="lucide:edit" width="16" />
-                Edit Feedback
-              </button>
-            )}
+        <div className="flex items-center gap-3">
+          {isSuperAdmin && reportData && (
             <button
               type="button"
-              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              style={{ backgroundColor: "#1a3652" }}
+              onClick={() => setIsEditModalOpen(true)}
+              className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+              title="Edit AI Insights, Objectives, and Recommendations"
             >
-              <Icon
-                icon="lucide:arrow-down-to-line"
-                width="16"
-                className="transition-transform duration-300 group-hover:translate-y-0.5"
-              />
-              Export Analysis
+              <Icon icon="lucide:edit" width="16" />
+              Edit Feedback
             </button>
+          )}
+           {/* Existing export button */}
+          <button
+            type="button"
+            onClick={() => console.log("User ID", userId)}
+            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            style={{ backgroundColor: "#1a3652" }}
+          >
+            <Icon
+              icon="lucide:arrow-down-to-line"
+              width="16"
+              className="transition-transform duration-300 group-hover:translate-y-0.5"
+            />
+            Export Analysis
+          </button>
+          
+
+          {/* PDF download button */}
+          <button
+            onClick={handleGeneratePdf}
+            disabled={isLoading}
+            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+          >
+            {isLoading ? 'Generating PDF...' : 'Download PDF'}
+          </button>
+            <div>
+            {/* Your existing report content goes here */}
+            {isLoading ? <SpinnerLoader /> : <div>Report Data</div>}
           </div>
         </div>
-
-
-
-        {/* Filters Section */}
+      </div>
+       {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
           <div className="xl:block hidden"></div>
@@ -1222,9 +1275,9 @@ const AdminReport = () => {
         ) : (
           <ReportEmptyState role="Org Head" />
         )}
-      </div>
 
-      <FeedbackEditorModal
+
+         <FeedbackEditorModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         domain={selectedDomain}
@@ -1239,6 +1292,13 @@ const AdminReport = () => {
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
       />
     </div>
+
+    
+  </div>
+
+
+       
+    </>
   );
 };
 
