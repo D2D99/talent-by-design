@@ -531,8 +531,40 @@ const handleTopicSave = (topics: string[]) => {
   const topicsForPdf = pendingPdfTopics || selectedTopics;
 
   const selectedDomainEntries = Object.entries(reportData?.scores?.domains || {});
-  const selectedSubdomainEntries = Object.entries(
-    reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+  const allSubdomainEntries = selectedDomainEntries.flatMap(([domainName, domainData]: any) =>
+    Object.entries(domainData?.subdomains || {}).map(([subName, subScore]: any) => ({
+      domainName,
+      subName,
+      subScore: Math.round(subScore || 0),
+    })),
+  );
+  const allInsights = selectedDomainEntries.flatMap(([domainName, domainData]: any) => {
+    const domainInsight = domainData?.feedback?.insight
+      ? [{ title: domainName, body: domainData.feedback.insight }]
+      : [];
+
+    const subInsights = Object.entries(domainData?.subdomainFeedback || {}).map(
+      ([subName, feedback]: any) => ({
+        title: `${domainName} / ${subName}`,
+        body: feedback?.insight || "No insight available.",
+      }),
+    );
+
+    return [...domainInsight, ...subInsights];
+  });
+  const allObjectives = selectedDomainEntries.flatMap(([domainName, domainData]: any) =>
+    Object.entries(domainData?.subdomainFeedback || {}).flatMap(([subName, feedback]: any) => {
+      const items = (feedback?.coachingTips || "")
+        .split(/[â€¢\n\r]/)
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0);
+
+      return items.map((item: string, index: number) => ({
+        label: `${domainName} / ${subName} / KR${index + 1}`,
+        text: item,
+        value: domainData?.subdomains?.[subName] || 0,
+      }));
+    }),
   );
 
   const renderPdfTopicSection = (topic: string) => {
@@ -566,8 +598,8 @@ const handleTopicSave = (topics: string[]) => {
                 <p className="mt-2 text-lg font-bold text-[#1a3652]">{currentStatus.label}</p>
               </div>
                 <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Selected Domain</p>
-                <p className="mt-2 text-lg font-bold text-[#1a3652]">{selectedDomain}</p>
+                <p className="text-xs uppercase text-[#5d6b82]">Domains Covered</p>
+                <p className="mt-2 text-lg font-bold text-[#1a3652]">{selectedDomainEntries.length}</p>
               </div>
               </div>
             </div>
@@ -703,17 +735,20 @@ const handleTopicSave = (topics: string[]) => {
         return (
           <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
             <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <p className="mt-2 text-sm text-[#5d6b82]">{selectedDomain}</p>
+            <p className="mt-2 text-sm text-[#5d6b82]">All domains and all sub-domains</p>
             <div className="mt-4 flex justify-center rounded-2xl bg-[#f8fbfe] p-4">
               <div className="h-[300px] w-full max-w-[500px]">
                 <SpeedMeter value={subdomainScore} />
               </div>
             </div>
             <div className="mt-4 space-y-3">
-              {selectedSubdomainEntries.map(([name, score]: any) => (
-                <div key={name} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
-                  <p className="font-semibold text-[#1a3652]">{name}</p>
-                  <p className="text-lg font-bold text-[#1a3652]">{Math.round(score || 0)}%</p>
+              {allSubdomainEntries.map(({ domainName, subName, subScore }) => (
+                <div key={`${domainName}-${subName}`} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
+                  <div>
+                    <p className="font-semibold text-[#1a3652]">{subName}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#64748b]">{domainName}</p>
+                  </div>
+                  <p className="text-lg font-bold text-[#1a3652]">{subScore}%</p>
                 </div>
               ))}
             </div>
@@ -724,14 +759,12 @@ const handleTopicSave = (topics: string[]) => {
           <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
             <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Domain Score</p>
-                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(domainScore)}%</p>
-              </div>
-              <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Sub-domain Score</p>
-                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(subdomainScore)}%</p>
-              </div>
+              {selectedDomainEntries.map(([name, data]: any) => (
+                <div key={name} className="rounded-xl bg-[#f4f8fc] p-4">
+                  <p className="text-xs uppercase text-[#5d6b82]">{name}</p>
+                  <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(data.score || 0)}%</p>
+                </div>
+              ))}
             </div>
             <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
               <div className="h-[320px] w-full">
@@ -745,8 +778,11 @@ const handleTopicSave = (topics: string[]) => {
           <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
             <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
             <div className="mt-4 space-y-2 text-sm text-[#334155]">
-              {displayInsights.map((item: string, index: number) => (
-                <p key={index}>- {item}</p>
+              {allInsights.map((item, index: number) => (
+                <div key={`${item.title}-${index}`} className="rounded-xl bg-[#f8fbfe] p-4">
+                  <p className="font-semibold text-[#1a3652]">{item.title}</p>
+                  <p className="mt-2">- {item.body}</p>
+                </div>
               ))}
             </div>
           </div>
@@ -756,7 +792,7 @@ const handleTopicSave = (topics: string[]) => {
           <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
             <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
             <div className="mt-4 space-y-3">
-              {displayKRs.map((kr: any) => (
+              {allObjectives.map((kr: any) => (
                 <div key={kr.label} className="rounded-xl bg-[#f4f8fc] p-4">
                   <p className="font-semibold text-[#1a3652]">{kr.label}</p>
                   <p className="mt-1 text-sm text-[#475569]">{kr.text}</p>
