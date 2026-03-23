@@ -311,10 +311,13 @@ const LeaderReport = () => {
   };
 
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
-  const subdomainScore =
-    reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
-    ] || 0;
+  const subdomainScore = (() => {
+    const subData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[selectedSubdomain];
+    if (typeof subData === "object" && subData !== null) {
+      return subData.score || 0;
+    }
+    return Number(subData) || 0;
+  })();
   const overallScore = reportData?.scores?.overall || 0;
 
   const getStatus = (val: number) => {

@@ -384,13 +384,25 @@ const ManagerReport = () => {
 
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);
+    // 🆕 Auto-select first subdomain when domain changes to ensure SpeedMeter updates
+    if (reportData?.scores?.domains?.[domain]?.subdomains) {
+      const firstSub = Object.keys(
+        reportData.scores.domains[domain].subdomains,
+      )[0];
+      setSelectedSubdomain(firstSub);
+    } else {
+      setSelectedSubdomain("");
+    }
   };
 
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
-  const subdomainScore =
-    reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
-    ]?.score || 0;
+  const subdomainScore = (() => {
+    const subData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[selectedSubdomain];
+    if (typeof subData === "object" && subData !== null) {
+      return subData.score || 0;
+    }
+    return Number(subData) || 0;
+  })();
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
