@@ -1147,7 +1147,7 @@ const ManagerReport = () => {
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                       Delta Breakdown
                     </h3>
-                    <p className="text-sm text-[#64748B] mt-1">
+                    <p className="text-sm text-[#64748B] mt-1 mb-6 ">
                       {userData?.firstName || reportData?.user?.firstName || "Manager"}:{" "}
                       <span className="font-bold text-[#448CD2]">
                         {(radarData.manager.reduce((a, b) => a + b, 0) / (radarData.manager.length || 1) * 10).toFixed(0)}%
@@ -1171,146 +1171,11 @@ const ManagerReport = () => {
               </div>
             </div>
 
-            {/* 🆕 Employee Average Bar Chart */}
-            {(teamAvgData?.employeeCount > 0 || true) && (
-              <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
-                      Manager vs Employee Gap — {selectedDomain}
-                    </h3>
-                    <p className="text-sm text-[#64748B] mt-1">
-                      Average subdomain scores across{" "}
-                      <span className="font-bold text-[#448CD2]">
-                        {teamAvgData?.employeeCount || 0} employee
-                        {teamAvgData?.employeeCount !== 1 ? "s" : ""}
-                      </span>{" "}
-                      in <span className="font-bold">{teamAvgData?.department || "the department"}</span>
-                    </p>
-                  </div>
-                  {/* Legend */}
-                  <div className="flex items-center gap-4 flex-shrink-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-4 h-3 rounded-sm bg-[#1A3652] inline-block" />
-                      <span className="text-xs text-[#474747] font-medium">Manager</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-4 h-3 rounded-sm bg-[#30AD43] inline-block" />
-                      <span className="text-xs text-[#474747] font-medium">Employee Avg</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Subdomain comparison rows */}
-                <div className="space-y-4 mt-4">
-                  {Object.entries(
-                    teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains || {},
-                  ).map(([subName, teamScore]: [string, any]) => {
-                    const managerSubData =
-                      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-                      subName
-                      ];
-                    const managerScore =
-                      typeof managerSubData === "object"
-                        ? managerSubData?.score ?? 0
-                        : managerSubData ?? 0;
-
-                    const mPct = Math.min(Math.round(managerScore), 100);
-                    const tPct = Math.min(Math.round(teamScore as number), 100);
-                    const delta = Number((tPct - mPct).toFixed(1));
-
-                    const mColor =
-                      mPct >= 75
-                        ? "#30AD43"
-                        : mPct >= 50
-                          ? "#448CD2"
-                          : "#FF5656";
-
-
-                    return (
-                      <div key={subName} className="">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-semibold text-[#334155] truncate max-w-[50%]">
-                            {subName}
-                          </span>
-                          <span
-                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${delta > 0
-                              ? "bg-green-100 text-green-700"
-                              : delta < 0
-                                ? "bg-red-100 text-red-600"
-                                : "bg-gray-100 text-gray-500"
-                              }`}
-                          >
-                            {delta > 0 ? `+${delta}` : delta} pts team vs mgr
-                          </span>
-                        </div>
-                        {/* Manager bar */}
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] text-gray-400 w-16 shrink-0">
-                            Manager
-                          </span>
-                          <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-700"
-                              style={{
-                                width: `${mPct}%`,
-                                backgroundColor: mColor,
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs font-bold w-9 text-right shrink-0" style={{ color: mColor }}>
-                            {mPct}%
-                          </span>
-                        </div>
-                        {/* Employee avg bar */}
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-gray-400 w-16 shrink-0">
-                            Employee Avg
-                          </span>
-                          <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-700"
-                              style={{
-                                width: `${tPct}%`,
-                                backgroundColor: "#30AD43",
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs font-bold w-9 text-right shrink-0 text-[#30AD43]">
-                            {tPct}%
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {Object.keys(
-                    teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains || {},
-                  ).length === 0 && (
-                      <p className="text-sm text-gray-400 italic">
-                        No team subdomain data available for this domain yet.
-                      </p>
-                    )}
-                </div>
-
-                {/* Domain-level avg summary row */}
-                {teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore != null && (
-                  <div className="mt-6 pt-4 border-t border-[#E2E8F0] flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#64748B] uppercase tracking-wide">
-                      Domain Avg Score (Employee)
-                    </span>
-                    <span className="text-lg font-black text-[#1A3652]">
-                      {Math.round(teamAvgData.employeeAvg[selectedDomain].avgScore)}%
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
             <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px]">
-              <h3 className="text-lg font-bold text-[var(--secondary-color)] mb-4 capitalize text-center">
+              <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
                 Overall {selectedDomain} Domain Score — {userData?.firstName || reportData?.user?.firstName || "Manager"}
               </h3>
-              <div className="p-4 bg-[#F8FAFC] rounded-lg">
+              <div className="p-4 pt-0 ">
                 <ScoreBar
                   score={Math.round(domainScore)}
                   label={`${userData?.firstName || reportData?.user?.firstName || "Manager"} ${userData?.lastName || reportData?.user?.lastName || ""}`}

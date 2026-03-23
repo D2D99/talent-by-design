@@ -398,22 +398,19 @@ const AdminReport = () => {
     const lScores: number[] = []; // Leader (Blue)
     const mScores: number[] = []; // Manager (Green)
     const eScores: number[] = []; // Employee (Red)
-    const aScores: number[] = []; // Admin (Purple)
 
     labels.forEach((domain) => {
       // Pull directly from the fetched org-wide team averages
       const lAvg = teamAvgData?.leaderAvg?.[domain]?.avgScore ?? 0;
       const mAvg = teamAvgData?.managerAvg?.[domain]?.avgScore ?? 0;
       const eAvg = teamAvgData?.employeeAvg?.[domain]?.avgScore ?? 0;
-      const aAvg = teamAvgData?.adminAvg?.[domain]?.avgScore ?? 0;
 
       lScores.push(Number((lAvg / 10).toFixed(1)));
       mScores.push(Number((mAvg / 10).toFixed(1)));
       eScores.push(Number((eAvg / 10).toFixed(1)));
-      aScores.push(Number((aAvg / 10).toFixed(1)));
     });
 
-    return { labels, manager: lScores, team: mScores, peer: eScores, admin: aScores };
+    return { labels, manager: lScores, team: mScores, peer: eScores };
   })();
 
   // Derive Role Data and Gaps from stakeholders (Alignment Status)
@@ -1049,7 +1046,7 @@ const AdminReport = () => {
                           className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
                           onClick={() => setSelectedRadarDept("")}
                         >
-                          Organization 
+                          Organization
                         </button>
                       </li>
                       {(teamAvgData?.allDepartments || []).map((dept: string) => (
@@ -1066,13 +1063,6 @@ const AdminReport = () => {
                   </div>
                 </div>
                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(3) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(3)}
-                  >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(155, 89, 182, 0.7)" }} />
-                    <span className="text-xs text-[#474747]">Admin</span>
-                  </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(0)}
@@ -1099,118 +1089,10 @@ const AdminReport = () => {
                   <MultiRadarChart
                     data={radarData}
                     onLabelSelect={handleDomainChange}
-                    datasetLabels={["Leader", "Manager", "Employee", "Admin"]}
+                    datasetLabels={["Leader", "Manager", "Employee"]}
                     hiddenIndices={hiddenIndices}
                   />
                 </div>
-              </div>
-              {/* 🆕 Department Score Breakdown (Replaces empty block) */}
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                {teamAvgData && teamAvgData.memberCount > 0 ? (
-                  <div className="flex flex-col h-full">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
-                          Role Score Breakdown — {selectedDomain}
-                        </h3>
-                        <p className="text-sm text-[#64748B] mt-1">
-                          Average subdomain scores across the{" "}
-                          <span className="font-bold">{selectedRadarDept || "Organization"}</span>
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Subdomain comparison rows */}
-                    <div className="space-y-6 mt-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                      {Object.entries(
-                        reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
-                      ).map(([subName, _selfData]: [string, any]) => {
-                        // Admin Avg
-                        const adminScore = teamAvgData?.adminAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
-                        // Leader Avg
-                        const leaderScore = teamAvgData?.leaderAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
-                        // Manager Avg
-                        const managerScore = teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
-                        // Employee Avg
-                        const employeeScore = teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
-
-                        return (
-                          <div key={subName} className="flex flex-col gap-2">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm font-bold text-[#1A3652]">{subName}</span>
-                            </div>
-                            <div className="space-y-2">
-                              {/* Admin Bar */}
-                              {!hiddenIndices.includes(3) && (
-                                <div className="space-y-1">
-                                  <div className="flex justify-between text-[10px] text-[#64748B]">
-                                    <span>Admin Avg</span>
-                                    <span>{adminScore}%</span>
-                                  </div>
-                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-[#9B59B6] rounded-full transition-all duration-500"
-                                      style={{ width: `${adminScore}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                              {/* Leader Bar */}
-                              {!hiddenIndices.includes(0) && (
-                                <div className="space-y-1">
-                                  <div className="flex justify-between text-[10px] text-[#64748B]">
-                                    <span>Leader Avg</span>
-                                    <span>{leaderScore}%</span>
-                                  </div>
-                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-[#4A90E2] rounded-full transition-all duration-500"
-                                      style={{ width: `${leaderScore}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                              {/* Manager Bar */}
-                              {!hiddenIndices.includes(1) && (
-                                <div className="space-y-1">
-                                  <div className="flex justify-between text-[10px] text-[#64748B]">
-                                    <span>Manager Avg</span>
-                                    <span>{managerScore}%</span>
-                                  </div>
-                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-[#2ECC71] rounded-full transition-all duration-500"
-                                      style={{ width: `${managerScore}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                              {/* Employee Bar */}
-                              {!hiddenIndices.includes(2) && (
-                                <div className="space-y-1">
-                                  <div className="flex justify-between text-[10px] text-[#64748B]">
-                                    <span>Employee Avg</span>
-                                    <span>{employeeScore}%</span>
-                                  </div>
-                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-[#E74C3C] rounded-full transition-all duration-500"
-                                      style={{ width: `${employeeScore}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-slate-400">
-                    Select a department to see role breakdown
-                  </div>
-                )}
               </div>
             </div>
 
