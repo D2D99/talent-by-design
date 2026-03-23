@@ -24,9 +24,11 @@ interface GapBarChartProps {
   labels: string[];
   deltaScores: number[];
   selectedLabel: string | null;
+  managerScores?: number[];
+  employeeScores?: number[];
 }
 
-const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selectedLabel }) => {
+const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selectedLabel, managerScores = [], employeeScores = [] }) => {
   const chartRef = useRef<Chart | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -36,7 +38,7 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selected
     afterDatasetsDraw(chart: Chart) {
       const ctx = chart.ctx as CanvasRenderingContext2D;
       ctx.save();
-      ctx.font = "12px Arial";
+      ctx.font = "11px Arial";
       ctx.textBaseline = "middle";
 
       chart.data.datasets.forEach((dataset, datasetIndex) => {
@@ -44,14 +46,17 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selected
 
         meta.data.forEach((element, index) => {
           const bar = element as any;
-          const value = dataset.data[index] as number;
+          const delta = dataset.data[index] as number;
+          const mVal = managerScores[index] !== undefined ? (managerScores[index] * 10).toFixed(0) : "N/A";
+          const eVal = employeeScores[index] !== undefined ? (employeeScores[index] * 10).toFixed(0) : "N/A";
 
-          const label = `${value > 0 ? "+" : ""}${value} pts ${value > 0 ? "↑" : "↓"}`;
+          // Label: "+2 pts ↑ (Manager: 70 | Employee: 90)"
+          const label = `${delta > 0 ? "+" : ""}${delta} pts ${delta > 0 ? "↑" : "↓"} [M:${mVal} | E:${eVal}]`;
 
-          ctx.fillStyle = value > 0 ? "#2E7D32" : "#C62828"; // Green for positive, red for negative
+          ctx.fillStyle = delta > 0 ? "#2E7D32" : "#C62828"; // Green for positive, red for negative
 
-          const xOffset = value > 0 ? 6 : -6;
-          ctx.textAlign = value > 0 ? "left" : "right";
+          const xOffset = delta > 0 ? 6 : -6;
+          ctx.textAlign = delta > 0 ? "left" : "right";
 
           ctx.fillText(label, bar.x + xOffset, bar.y);
         });

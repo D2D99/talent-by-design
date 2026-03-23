@@ -20,43 +20,69 @@ const AdminAssessments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter] = useState<string[]>([]);
   const [statusFilter] = useState<string[]>([]);
+  const [resetingId, setResetingId] = useState<string | null>(null);
+  const [confirmResetId, setConfirmResetId] = useState<string | null>(null);
+
+  // Get the logged-in admin's own user ID to hide the button for themselves
+  const [adminId, setAdminId] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        // Get admin's organization name
-        const savedUser = localStorage.getItem("user");
-        let orgName = "";
+  const fetchMembers = async () => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      let orgName = "";
+      let savedId = "";
 
-        if (savedUser) {
-          const parsed = JSON.parse(savedUser);
-          orgName = parsed.orgName;
-        }
-
-        if (!orgName) {
-          const profileRes = await api.get("auth/me");
-          orgName = profileRes.data.orgName;
-        }
-
-        if (!orgName) {
-          toast.error("Organization not found");
-          return;
-        }
-
-        const res = await api.get(`auth/organization/${orgName}`);
-        setMembers(res.data.members);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load team members");
-      } finally {
-        setLoading(false);
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        orgName = parsed.orgName;
+        savedId = parsed._id || "";
       }
-    };
+
+      if (!orgName) {
+        const profileRes = await api.get("auth/me");
+        orgName = profileRes.data.orgName;
+        savedId = profileRes.data._id || savedId;
+      }
+
+      if (savedId) setAdminId(savedId);
+
+      if (!orgName) {
+        toast.error("Organization not found");
+        return;
+      }
+
+      const res = await api.get(`auth/organization/${orgName}`);
+      setMembers(res.data.members);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load team members");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchMembers();
   }, []);
+
+  const handleResetAssessment = async (memberId: string) => {
+    setResetingId(memberId);
+    setConfirmResetId(null);
+    try {
+      await api.delete(`auth/reset-assessment/${memberId}`);
+      toast.success("Assessment reset successfully. The user must retake the assessment.");
+      // Refresh the members list
+      await fetchMembers();
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Failed to reset assessment.";
+      toast.error(msg);
+    } finally {
+      setResetingId(null);
+    }
+  };
 
   const totalMembers = members.length;
   const completedMembers = members.filter(
@@ -165,6 +191,7 @@ const AdminAssessments = () => {
                 Assessment Status
               </th>
               <th className="px-6 py-4 font-semibold">Progress</th>
+              <th className="px-6 py-4 font-semibold text-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -178,6 +205,14 @@ const AdminAssessments = () => {
                     : status === "Due"
                       ? 25
                       : 0;
+
+              // Hide reset button for admins (own role) and for the logged-in admin themselves
+              const isAdminRole = member.role?.toLowerCase() === "admin";
+              const isSelf = adminId && member._id?.toString() === adminId?.toString();
+              const canReset = !isAdminRole && !isSelf && status === "Completed";
+
+              const isResetting = resetingId === member._id;
+              const isConfirming = confirmResetId === member._id;
 
               return (
                 <tr
@@ -208,15 +243,14 @@ const AdminAssessments = () => {
                     <span
                       className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center
-                         ${
-                           status === "Completed"
-                             ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
-                             : status === "In Progress"
-                               ? "bg-blue-100 text-blue-600 border-blue-600"
-                               : status === "Due"
-                                 ? "bg-amber-100 text-amber-600 border-amber-600"
-                                 : "bg-gray-100 text-gray-400 border-gray-400"
-                         }`}
+                         ${status === "Completed"
+                          ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
+                          : status === "In Progress"
+                            ? "bg-blue-100 text-blue-600 border-blue-600"
+                            : status === "Due"
+                              ? "bg-amber-100 text-amber-600 border-amber-600"
+                              : "bg-gray-100 text-gray-400 border-gray-400"
+                        }`}
                     >
                       {status}
                     </span>
@@ -225,35 +259,73 @@ const AdminAssessments = () => {
                     <div className="pt-2">
                       <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-700 ease-out ${
-                            percentage === 100
+                          className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
                               ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
                               : percentage >= 50
                                 ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
                                 : "bg-gradient-to-r from-amber-400 to-amber-500"
-                          }`}
+                            }`}
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
                       <span
-                        className={`text-xs font-semibold w-10 ${
-                          percentage === 100
+                        className={`text-xs font-semibold w-10 ${percentage === 100
                             ? "text-green-600"
                             : percentage >= 50
                               ? "text-[#448CD2]"
                               : "text-neutral-300"
-                        }`}
+                          }`}
                       >
                         {percentage}%
                       </span>
                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {canReset ? (
+                      isConfirming ? (
+                        /* Confirm prompt */
+                        <div className="flex items-center gap-2 text-nowrap">
+                          <span className="text-xs text-gray-500">Sure?</span>
+                          <button
+                            id={`confirm-reset-${member._id}`}
+                            onClick={() => handleResetAssessment(member._id)}
+                            disabled={isResetting}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-60"
+                          >
+                            {isResetting ? (
+                              <Icon icon="svg-spinners:ring-resize" width="12" />
+                            ) : (
+                              "Yes, Reset"
+                            )}
+                          </button>
+                          <button
+                            onClick={() => setConfirmResetId(null)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          id={`reset-assessment-${member._id}`}
+                          onClick={() => setConfirmResetId(member._id)}
+                          title="Reset this user's assessment so they must retake it"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-orange-300 text-orange-600 bg-orange-50 hover:bg-orange-100 hover:border-orange-400 transition-all"
+                        >
+                          <Icon icon="solar:restart-linear" width="14" />
+                          Reset
+                        </button>
+                      )
+                    ) : (
+                      <span className="text-gray-300 text-xs">—</span>
+                    )}
                   </td>
                 </tr>
               );
             })}
             {filteredMembers.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center py-12">
+                <td colSpan={7} className="text-center py-12">
                   <div className="flex flex-col items-center justify-center text-gray-400">
                     <Icon
                       icon="solar:file-remove-linear"

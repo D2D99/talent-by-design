@@ -54,9 +54,17 @@ const ManagerReport = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
+  const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Real dept team avg
 
   // setChartData
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+  const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
+
+  const toggleHiddenIndex = (idx: number) => {
+    setHiddenIndices(prev =>
+      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    );
+  };
 
   const { user } = useAuth();
   const location = useLocation();
@@ -196,6 +204,26 @@ const ManagerReport = () => {
     };
 
     fetchReport();
+  }, [userId, userEmail, refreshKey]);
+
+  // 🆕 Fetch real team avg from backend whenever the viewed manager changes
+  useEffect(() => {
+    const fetchTeamAvg = async () => {
+      if (!userId && !userEmail) return;
+      try {
+        let url = "dashboard/manager-team-avg";
+        const params: string[] = [];
+        if (userId) params.push(`userId=${userId}`);
+        if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
+        if (params.length) url += `?${params.join("&")}`;
+        const res = await api.get(url);
+        setTeamAvgData(res.data);
+      } catch (err) {
+        // Not critical — silently fall back to empty
+        setTeamAvgData(null);
+      }
+    };
+    fetchTeamAvg();
   }, [userId, userEmail, refreshKey]);
 
   // Handle label selection from Radar Chart
@@ -367,16 +395,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -396,6 +424,9 @@ const ManagerReport = () => {
   ];
 
   // Calculate radar data dynamically from responses
+  // Manager series = manager's OWN subdomain scores (self-assessment)
+  // Team series    = REAL dept avg from backend
+  // Peer series    = Org-wide benchmark avg (other departments)
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
@@ -403,49 +434,26 @@ const ManagerReport = () => {
     const labels = subdomains;
     const mScores: number[] = [];
     const tScores: number[] = [];
-    const pScores: number[] = [];
 
     labels.forEach((sub) => {
-      const subRes = reportData?.responses?.filter(
-        (r: any) => r.domain === selectedDomain && r.subdomain === sub,
+      // Manager self-assessment score
+      const managerSubData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const mRaw =
+        typeof managerSubData === "object"
+          ? managerSubData?.score ?? 0
+          : managerSubData ?? 0;
+      mScores.push(Number((mRaw / 10).toFixed(1)));
+
+      // Employee avg (same department) - mapped to 'team' dataset for colors
+      const employeeSubScore =
+        teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      tScores.push(
+        employeeSubScore !== null ? Number((employeeSubScore / 10).toFixed(1)) : 0,
       );
-
-      const mResponses =
-        subRes?.filter((r: any) => r.stakeholder === "manager") || [];
-      const mAvg =
-        mResponses.length > 0
-          ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
-          : 0;
-
-      const tResponses =
-        subRes?.filter((r: any) => r.stakeholder === "employee") || [];
-      const tAvg =
-        tResponses.length > 0
-          ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
-          : 0;
-
-      const pResponses =
-        subRes?.filter((r: any) => r.stakeholder === "leader") || [];
-      const pAvg =
-        pResponses.length > 0
-          ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
-          : 0;
-
-      mScores.push(Number((mAvg / 10).toFixed(1)));
-      tScores.push(Number((tAvg / 10).toFixed(1)));
-      pScores.push(Number((pAvg / 10).toFixed(1)));
     });
 
-    return { labels, manager: mScores, team: tScores, peer: pScores };
+    return { labels, manager: mScores, team: tScores, peer: [] };
   })();
 
   const deltaScores = radarData.team.map((t, i) =>
@@ -555,9 +563,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -919,9 +927,9 @@ const ManagerReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1093,11 +1101,31 @@ const ManagerReport = () => {
                     </p>
                   </div>
                 </div>
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(74, 144, 226, 0.7)" }} />
+                    <span className="text-xs text-[#474747]">Manager</span>
+                  </div>
+                  {(teamAvgData?.employeeCount > 0 || true) && (
+                    <div
+                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                      onClick={() => toggleHiddenIndex(1)}
+                    >
+                      <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(46, 204, 113, 0.7)" }} />
+                      <span className="text-xs text-[#474747]">Employee ({teamAvgData?.employeeCount || 0})</span>
+                    </div>
+                  )}
+                </div>
                 <div>
-                  <RadarChart
+                   <RadarChart
                     data={radarData}
                     selectedLabel={selectedLabel}
                     onLabelSelect={handleRadarChartSelection}
+                    datasetLabels={["Manager", "Employee"]}
+                    hiddenIndices={hiddenIndices}
                   />
                 </div>
               </div>
@@ -1107,6 +1135,16 @@ const ManagerReport = () => {
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                       Delta Breakdown
                     </h3>
+                    <p className="text-sm text-[#64748B] mt-1">
+                      {userData?.firstName || reportData?.user?.firstName || "Manager"}:{" "}
+                      <span className="font-bold text-[#448CD2]">
+                        {(radarData.manager.reduce((a, b) => a + b, 0) / (radarData.manager.length || 1) * 10).toFixed(0)}%
+                      </span>{" "}
+                      Domain Avg vs Employee Avg:{" "}
+                      <span className="font-bold text-[#E74C3C]">
+                        {(radarData.team.reduce((a, b) => a + b, 0) / (radarData.team.length || 1) * 10).toFixed(0)}%
+                      </span>
+                    </p>
                   </div>
                 </div>
                 <div>
@@ -1114,12 +1152,158 @@ const ManagerReport = () => {
                     labels={radarData.labels}
                     deltaScores={deltaScores}
                     selectedLabel={selectedLabel}
+                    managerScores={radarData.manager}
+                    employeeScores={radarData.team}
                   />
                 </div>
               </div>
             </div>
-            <div className="last-graph mt-8">
-              <ScoreBar score={50} label="hello world" />
+
+            {/* 🆕 Employee Average Bar Chart */}
+            {(teamAvgData?.employeeCount > 0 || true) && (
+              <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
+                      Manager vs Employee Gap — {selectedDomain}
+                    </h3>
+                    <p className="text-sm text-[#64748B] mt-1">
+                      Average subdomain scores across{" "}
+                      <span className="font-bold text-[#448CD2]">
+                        {teamAvgData?.employeeCount || 0} employee
+                        {teamAvgData?.employeeCount !== 1 ? "s" : ""}
+                      </span>{" "}
+                      in <span className="font-bold">{teamAvgData?.department || "the department"}</span>
+                    </p>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-4 h-3 rounded-sm bg-[#1A3652] inline-block" />
+                      <span className="text-xs text-[#474747] font-medium">Manager</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-4 h-3 rounded-sm bg-[#30AD43] inline-block" />
+                      <span className="text-xs text-[#474747] font-medium">Employee Avg</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subdomain comparison rows */}
+                <div className="space-y-4 mt-4">
+                  {Object.entries(
+                    teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains || {},
+                  ).map(([subName, teamScore]: [string, any]) => {
+                    const managerSubData =
+                      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+                      subName
+                      ];
+                    const managerScore =
+                      typeof managerSubData === "object"
+                        ? managerSubData?.score ?? 0
+                        : managerSubData ?? 0;
+
+                    const mPct = Math.min(Math.round(managerScore), 100);
+                    const tPct = Math.min(Math.round(teamScore as number), 100);
+                    const delta = Number((tPct - mPct).toFixed(1));
+
+                    const mColor =
+                      mPct >= 75
+                        ? "#30AD43"
+                        : mPct >= 50
+                          ? "#448CD2"
+                          : "#FF5656";
+
+
+                    return (
+                      <div key={subName} className="">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-semibold text-[#334155] truncate max-w-[50%]">
+                            {subName}
+                          </span>
+                          <span
+                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${delta > 0
+                              ? "bg-green-100 text-green-700"
+                              : delta < 0
+                                ? "bg-red-100 text-red-600"
+                                : "bg-gray-100 text-gray-500"
+                              }`}
+                          >
+                            {delta > 0 ? `+${delta}` : delta} pts team vs mgr
+                          </span>
+                        </div>
+                        {/* Manager bar */}
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] text-gray-400 w-16 shrink-0">
+                            Manager
+                          </span>
+                          <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-700"
+                              style={{
+                                width: `${mPct}%`,
+                                backgroundColor: mColor,
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs font-bold w-9 text-right shrink-0" style={{ color: mColor }}>
+                            {mPct}%
+                          </span>
+                        </div>
+                        {/* Employee avg bar */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-gray-400 w-16 shrink-0">
+                            Employee Avg
+                          </span>
+                          <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-700"
+                              style={{
+                                width: `${tPct}%`,
+                                backgroundColor: "#30AD43",
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs font-bold w-9 text-right shrink-0 text-[#30AD43]">
+                            {tPct}%
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {Object.keys(
+                    teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains || {},
+                  ).length === 0 && (
+                      <p className="text-sm text-gray-400 italic">
+                        No team subdomain data available for this domain yet.
+                      </p>
+                    )}
+                </div>
+
+                {/* Domain-level avg summary row */}
+                {teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore != null && (
+                  <div className="mt-6 pt-4 border-t border-[#E2E8F0] flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#64748B] uppercase tracking-wide">
+                      Domain Avg Score (Employee)
+                    </span>
+                    <span className="text-lg font-black text-[#1A3652]">
+                      {Math.round(teamAvgData.employeeAvg[selectedDomain].avgScore)}%
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px]">
+              <h3 className="text-lg font-bold text-[var(--secondary-color)] mb-4 capitalize text-center">
+                Overall {selectedDomain} Domain Score — {userData?.firstName || reportData?.user?.firstName || "Manager"}
+              </h3>
+              <div className="p-4 bg-[#F8FAFC] rounded-lg">
+                <ScoreBar
+                  score={Math.round(domainScore)}
+                  label={`${userData?.firstName || reportData?.user?.firstName || "Manager"} ${userData?.lastName || reportData?.user?.lastName || ""}`}
+                />
+              </div>
             </div>
           </>
         ) : (
@@ -1141,7 +1325,7 @@ const ManagerReport = () => {
         }}
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
       />
-    </div>
+    </div >
   );
 };
 export default ManagerReport;

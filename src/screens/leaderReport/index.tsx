@@ -57,6 +57,14 @@ const LeaderReport = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
   const [exportLoading, setExportLoading] = useState(false);
+  const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Real dept and org avg
+  const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
+
+  const toggleHiddenIndex = (idx: number) => {
+    setHiddenIndices(prev =>
+      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    );
+  };
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
@@ -225,6 +233,25 @@ const LeaderReport = () => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
+  // 🆕 Fetch real team avg from backend whenever the viewed leader changes
+  useEffect(() => {
+    const fetchTeamAvg = async () => {
+      if (!userId && !userEmail) return;
+      try {
+        let url = "dashboard/manager-team-avg"; // It works for leaders too (finds their dept members)
+        const params: string[] = [];
+        if (userId) params.push(`userId=${userId}`);
+        if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
+        if (params.length) url += `?${params.join("&")}`;
+        const res = await api.get(url);
+        setTeamAvgData(res.data);
+      } catch (err) {
+        setTeamAvgData(null);
+      }
+    };
+    fetchTeamAvg();
+  }, [userId, userEmail, refreshKey]);
+
   const [selectedDomain, setSelectedDomain] =
     useState<string>("People Potential");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
@@ -286,7 +313,7 @@ const LeaderReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
@@ -331,16 +358,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -379,96 +406,107 @@ const LeaderReport = () => {
     const pScores: number[] = [];
 
     labels.forEach((sub) => {
-      const subRes = reportData?.responses?.filter(
-        (r: any) => r.domain === selectedDomain && r.subdomain === sub,
+      // Leader's OWN self-assessment score
+      const leaderSubData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const lRaw =
+        typeof leaderSubData === "object"
+          ? leaderSubData?.score ?? 0
+          : leaderSubData ?? 0;
+      mScores.push(Number((lRaw / 10).toFixed(1)));
+
+      // Manager avg (managers under the leader)
+      const managerSubScore =
+        teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      tScores.push(
+        managerSubScore !== null ? Number((managerSubScore / 10).toFixed(1)) : 0,
       );
 
-      const mResponses =
-        subRes?.filter((r: any) => r.stakeholder === "manager") || [];
-      const mAvg =
-        mResponses.length > 0
-          ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
-          : 0;
-
-      const tResponses =
-        subRes?.filter((r: any) => r.stakeholder === "employee") || [];
-      const tAvg =
-        tResponses.length > 0
-          ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
-          : 0;
-
-      const pResponses =
-        subRes?.filter((r: any) => r.stakeholder === "leader") || [];
-      const pAvg =
-        pResponses.length > 0
-          ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
-          : 0;
-
-      mScores.push(Number((mAvg / 10).toFixed(1)));
-      tScores.push(Number((tAvg / 10).toFixed(1)));
-      pScores.push(Number((pAvg / 10).toFixed(1)));
+      // Employee avg (employees under the leader)
+      const employeeSubScore =
+        teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      pScores.push(
+        employeeSubScore !== null ? Number((employeeSubScore / 10).toFixed(1)) : 0,
+      );
     });
 
     return { labels, manager: mScores, team: tScores, peer: pScores };
   })();
 
-  // Derive Role Data and Gaps from stakeholders
+  // Derive Role Data and Gaps (Alignment Status)
   const roleAverages = (() => {
-    const roles = ["employee", "manager", "leader"];
-    return roles.map((role) => {
-      const responses =
-        reportData?.responses?.filter((r: any) => r.stakeholder === role) || [];
-      const score =
-        responses.length > 0
-          ? responses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / responses.length
-          : 0;
+    // Leader's OWN domain score
+    const leaderScore = Math.round(reportData?.scores?.domains?.[selectedDomain]?.score || 0);
 
-      const labelMap: any = {
-        employee: "EMPLOYEE",
-        manager: "MANAGER",
-        leader: "SENIOR LEADER",
-      };
-      const colorMap: any = {
-        employee: "#FF5656",
-        manager: "#FEE114",
-        leader: "#30AD43",
-      };
+    // Manager Avg from department POD data
+    const managerAvgScore = Math.round(teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0);
 
-      return {
-        label: labelMap[role],
-        value: Math.round(score),
-        color: colorMap[role],
-      };
-    });
+    // Employee Avg from department POD data
+    const employeeAvgScore = Math.round(teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0);
+
+    const getColor = (val: number) => {
+      if (val < 50) return "#FF5656"; // Needs Attention
+      if (val < 75) return "#FEE114"; // At Risk
+      return "#30AD43"; // On Track
+    };
+
+    return [
+      {
+        label: "SENIOR LEADER",
+        value: leaderScore,
+        color: getColor(leaderScore),
+      },
+      {
+        label: "MANAGER",
+        value: managerAvgScore,
+        color: getColor(managerAvgScore),
+      },
+      {
+        label: "EMPLOYEE",
+        value: employeeAvgScore,
+        color: getColor(employeeAvgScore),
+      },
+    ];
   })();
 
-  const maxGapInfo = (() => {
-    let largest = 0;
-    let rolesText = "Balanced Views";
-    for (let i = 0; i < roleAverages.length; i++) {
-      for (let j = i + 1; j < roleAverages.length; j++) {
-        if (roleAverages[i].value === 0 || roleAverages[j].value === 0)
-          continue;
-        const gap = Math.abs(roleAverages[i].value - roleAverages[j].value);
-        if (gap > largest) {
-          largest = gap;
-          rolesText = `${roleAverages[i].label} VS ${roleAverages[j].label}`;
-        }
-      }
+  const alignmentInfo = (() => {
+    const leaderVal = roleAverages.find(r => r.label === "SENIOR LEADER")?.value || 0;
+    const employeeVal = roleAverages.find(r => r.label === "EMPLOYEE")?.value || 0;
+    const gap = Math.abs(leaderVal - employeeVal);
+
+    // Leadership Optimism Risk: Leader is High (Green), Employee is Low (Red)
+    if (leaderVal >= 75 && employeeVal < 50) {
+      return {
+        label: "Leadership optimism risk",
+        status: "Red",
+        color: "#D71818",
+        bg: "#FFEBEB",
+        icon: "solar:shield-warning-bold-duotone",
+        gap: gap
+      };
     }
-    return { text: rolesText, value: largest };
+
+    // Blind Spot Detected: Significant gap but not necessarily optimism risk
+    if (gap > 18) {
+      return {
+        label: "Blind spot detected",
+        status: "Amber",
+        color: "#D97706",
+        bg: "#FFFBEB",
+        icon: "solar:eye-broken-bold-duotone",
+        gap: gap
+      };
+    }
+
+    // Alignment Healthy
+    return {
+      label: "Alignment healthy",
+      status: "Green",
+      color: "#30AD43",
+      bg: "#F0FDF4",
+      icon: "solar:check-circle-bold-duotone",
+      gap: gap
+    };
   })();
 
   const trendData = (() => {
@@ -529,7 +567,7 @@ const LeaderReport = () => {
     return { labels, manager: firstScores, team: currentScores, descriptions };
   })();
 
-  const roleData = roleAverages;
+
 
   return (
     <div>
@@ -630,9 +668,9 @@ const LeaderReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -776,9 +814,9 @@ const LeaderReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -910,9 +948,9 @@ const LeaderReport = () => {
                       <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                         Alignment Status
                       </h3>
-                      <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
-                        Blind Spot Detected
+                      <p className="text-sm font-semibold mt-1 flex items-center gap-1" style={{ color: alignmentInfo.color }}>
+                        <Icon icon={alignmentInfo.icon} width="16" />
+                        {alignmentInfo.status} Status
                       </p>
                     </div>
 
@@ -921,20 +959,18 @@ const LeaderReport = () => {
                     </div>
                   </div>
                   <div className="sm:w-[400px] w-full my-10">
-                    <RoleProgressChart data={roleData} />
+                    <RoleProgressChart data={roleAverages} />
                   </div>
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> {maxGapInfo.text} (+
-                    {maxGapInfo.value})
+                    <b className="">Largest Gap:</b> Senior Leader VS Employee (+{alignmentInfo.gap})
                   </p>
                   <div className="sm:mt-16 mt-6 ">
                     <button
                       type="button"
-                      className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
+                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider"
+                      style={{ backgroundColor: alignmentInfo.bg, color: alignmentInfo.color }}
                     >
-                      {maxGapInfo.value > 15
-                        ? "Perception Risk Detected"
-                        : "Alignment On Track"}
+                      {alignmentInfo.label}
                     </button>
                   </div>
                   <div></div>
@@ -1053,14 +1089,171 @@ const LeaderReport = () => {
                     </ul>
                   </div>
                 </div>
+                {/* Legend */}
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(74, 144, 226, 0.7)" }} />
+                    <span className="text-xs text-[#474747]">Leader</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(1)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(46, 204, 113, 0.7)" }} />
+                    <span className="text-xs text-[#474747]">Manager Avg ({teamAvgData?.managerCount || 0})</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(2)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(231, 76, 60, 0.6)" }} />
+                    <span className="text-xs text-[#474747]">Employee Avg ({teamAvgData?.employeeCount || 0})</span>
+                  </div>
+                </div>
                 <div>
                   <MultiRadarChart
                     data={radarData}
                     onLabelSelect={handleSubdomainChange}
+                    datasetLabels={["Leader", "Manager Avg", "Employee Avg"]}
+                    hiddenIndices={hiddenIndices}
                   />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
+
+              {/* 🆕 Department Team Average Bar Chart (Replaces empty block) */}
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                {teamAvgData && teamAvgData.memberCount > 0 ? (
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
+                          Department Score Breakdown — {selectedDomain}
+                        </h3>
+                        <p className="text-sm text-[#64748B] mt-1">
+                          Average subdomain scores across{" "}
+                          <span className="font-bold text-[#448CD2]">
+                            {teamAvgData.memberCount} member
+                            {teamAvgData.memberCount !== 1 ? "s" : ""}
+                          </span>{" "}
+                          in <span className="font-bold">{teamAvgData.department}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Subdomain comparison rows */}
+                    <div className="space-y-6 mt-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                      {Object.entries(
+                        reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+                      ).map(([subName, leaderSubData]: [string, any]) => {
+                        const leaderScore =
+                          typeof leaderSubData === "object"
+                            ? leaderSubData?.score ?? 0
+                            : leaderSubData ?? 0;
+
+                        const managerScore = teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
+                        const employeeScore = teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
+
+                        const lPct = Math.min(Math.round(leaderScore), 100);
+                        const mPct = Math.min(Math.round(managerScore as number), 100);
+                        const ePct = Math.min(Math.round(employeeScore as number), 100);
+
+                        return (
+                          <div key={subName} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-semibold text-[#334155] truncate max-w-[80%]">
+                                {subName}
+                              </span>
+                            </div>
+
+                            {/* Leader bar */}
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-[10px] text-gray-500 w-16 shrink-0 font-medium">
+                                Leader
+                              </span>
+                              <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-700"
+                                  style={{
+                                    width: `${lPct}%`,
+                                    backgroundColor: "rgba(74, 144, 226, 0.7)",
+                                  }}
+                                />
+                              </div>
+                              <span className="text-[10px] font-bold w-7 text-right shrink-0 text-[#1A3652]">
+                                {lPct}%
+                              </span>
+                            </div>
+
+                            {/* Manager avg bar */}
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-[10px] text-gray-500 w-16 shrink-0 font-medium">
+                                Managers
+                              </span>
+                              <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-700"
+                                  style={{
+                                    width: `${mPct}%`,
+                                    backgroundColor: "rgba(46, 204, 113, 0.7)",
+                                  }}
+                                />
+                              </div>
+                              <span className="text-[10px] font-bold w-7 text-right shrink-0 text-[#30AD43]">
+                                {mPct}%
+                              </span>
+                            </div>
+
+                            {/* Employee avg bar */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-gray-500 w-16 shrink-0 font-medium">
+                                Employees
+                              </span>
+                              <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-700"
+                                  style={{
+                                    width: `${ePct}%`,
+                                    backgroundColor: "rgba(231, 76, 60, 0.6)",
+                                  }}
+                                />
+                              </div>
+                              <span className="text-[10px] font-bold w-7 text-right shrink-0 text-[#E74C3C]">
+                                {ePct}%
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {Object.keys(
+                        reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+                      ).length === 0 && (
+                          <p className="text-sm text-gray-400 italic">
+                            No team subdomain data available for this domain yet.
+                          </p>
+                        )}
+                    </div>
+
+                    {/* Domain-level avg summary row */}
+                    {teamAvgData.teamAvg?.[selectedDomain]?.avgScore != null && (
+                      <div className="mt-6 pt-4 border-t border-[#E2E8F0] flex items-center justify-between">
+                        <span className="text-xs font-bold text-[#64748B] uppercase tracking-wide">
+                          Domain Avg Score (Dept)
+                        </span>
+                        <span className="text-lg font-black text-[#1A3652]">
+                          {Math.round(teamAvgData.teamAvg[selectedDomain].avgScore)}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-[#64748B] text-sm">
+                    No department data available.
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">

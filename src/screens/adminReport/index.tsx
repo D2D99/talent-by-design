@@ -57,6 +57,15 @@ const AdminReport = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
   const [exportLoading, setExportLoading] = useState(false);
+  const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Org wide data
+  const [selectedRadarDept, setSelectedRadarDept] = useState<string>(""); // 🆕 Radar Dept Filter
+  const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
+
+  const toggleHiddenIndex = (idx: number) => {
+    setHiddenIndices(prev =>
+      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    );
+  };
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
@@ -183,6 +192,27 @@ const AdminReport = () => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
+  // 🆕 NEW: Fetch Org averages
+  useEffect(() => {
+    const fetchTeamAvg = async () => {
+      if (!userId && !userEmail) return;
+      try {
+        let url = "dashboard/manager-team-avg";
+        const params: string[] = ["includeSelf=true"];
+        if (userId) params.push(`userId=${userId}`);
+        if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
+        if (selectedRadarDept) params.push(`department=${encodeURIComponent(selectedRadarDept)}`);
+        if (params.length) url += `?${params.join("&")}`;
+        const res = await api.get(url);
+        setTeamAvgData(res.data);
+      } catch (err) {
+        setTeamAvgData(null);
+      }
+    };
+    fetchTeamAvg();
+  }, [userId, userEmail, refreshKey, selectedRadarDept]);
+
+
   const handleExportPDF = async () => {
     try {
       setExportLoading(true);
@@ -276,7 +306,7 @@ const AdminReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
   const overallScore = reportData?.scores?.overall || 0;
 
@@ -321,16 +351,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -358,107 +388,89 @@ const AdminReport = () => {
       color: data.score < 50 ? "#D71818" : "#FF8D28",
     }));
 
-  // Derive Radar Data from responses
+  // Derive Radar Data from responses (Aggregated by Domain instead of Subdomain)
   const radarData: RadarData = (() => {
-    const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
-    );
-    const labels = subdomains;
-    const mScores: number[] = [];
-    const tScores: number[] = [];
-    const pScores: number[] = [];
+    const domains = Object.keys(reportData?.scores?.domains || {});
+    const labels = domains;
+    const lScores: number[] = []; // Leader (Blue)
+    const mScores: number[] = []; // Manager (Green)
+    const eScores: number[] = []; // Employee (Red)
+    const aScores: number[] = []; // Admin (Purple)
 
-    labels.forEach((sub) => {
-      const subRes = reportData?.responses?.filter(
-        (r: any) => r.domain === selectedDomain && r.subdomain === sub,
-      );
+    labels.forEach((domain) => {
+      // Pull directly from the fetched org-wide team averages
+      const lAvg = teamAvgData?.leaderAvg?.[domain]?.avgScore ?? 0;
+      const mAvg = teamAvgData?.managerAvg?.[domain]?.avgScore ?? 0;
+      const eAvg = teamAvgData?.employeeAvg?.[domain]?.avgScore ?? 0;
+      const aAvg = teamAvgData?.adminAvg?.[domain]?.avgScore ?? 0;
 
-      const mResponses =
-        subRes?.filter((r: any) => r.stakeholder === "manager") || [];
-      const mAvg =
-        mResponses.length > 0
-          ? mResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / mResponses.length
-          : 0;
-
-      const tResponses =
-        subRes?.filter((r: any) => r.stakeholder === "employee") || [];
-      const tAvg =
-        tResponses.length > 0
-          ? tResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / tResponses.length
-          : 0;
-
-      const pResponses =
-        subRes?.filter((r: any) => r.stakeholder === "leader") || [];
-      const pAvg =
-        pResponses.length > 0
-          ? pResponses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / pResponses.length
-          : 0;
-
+      lScores.push(Number((lAvg / 10).toFixed(1)));
       mScores.push(Number((mAvg / 10).toFixed(1)));
-      tScores.push(Number((tAvg / 10).toFixed(1)));
-      pScores.push(Number((pAvg / 10).toFixed(1)));
+      eScores.push(Number((eAvg / 10).toFixed(1)));
+      aScores.push(Number((aAvg / 10).toFixed(1)));
     });
 
-    return { labels, manager: mScores, team: tScores, peer: pScores };
+    return { labels, manager: lScores, team: mScores, peer: eScores, admin: aScores };
   })();
 
-  // Derive Role Data and Gaps from stakeholders
+  // Derive Role Data and Gaps from stakeholders (Alignment Status)
   const roleAverages = (() => {
-    const roles = ["employee", "manager", "leader"];
-    return roles.map((role) => {
-      const responses =
-        reportData?.responses?.filter((r: any) => r.stakeholder === role) || [];
-      const score =
-        responses.length > 0
-          ? responses.reduce(
-              (acc: number, curr: any) => acc + getNumericScore(curr),
-              0,
-            ) / responses.length
-          : 0;
+    // Aggregated averages for the organization or selected department
+    const leaderScore = Math.round(teamAvgData?.leaderAvg?.[selectedDomain]?.avgScore || 0);
+    const managerScore = Math.round(teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0);
+    const employeeScore = Math.round(teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0);
 
-      const labelMap: any = {
-        employee: "EMPLOYEE",
-        manager: "MANAGER",
-        leader: "SENIOR LEADER",
-      };
-      const colorMap: any = {
-        employee: "#FF5656",
-        manager: "#FEE114",
-        leader: "#30AD43",
-      };
+    const getColor = (val: number) => {
+      if (val < 50) return "#FF5656"; // Needs Attention
+      if (val < 75) return "#FEE114"; // At Risk
+      return "#30AD43"; // On Track
+    };
 
-      return {
-        label: labelMap[role],
-        value: Math.round(score),
-        color: colorMap[role],
-      };
-    });
+    return [
+      { label: "SENIOR LEADER", value: leaderScore, color: getColor(leaderScore) },
+      { label: "MANAGER", value: managerScore, color: getColor(managerScore) },
+      { label: "EMPLOYEE", value: employeeScore, color: getColor(employeeScore) },
+    ];
   })();
 
-  const maxGapInfo = (() => {
-    let largest = 0;
-    let rolesText = "Balanced Views";
-    for (let i = 0; i < roleAverages.length; i++) {
-      for (let j = i + 1; j < roleAverages.length; j++) {
-        if (roleAverages[i].value === 0 || roleAverages[j].value === 0)
-          continue;
-        const gap = Math.abs(roleAverages[i].value - roleAverages[j].value);
-        if (gap > largest) {
-          largest = gap;
-          rolesText = `${roleAverages[i].label} VS ${roleAverages[j].label}`;
-        }
-      }
+  const alignmentInfo = (() => {
+    const leaderVal = roleAverages.find(r => r.label === "SENIOR LEADER")?.value || 0;
+    const employeeVal = roleAverages.find(r => r.label === "EMPLOYEE")?.value || 0;
+    const gap = Math.abs(leaderVal - employeeVal);
+
+    // Leadership Optimism Risk: Leader is High (Green), Employee is Low (Red)
+    if (leaderVal >= 75 && employeeVal < 50) {
+      return {
+        label: "Leadership optimism risk",
+        status: "Red",
+        color: "#D71818",
+        bg: "#FFEBEB",
+        icon: "solar:shield-warning-bold-duotone",
+        gap: gap
+      };
     }
-    return { text: rolesText, value: largest };
+
+    // Blind Spot Detected: Significant gap but not necessarily optimism risk
+    if (gap > 18) {
+      return {
+        label: "Blind spot detected",
+        status: "Amber",
+        color: "#D97706",
+        bg: "#FFFBEB",
+        icon: "solar:eye-broken-bold-duotone",
+        gap: gap
+      };
+    }
+
+    // Alignment Healthy
+    return {
+      label: "Alignment healthy",
+      status: "Green",
+      color: "#30AD43",
+      bg: "#F0FDF4",
+      icon: "solar:check-circle-bold-duotone",
+      gap: gap
+    };
   })();
 
   const trendData = (() => {
@@ -519,7 +531,7 @@ const AdminReport = () => {
     return { labels, manager: firstScores, team: currentScores, descriptions };
   })();
 
-  const roleData = roleAverages;
+
 
   return (
     <div>
@@ -598,9 +610,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                  value: selectedMember._id,
+                  label: selectedMember.name,
+                }
                 : null
             }
             onChange={(option: any) => {
@@ -742,9 +754,9 @@ const AdminReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -876,10 +888,52 @@ const AdminReport = () => {
                       <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                         Alignment Status
                       </h3>
-                      <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
-                        Blind Spot Detected
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="relative" data-twe-dropdown-ref>
+                          <button
+                            className="flex items-center whitespace-nowrap bg-[#EDF5FD] px-3 py-1 text-xs font-bold leading-normal text-[#676767] rounded-[4px]"
+                            type="button"
+                            id="alignmentDeptDropdown"
+                            data-twe-dropdown-toggle-ref
+                            aria-expanded="false"
+                          >
+                            {selectedRadarDept || "Organization Wide"}
+                            <span className="ms-1 w-2 [&>svg]:h-3 [&>svg]:w-3">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          </button>
+                          <ul
+                            className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                            aria-labelledby="alignmentDeptDropdown"
+                            data-twe-dropdown-menu-ref
+                          >
+                            <li>
+                              <button
+                                className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                                onClick={() => setSelectedRadarDept("")}
+                              >
+                                Organization Wide
+                              </button>
+                            </li>
+                            {(teamAvgData?.allDepartments || []).map((dept: string) => (
+                              <li key={dept}>
+                                <button
+                                  className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                                  onClick={() => setSelectedRadarDept(dept)}
+                                >
+                                  {dept}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <p className="text-sm font-semibold flex items-center gap-1" style={{ color: alignmentInfo.color }}>
+                          <Icon icon={alignmentInfo.icon} width="16" />
+                          {alignmentInfo.status} Status
+                        </p>
+                      </div>
                     </div>
 
                     <div>
@@ -887,20 +941,18 @@ const AdminReport = () => {
                     </div>
                   </div>
                   <div className="sm:w-[400px] w-full my-10">
-                    <RoleProgressChart data={roleData} />
+                    <RoleProgressChart data={roleAverages} />
                   </div>
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> {maxGapInfo.text} (+
-                    {maxGapInfo.value})
+                    <b className="">Largest Gap:</b> Senior Leader VS Employee (+{alignmentInfo.gap})
                   </p>
                   <div className="sm:mt-16 mt-6 ">
                     <button
                       type="button"
-                      className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
+                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider"
+                      style={{ backgroundColor: alignmentInfo.bg, color: alignmentInfo.color }}
                     >
-                      {maxGapInfo.value > 15
-                        ? "Perception Risk Detected"
-                        : "Alignment On Track"}
+                      {alignmentInfo.label}
                     </button>
                   </div>
                   <div></div>
@@ -969,7 +1021,7 @@ const AdminReport = () => {
                       data-twe-ripple-init
                       data-twe-ripple-color="light"
                     >
-                      Organization
+                      {selectedRadarDept || "Organization"}
                       <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -985,48 +1037,178 @@ const AdminReport = () => {
                       </span>
                     </button>
                     <ul
-                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block max-h-60 overflow-y-auto"
                       aria-labelledby="dropdownMenuButton1"
                       data-twe-dropdown-menu-ref
                     >
                       <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
+                        <button
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                          onClick={() => setSelectedRadarDept("")}
                         >
-                          Action
-                        </a>
+                          Organization 
+                        </button>
                       </li>
-                      <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
-                        >
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
-                        >
-                          Something else here
-                        </a>
-                      </li>
+                      {(teamAvgData?.allDepartments || []).map((dept: string) => (
+                        <li key={dept}>
+                          <button
+                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                            onClick={() => setSelectedRadarDept(dept)}
+                          >
+                            {dept}
+                          </button>
+                        </li>
+                      ))}
                     </ul>
+                  </div>
+                </div>
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(3) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(3)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(155, 89, 182, 0.7)" }} />
+                    <span className="text-xs text-[#474747]">Admin</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(74, 144, 226, 0.7)" }} />
+                    <span className="text-xs text-[#474747]">Leader</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(1)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(46, 204, 113, 0.7)" }} />
+                    <span className="text-xs text-[#474747]">Manager</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(2)}
+                  >
+                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(231, 76, 60, 0.6)" }} />
+                    <span className="text-xs text-[#474747]">Employee</span>
                   </div>
                 </div>
                 <div>
                   <MultiRadarChart
                     data={radarData}
-                    onLabelSelect={handleSubdomainChange}
+                    onLabelSelect={handleDomainChange}
+                    datasetLabels={["Leader", "Manager", "Employee", "Admin"]}
+                    hiddenIndices={hiddenIndices}
                   />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
+              {/* 🆕 Department Score Breakdown (Replaces empty block) */}
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                {teamAvgData && teamAvgData.memberCount > 0 ? (
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
+                          Role Score Breakdown — {selectedDomain}
+                        </h3>
+                        <p className="text-sm text-[#64748B] mt-1">
+                          Average subdomain scores across the{" "}
+                          <span className="font-bold">{selectedRadarDept || "Organization"}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Subdomain comparison rows */}
+                    <div className="space-y-6 mt-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                      {Object.entries(
+                        reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+                      ).map(([subName, _selfData]: [string, any]) => {
+                        // Admin Avg
+                        const adminScore = teamAvgData?.adminAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
+                        // Leader Avg
+                        const leaderScore = teamAvgData?.leaderAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
+                        // Manager Avg
+                        const managerScore = teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
+                        // Employee Avg
+                        const employeeScore = teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[subName] ?? 0;
+
+                        return (
+                          <div key={subName} className="flex flex-col gap-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-bold text-[#1A3652]">{subName}</span>
+                            </div>
+                            <div className="space-y-2">
+                              {/* Admin Bar */}
+                              {!hiddenIndices.includes(3) && (
+                                <div className="space-y-1">
+                                  <div className="flex justify-between text-[10px] text-[#64748B]">
+                                    <span>Admin Avg</span>
+                                    <span>{adminScore}%</span>
+                                  </div>
+                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-[#9B59B6] rounded-full transition-all duration-500"
+                                      style={{ width: `${adminScore}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              {/* Leader Bar */}
+                              {!hiddenIndices.includes(0) && (
+                                <div className="space-y-1">
+                                  <div className="flex justify-between text-[10px] text-[#64748B]">
+                                    <span>Leader Avg</span>
+                                    <span>{leaderScore}%</span>
+                                  </div>
+                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-[#4A90E2] rounded-full transition-all duration-500"
+                                      style={{ width: `${leaderScore}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              {/* Manager Bar */}
+                              {!hiddenIndices.includes(1) && (
+                                <div className="space-y-1">
+                                  <div className="flex justify-between text-[10px] text-[#64748B]">
+                                    <span>Manager Avg</span>
+                                    <span>{managerScore}%</span>
+                                  </div>
+                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-[#2ECC71] rounded-full transition-all duration-500"
+                                      style={{ width: `${managerScore}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              {/* Employee Bar */}
+                              {!hiddenIndices.includes(2) && (
+                                <div className="space-y-1">
+                                  <div className="flex justify-between text-[10px] text-[#64748B]">
+                                    <span>Employee Avg</span>
+                                    <span>{employeeScore}%</span>
+                                  </div>
+                                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-[#E74C3C] rounded-full transition-all duration-500"
+                                      style={{ width: `${employeeScore}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-slate-400">
+                    Select a department to see role breakdown
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
