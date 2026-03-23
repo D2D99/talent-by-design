@@ -1,9 +1,12 @@
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
+import { Modal, Ripple, initTWE } from "tw-elements";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 import Pagination from "../../components/Pagination";
+import ProgressIcon from "../../../public/static/img/home/progress-icon.png";
+import { useRef } from "react";
 
 interface UserMember {
   _id: string;
@@ -21,7 +24,12 @@ const AdminAssessments = () => {
   const [roleFilter] = useState<string[]>([]);
   const [statusFilter] = useState<string[]>([]);
   const [resetingId, setResetingId] = useState<string | null>(null);
-  const [confirmResetId, setConfirmResetId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const resetModalInstance = useRef<any>(null);
+
+  useEffect(() => {
+    initTWE({ Modal, Ripple });
+  }, []);
 
   // Get the logged-in admin's own user ID to hide the button for themselves
   const [adminId, setAdminId] = useState<string | null>(null);
@@ -68,18 +76,35 @@ const AdminAssessments = () => {
     fetchMembers();
   }, []);
 
-  const handleResetAssessment = async (memberId: string) => {
+  const openResetModal = (memberId: string) => {
     setResetingId(memberId);
-    setConfirmResetId(null);
+    const modalElem = document.getElementById("resetModal");
+    if (modalElem) {
+      if (!resetModalInstance.current) {
+        resetModalInstance.current = new Modal(modalElem);
+      }
+      resetModalInstance.current.show();
+    }
+  };
+
+  const handleResetAssessment = async () => {
+    if (!resetingId) return;
+    setIsProcessing(true);
     try {
-      await api.delete(`auth/reset-assessment/${memberId}`);
-      toast.success("Assessment reset successfully. The user must retake the assessment.");
+      await api.delete(`auth/reset-assessment/${resetingId}`);
+      toast.success(
+        "Assessment reset successfully. The user must retake the assessment.",
+      );
+      // Close modal
+      resetModalInstance.current?.hide();
       // Refresh the members list
       await fetchMembers();
     } catch (error: any) {
-      const msg = error?.response?.data?.message || "Failed to reset assessment.";
+      const msg =
+        error?.response?.data?.message || "Failed to reset assessment.";
       toast.error(msg);
     } finally {
+      setIsProcessing(false);
       setResetingId(null);
     }
   };
@@ -209,10 +234,7 @@ const AdminAssessments = () => {
               // Hide reset button for admins (own role) and for the logged-in admin themselves
               const isAdminRole = member.role?.toLowerCase() === "admin";
               const isSelf = adminId && member._id?.toString() === adminId?.toString();
-              const canReset = !isAdminRole && !isSelf && status === "Completed";
-
-              const isResetting = resetingId === member._id;
-              const isConfirming = confirmResetId === member._id;
+              const canReset = !isAdminRole && !isSelf && (status === "Completed" || status === "In Progress");
 
               return (
                 <tr
@@ -282,40 +304,14 @@ const AdminAssessments = () => {
                   </td>
                   <td className="px-6 py-4">
                     {canReset ? (
-                      isConfirming ? (
-                        /* Confirm prompt */
-                        <div className="flex items-center gap-2 text-nowrap">
-                          <span className="text-xs text-gray-500">Sure?</span>
-                          <button
-                            id={`confirm-reset-${member._id}`}
-                            onClick={() => handleResetAssessment(member._id)}
-                            disabled={isResetting}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-60"
-                          >
-                            {isResetting ? (
-                              <Icon icon="svg-spinners:ring-resize" width="12" />
-                            ) : (
-                              "Yes, Reset"
-                            )}
-                          </button>
-                          <button
-                            onClick={() => setConfirmResetId(null)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          id={`reset-assessment-${member._id}`}
-                          onClick={() => setConfirmResetId(member._id)}
-                          title="Reset this user's assessment so they must retake it"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-orange-300 text-orange-600 bg-orange-50 hover:bg-orange-100 hover:border-orange-400 transition-all"
-                        >
-                          <Icon icon="solar:restart-linear" width="14" />
-                          Reset
-                        </button>
-                      )
+                      <button
+                        onClick={() => openResetModal(member._id)}
+                        title="Reset this user's assessment so they must retake it"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-orange-300 text-orange-600 bg-orange-50 hover:bg-orange-100 hover:border-orange-400 transition-all"
+                      >
+                        <Icon icon="solar:restart-linear" width="14" />
+                        Reset
+                      </button>
                     ) : (
                       <span className="text-gray-300 text-xs">—</span>
                     )}
@@ -348,6 +344,75 @@ const AdminAssessments = () => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
+
+      {/* --- Reset Modal --- */}
+      <div
+        data-twe-modal-init
+        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="resetModal"
+        tabIndex={-1}
+        aria-labelledby="resetModalTitle"
+        aria-modal="true"
+        role="dialog"
+        data-twe-backdrop="static"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-xl mx-auto px-4"
+        >
+          <div className="pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
+              <h5
+                className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold"
+                id="resetModalTitle"
+              >
+                Reset Assessment
+              </h5>
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="text-neutral-500 hover:text-neutral-800"
+              >
+                <Icon icon="material-symbols:close" width="24" />
+              </button>
+            </div>
+
+            <div className="relative sm:py-8 py-4 px-4 grid place-items-center gap-4">
+              <img src={ProgressIcon} alt="Progress Icon" width={80} />
+              <div className="text-center">
+                <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
+                  Are you sure you want to reset the assessment?
+                </h5>
+                <p className="text-sm text-neutral-600">
+                  This user will be required to retake their assessment from
+                  the beginning.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-neutral-200 py-4 px-4">
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleResetAssessment}
+                className="group relative overflow-hidden z-0 bg-orange-500 px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase text-white duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                {isProcessing ? (
+                  <Icon icon="svg-spinners:ring-resize" width="12" />
+                ) : (
+                  "Reset Now"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
