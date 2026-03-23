@@ -4,6 +4,7 @@ import Pagination from "../Pagination";
 import api from "../../services/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Ripple, initTWE } from "tw-elements";
 
 interface UserMember {
   _id: string;
@@ -32,10 +33,11 @@ const OrgAssessmentDetails = () => {
   const [details, setDetails] = useState<OrgDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [assessmentFilter] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [roleFilter] = useState<string[]>([]);
-  const [assessmentFilter] = useState<string[]>([]);
+
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;
@@ -65,6 +67,7 @@ const OrgAssessmentDetails = () => {
 
   useEffect(() => {
     fetchMembers();
+    initTWE({ Ripple });
   }, [fetchMembers]);
 
   const handleSort = (key: keyof UserMember) => {
@@ -492,69 +495,71 @@ const OrgAssessmentDetails = () => {
           </thead>
           <tbody>
             {currentData.length > 0 ? (
-              currentData.map((member, index) => (
-                <tr
-                  key={member._id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
-                >
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                    {indexOfFirstItem + index + 1}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium">
-                    <span className="font-bold text-gray-800 tracking-tight text-nowrap">
-                      {member.firstName === "-" ? (
-                        <span className="text-gray-300 font-black">—</span>
+              currentData.map((member, index) => {
+                return (
+                  <tr
+                    key={member._id}
+                    className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                      {indexOfFirstItem + index + 1}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium">
+                      <span className="font-bold text-gray-800 tracking-tight text-nowrap">
+                        {member.firstName === "-" ? (
+                          <span className="text-gray-300 font-black">—</span>
+                        ) : (
+                          `${member.firstName} ${member.lastName}`
+                        )}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {member.email}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {new Date(member.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="uppercase text-xs font-bold">
+                        {member.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {renderAssessmentBadge(member.assessmentStatus)}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {member.assessmentStatus === "Completed" ? (
+                        <button
+                          onClick={() => {
+                            const roleMapping: Record<string, string> = {
+                              superAdmin: "org-head",
+                              superadmin: "org-head",
+                              super_admin: "org-head",
+                              admin: "org-head",
+                              "senior-leader": "senior-leader",
+                              leader: "senior-leader",
+                              manager: "manager",
+                              employee: "employee",
+                            };
+                            const reportType =
+                              roleMapping[member.role.toLowerCase()] ||
+                              "employee";
+                            navigate(
+                              `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`,
+                            );
+                          }}
+                          className="text-gray-400 hover:text-[#448CD2] transition-colors"
+                          title="View Report"
+                        >
+                          <Icon icon="solar:eye-linear" width="18" />
+                        </button>
                       ) : (
-                        `${member.firstName} ${member.lastName}`
+                        <span className="text-gray-300">—</span>
                       )}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {member.email}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {new Date(member.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="uppercase text-xs font-bold">
-                      {member.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {renderAssessmentBadge(member.assessmentStatus)}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    {member.assessmentStatus === "Completed" ? (
-                      <button
-                        onClick={() => {
-                          const roleMapping: Record<string, string> = {
-                            superAdmin: "org-head",
-                            superadmin: "org-head",
-                            super_admin: "org-head",
-                            admin: "org-head",
-                            "senior-leader": "senior-leader",
-                            leader: "senior-leader",
-                            manager: "manager",
-                            employee: "employee",
-                          };
-                          const reportType =
-                            roleMapping[member.role.toLowerCase()] ||
-                            "employee";
-                          navigate(
-                            `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`,
-                          );
-                        }}
-                        className="text-gray-400 hover:text-[#448CD2] transition-colors"
-                        title="View Report"
-                      >
-                        <Icon icon="solar:eye-linear" width="18" />
-                      </button>
-                    ) : (
-                      <span className="text-gray-300">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={7} className="py-20 text-center text-gray-400">
