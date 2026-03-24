@@ -72,6 +72,9 @@ const ManagerReport = () => {
   const userRole = user?.role?.toLowerCase() || "";
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
+  const isLeader = userRole === "leader";
+  const isManager = userRole === "manager";
+
   const isReportPage = location.pathname.includes("reports");
 
   const [orgs, setOrgs] = useState<string[]>([]);
@@ -529,6 +532,13 @@ const ManagerReport = () => {
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
           {isAdmin && <div className="xl:block hidden"></div>}
+
+          {isLeader && <div className="xl:block hidden"></div>}
+          {isLeader && <div className="xl:block hidden"></div>}
+
+          {isManager && <div className="xl:block hidden"></div>}
+
+          {isManager && <div className="xl:block hidden"></div>}
 
           {isSuperAdmin && (
             <Select

@@ -69,6 +69,7 @@ const LeaderReport = () => {
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
+  const isLeader = userRole === "leader";
   const isReportPage = location.pathname.includes("reports");
   const [orgs, setOrgs] = useState<string[]>([]);
   const [depts, setDepts] = useState<string[]>([]);
@@ -641,6 +642,10 @@ const LeaderReport = () => {
           <div className="xl:block hidden"></div>
 
           {isAdmin && <div className="xl:block hidden"></div>}
+
+          {isLeader && <div className="xl:block hidden"></div>}
+
+          {isLeader && <div className="xl:block hidden"></div>}
 
           {isSuperAdmin && (
             <Select
