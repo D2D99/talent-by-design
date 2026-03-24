@@ -1103,17 +1103,7 @@ const ManagerReport = () => {
                     </h3>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-1 mt-6">
-                  <div>
-                    <p className="w-9 h-4 bg-[#448bd26c]"></p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-normal text-[#474747]">
-                      Manager Self Assessment
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2 mb-2">
+                <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(0)}

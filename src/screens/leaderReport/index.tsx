@@ -438,14 +438,20 @@ const LeaderReport = () => {
 
   // Derive Role Data and Gaps (Alignment Status)
   const roleAverages = (() => {
-    // Leader's OWN domain score
-    const leaderScore = Math.round(reportData?.scores?.domains?.[selectedDomain]?.score || 0);
+    // Leader's OWN total POD average across all domains
+    const leaderScore = Math.round(reportData?.scores?.overall || 0);
 
-    // Manager Avg from department POD data
-    const managerAvgScore = Math.round(teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0);
+    // Manager total POD avg across all domains from department data
+    const mScores = Object.values(teamAvgData?.managerAvg || {}).map((d: any) => d.avgScore || 0);
+    const managerAvgScore = mScores.length > 0
+      ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
+      : 0;
 
-    // Employee Avg from department POD data
-    const employeeAvgScore = Math.round(teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0);
+    // Employee total POD avg across all domains from department data
+    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map((d: any) => d.avgScore || 0);
+    const employeeAvgScore = eScores.length > 0
+      ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
+      : 0;
 
     const getColor = (val: number) => {
       if (val < 50) return "#FF5656"; // Needs Attention
@@ -670,7 +676,7 @@ const LeaderReport = () => {
               }))}
 
 
-              
+
               value={
                 selectedMember
                   ? {
@@ -1035,65 +1041,7 @@ const LeaderReport = () => {
                   <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                     Overall Departmental POD Score
                   </h3>
-                  <div className="relative" data-twe-dropdown-ref>
-                    <button
-                      className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[14px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                      type="button"
-                      id="dropdownMenuButton1"
-                      data-twe-dropdown-toggle-ref
-                      aria-expanded="false"
-                      data-twe-ripple-init
-                      data-twe-ripple-color="light"
-                    >
-                      Organization
-                      <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <ul
-                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                      aria-labelledby="dropdownMenuButton1"
-                      data-twe-dropdown-menu-ref
-                    >
-                      <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
-                        >
-                          Action
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
-                        >
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
-                        >
-                          Something else here
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+                  
                 </div>
                 {/* Legend */}
                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">

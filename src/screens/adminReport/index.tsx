@@ -73,6 +73,7 @@ const AdminReport = () => {
   const isAdmin = userRole === "admin";
   const [orgs, setOrgs] = useState<string[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
+  const [depts, setDepts] = useState<string[]>([]);
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -89,6 +90,7 @@ const AdminReport = () => {
     if (selectedOrg) {
       api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
         setMembers(res.data.members);
+        setDepts(res.data.departments);
       });
     }
   }, [selectedOrg]);
@@ -415,10 +417,21 @@ const AdminReport = () => {
 
   // Derive Role Data and Gaps from stakeholders (Alignment Status)
   const roleAverages = (() => {
-    // Aggregated averages for the organization or selected department
-    const leaderScore = Math.round(teamAvgData?.leaderAvg?.[selectedDomain]?.avgScore || 0);
-    const managerScore = Math.round(teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0);
-    const employeeScore = Math.round(teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0);
+    // Aggregated averages across ALL domains
+    const lScores = Object.values(teamAvgData?.leaderAvg || {}).map((d: any) => d.avgScore || 0);
+    const leaderScore = lScores.length > 0
+      ? Math.round(lScores.reduce((a, b) => a + b, 0) / lScores.length)
+      : 0;
+
+    const mScores = Object.values(teamAvgData?.managerAvg || {}).map((d: any) => d.avgScore || 0);
+    const managerScore = mScores.length > 0
+      ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
+      : 0;
+
+    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map((d: any) => d.avgScore || 0);
+    const employeeScore = eScores.length > 0
+      ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
+      : 0;
 
     const getColor = (val: number) => {
       if (val < 50) return "#FF5656"; // Needs Attention
@@ -427,9 +440,9 @@ const AdminReport = () => {
     };
 
     return [
-      { label: "SENIOR LEADER", value: leaderScore, color: getColor(leaderScore) },
-      { label: "MANAGER", value: managerScore, color: getColor(managerScore) },
-      { label: "EMPLOYEE", value: employeeScore, color: getColor(employeeScore) },
+      { label: `SENIOR LEADER (${teamAvgData?.leaderCount || 0})`, value: leaderScore, color: getColor(leaderScore) },
+      { label: `MANAGER (${teamAvgData?.managerCount || 0})`, value: managerScore, color: getColor(managerScore) },
+      { label: `EMPLOYEE (${teamAvgData?.employeeCount || 0})`, value: employeeScore, color: getColor(employeeScore) },
     ];
   })();
 
@@ -917,7 +930,7 @@ const AdminReport = () => {
                                 Organization Wide
                               </button>
                             </li>
-                            {(teamAvgData?.allDepartments || []).map((dept: string) => (
+                            {(depts.length > 0 ? depts : (teamAvgData?.allDepartments || [])).map((dept: string) => (
                               <li key={dept}>
                                 <button
                                   className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
@@ -1049,7 +1062,7 @@ const AdminReport = () => {
                           Organization
                         </button>
                       </li>
-                      {(teamAvgData?.allDepartments || []).map((dept: string) => (
+                      {(depts.length > 0 ? depts : (teamAvgData?.allDepartments || [])).map((dept: string) => (
                         <li key={dept}>
                           <button
                             className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
@@ -1068,21 +1081,21 @@ const AdminReport = () => {
                     onClick={() => toggleHiddenIndex(0)}
                   >
                     <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(74, 144, 226, 0.7)" }} />
-                    <span className="text-xs text-[#474747]">Leader</span>
+                    <span className="text-xs text-[#474747]">Leader ({teamAvgData?.leaderCount || 0})</span>
                   </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(1)}
                   >
                     <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(46, 204, 113, 0.7)" }} />
-                    <span className="text-xs text-[#474747]">Manager</span>
+                    <span className="text-xs text-[#474747]">Manager ({teamAvgData?.managerCount || 0})</span>
                   </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(2)}
                   >
                     <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(231, 76, 60, 0.6)" }} />
-                    <span className="text-xs text-[#474747]">Employee</span>
+                    <span className="text-xs text-[#474747]">Employee ({teamAvgData?.employeeCount || 0})</span>
                   </div>
                 </div>
                 <div>
