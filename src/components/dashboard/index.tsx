@@ -26,7 +26,7 @@ const Dashboard = () => {
           className="restore-sidebar absolute top-[80px] right-[-12px] cursor-pointer"
           onClick={() => setIsActive(!isActive)}
         >
-          <img src={IconamoonArrow} alt="arrow" className="rotate-180" />
+          <img src={IconamoonArrow} alt="arrow" className="rotate-180 hidden" />
         </div>
       </div>
 

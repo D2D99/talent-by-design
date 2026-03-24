@@ -452,6 +452,7 @@ const EmployeeReport = () => {
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
+          {isAdmin && <div className="xl:block hidden"></div>}
 
           {isSuperAdmin && (
             <Select

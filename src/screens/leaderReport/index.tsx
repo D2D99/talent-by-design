@@ -61,8 +61,8 @@ const LeaderReport = () => {
   const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
 
   const toggleHiddenIndex = (idx: number) => {
-    setHiddenIndices(prev =>
-      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    setHiddenIndices((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -312,7 +312,10 @@ const LeaderReport = () => {
 
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore = (() => {
-    const subData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[selectedSubdomain];
+    const subData =
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+        selectedSubdomain
+      ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
     }
@@ -361,16 +364,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -414,22 +417,26 @@ const LeaderReport = () => {
         reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
       const lRaw =
         typeof leaderSubData === "object"
-          ? leaderSubData?.score ?? 0
-          : leaderSubData ?? 0;
+          ? (leaderSubData?.score ?? 0)
+          : (leaderSubData ?? 0);
       mScores.push(Number((lRaw / 10).toFixed(1)));
 
       // Manager avg (managers under the leader)
       const managerSubScore =
         teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
       tScores.push(
-        managerSubScore !== null ? Number((managerSubScore / 10).toFixed(1)) : 0,
+        managerSubScore !== null
+          ? Number((managerSubScore / 10).toFixed(1))
+          : 0,
       );
 
       // Employee avg (employees under the leader)
       const employeeSubScore =
         teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
       pScores.push(
-        employeeSubScore !== null ? Number((employeeSubScore / 10).toFixed(1)) : 0,
+        employeeSubScore !== null
+          ? Number((employeeSubScore / 10).toFixed(1))
+          : 0,
       );
     });
 
@@ -442,16 +449,22 @@ const LeaderReport = () => {
     const leaderScore = Math.round(reportData?.scores?.overall || 0);
 
     // Manager total POD avg across all domains from department data
-    const mScores = Object.values(teamAvgData?.managerAvg || {}).map((d: any) => d.avgScore || 0);
-    const managerAvgScore = mScores.length > 0
-      ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
-      : 0;
+    const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const managerAvgScore =
+      mScores.length > 0
+        ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
+        : 0;
 
     // Employee total POD avg across all domains from department data
-    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map((d: any) => d.avgScore || 0);
-    const employeeAvgScore = eScores.length > 0
-      ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
-      : 0;
+    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const employeeAvgScore =
+      eScores.length > 0
+        ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
+        : 0;
 
     const getColor = (val: number) => {
       if (val < 50) return "#FF5656"; // Needs Attention
@@ -479,8 +492,10 @@ const LeaderReport = () => {
   })();
 
   const alignmentInfo = (() => {
-    const leaderVal = roleAverages.find(r => r.label === "SENIOR LEADER")?.value || 0;
-    const employeeVal = roleAverages.find(r => r.label === "EMPLOYEE")?.value || 0;
+    const leaderVal =
+      roleAverages.find((r) => r.label === "SENIOR LEADER")?.value || 0;
+    const employeeVal =
+      roleAverages.find((r) => r.label === "EMPLOYEE")?.value || 0;
     const gap = Math.abs(leaderVal - employeeVal);
 
     // Leadership Optimism Risk: Leader is High (Green), Employee is Low (Red)
@@ -491,7 +506,7 @@ const LeaderReport = () => {
         color: "#D71818",
         bg: "#FFEBEB",
         icon: "solar:shield-warning-bold-duotone",
-        gap: gap
+        gap: gap,
       };
     }
 
@@ -503,7 +518,7 @@ const LeaderReport = () => {
         color: "#D97706",
         bg: "#FFFBEB",
         icon: "solar:eye-broken-bold-duotone",
-        gap: gap
+        gap: gap,
       };
     }
 
@@ -514,7 +529,7 @@ const LeaderReport = () => {
       color: "#30AD43",
       bg: "#F0FDF4",
       icon: "solar:check-circle-bold-duotone",
-      gap: gap
+      gap: gap,
     };
   })();
 
@@ -576,8 +591,6 @@ const LeaderReport = () => {
     return { labels, manager: firstScores, team: currentScores, descriptions };
   })();
 
-
-
   return (
     <div>
       <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
@@ -627,6 +640,8 @@ const LeaderReport = () => {
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
 
+          {isAdmin && <div className="xl:block hidden"></div>}
+
           {isSuperAdmin && (
             <Select
               className="select-search"
@@ -674,15 +689,12 @@ const LeaderReport = () => {
                 label: m.name,
                 data: m,
               }))}
-
-
-
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -826,9 +838,9 @@ const LeaderReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -960,7 +972,10 @@ const LeaderReport = () => {
                       <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                         Alignment Status
                       </h3>
-                      <p className="text-sm font-semibold mt-1 flex items-center gap-1" style={{ color: alignmentInfo.color }}>
+                      <p
+                        className="text-sm font-semibold mt-1 flex items-center gap-1"
+                        style={{ color: alignmentInfo.color }}
+                      >
                         <Icon icon={alignmentInfo.icon} width="16" />
                         {alignmentInfo.status} Status
                       </p>
@@ -974,13 +989,17 @@ const LeaderReport = () => {
                     <RoleProgressChart data={roleAverages} />
                   </div>
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> Senior Leader VS Employee (+{alignmentInfo.gap})
+                    <b className="">Largest Gap:</b> Senior Leader VS Employee
+                    (+{alignmentInfo.gap})
                   </p>
                   <div className="sm:mt-16 mt-6 ">
                     <button
                       type="button"
                       className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider"
-                      style={{ backgroundColor: alignmentInfo.bg, color: alignmentInfo.color }}
+                      style={{
+                        backgroundColor: alignmentInfo.bg,
+                        color: alignmentInfo.color,
+                      }}
                     >
                       {alignmentInfo.label}
                     </button>
@@ -1041,7 +1060,6 @@ const LeaderReport = () => {
                   <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                     Overall Departmental POD Score
                   </h3>
-                  
                 </div>
                 {/* Legend */}
                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
@@ -1049,22 +1067,35 @@ const LeaderReport = () => {
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(0)}
                   >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(74, 144, 226, 0.7)" }} />
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
                     <span className="text-xs text-[#474747]">Leader</span>
                   </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(1)}
                   >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(46, 204, 113, 0.7)" }} />
-                    <span className="text-xs text-[#474747]">Manager Avg ({teamAvgData?.managerCount || 0})</span>
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Manager Avg ({teamAvgData?.managerCount || 0})
+                    </span>
                   </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(2)}
                   >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(231, 76, 60, 0.6)" }} />
-                    <span className="text-xs text-[#474747]">Employee Avg ({teamAvgData?.employeeCount || 0})</span>
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(231, 76, 60, 0.6)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Employee Avg ({teamAvgData?.employeeCount || 0})
+                    </span>
                   </div>
                 </div>
                 <div>

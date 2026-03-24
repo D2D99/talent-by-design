@@ -62,8 +62,8 @@ const AdminReport = () => {
   const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
 
   const toggleHiddenIndex = (idx: number) => {
-    setHiddenIndices(prev =>
-      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    setHiddenIndices((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -203,7 +203,8 @@ const AdminReport = () => {
         const params: string[] = ["includeSelf=true"];
         if (userId) params.push(`userId=${userId}`);
         if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
-        if (selectedRadarDept) params.push(`department=${encodeURIComponent(selectedRadarDept)}`);
+        if (selectedRadarDept)
+          params.push(`department=${encodeURIComponent(selectedRadarDept)}`);
         if (params.length) url += `?${params.join("&")}`;
         const res = await api.get(url);
         setTeamAvgData(res.data);
@@ -213,7 +214,6 @@ const AdminReport = () => {
     };
     fetchTeamAvg();
   }, [userId, userEmail, refreshKey, selectedRadarDept]);
-
 
   const handleExportPDF = async () => {
     try {
@@ -307,7 +307,10 @@ const AdminReport = () => {
 
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore = (() => {
-    const subData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[selectedSubdomain];
+    const subData =
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+        selectedSubdomain
+      ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
     }
@@ -356,16 +359,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -418,20 +421,29 @@ const AdminReport = () => {
   // Derive Role Data and Gaps from stakeholders (Alignment Status)
   const roleAverages = (() => {
     // Aggregated averages across ALL domains
-    const lScores = Object.values(teamAvgData?.leaderAvg || {}).map((d: any) => d.avgScore || 0);
-    const leaderScore = lScores.length > 0
-      ? Math.round(lScores.reduce((a, b) => a + b, 0) / lScores.length)
-      : 0;
+    const lScores = Object.values(teamAvgData?.leaderAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const leaderScore =
+      lScores.length > 0
+        ? Math.round(lScores.reduce((a, b) => a + b, 0) / lScores.length)
+        : 0;
 
-    const mScores = Object.values(teamAvgData?.managerAvg || {}).map((d: any) => d.avgScore || 0);
-    const managerScore = mScores.length > 0
-      ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
-      : 0;
+    const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const managerScore =
+      mScores.length > 0
+        ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
+        : 0;
 
-    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map((d: any) => d.avgScore || 0);
-    const employeeScore = eScores.length > 0
-      ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
-      : 0;
+    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const employeeScore =
+      eScores.length > 0
+        ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
+        : 0;
 
     const getColor = (val: number) => {
       if (val < 50) return "#FF5656"; // Needs Attention
@@ -440,15 +452,29 @@ const AdminReport = () => {
     };
 
     return [
-      { label: `SENIOR LEADER (${teamAvgData?.leaderCount || 0})`, value: leaderScore, color: getColor(leaderScore) },
-      { label: `MANAGER (${teamAvgData?.managerCount || 0})`, value: managerScore, color: getColor(managerScore) },
-      { label: `EMPLOYEE (${teamAvgData?.employeeCount || 0})`, value: employeeScore, color: getColor(employeeScore) },
+      {
+        label: `SENIOR LEADER (${teamAvgData?.leaderCount || 0})`,
+        value: leaderScore,
+        color: getColor(leaderScore),
+      },
+      {
+        label: `MANAGER (${teamAvgData?.managerCount || 0})`,
+        value: managerScore,
+        color: getColor(managerScore),
+      },
+      {
+        label: `EMPLOYEE (${teamAvgData?.employeeCount || 0})`,
+        value: employeeScore,
+        color: getColor(employeeScore),
+      },
     ];
   })();
 
   const alignmentInfo = (() => {
-    const leaderVal = roleAverages.find(r => r.label === "SENIOR LEADER")?.value || 0;
-    const employeeVal = roleAverages.find(r => r.label === "EMPLOYEE")?.value || 0;
+    const leaderVal =
+      roleAverages.find((r) => r.label === "SENIOR LEADER")?.value || 0;
+    const employeeVal =
+      roleAverages.find((r) => r.label === "EMPLOYEE")?.value || 0;
     const gap = Math.abs(leaderVal - employeeVal);
 
     // Leadership Optimism Risk: Leader is High (Green), Employee is Low (Red)
@@ -459,7 +485,7 @@ const AdminReport = () => {
         color: "#D71818",
         bg: "#FFEBEB",
         icon: "solar:shield-warning-bold-duotone",
-        gap: gap
+        gap: gap,
       };
     }
 
@@ -471,7 +497,7 @@ const AdminReport = () => {
         color: "#D97706",
         bg: "#FFFBEB",
         icon: "solar:eye-broken-bold-duotone",
-        gap: gap
+        gap: gap,
       };
     }
 
@@ -482,7 +508,7 @@ const AdminReport = () => {
       color: "#30AD43",
       bg: "#F0FDF4",
       icon: "solar:check-circle-bold-duotone",
-      gap: gap
+      gap: gap,
     };
   })();
 
@@ -544,8 +570,6 @@ const AdminReport = () => {
     return { labels, manager: firstScores, team: currentScores, descriptions };
   })();
 
-
-
   return (
     <div>
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
@@ -597,6 +621,7 @@ const AdminReport = () => {
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
           <div className="xl:block hidden"></div>
+          {isAdmin && <div className="xl:block hidden"></div>}
           {isSuperAdmin && (
             <Select
               className="select-search"
@@ -623,9 +648,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -767,9 +792,9 @@ const AdminReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -912,8 +937,16 @@ const AdminReport = () => {
                           >
                             {selectedRadarDept || "Organization Wide"}
                             <span className="ms-1 w-2 [&>svg]:h-3 [&>svg]:w-3">
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                  clipRule="evenodd"
+                                />
                               </svg>
                             </span>
                           </button>
@@ -930,7 +963,10 @@ const AdminReport = () => {
                                 Organization Wide
                               </button>
                             </li>
-                            {(depts.length > 0 ? depts : (teamAvgData?.allDepartments || [])).map((dept: string) => (
+                            {(depts.length > 0
+                              ? depts
+                              : teamAvgData?.allDepartments || []
+                            ).map((dept: string) => (
                               <li key={dept}>
                                 <button
                                   className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
@@ -942,7 +978,10 @@ const AdminReport = () => {
                             ))}
                           </ul>
                         </div>
-                        <p className="text-sm font-semibold flex items-center gap-1" style={{ color: alignmentInfo.color }}>
+                        <p
+                          className="text-sm font-semibold flex items-center gap-1"
+                          style={{ color: alignmentInfo.color }}
+                        >
                           <Icon icon={alignmentInfo.icon} width="16" />
                           {alignmentInfo.status} Status
                         </p>
@@ -957,13 +996,17 @@ const AdminReport = () => {
                     <RoleProgressChart data={roleAverages} />
                   </div>
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> Senior Leader VS Employee (+{alignmentInfo.gap})
+                    <b className="">Largest Gap:</b> Senior Leader VS Employee
+                    (+{alignmentInfo.gap})
                   </p>
                   <div className="sm:mt-16 mt-6 ">
                     <button
                       type="button"
                       className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider"
-                      style={{ backgroundColor: alignmentInfo.bg, color: alignmentInfo.color }}
+                      style={{
+                        backgroundColor: alignmentInfo.bg,
+                        color: alignmentInfo.color,
+                      }}
                     >
                       {alignmentInfo.label}
                     </button>
@@ -1062,7 +1105,10 @@ const AdminReport = () => {
                           Organization
                         </button>
                       </li>
-                      {(depts.length > 0 ? depts : (teamAvgData?.allDepartments || [])).map((dept: string) => (
+                      {(depts.length > 0
+                        ? depts
+                        : teamAvgData?.allDepartments || []
+                      ).map((dept: string) => (
                         <li key={dept}>
                           <button
                             className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
@@ -1080,22 +1126,37 @@ const AdminReport = () => {
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(0)}
                   >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(74, 144, 226, 0.7)" }} />
-                    <span className="text-xs text-[#474747]">Leader ({teamAvgData?.leaderCount || 0})</span>
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Leader ({teamAvgData?.leaderCount || 0})
+                    </span>
                   </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(1)}
                   >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(46, 204, 113, 0.7)" }} />
-                    <span className="text-xs text-[#474747]">Manager ({teamAvgData?.managerCount || 0})</span>
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Manager ({teamAvgData?.managerCount || 0})
+                    </span>
                   </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(2)}
                   >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(231, 76, 60, 0.6)" }} />
-                    <span className="text-xs text-[#474747]">Employee ({teamAvgData?.employeeCount || 0})</span>
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(231, 76, 60, 0.6)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Employee ({teamAvgData?.employeeCount || 0})
+                    </span>
                   </div>
                 </div>
                 <div>

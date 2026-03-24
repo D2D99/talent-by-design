@@ -61,8 +61,8 @@ const ManagerReport = () => {
   const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
 
   const toggleHiddenIndex = (idx: number) => {
-    setHiddenIndices(prev =>
-      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    setHiddenIndices((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -397,7 +397,10 @@ const ManagerReport = () => {
 
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore = (() => {
-    const subData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[selectedSubdomain];
+    const subData =
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+        selectedSubdomain
+      ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
     }
@@ -407,16 +410,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -453,15 +456,17 @@ const ManagerReport = () => {
         reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
       const mRaw =
         typeof managerSubData === "object"
-          ? managerSubData?.score ?? 0
-          : managerSubData ?? 0;
+          ? (managerSubData?.score ?? 0)
+          : (managerSubData ?? 0);
       mScores.push(Number((mRaw / 10).toFixed(1)));
 
       // Employee avg (same department) - mapped to 'team' dataset for colors
       const employeeSubScore =
         teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
       tScores.push(
-        employeeSubScore !== null ? Number((employeeSubScore / 10).toFixed(1)) : 0,
+        employeeSubScore !== null
+          ? Number((employeeSubScore / 10).toFixed(1))
+          : 0,
       );
     });
 
@@ -523,6 +528,7 @@ const ManagerReport = () => {
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
+          {isAdmin && <div className="xl:block hidden"></div>}
 
           {isSuperAdmin && (
             <Select
@@ -575,9 +581,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -939,9 +945,9 @@ const ManagerReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1108,7 +1114,10 @@ const ManagerReport = () => {
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
                     onClick={() => toggleHiddenIndex(0)}
                   >
-                    <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(74, 144, 226, 0.7)" }} />
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
                     <span className="text-xs text-[#474747]">Manager</span>
                   </div>
                   {(teamAvgData?.employeeCount > 0 || true) && (
@@ -1116,13 +1125,18 @@ const ManagerReport = () => {
                       className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
                       onClick={() => toggleHiddenIndex(1)}
                     >
-                      <span className="w-5 h-2 rounded-sm inline-block" style={{ background: "rgba(46, 204, 113, 0.7)" }} />
-                      <span className="text-xs text-[#474747]">Employee ({teamAvgData?.employeeCount || 0})</span>
+                      <span
+                        className="w-5 h-2 rounded-sm inline-block"
+                        style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                      />
+                      <span className="text-xs text-[#474747]">
+                        Employee ({teamAvgData?.employeeCount || 0})
+                      </span>
                     </div>
                   )}
                 </div>
                 <div>
-                   <RadarChart
+                  <RadarChart
                     data={radarData}
                     selectedLabel={selectedLabel}
                     onLabelSelect={handleRadarChartSelection}
@@ -1138,13 +1152,26 @@ const ManagerReport = () => {
                       Delta Breakdown
                     </h3>
                     <p className="text-sm text-[#64748B] mt-1 mb-6 ">
-                      {userData?.firstName || reportData?.user?.firstName || "Manager"}:{" "}
+                      {userData?.firstName ||
+                        reportData?.user?.firstName ||
+                        "Manager"}
+                      :{" "}
                       <span className="font-bold text-[#448CD2]">
-                        {(radarData.manager.reduce((a, b) => a + b, 0) / (radarData.manager.length || 1) * 10).toFixed(0)}%
+                        {(
+                          (radarData.manager.reduce((a, b) => a + b, 0) /
+                            (radarData.manager.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
                       </span>{" "}
                       Domain Avg vs Employee Avg:{" "}
                       <span className="font-bold text-[#E74C3C]">
-                        {(radarData.team.reduce((a, b) => a + b, 0) / (radarData.team.length || 1) * 10).toFixed(0)}%
+                        {(
+                          (radarData.team.reduce((a, b) => a + b, 0) /
+                            (radarData.team.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
                       </span>
                     </p>
                   </div>
@@ -1163,7 +1190,10 @@ const ManagerReport = () => {
 
             <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px]">
               <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
-                Overall {selectedDomain} Domain Score — {userData?.firstName || reportData?.user?.firstName || "Manager"}
+                Overall {selectedDomain} Domain Score —{" "}
+                {userData?.firstName ||
+                  reportData?.user?.firstName ||
+                  "Manager"}
               </h3>
               <div className="p-4 pt-0 ">
                 <ScoreBar
@@ -1192,7 +1222,7 @@ const ManagerReport = () => {
         }}
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
       />
-    </div >
+    </div>
   );
 };
 export default ManagerReport;

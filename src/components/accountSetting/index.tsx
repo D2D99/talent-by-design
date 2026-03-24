@@ -130,7 +130,6 @@ const AccountSetting = () => {
                 aria-controls="tabs-info"
                 aria-selected="true"
               >
-                General Info
               </a>
             </li>
             <li role="presentation">
