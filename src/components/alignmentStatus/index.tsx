@@ -85,18 +85,14 @@ const RoleProgressChart = ({ data }: Props) => {
                     return value > 0 ? `${value}%` : ''; 
                   },
                   color: '#000',
+                  // Shift the percentage to the right
                   offset: (ctx) => {
-                    // Ensure value is a number
                     const value = ctx.dataset.data[ctx.dataIndex];
-
-                    // Check if the value is a valid number and not null
                     if (typeof value === 'number') {
-                      // Display the percentage under the name if the value is low (e.g., < 20%)
-                      return value <= 20 ? 10 : -10; // Adjust this value for positioning
+                      // Increase the right shift for higher values
+                      return value <= 20 ? 15 : 10; // Increase to move the percentage further right
                     }
-
-                    // Return a default offset if the value is not a valid number
-                    return 4;
+                    return 4; // Default offset for invalid values
                   },
                   font: { size: 14, weight: 'bold' },
                 },
