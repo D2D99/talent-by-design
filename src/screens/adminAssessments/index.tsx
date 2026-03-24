@@ -233,8 +233,12 @@ const AdminAssessments = () => {
 
               // Hide reset button for admins (own role) and for the logged-in admin themselves
               const isAdminRole = member.role?.toLowerCase() === "admin";
-              const isSelf = adminId && member._id?.toString() === adminId?.toString();
-              const canReset = !isAdminRole && !isSelf && (status === "Completed" || status === "In Progress");
+              const isSelf =
+                adminId && member._id?.toString() === adminId?.toString();
+              const canReset =
+                !isAdminRole &&
+                !isSelf &&
+                (status === "Completed" || status === "In Progress");
 
               return (
                 <tr
@@ -265,14 +269,15 @@ const AdminAssessments = () => {
                     <span
                       className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center
-                         ${status === "Completed"
-                          ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
-                          : status === "In Progress"
-                            ? "bg-blue-100 text-blue-600 border-blue-600"
-                            : status === "Due"
-                              ? "bg-amber-100 text-amber-600 border-amber-600"
-                              : "bg-gray-100 text-gray-400 border-gray-400"
-                        }`}
+                         ${
+                           status === "Completed"
+                             ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
+                             : status === "In Progress"
+                               ? "bg-blue-100 text-blue-600 border-blue-600"
+                               : status === "Due"
+                                 ? "bg-amber-100 text-amber-600 border-amber-600"
+                                 : "bg-gray-100 text-gray-400 border-gray-400"
+                         }`}
                     >
                       {status}
                     </span>
@@ -281,22 +286,24 @@ const AdminAssessments = () => {
                     <div className="pt-2">
                       <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
+                          className={`h-full rounded-full transition-all duration-700 ease-out ${
+                            percentage === 100
                               ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
                               : percentage >= 50
                                 ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
                                 : "bg-gradient-to-r from-amber-400 to-amber-500"
-                            }`}
+                          }`}
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
                       <span
-                        className={`text-xs font-semibold w-10 ${percentage === 100
+                        className={`text-xs font-semibold w-10 ${
+                          percentage === 100
                             ? "text-green-600"
                             : percentage >= 50
                               ? "text-[#448CD2]"
                               : "text-neutral-300"
-                          }`}
+                        }`}
                       >
                         {percentage}%
                       </span>
@@ -307,9 +314,9 @@ const AdminAssessments = () => {
                       <button
                         onClick={() => openResetModal(member._id)}
                         title="Reset this user's assessment so they must retake it"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-orange-300 text-orange-600 bg-orange-50 hover:bg-orange-100 hover:border-orange-400 transition-all"
+                        className="inline-flex items-center gap-1 py-1 px-2 text-[10px] font-semibold rounded-full border border-orange-300 text-orange-600 bg-orange-50 hover:bg-orange-100 hover:border-orange-400 transition-all"
                       >
-                        <Icon icon="solar:restart-linear" width="14" />
+                        <Icon icon="solar:restart-linear" width="12" />
                         Reset
                       </button>
                     ) : (
@@ -384,8 +391,8 @@ const AdminAssessments = () => {
                   Are you sure you want to reset the assessment?
                 </h5>
                 <p className="text-sm text-neutral-600">
-                  This user will be required to retake their assessment from
-                  the beginning.
+                  This user will be required to retake their assessment from the
+                  beginning.
                 </p>
               </div>
             </div>
@@ -401,7 +408,7 @@ const AdminAssessments = () => {
               <button
                 type="button"
                 onClick={handleResetAssessment}
-                className="group relative overflow-hidden z-0 bg-orange-500 px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase text-white duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
                 {isProcessing ? (
                   <Icon icon="svg-spinners:ring-resize" width="12" />

@@ -401,7 +401,7 @@ const SuperAdminOverview = () => {
                     </span>
                   </div>
                 </div>
-                <div className="w-full max-h-[170px] flex items-center justify-center">
+                <div className="w-full flex items-center justify-center">
                   <PieChart
                     labels={roleLabels}
                     data={roleData}
