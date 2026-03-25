@@ -295,23 +295,13 @@ const ProfileInfo = () => {
                     })}
                   >
                     <option value="">Select your department</option>
-                    <option value="HR/People & Culture">
-                      HR/People & Culture
-                    </option>
-                    <option value="Finance & Accounting">
-                      Finance & Accounting
-                    </option>
+                    <option value="HR/People & Culture">HR/People & Culture</option>
+                    <option value="Finance & Accounting">Finance & Accounting</option>
                     <option value="Operations">Operations</option>
                     <option value="IT">IT</option>
-                    <option value="Sales and Marketing">
-                      Sales and Marketing
-                    </option>
-                    <option value="Legal, Risk & Compliance">
-                      Legal, Risk & Compliance
-                    </option>
-                    <option value="Admin & Corporate Services">
-                      Admin & Corporate Services
-                    </option>
+                    <option value="Sales and Marketing">Sales and Marketing</option>
+                    <option value="Legal, Risk & Compliance">Legal, Risk & Compliance</option>
+                    <option value="Admin & Corporate Services">Admin & Corporate Services</option>
                   </select>
                 </div>
               </div>

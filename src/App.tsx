@@ -21,8 +21,6 @@ import OrgAssessmentDetails from "./components/orgAssessmentDetails";
 import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
-import LeaderOverview from "./screens/leaderOverview";
-import ManagerOverview from "./screens/managerOverview";
 import "react-tooltip/dist/react-tooltip.css";
 import UserProfile from "./screens/userProfile";
 import SessionPopup from "./components/sessionPopup";
@@ -35,6 +33,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EmployeeReport from "./screens/employeeReport";
 import AdminReport from "./screens/adminReport";
+import LeaderReport from "./screens/leaderReport";
+import ManagerReport from "./screens/managerReport";
 import TopicSelectorModal from "./components/TopicSelectorModal";
 
 // import { useTheme } from "./context/useTheme";
@@ -118,8 +118,8 @@ const App = () => {
 
             {/* Reports */}
             <Route path="reports/org-head" element={<AdminReport />} />
-            <Route path="reports/senior-leader" element={<LeaderOverview />} />
-            <Route path="reports/manager" element={<ManagerOverview />} />
+            <Route path="reports/senior-leader" element={<LeaderReport />} />
+            <Route path="reports/manager" element={<ManagerReport />} />
             <Route path="reports/employee" element={<EmployeeReport />} />
           </Route>
         </Route>

@@ -14,7 +14,6 @@ import UpArrow from "../../../public/static/img/home/up-arrow.svg";
 import { useState, useEffect } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
-import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
@@ -56,7 +55,6 @@ const LeaderReport = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
-  const [exportLoading, setExportLoading] = useState(false);
   const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Real dept and org avg
   const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
 
@@ -210,38 +208,6 @@ const LeaderReport = () => {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleExportPDF = async () => {
-    try {
-      setExportLoading(true);
-      const params: any = {};
-      if (userId) params.userId = userId;
-      if (userEmail) params.email = userEmail;
-
-      const response = await api.get("/dashboard/export-pdf", {
-        params,
-        responseType: "blob",
-      });
-
-      const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-
-      const fileName = `POD360_Report_${userData?.firstName || "Participant"}.pdf`;
-      link.setAttribute("download", fileName);
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("PDF Export failed:", err);
-      toast.error("Failed to generate PDF report");
-    } finally {
-      setExportLoading(false);
     }
   };
 
@@ -632,24 +598,6 @@ const LeaderReport = () => {
                 {/* Edit Feedback */}
               </button>
             )}
-            <button
-              type="button"
-              onClick={handleExportPDF}
-              disabled={exportLoading}
-              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              style={{ backgroundColor: "#1a3652" }}
-            >
-              {exportLoading ? (
-                <Icon icon="eos-icons:loading" width="16" />
-              ) : (
-                <Icon
-                  icon="lucide:file-text"
-                  width="16"
-                  className="transition-transform duration-300 group-hover:translate-y-0.5"
-                />
-              )}
-              {exportLoading ? "Exporting..." : "Export PDF Report"}
-            </button>
           </div>
         </div>
 

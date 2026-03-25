@@ -1,13 +1,7 @@
-// import { Icon } from "@iconify/react";
-import ManagerReport from "../managerReport";
+import RoleIntelligenceOverview from "../../components/roleIntelligenceOverview";
+
 const ManagerOverview = () => {
-  return (
-    <>
-      {/* Manager Overview Start */}
-      <ManagerReport />
-      {/* Manager Overview End */}
-    </>
-  );
+  return <RoleIntelligenceOverview scope="manager" />;
 };
 
 export default ManagerOverview;
