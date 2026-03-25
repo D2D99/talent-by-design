@@ -40,6 +40,29 @@ const getNumericScore = (res: any): number => {
   return 20;
 };
 
+const Ring = ({ score, r, color }: { score: number; r: number; color: string }) => {
+  const circ = 2 * Math.PI * r;
+  const strokeDashoffset = circ - (circ * score) / 100;
+  return (
+    <>
+      <circle cx="100" cy="100" r={r} fill="none" stroke="#F1F5F9" strokeWidth="8" />
+      <circle
+        cx="100"
+        cy="100"
+        r={r}
+        fill="none"
+        stroke={color}
+        strokeWidth="8"
+        strokeDasharray={circ}
+        strokeDashoffset={strokeDashoffset}
+        strokeLinecap="round"
+        transform="rotate(-90 100 100)"
+        style={{ transition: "stroke-dashoffset 1s ease-out" }}
+      />
+    </>
+  );
+};
+
 const LeaderReport = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -775,63 +798,116 @@ const LeaderReport = () => {
         ) : reportData ? (
           <>
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Organizational Health
-                </h2>
-                <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: "40px",
-                    }}
-                  >
-                    <CircularProgress
-                      value={Math.round(overallScore)}
-                      width={180}
-                      pathColor={currentStatus.color}
-                      trailColor={currentStatus.trail}
-                      textColor={currentStatus.color}
-                    />
-                  </div>
-                  <div>
-                    {" "}
-                    <div className="flex justify-center flex-col gap-1 ">
-                      <div className="flex items-center gap-2">
+              <div className="border border-[#EEF2F6] p-6 lg:p-8 rounded-[24px] w-full xl:col-span-2 bg-white shadow-sm flex flex-col justify-between">
+                {(() => {
+                  const getOverallStatus = (score: number) => {
+                    if (score >= 80) return { label: "OPTIMIZED", bg: "#E6F8F0", text: "#12B76A" };
+                    if (score >= 60) return { label: "MODERATE", bg: "#FEF3C7", text: "#D97706" };
+                    return { label: "NEEDS ATTENTION", bg: "#FEE2E2", text: "#EF4444" };
+                  };
+                  const status = getOverallStatus(overallScore);
+
+                  const getMetricColor = (score: number) => {
+                    if (score < 50) return "#FF5656"; // Needs Attention (Red)
+                    if (score < 75) return "#FEE114"; // At Risk (Yellow)
+                    return "#30AD43"; // On Track (Green)
+                  };
+
+                  const domains = reportData?.scores?.domains || {};
+                  const dNames = Object.keys(domains);
+                  const domainMetrics = [
+                    { name: dNames[0] || "People Potential", score: domains[dNames[0]]?.score || 0, color: getMetricColor(domains[dNames[0]]?.score || 0) },
+                    { name: dNames[1] || "Operational Steadiness", score: domains[dNames[1]]?.score || 0, color: getMetricColor(domains[dNames[1]]?.score || 0) },
+                    { name: dNames[2] || "Digital Fluency", score: domains[dNames[2]]?.score || 0, color: getMetricColor(domains[dNames[2]]?.score || 0) },
+                  ];
+
+                  const getDomainIcon = (idx: number) => {
+                    if (idx === 0) return "solar:users-group-rounded-bold";
+                    if (idx === 1) return "solar:settings-bold";
+                    if (idx === 2) return "solar:laptop-minimalistic-bold";
+                    return "solar:star-bold";
+                  };
+
+                  return (
+                    <>
+                      {/* Header Section */}
+                      <div className="flex flex-col sm:flex-row justify-between items-start mb-10 gap-4">
                         <div>
-                          <p className="w-6 h-2 bg-[#FF5656]"></p>
+                          <h2 className="text-2xl font-black text-[#0F172A] mb-2.5 tracking-tight">
+                            Organizational Health Index
+                          </h2>
+                          <div className="flex items-center gap-3">
+                            <span
+                              className="text-[11px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
+                              style={{ backgroundColor: status.bg, color: status.text }}
+                            >
+                              {status.label}
+                            </span>
+                            <span className="text-xs text-[#94A3B8] font-medium">Updated just now</span>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-normal text-[#474747]">
-                            Needs Attention
-                          </p>
+                        {/* Legend Pill */}
+                        <div className="flex items-center gap-4 bg-[#F8FAFC] px-4 py-2 rounded-xl border border-[#EEF2F6]">
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-6 bg-[#30AD43]" />
+                            <span className="text-xs font-semibold text-[#64748B]">On Track</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-6 bg-[#FEE114]" />
+                            <span className="text-xs font-semibold text-[#64748B]">At Risk</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-6 bg-[#FF5656]" />
+                            <span className="text-xs font-semibold text-[#64748B]">Needs Attention</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className="w-6 h-2 bg-[#FEE114]"></p>
+
+                      {/* Main Content Grid */}
+                      <div className="grid md:grid-cols-[1fr_1.2fr] grid-cols-1 gap-10 items-center mt-2 mb-10">
+                        {/* Radial Chart Left */}
+                        <div className="relative flex justify-center items-center">
+                          <svg width="250" height="250" viewBox="0 0 200 200" className="drop-shadow-sm">
+                            <Ring score={domainMetrics[0]?.score || 0} r={82} color={domainMetrics[0]?.color} />
+                            <Ring score={domainMetrics[1]?.score || 0} r={62} color={domainMetrics[1]?.color} />
+                            <Ring score={domainMetrics[2]?.score || 0} r={42} color={domainMetrics[2]?.color} />
+                          </svg>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className="text-3xl font-black text-[#0F172A] tracking-tighter">
+                              {Math.round(overallScore)}<span className="text-3xl">%</span>
+                            </span>
+                            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[0.2em] mt-1.5">
+                              Aggregate
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-normal text-[#474747]">
-                            At Risk
-                          </p>
+
+                        {/* Linear Bars Right */}
+                        <div className="flex flex-col justify-center space-y-8">
+                          {domainMetrics.map((dm, idx) => (
+                            <div key={idx}>
+                              <div className="flex justify-between items-center mb-2.5">
+                                <div className="flex items-center gap-2">
+                                  <Icon icon={getDomainIcon(idx)} className="text-[#475569] w-[20px] h-[20px]" />
+                                  <span className="text-[15px] font-bold text-[#334155]">{dm.name}</span>
+                                </div>
+                                <span className="text-[15px] font-black" style={{ color: dm.color }}>
+                                  {Math.round(dm.score)}%
+                                </span>
+                              </div>
+                              <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-1000 ease-out"
+                                  style={{ width: `${dm.score}%`, backgroundColor: dm.color }}
+                                />
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className="w-6 h-2 bg-[#30AD43]"></p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-normal text-[#474747]">
-                            On Track
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    </>
+                  );
+                })()}
               </div>
               <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
                 <div className="flex items-center justify-between w-full mb-2">
@@ -845,7 +921,7 @@ const LeaderReport = () => {
                   </div>
                 </div>
                 <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
-                  <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
                     <Triangle data={triangleData} />
                   </div>
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
@@ -925,34 +1001,8 @@ const LeaderReport = () => {
                     )}
                   </div>
                 </div>
-                <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
-                  <div className="text-center">
-                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                      People
-                    </p>
-                    <p className="text-sm font-black text-[var(--secondary-color)]">
-                      {Math.round(findDomainScore("people"))}%
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                      Operational
-                    </p>
-                    <p className="text-sm font-black text-[var(--secondary-color)]">
-                      {Math.round(findDomainScore("operational"))}%
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
-                      Digital
-                    </p>
-                    <p className="text-sm font-black text-[var(--secondary-color)]">
-                      {Math.round(findDomainScore("digital"))}%
-                    </p>
-                  </div>
-                </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] xl:col-span-2 bg-[#448bd21c]">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Trends Analysis
                 </h2>
