@@ -730,12 +730,7 @@ const AdminReport = () => {
             <div className="mt-6 grid lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
               <div className="border border-[#EEF2F6] p-6 lg:p-8 rounded-[24px] w-full bg-white shadow-sm flex flex-col justify-between">
                 {(() => {
-                  const getOverallStatus = (score: number) => {
-                    if (score >= 80) return { label: "OPTIMIZED", bg: "#E6F8F0", text: "#12B76A" };
-                    if (score >= 60) return { label: "MODERATE", bg: "#FEF3C7", text: "#D97706" };
-                    return { label: "NEEDS ATTENTION", bg: "#FEE2E2", text: "#EF4444" };
-                  };
-                  const status = getOverallStatus(overallScore);
+
 
                   const getMetricColor = (score: number) => {
                     if (score < 50) return "#FF5656"; // Needs Attention (Red)

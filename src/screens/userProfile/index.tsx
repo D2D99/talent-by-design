@@ -113,9 +113,17 @@ const UserProfile = () => {
     fetchProfile();
   }, []);
 
+  const MAX_FILE_SIZE_MB = 4;
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        toast.error(`Profile image size must be less than ${MAX_FILE_SIZE_MB}MB`);
+        e.target.value = "";
+        return;
+      }
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
@@ -124,6 +132,11 @@ const UserProfile = () => {
   const handleOrgLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        toast.error(`Organization logo size must be less than ${MAX_FILE_SIZE_MB}MB`);
+        e.target.value = "";
+        return;
+      }
       setSelectedOrgLogoFile(file);
       setOrgLogoPreviewUrl(URL.createObjectURL(file));
     }
@@ -247,11 +260,10 @@ const UserProfile = () => {
 
               <label
                 htmlFor="upload"
-                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${
-                  isEditing
+                className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${isEditing
                     ? "cursor-pointer bg-white hover:bg-neutral-50"
                     : "bg-gray-50 cursor-not-allowed pointer-events-none"
-                }`}
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -542,33 +554,32 @@ const UserProfile = () => {
             {(formData.role?.toLowerCase() === "leader" ||
               formData.role?.toLowerCase() === "manager" ||
               formData.department) && (
-              <div>
-                <label
-                  htmlFor="department"
-                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                >
-                  Department
-                </label>
-                <input
-                  type="text"
-                  id="department"
-                  {...register("department")}
-                  disabled={
-                    !isEditing ||
-                    formData.role?.toLowerCase() === "leader" ||
-                    formData.role?.toLowerCase() === "manager"
-                  }
-                  className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] ${
-                    !isEditing ||
-                    formData.role?.toLowerCase() === "leader" ||
-                    formData.role?.toLowerCase() === "manager"
-                      ? "read-only:bg-gray-50 read-only:cursor-not-allowed"
-                      : "focus:border-[var(--primary-color)]"
-                  }`}
-                  placeholder="No Department Assigned"
-                />
-              </div>
-            )}
+                <div>
+                  <label
+                    htmlFor="department"
+                    className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                  >
+                    Department
+                  </label>
+                  <input
+                    type="text"
+                    id="department"
+                    {...register("department")}
+                    disabled={
+                      !isEditing ||
+                      formData.role?.toLowerCase() === "leader" ||
+                      formData.role?.toLowerCase() === "manager"
+                    }
+                    className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] ${!isEditing ||
+                        formData.role?.toLowerCase() === "leader" ||
+                        formData.role?.toLowerCase() === "manager"
+                        ? "read-only:bg-gray-50 read-only:cursor-not-allowed"
+                        : "focus:border-[var(--primary-color)]"
+                      }`}
+                    placeholder="No Department Assigned"
+                  />
+                </div>
+              )}
 
             {/* View Or Edit Organization Logo based on role */}
             {(formData.role === "admin" || orgLogoPreviewUrl) && (

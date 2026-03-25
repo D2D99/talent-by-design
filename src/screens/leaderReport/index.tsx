@@ -364,27 +364,6 @@ const LeaderReport = () => {
   })();
   const overallScore = reportData?.scores?.overall || 0;
 
-  const getStatus = (val: number) => {
-    if (val < 50)
-      return {
-        label: "Needs Attention",
-        color: "#FF5656",
-        trail: "#FF56564b",
-      };
-    if (val < 75)
-      return {
-        label: "At Risk",
-        color: "#FEE114",
-        trail: "#FEE1144b",
-      };
-    return {
-      label: "On Track",
-      color: "#30AD43",
-      trail: "#30AD434b",
-    };
-  };
-
-  const currentStatus = getStatus(overallScore);
 
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);
@@ -801,13 +780,6 @@ const LeaderReport = () => {
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
               <div className="border border-[#EEF2F6] p-6 lg:p-8 rounded-[24px] w-full xl:col-span-2 bg-white shadow-sm flex flex-col justify-between">
                 {(() => {
-                  const getOverallStatus = (score: number) => {
-                    if (score >= 80) return { label: "OPTIMIZED", bg: "#E6F8F0", text: "#12B76A" };
-                    if (score >= 60) return { label: "MODERATE", bg: "#FEF3C7", text: "#D97706" };
-                    return { label: "NEEDS ATTENTION", bg: "#FEE2E2", text: "#EF4444" };
-                  };
-                  const status = getOverallStatus(overallScore);
-
                   const getMetricColor = (score: number) => {
                     if (score < 50) return "#FF5656"; // Needs Attention (Red)
                     if (score < 75) return "#FEE114"; // At Risk (Yellow)
