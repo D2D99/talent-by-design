@@ -1,13 +1,11 @@
 import { useEffect, useRef } from "react";
 
-
 // Declare Highcharts if it's loaded from a <script> tag
 declare global {
   interface Window {
     Highcharts: typeof import("highcharts");
   }
 }
-
 
 interface SpeedMeterProps {
   value?: number;
@@ -50,9 +48,30 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
           },
 
           plotBands: [
-            { from: 0, to: 50, color: "#ff5c5c", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
-            { from: 50, to: 75, color: "#ffd400", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
-            { from: 75, to: 100, color: "#4caf50", thickness: 18, borderWidth: 4, borderColor: "#ffffff" },
+            {
+              from: 0,
+              to: 50,
+              color: "#ff5c5c",
+              thickness: 18,
+              borderWidth: 4,
+              borderColor: "#ffffff",
+            },
+            {
+              from: 50,
+              to: 75,
+              color: "#ffd400",
+              thickness: 18,
+              borderWidth: 4,
+              borderColor: "#ffffff",
+            },
+            {
+              from: 75,
+              to: 100,
+              color: "#4caf50",
+              thickness: 18,
+              borderWidth: 4,
+              borderColor: "#ffffff",
+            },
           ],
 
           title: {
@@ -112,7 +131,7 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
       style={{
         width: "100%", // Make the div container take full width
         maxWidth: "500px", // Set the maximum width
-        height: "300px", // Set the height of the div
+        height: "375px", // Set the height of the div
         margin: "auto", // Center the div container
       }}
       ref={chartRef}
