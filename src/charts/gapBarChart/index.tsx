@@ -55,10 +55,11 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selected
 
           ctx.fillStyle = delta > 0 ? "#2E7D32" : "#C62828"; // Green for positive, red for negative
 
-          const xOffset = delta > 0 ? 6 : -6;
-          ctx.textAlign = delta > 0 ? "left" : "right";
+          // Change alignment to point inwards towards 0 to avoid overlapping Y-axis
+          const xOffset = delta > 0 ? -6 : 6;
+          ctx.textAlign = delta > 0 ? "right" : "left";
 
-          ctx.fillText(label, bar.x + xOffset, bar.y);
+          ctx.fillText(label, bar.x + xOffset, bar.y -18);
         });
       });
 
