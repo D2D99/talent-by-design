@@ -28,17 +28,20 @@ export interface RadarData {
   manager: number[];
   team: number[];
   peer: number[];
+  admin?: number[];
 }
 
 interface RadarChartProps {
   data: RadarData;
   selectedLabel: string | null;
   onLabelSelect: (label: string) => void;
+  datasetLabels?: [string, string?, string?]; // Optional custom labels
+  hiddenIndices?: number[];
 }
 
 //selectedLabel,    can use this below if needed 
 
-const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect }) => {
+const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [] }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
 
@@ -54,7 +57,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect }) => {
           labels: data.labels,
           datasets: [
             {
-              label: "Manager",
+              label: datasetLabels?.[0] || "Manager",
               data: data.manager,
               backgroundColor: "rgba(74, 144, 226, 0.3)",
               borderColor: "#4A90E2",
@@ -63,9 +66,10 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect }) => {
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
+              hidden: hiddenIndices.includes(0),
             },
-            {
-              label: "Team",
+            ...(data.team && data.team.length > 0 ? [{
+              label: datasetLabels?.[1] || "Team",
               data: data.team,
               backgroundColor: "rgba(46, 204, 113, 0.3)",
               borderColor: "#2ECC71",
@@ -74,9 +78,10 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect }) => {
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
-            },
-            {
-              label: "Peer",
+              hidden: hiddenIndices.includes(1),
+            }] : []),
+            ...(data.peer && data.peer.length > 0 ? [{
+              label: datasetLabels?.[2] || "Peer",
               data: data.peer,
               backgroundColor: "rgba(231, 76, 60, 0.3)",
               borderColor: "#E74C3C",
@@ -85,7 +90,8 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect }) => {
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
-            },
+              hidden: hiddenIndices.includes(2),
+            }] : []),
           ],
         },
         options: {
@@ -148,7 +154,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect }) => {
         chartRef.current.destroy(); // Clean up the chart instance
       }
     };
-  }, [onLabelSelect, data]); // Only re-run when `onLabelSelect` or `data` changes
+  }, [onLabelSelect, data, hiddenIndices]); // Only re-run when `onLabelSelect`, `data` or `hiddenIndices` changes
 
   return <canvas ref={canvasRef} />;
 };

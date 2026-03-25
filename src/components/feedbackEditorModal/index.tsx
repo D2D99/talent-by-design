@@ -1,206 +1,326 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../../services/axios";
 import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
+import { Modal, initTWE } from "tw-elements";
 
 interface FeedbackEditorModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    domain: string;
-    subdomain: string;
-    userId: string | null;
-    userEmail: string | null;
-    rawFeedback: {
-        insight: string;
-        coachingTips: string;
-        recommendedPrograms: string;
-        modelDescription?: string;
-    };
-    onSuccess: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  domain: string;
+  subdomain: string;
+  userId: string | null;
+  userEmail: string | null;
+  rawFeedback: {
+    insight: string;
+    coachingTips: string;
+    recommendedPrograms: string;
+    modelDescription?: string;
+    pod360Title?: string;
+    pod360Description?: string;
+  };
+  onSuccess: () => void;
 }
 
 const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
-    isOpen,
-    onClose,
-    domain,
-    subdomain,
-    userId,
-    userEmail,
-    rawFeedback,
-    onSuccess,
+  isOpen,
+  onClose,
+  domain,
+  subdomain,
+  userId,
+  userEmail,
+  rawFeedback,
+  onSuccess,
 }) => {
-    const [insight, setInsight] = useState("");
-    const [coachingTips, setCoachingTips] = useState("");
-    const [recommendedPrograms, setRecommendedPrograms] = useState("");
-    const [modelDescription, setModelDescription] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [insight, setInsight] = useState("");
+  const [coachingTips, setCoachingTips] = useState("");
+  const [recommendedPrograms, setRecommendedPrograms] = useState("");
+  const [modelDescription, setModelDescription] = useState("");
+  const [pod360Title, setPod360Title] = useState("");
+  const [pod360Description, setPod360Description] = useState("");
+  const [loading, setLoading] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const modalInstance = useRef<any>(null);
 
-    useEffect(() => {
-        if (isOpen) {
-            setInsight(rawFeedback?.insight || "");
-            setCoachingTips(rawFeedback?.coachingTips || "");
-            setRecommendedPrograms(rawFeedback?.recommendedPrograms || "");
-            setModelDescription(rawFeedback?.modelDescription || "");
-        }
-    }, [isOpen, rawFeedback]);
+  useEffect(() => {
+    initTWE({ Modal });
+  }, []);
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>, value: string, addBulletedNewline: boolean) => {
-        if (e.key === 'Enter' && addBulletedNewline) {
-            e.preventDefault();
-            const cursorPosition = e.currentTarget.selectionStart;
-            const textBefore = value.substring(0, cursorPosition);
-            const textAfter = value.substring(cursorPosition);
+  useEffect(() => {
+    if (modalRef.current && !modalInstance.current) {
+      modalInstance.current = Modal.getOrCreateInstance(modalRef.current);
+    }
 
-            // Check if current line is already empty or just a bullet
-            const lines = textBefore.split('\n');
-            const lastLine = lines[lines.length - 1].trim();
+    const modalElement = modalRef.current;
+    if (modalElement) {
+      const handleHidden = () => {
+        onClose();
+      };
+      modalElement.addEventListener("hidden.twe.modal", handleHidden);
+      return () => {
+        modalElement.removeEventListener("hidden.twe.modal", handleHidden);
+      };
+    }
+  }, [onClose]);
 
-            let insertion = '\n• ';
-            if (lastLine === '' || lastLine === '•') {
-                // If they press enter on an empty bulleted line, maybe they want to end the list? 
-                // For now, let's stick to the user's request: "automatically a dot come"
-            }
+  useEffect(() => {
+    if (isOpen) {
+      setInsight(rawFeedback?.insight || "");
+      setCoachingTips(rawFeedback?.coachingTips || "");
+      setRecommendedPrograms(rawFeedback?.recommendedPrograms || "");
+      setModelDescription(rawFeedback?.modelDescription || "");
+      setPod360Title(rawFeedback?.pod360Title || "");
+      setPod360Description(rawFeedback?.pod360Description || "");
 
-            const newValue = textBefore + insertion + textAfter;
-            setter(newValue);
+      if (modalInstance.current) {
+        modalInstance.current.show();
+      }
+    } else {
+      if (modalInstance.current) {
+        modalInstance.current.hide();
+      }
+    }
+  }, [isOpen, rawFeedback]);
 
-            // Set cursor position after the bullet
-            setTimeout(() => {
-                const newPos = cursorPosition + insertion.length;
-                e.currentTarget.setSelectionRange(newPos, newPos);
-            }, 0);
-        }
-    };
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    value: string,
+    addBulletedNewline: boolean,
+  ) => {
+    if (!addBulletedNewline) return;
 
-    const handleSave = async () => {
-        setLoading(true);
-        try {
-            await api.put("dashboard/detailed-insight", {
-                domain,
-                subdomain,
-                userId,
-                email: userEmail,
-                insight,
-                coachingTips,
-                recommendedPrograms,
-                modelDescription
-            });
-            toast.success("Feedback updated successfully!");
-            onSuccess();
-            onClose();
-        } catch (error) {
-            console.error("Error updating feedback:", error);
-            toast.error("Failed to update feedback.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const cursorPosition = e.currentTarget.selectionStart;
+      const textBefore = value.substring(0, cursorPosition);
 
-    if (!isOpen) return null;
+      const linesBefore = textBefore.split("\n");
+      const currentLine = linesBefore[linesBefore.length - 1];
 
-    return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col hide-scrollbar">
-                <div className="p-5 border-b flex justify-between items-center bg-[#f8fafc] rounded-t-xl">
-                    <h2 className="text-xl font-bold text-[#1A3652]">
-                        Edit Feedback: {subdomain || domain}
-                    </h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-black transition-colors"
-                    >
-                        <Icon icon="ion:close-round" width="24" height="24" />
-                    </button>
-                </div>
+      let newValue = value;
+      let cursorOffset = 0;
 
-                <div className="p-6 overflow-y-auto flex flex-col gap-6 hide-scrollbar flex-1">
+      // If the current line where Enter was pressed DOESN'T have a bullet, add one to it!
+      // This prevents the line from disappearing on the frontend (since we filter for bullets).
+      if (
+        currentLine.trim().length > 0 &&
+        !currentLine.trim().startsWith("•")
+      ) {
+        const lineStartPos = textBefore.lastIndexOf("\n") + 1;
+        newValue =
+          value.substring(0, lineStartPos) +
+          "• " +
+          value.substring(lineStartPos);
+        cursorOffset = 2;
+      }
 
+      const updatedCursorPos = cursorPosition + cursorOffset;
+      const finalBefore = newValue.substring(0, updatedCursorPos);
+      const finalAfter = newValue.substring(updatedCursorPos);
+      const insertion = "\n• ";
 
-                    <div>
-                        <label className="block text-sm font-bold text-[#1a3652] mb-2">
-                            Pod 360 Model Items (Bullets below Triangle)
-                        </label>
-                        <p className="text-[10px] text-gray-400 mb-1">Press Enter to automatically add a bullet (•).</p>
-                        <textarea
-                            value={modelDescription}
-                            onChange={(e) => setModelDescription(e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(e, setModelDescription, modelDescription, true)}
-                            rows={4}
-                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-[#448cd2] focus:ring-1 focus:ring-[#448cd2]"
-                            placeholder="Capability, Engagement, Confidence..."
-                        />
-                    </div>
+      setter(finalBefore + insertion + finalAfter);
 
-                    <div>
-                        <label className="block text-sm font-bold text-[#1a3652] mb-2">
-                            Insight for Domain (Main Text)
-                        </label>
-                        <p className="text-[10px] text-gray-400 mb-1">Press Enter to automatically add a bullet (•).</p>
-                        <textarea
-                            value={insight}
-                            onChange={(e) => setInsight(e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(e, setInsight, insight, true)}
-                            rows={4}
-                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-[#448cd2] focus:ring-1 focus:ring-[#448cd2]"
-                            placeholder="Enter insights here..."
-                        />
-                    </div>
+      setTimeout(() => {
+        const newPos = updatedCursorPos + insertion.length;
+        e.currentTarget.setSelectionRange(newPos, newPos);
+      }, 0);
+    } else if (
+      value === "" &&
+      e.key.length === 1 &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.altKey
+    ) {
+      // Automatically add a bullet if typing the first character in an empty field
+      e.preventDefault();
+      setter("• " + e.key);
+    }
+  };
 
-                    <div>
-                        <label className="block text-sm font-bold text-[#1a3652] mb-2">
-                            Objectives & Key Results (Coaching Tips)
-                        </label>
-                        <p className="text-[10px] text-gray-400 mb-1">Press Enter to automatically add a bullet (•).</p>
-                        <textarea
-                            value={coachingTips}
-                            onChange={(e) => setCoachingTips(e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(e, setCoachingTips, coachingTips, true)}
-                            rows={5}
-                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-[#448cd2] focus:ring-1 focus:ring-[#448cd2]"
-                            placeholder="Enter objectives/tips here..."
-                        />
-                    </div>
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await api.put("dashboard/detailed-insight", {
+        domain,
+        subdomain,
+        userId,
+        email: userEmail,
+        insight,
+        coachingTips,
+        recommendedPrograms,
+        modelDescription,
+        pod360Title,
+        pod360Description,
+      });
+      toast.success("Feedback updated successfully!");
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Error updating feedback:", error);
+      toast.error("Failed to update feedback.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    <div>
-                        <label className="block text-sm font-bold text-[#1a3652] mb-2">
-                            Talent By Design Recommended Offering
-                        </label>
-                        <p className="text-[10px] text-gray-400 mb-1">Press Enter to automatically add a bullet (•).</p>
-                        <textarea
-                            value={recommendedPrograms}
-                            onChange={(e) => setRecommendedPrograms(e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(e, setRecommendedPrograms, recommendedPrograms, true)}
-                            rows={5}
-                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-[#448cd2] focus:ring-1 focus:ring-[#448cd2]"
-                            placeholder="Enter recommendations here..."
-                        />
-                    </div>
-                </div>
+  return (
+    <div
+      ref={modalRef}
+      data-twe-modal-init
+      className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+      id="feedbackModal"
+      tabIndex={-1}
+      aria-hidden="true"
+      data-twe-backdrop="static"
+    >
+      <div
+        data-twe-modal-dialog-ref
+        className="pointer-events-none relative flex min-h-full w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-3xl mx-auto px-4"
+      >
+        <div className="pointer-events-auto relative flex w-full flex-col rounded-xl border-none bg-white bg-clip-padding text-current shadow-lg outline-none max-h-[90vh] overflow-hidden">
+          <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
+            <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
+              Edit Feedback: {subdomain || domain}
+            </h5>
+            <button
+              type="button"
+              data-twe-modal-dismiss
+              aria-label="Close"
+              className="box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
+            >
+              <Icon icon="material-symbols:close" width="24" />
+            </button>
+          </div>
 
-                <div className="p-5 border-t flex justify-end gap-3 bg-[#f8fafc] rounded-b-xl">
-                    <button
-                        onClick={onClose}
-                        className="px-5 py-2 rounded-lg font-semibold text-gray-600 bg-white border hover:bg-gray-50 transition-colors"
-                        disabled={loading}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={loading}
-                        className="px-5 py-2 rounded-lg font-semibold text-white bg-[#1a3652] hover:bg-[#112335] transition-colors flex items-center gap-2"
-                    >
-                        {loading ? (
-                            <Icon icon="eos-icons:loading" width="20" height="20" />
-                        ) : (
-                            <Icon icon="material-symbols:save" width="20" height="20" />
-                        )}
-                        Save Changes
-                    </button>
-                </div>
+          <div className="relative sm:py-8 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll space-y-4">
+            <div>
+              <label className="block font-bold text-sm text-gray-700">
+                Pod 360 Model Items (Bullets below Triangle)
+              </label>
+              <textarea
+                value={modelDescription}
+                onChange={(e) => setModelDescription(e.target.value)}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, setModelDescription, modelDescription, true)
+                }
+                rows={3}
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                placeholder="Capability, Engagement, Confidence..."
+              />
+              <p className="text-[10px] text-gray-400 mt-1">
+                Press Enter to automatically add a bullet (•).
+              </p>
             </div>
+
+            <div>
+              <label className="block font-bold text-sm text-gray-700">
+                Insight for Domain (Main Text)
+              </label>
+              <textarea
+                value={insight}
+                onChange={(e) => setInsight(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, setInsight, insight, true)}
+                rows={4}
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                placeholder="Enter insights here..."
+              />
+              <p className="text-[10px] text-gray-400 mt-1">
+                Press Enter to automatically add a bullet (•).
+              </p>
+            </div>
+
+            <div>
+              <label className="block font-bold text-sm text-gray-700">
+                Objectives & Key Results (Coaching Tips)
+              </label>
+              <textarea
+                value={coachingTips}
+                onChange={(e) => setCoachingTips(e.target.value)}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, setCoachingTips, coachingTips, true)
+                }
+                rows={4}
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                placeholder="Enter objectives/tips here..."
+              />
+              <p className="text-[10px] text-gray-400 mt-1">
+                Press Enter to automatically add a bullet (•).
+              </p>
+            </div>
+
+            <div>
+              <label className="block font-bold text-sm text-gray-700">
+                Pod 360 Title
+              </label>
+              <textarea
+                value={pod360Title}
+                onChange={(e) => setPod360Title(e.target.value)}
+                rows={1}
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                placeholder="Enter title here..."
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-sm text-gray-700">
+                Pod 360 Description
+              </label>
+              <textarea
+                value={pod360Description}
+                onChange={(e) => setPod360Description(e.target.value)}
+                rows={3}
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                placeholder="Enter description here..."
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-sm text-gray-700">
+                Talent By Design Recommended Offering
+              </label>
+              <textarea
+                value={recommendedPrograms}
+                onChange={(e) => setRecommendedPrograms(e.target.value)}
+                onKeyDown={(e) =>
+                  handleKeyDown(
+                    e,
+                    setRecommendedPrograms,
+                    recommendedPrograms,
+                    true,
+                  )
+                }
+                rows={4}
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                placeholder="Enter recommendations here..."
+              />
+              <p className="text-[10px] text-gray-400 mt-1">
+                Press Enter to automatically add a bullet (•).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2 bg-white">
+            <button
+              type="button"
+              data-twe-modal-dismiss
+              className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 disabled:pointer-events-none"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default FeedbackEditorModal;

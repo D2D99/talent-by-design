@@ -43,7 +43,7 @@ const SuperAdminStats = () => {
   if (loading) return <SpinnerLoader />;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-3">
@@ -108,126 +108,128 @@ const SuperAdminStats = () => {
         />
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-100">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
-              <th className="px-6 py-4 font-semibold">Organization</th>
-              <th className="px-6 py-4 font-semibold">Participants</th>
-              <th className="px-6 py-4 font-semibold">Completed</th>
-              <th className="px-6 py-4 font-semibold">Progress</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {filteredStats.map((org, idx) => {
-              const percentage =
-                org.users > 0
-                  ? Math.round((org.completed / org.users) * 100)
-                  : 0;
-              return (
-                <tr
-                  key={idx}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
-                >
-                  <td className="px-6 py-4 text-sm font-medium">
-                    <div
-                      onClick={() =>
-                        navigate(
-                          `/dashboard/org-assessments/${encodeURIComponent(org.orgName)}`,
-                        )
-                      }
-                      className="text-[#448CD2] hover:underline font-bold cursor-pointer"
-                    >
-                      {org.orgName}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-xs text-gray-600">
-                    <span className="flex items-center gap-2 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100 font-bold">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        xmlnsXlink="http://www.w3.org/1999/xlink"
-                        aria-hidden="true"
-                        role="img"
-                        className="iconify iconify--solar"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
+      <div className="grid">
+        {/* Table */}
+        <div className="overflow-x-auto rounded-xl border border-gray-100">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
+                <th className="px-6 py-4 font-semibold">Organization</th>
+                <th className="px-6 py-4 font-semibold">Participants</th>
+                <th className="px-6 py-4 font-semibold">Completed</th>
+                <th className="px-6 py-4 font-semibold">Progress</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filteredStats.map((org, idx) => {
+                const percentage =
+                  org.users > 0
+                    ? Math.round((org.completed / org.users) * 100)
+                    : 0;
+                return (
+                  <tr
+                    key={idx}
+                    className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium">
+                      <div
+                        onClick={() =>
+                          navigate(
+                            `/dashboard/org-assessments/${encodeURIComponent(org.orgName)}`,
+                          )
+                        }
+                        className="text-[#448CD2] hover:underline font-bold cursor-pointer"
                       >
-                        <circle
-                          cx="9.001"
-                          cy="6"
-                          r="4"
-                          fill="currentColor"
-                        ></circle>
-                        <ellipse
-                          cx="9.001"
-                          cy="17.001"
-                          fill="currentColor"
-                          rx="7"
-                          ry="4"
-                        ></ellipse>
-                        <path
-                          fill="currentColor"
-                          d="M21 17c0 1.657-2.036 3-4.521 3c.732-.8 1.236-1.805 1.236-2.998c0-1.195-.505-2.2-1.239-3.001C18.962 14 21 15.344 21 17M18 6a3 3 0 0 1-4.029 2.82A5.7 5.7 0 0 0 14.714 6c0-1.025-.27-1.987-.742-2.819A3 3 0 0 1 18 6.001"
-                        ></path>
-                      </svg>
-                      {org.users}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    <span
-                      className={`rounded-md text-sm ${org.completed > 0 ? "text-neutral-800 font-bold" : "text-gray-400"}`}
-                    >
-                      {org.completed}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="pt-2">
-                      <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-700 ease-out ${
-                            percentage === 100
-                              ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
-                              : percentage >= 50
-                                ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
-                                : "bg-gradient-to-r from-amber-400 to-amber-500"
-                          }`}
-                          style={{ width: `${percentage}%` }}
-                        ></div>
+                        {org.orgName}
                       </div>
-                      <span
-                        className={`text-xs font-semibold w-10 ${
-                          percentage === 100
-                            ? "text-green-600"
-                            : percentage >= 50
-                              ? "text-[#448CD2]"
-                              : "text-neutral-300"
-                        }`}
-                      >
-                        {percentage}%
+                    </td>
+                    <td className="px-6 py-4 text-xs text-gray-600">
+                      <span className="flex items-center gap-2 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100 font-bold">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          xmlnsXlink="http://www.w3.org/1999/xlink"
+                          aria-hidden="true"
+                          role="img"
+                          className="iconify iconify--solar"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            cx="9.001"
+                            cy="6"
+                            r="4"
+                            fill="currentColor"
+                          ></circle>
+                          <ellipse
+                            cx="9.001"
+                            cy="17.001"
+                            fill="currentColor"
+                            rx="7"
+                            ry="4"
+                          ></ellipse>
+                          <path
+                            fill="currentColor"
+                            d="M21 17c0 1.657-2.036 3-4.521 3c.732-.8 1.236-1.805 1.236-2.998c0-1.195-.505-2.2-1.239-3.001C18.962 14 21 15.344 21 17M18 6a3 3 0 0 1-4.029 2.82A5.7 5.7 0 0 0 14.714 6c0-1.025-.27-1.987-.742-2.819A3 3 0 0 1 18 6.001"
+                          ></path>
+                        </svg>
+                        {org.users}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      <span
+                        className={`rounded-md text-sm ${org.completed > 0 ? "text-neutral-800 font-bold" : "text-gray-400"}`}
+                      >
+                        {org.completed}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="pt-2">
+                        <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-700 ease-out ${
+                              percentage === 100
+                                ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
+                                : percentage >= 50
+                                  ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
+                                  : "bg-gradient-to-r from-amber-400 to-amber-500"
+                            }`}
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                        <span
+                          className={`text-xs font-semibold w-10 ${
+                            percentage === 100
+                              ? "text-green-600"
+                              : percentage >= 50
+                                ? "text-[#448CD2]"
+                                : "text-neutral-300"
+                          }`}
+                        >
+                          {percentage}%
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filteredStats.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="text-center py-12">
+                    <div className="flex flex-col items-center justify-center text-gray-400">
+                      <Icon
+                        icon="solar:file-remove-linear"
+                        width="40"
+                        className="mb-2 opacity-50"
+                      />
+                      <p>No organizations found matching "{searchTerm}"</p>
                     </div>
                   </td>
                 </tr>
-              );
-            })}
-            {filteredStats.length === 0 && (
-              <tr>
-                <td colSpan={4} className="text-center py-12">
-                  <div className="flex flex-col items-center justify-center text-gray-400">
-                    <Icon
-                      icon="solar:file-remove-linear"
-                      width="40"
-                      className="mb-2 opacity-50"
-                    />
-                    <p>No organizations found matching "{searchTerm}"</p>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

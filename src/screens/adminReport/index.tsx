@@ -11,10 +11,10 @@ import OuiSecurity from "../../../public/static/img/home/oui_security-signal-det
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
 import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
-import generatePDF, { Resolution } from "react-to-pdf";
+import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
@@ -28,8 +28,6 @@ import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
-import TopicSelectorModal from "../../components/TopicSelectorModal";
-
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -44,14 +42,6 @@ const getNumericScore = (res: any): number => {
 
 const AdminReport = () => {
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [pendingPdfTopics, setPendingPdfTopics] = useState<string[] | null>(null);
-  const [selectedDomain, setSelectedDomain] = useState<string>('People Potential');
-  const [selectedSubdomain, setSelectedSubdomain] = useState<string>(''); // Default to the first subdomain if available
-  const pdfExportRef = useRef<HTMLDivElement | null>(null);
-
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -66,30 +56,26 @@ const AdminReport = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Org wide data
+  const [selectedRadarDept, setSelectedRadarDept] = useState<string>(""); // 🆕 Radar Dept Filter
+  const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
 
-
-  // Function to handle PDF generation
-const handleOpenTopicModal = () => {
-  setIsTopicModalOpen(true);
-};
-
-const handleCloseTopicModal = () => {
-  if (!isLoading) {
-    setIsTopicModalOpen(false);
-  }
-};
-
-const handleTopicSave = (topics: string[]) => {
-  setSelectedTopics(topics);
-  setPendingPdfTopics(topics);
-};
+  const toggleHiddenIndex = (idx: number) => {
+    setHiddenIndices((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
+    );
+  };
 
   const userRole = user?.role?.toLowerCase();
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
 
   const isAdmin = userRole === "admin";
   const [orgs, setOrgs] = useState<string[]>([]);
-  const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
+  const [selectedOrg, setSelectedOrg] = useState<string>(
+    searchParams.get("orgName") || user?.orgName || "",
+  );
+  const [depts, setDepts] = useState<string[]>([]);
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -105,10 +91,24 @@ const handleTopicSave = (topics: string[]) => {
   useEffect(() => {
     if (selectedOrg) {
       api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
-        setMembers(res.data.members);
+        const fetchedMembers = res.data.members;
+        setMembers(fetchedMembers);
+        setDepts(res.data.departments);
+
+        // Pre-select member if userId or email is in query params
+        if (userId || userEmail) {
+          const member = fetchedMembers.find(
+            (m: any) =>
+              (userId && m._id === userId) ||
+              (userEmail && m.email === userEmail),
+          );
+          if (member) {
+            setSelectedMember(member);
+          }
+        }
       });
     }
-  }, [selectedOrg]);
+  }, [selectedOrg, userId, userEmail]);
 
   const filteredMembers = members.filter((m) => {
     const roleLower = m.role?.toLowerCase();
@@ -184,7 +184,7 @@ const handleTopicSave = (topics: string[]) => {
       }
       setLoading(true);
       try {
-        let url = `dashboard`;
+        let url = `dashboard/admin`;
         if (userEmail) {
           url = `dashboard/admin?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
         } else if (userId) {
@@ -209,9 +209,62 @@ const handleTopicSave = (topics: string[]) => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
-  // const [selectedDomain, setSelectedDomain] =
-  //   useState<string>("People Potential");
-  // const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
+  // 🆕 NEW: Fetch Org averages
+  useEffect(() => {
+    const fetchTeamAvg = async () => {
+      if (!userId && !userEmail) return;
+      try {
+        let url = "dashboard/manager-team-avg";
+        const params: string[] = ["includeSelf=true"];
+        if (userId) params.push(`userId=${userId}`);
+        if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
+        if (selectedRadarDept)
+          params.push(`department=${encodeURIComponent(selectedRadarDept)}`);
+        if (params.length) url += `?${params.join("&")}`;
+        const res = await api.get(url);
+        setTeamAvgData(res.data);
+      } catch (err) {
+        setTeamAvgData(null);
+      }
+    };
+    fetchTeamAvg();
+  }, [userId, userEmail, refreshKey, selectedRadarDept]);
+
+  const handleExportPDF = async () => {
+    try {
+      setExportLoading(true);
+      const params: any = {};
+      if (userId) params.userId = userId;
+      if (userEmail) params.email = userEmail;
+
+      const response = await api.get("/dashboard/export-pdf", {
+        params,
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const fileName = `POD360_Report_${userData?.firstName || "Participant"}.pdf`;
+      link.setAttribute("download", fileName);
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF Export failed:", err);
+      toast.error("Failed to generate PDF report");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const [selectedDomain, setSelectedDomain] =
+    useState<string>("People Potential");
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
 
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
@@ -242,51 +295,14 @@ const handleTopicSave = (topics: string[]) => {
     if (reportData) {
       fetchDetailedPods();
     }
-  }, [selectedDomain, selectedSubdomain, userId, userEmail, reportData, refreshKey]);
-
-  useEffect(() => {
-    if (!pendingPdfTopics || !pdfExportRef.current || !reportData) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const runPdfExport = async () => {
-      setIsLoading(true);
-
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 150));
-        await generatePDF(pdfExportRef, {
-          filename: `${selectedDomain || "POD360"}_analysis.pdf`,
-          method: "save",
-          resolution: Resolution.MEDIUM,
-          page: {
-            margin: 10,
-            format: "a4",
-            orientation: "portrait",
-          },
-          canvas: {
-            mimeType: "image/png",
-            qualityRatio: 1,
-            useCORS: true,
-          },
-        });
-      } catch (error) {
-        console.error("Error generating PDF:", error);
-      } finally {
-        if (!cancelled) {
-          setPendingPdfTopics(null);
-          setIsLoading(false);
-        }
-      }
-    };
-
-    runPdfExport();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pendingPdfTopics, reportData, selectedDomain]);
+  }, [
+    selectedDomain,
+    selectedSubdomain,
+    userId,
+    userEmail,
+    reportData,
+    refreshKey,
+  ]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -305,10 +321,16 @@ const handleTopicSave = (topics: string[]) => {
   };
 
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
-  const subdomainScore =
-    reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
-    ] || 0;
+  const subdomainScore = (() => {
+    const subData =
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+        selectedSubdomain
+      ];
+    if (typeof subData === "object" && subData !== null) {
+      return subData.score || 0;
+    }
+    return Number(subData) || 0;
+  })();
   const overallScore = reportData?.scores?.overall || 0;
 
   const getStatus = (val: number) => {
@@ -351,8 +373,23 @@ const handleTopicSave = (topics: string[]) => {
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
+    ? (() => {
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
+
+  const finalInsights =
+    displayInsights.length > 0
+      ? displayInsights
+      : ["No specific insights available yet."];
 
   const displayKRs =
     detailedPods?.objectives?.items?.map((text: string, i: number) => ({
@@ -374,125 +411,143 @@ const handleTopicSave = (topics: string[]) => {
       color: data.score < 50 ? "#D71818" : "#FF8D28",
     }));
 
-
-  // Derive Radar Data from responses
+  // Derive Radar Data from responses (Aggregated by Domain instead of Subdomain)
   const radarData: RadarData = (() => {
-    const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
-    );
-    const labels = subdomains;
-    const mScores: number[] = [];
-    const tScores: number[] = [];
-    const pScores: number[] = [];
+    const domains = Object.keys(reportData?.scores?.domains || {});
+    const labels = domains;
+    const lScores: number[] = []; // Leader (Blue)
+    const mScores: number[] = []; // Manager (Green)
+    const eScores: number[] = []; // Employee (Red)
 
-    labels.forEach((sub) => {
-      const subRes = reportData?.responses?.filter(
-        (r: any) => r.domain === selectedDomain && r.subdomain === sub,
-      );
+    labels.forEach((domain) => {
+      // Pull directly from the fetched org-wide team averages
+      const lAvg = teamAvgData?.leaderAvg?.[domain]?.avgScore ?? 0;
+      const mAvg = teamAvgData?.managerAvg?.[domain]?.avgScore ?? 0;
+      const eAvg = teamAvgData?.employeeAvg?.[domain]?.avgScore ?? 0;
 
-      const mResponses =
-        subRes?.filter((r: any) => r.stakeholder === "manager") || [];
-      const mAvg =
-        mResponses.length > 0
-          ? mResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / mResponses.length
-          : 0;
-
-      const tResponses =
-        subRes?.filter((r: any) => r.stakeholder === "employee") || [];
-      const tAvg =
-        tResponses.length > 0
-          ? tResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / tResponses.length
-          : 0;
-
-      const pResponses =
-        subRes?.filter((r: any) => r.stakeholder === "leader") || [];
-      const pAvg =
-        pResponses.length > 0
-          ? pResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / pResponses.length
-          : 0;
-
+      lScores.push(Number((lAvg / 10).toFixed(1)));
       mScores.push(Number((mAvg / 10).toFixed(1)));
-      tScores.push(Number((tAvg / 10).toFixed(1)));
-      pScores.push(Number((pAvg / 10).toFixed(1)));
+      eScores.push(Number((eAvg / 10).toFixed(1)));
     });
 
-    return { labels, manager: mScores, team: tScores, peer: pScores };
+    return { labels, manager: lScores, team: mScores, peer: eScores };
   })();
 
-  // Derive Role Data and Gaps from stakeholders
+  // Derive Role Data and Gaps from stakeholders (Alignment Status)
   const roleAverages = (() => {
-    const roles = ["employee", "manager", "leader"];
-    return roles.map((role) => {
-      const responses =
-        reportData?.responses?.filter((r: any) => r.stakeholder === role) || [];
-      const score =
-        responses.length > 0
-          ? responses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / responses.length
-          : 0;
+    // Aggregated averages across ALL domains
+    const lScores = Object.values(teamAvgData?.leaderAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const leaderScore =
+      lScores.length > 0
+        ? Math.round(lScores.reduce((a, b) => a + b, 0) / lScores.length)
+        : 0;
 
-      const labelMap: any = {
-        employee: "EMPLOYEE",
-        manager: "MANAGER",
-        leader: "SENIOR LEADER",
-      };
-      const colorMap: any = {
-        employee: "#FF5656",
-        manager: "#FEE114",
-        leader: "#30AD43",
-      };
+    const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const managerScore =
+      mScores.length > 0
+        ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
+        : 0;
 
-      return {
-        label: labelMap[role],
-        value: Math.round(score),
-        color: colorMap[role],
-      };
-    });
+    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
+      (d: any) => d.avgScore || 0,
+    );
+    const employeeScore =
+      eScores.length > 0
+        ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
+        : 0;
+
+    const getColor = (val: number) => {
+      if (val < 50) return "#FF5656"; // Needs Attention
+      if (val < 75) return "#FEE114"; // At Risk
+      return "#30AD43"; // On Track
+    };
+
+    return [
+      {
+        label: `SENIOR LEADER (${teamAvgData?.leaderCount || 0})`,
+        value: leaderScore,
+        color: getColor(leaderScore),
+      },
+      {
+        label: `MANAGER (${teamAvgData?.managerCount || 0})`,
+        value: managerScore,
+        color: getColor(managerScore),
+      },
+      {
+        label: `EMPLOYEE (${teamAvgData?.employeeCount || 0})`,
+        value: employeeScore,
+        color: getColor(employeeScore),
+      },
+    ];
   })();
 
-  const maxGapInfo = (() => {
-    let largest = 0;
-    let rolesText = "Balanced Views";
-    for (let i = 0; i < roleAverages.length; i++) {
-      for (let j = i + 1; j < roleAverages.length; j++) {
-        if (roleAverages[i].value === 0 || roleAverages[j].value === 0)
-          continue;
-        const gap = Math.abs(roleAverages[i].value - roleAverages[j].value);
-        if (gap > largest) {
-          largest = gap;
-          rolesText = `${roleAverages[i].label} VS ${roleAverages[j].label}`;
-        }
-      }
+  const alignmentInfo = (() => {
+    const leaderVal =
+      roleAverages.find((r) => r.label === "SENIOR LEADER")?.value || 0;
+    const employeeVal =
+      roleAverages.find((r) => r.label === "EMPLOYEE")?.value || 0;
+    const gap = Math.abs(leaderVal - employeeVal);
+
+    // Leadership Optimism Risk: Leader is High (Green), Employee is Low (Red)
+    if (leaderVal >= 75 && employeeVal < 50) {
+      return {
+        label: "Leadership optimism risk",
+        status: "Red",
+        color: "#D71818",
+        bg: "#FFEBEB",
+        icon: "solar:shield-warning-bold-duotone",
+        gap: gap,
+      };
     }
-    return { text: rolesText, value: largest };
+
+    // Blind Spot Detected: Significant gap but not necessarily optimism risk
+    if (gap > 18) {
+      return {
+        label: "Blind spot detected",
+        status: "Amber",
+        color: "#D97706",
+        bg: "#FFFBEB",
+        icon: "solar:eye-broken-bold-duotone",
+        gap: gap,
+      };
+    }
+
+    // Alignment Healthy
+    return {
+      label: "Alignment healthy",
+      status: "Green",
+      color: "#30AD43",
+      bg: "#F0FDF4",
+      icon: "solar:check-circle-bold-duotone",
+      gap: gap,
+    };
   })();
 
   const trendData = (() => {
-    if (!reportData) return { labels: [], manager: [], team: [], descriptions: [] };
+    if (!reportData)
+      return { labels: [], manager: [], team: [], descriptions: [] };
 
     // Convert 0-100 score to /10 scale
-    const getScoreForChart = (val: any) => Number((getNumericScore(val) / 10).toFixed(1));
+    const getScoreForChart = (val: any) =>
+      Number((getNumericScore(val) / 10).toFixed(1));
 
     // If a subdomain is selected, show question-level trend
     if (selectedSubdomain) {
-      const qCurrent = reportData?.responses?.filter((r: any) =>
-        r.domain === selectedDomain && r.subdomain === selectedSubdomain
-      ) || [];
+      const qCurrent =
+        reportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
 
-      const qFirst = firstReportData?.responses?.filter((r: any) =>
-        r.domain === selectedDomain && r.subdomain === selectedSubdomain
-      ) || [];
+      const qFirst =
+        firstReportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
 
       const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
       const descriptions = qCurrent.map((q: any) => q.text);
@@ -507,355 +562,81 @@ const handleTopicSave = (topics: string[]) => {
     }
 
     // Default: subdomain averages
-    const subdomains = Object.keys(reportData?.scores?.domains?.[selectedDomain]?.subdomains || {});
+    const subdomains = Object.keys(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+    );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
-    const descriptions = subdomains.map(sub => sub);
+    const descriptions = subdomains.map((sub) => sub);
 
-    const currentScores = subdomains.map(sub => {
-      const scoreData = reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
-      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+    const currentScores = subdomains.map((sub) => {
+      const scoreData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
       return Number(((score || 0) / 10).toFixed(1));
     });
 
-    const firstScores = subdomains.map(sub => {
-      const scoreData = firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
-      const score = typeof scoreData === 'object' ? scoreData.score : scoreData;
+    const firstScores = subdomains.map((sub) => {
+      const scoreData =
+        firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
       return Number(((score || 0) / 10).toFixed(1));
     });
 
     return { labels, manager: firstScores, team: currentScores, descriptions };
   })();
 
-  const roleData = roleAverages;
+  return (
+    <div>
+      <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <h3 className="text-2xl font-black tracking-tight">
+            {userData?.firstName ||
+              reportData?.user?.firstName ||
+              reportData?.userDetails?.firstName ||
+              "Org Head"}{" "}
+            {userData?.lastName ||
+              reportData?.user?.lastName ||
+              reportData?.userDetails?.lastName ||
+              ""}
+          </h3>
 
-  const topicsForPdf = pendingPdfTopics || selectedTopics;
-
-  const selectedDomainEntries = Object.entries(reportData?.scores?.domains || {});
-  const allSubdomainEntries = selectedDomainEntries.flatMap(([domainName, domainData]: any) =>
-    Object.entries(domainData?.subdomains || {}).map(([subName, subScore]: any) => ({
-      domainName,
-      subName,
-      subScore: Math.round(subScore || 0),
-    })),
-  );
-  const allInsights = selectedDomainEntries.flatMap(([domainName, domainData]: any) => {
-    const domainInsight = domainData?.feedback?.insight
-      ? [{ title: domainName, body: domainData.feedback.insight }]
-      : [];
-
-    const subInsights = Object.entries(domainData?.subdomainFeedback || {}).map(
-      ([subName, feedback]: any) => ({
-        title: `${domainName} / ${subName}`,
-        body: feedback?.insight || "No insight available.",
-      }),
-    );
-
-    return [...domainInsight, ...subInsights];
-  });
-  const allObjectives = selectedDomainEntries.flatMap(([domainName, domainData]: any) =>
-    Object.entries(domainData?.subdomainFeedback || {}).flatMap(([subName, feedback]: any) => {
-      const items = (feedback?.coachingTips || "")
-        .split(/[â€¢\n\r]/)
-        .map((item: string) => item.trim())
-        .filter((item: string) => item.length > 0);
-
-      return items.map((item: string, index: number) => ({
-        label: `${domainName} / ${subName} / KR${index + 1}`,
-        text: item,
-        value: domainData?.subdomains?.[subName] || 0,
-      }));
-    }),
-  );
-
-  const renderPdfTopicSection = (topic: string) => {
-    switch (topic) {
-      case "Organizational Health":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <p className="mt-2 text-sm text-[#5d6b82]">
-              Overall organizational health based on the latest submitted assessment.
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <div className="flex justify-center">
-                  <CircularProgress
-                    value={Math.round(overallScore)}
-                    width={170}
-                    pathColor={currentStatus.color}
-                    trailColor={currentStatus.trail}
-                    textColor={currentStatus.color}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-3">
-                <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Overall Score</p>
-                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(overallScore)}%</p>
-              </div>
-                <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Status</p>
-                <p className="mt-2 text-lg font-bold text-[#1a3652]">{currentStatus.label}</p>
-              </div>
-                <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Domains Covered</p>
-                <p className="mt-2 text-lg font-bold text-[#1a3652]">{selectedDomainEntries.length}</p>
-              </div>
-              </div>
-            </div>
-          </div>
-        );
-      case "POD-360™ Model":
-      case "POD-360 Model":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">POD-360™ Model</h3>
-            <div className="mt-4 flex justify-center rounded-2xl bg-[#f8fbfe] p-5">
-              <div className="w-[240px]">
-                <Triangle data={triangleData} />
-              </div>
-            </div>
-            <div className="mt-4 grid grid-cols-3 gap-3">
-              <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">People Potential</p>
-                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(triangleData.peoplePotential)}%</p>
-              </div>
-              <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Operational Steadiness</p>
-                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(triangleData.operationalSteadiness)}%</p>
-              </div>
-              <div className="rounded-xl bg-[#f4f8fc] p-4">
-                <p className="text-xs uppercase text-[#5d6b82]">Digital Fluency</p>
-                <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(triangleData.digitalFluency)}%</p>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2 text-sm text-[#334155]">
-              {(detailedPods?.insights?.modelDescription
-                ? detailedPods.insights.modelDescription.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
-                : ["Capability", "Engagement", "Confidence", "Change resilience"]
-              ).map((item: string, index: number) => (
-                <p key={index}>- {item}</p>
-              ))}
-            </div>
-          </div>
-        );
-      case "Trends Analysis":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
-              <div className="h-[320px] w-full">
-                <MultiLineChart data={trendData} />
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              {trendData.labels.map((label: string, index: number) => (
-                <div key={label} className="rounded-xl bg-[#f8fbfe] p-4">
-                  <p className="font-semibold text-[#1a3652]">
-                    {trendData.descriptions[index] || label}
-                  </p>
-                  <p className="mt-1 text-sm text-[#475569]">
-                    Previous: {trendData.manager[index] ?? 0} | Current: {trendData.team[index] ?? 0}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "Alignment Status":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <p className="mt-2 text-sm text-[#5d6b82]">Largest gap: {maxGapInfo.text} (+{maxGapInfo.value})</p>
-            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
-              <div className="h-[240px] w-full">
-                <RoleProgressChart data={roleData} />
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              {roleData.map((role) => (
-                <div key={role.label} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
-                  <p className="font-semibold text-[#1a3652]">{role.label}</p>
-                  <p className="text-lg font-bold text-[#1a3652]">{role.value}%</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "Priorities Attention":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <div className="mt-4 space-y-3">
-              {topPriorities.map((item) => (
-                <div key={item.name} className="flex items-center justify-between rounded-xl bg-[#fff7ed] p-4">
-                  <p className="font-semibold text-[#1a3652]">{item.name}</p>
-                  <p className="text-lg font-bold" style={{ color: item.color }}>{item.score}%</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "Overall Departmental POD Score":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <div className="mt-4 rounded-xl bg-[#eef6ff] p-5">
-              <p className="text-3xl font-bold text-[#1a3652]">{Math.round(overallScore)}%</p>
-              <p className="mt-2 text-sm text-[#475569]">{aiInsight?.title || "Performance Trajectory"}</p>
-              <p className="mt-2 text-sm text-[#475569]">{aiInsight?.description || "Assessment summary for this report."}</p>
-            </div>
-            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
-              <div className="h-[360px] w-full">
-                <MultiRadarChart data={radarData} />
-              </div>
-            </div>
-          </div>
-        );
-      case "Score by domain":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <div className="mt-4 flex justify-center rounded-2xl bg-[#f8fbfe] p-4">
-              <div className="h-[300px] w-full max-w-[500px]">
-                <SpeedMeter value={domainScore} />
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              {selectedDomainEntries.map(([name, data]: any) => (
-                <div key={name} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
-                  <p className="font-semibold text-[#1a3652]">{name}</p>
-                  <p className="text-lg font-bold text-[#1a3652]">{Math.round(data.score || 0)}%</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "Score by sub-domain":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <p className="mt-2 text-sm text-[#5d6b82]">All domains and all sub-domains</p>
-            <div className="mt-4 flex justify-center rounded-2xl bg-[#f8fbfe] p-4">
-              <div className="h-[300px] w-full max-w-[500px]">
-                <SpeedMeter value={subdomainScore} />
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              {allSubdomainEntries.map(({ domainName, subName, subScore }) => (
-                <div key={`${domainName}-${subName}`} className="flex items-center justify-between rounded-xl bg-[#f4f8fc] p-4">
-                  <div>
-                    <p className="font-semibold text-[#1a3652]">{subName}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#64748b]">{domainName}</p>
-                  </div>
-                  <p className="text-lg font-bold text-[#1a3652]">{subScore}%</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "Performance Analysis":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {selectedDomainEntries.map(([name, data]: any) => (
-                <div key={name} className="rounded-xl bg-[#f4f8fc] p-4">
-                  <p className="text-xs uppercase text-[#5d6b82]">{name}</p>
-                  <p className="mt-2 text-2xl font-bold text-[#1a3652]">{Math.round(data.score || 0)}%</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 rounded-2xl bg-[#f8fbfe] p-4">
-              <div className="h-[320px] w-full">
-                <MultiLineChart data={trendData} />
-              </div>
-            </div>
-          </div>
-        );
-      case "Insight for People Potential":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <div className="mt-4 space-y-2 text-sm text-[#334155]">
-              {allInsights.map((item, index: number) => (
-                <div key={`${item.title}-${index}`} className="rounded-xl bg-[#f8fbfe] p-4">
-                  <p className="font-semibold text-[#1a3652]">{item.title}</p>
-                  <p className="mt-2">- {item.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "Objectives and Key Results":
-        return (
-          <div key={topic} className="mb-6 rounded-2xl border border-[#dbe6f1] p-5">
-            <h3 className="text-xl font-bold text-[#1a3652]">{topic}</h3>
-            <div className="mt-4 space-y-3">
-              {allObjectives.map((kr: any) => (
-                <div key={kr.label} className="rounded-xl bg-[#f4f8fc] p-4">
-                  <p className="font-semibold text-[#1a3652]">{kr.label}</p>
-                  <p className="mt-1 text-sm text-[#475569]">{kr.text}</p>
-                  <p className="mt-2 text-sm font-semibold text-[#1a3652]">Progress: {Math.round(kr.value)}%</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-return (
-  <>
-  <div>
-    <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <h3 className="text-2xl font-black tracking-tight">
-          {userData?.firstName ||
-            reportData?.user?.firstName ||
-            reportData?.userDetails?.firstName ||
-            "Org Head"}{" "}
-          {userData?.lastName ||
-            reportData?.user?.lastName ||
-            reportData?.userDetails?.lastName ||
-            ""}
-        </h3>
-
-        <div className="flex items-center gap-3">
-          {isSuperAdmin && reportData && (
+          <div className="flex items-center gap-3">
+            {isSuperAdmin && reportData && (
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                title="Edit AI Insights, Objectives, and Recommendations"
+              >
+                <Icon icon="lucide:pencil" width="16" />
+              </button>
+            )}
             <button
               type="button"
-              onClick={() => setIsEditModalOpen(true)}
-              className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
-              title="Edit AI Insights, Objectives, and Recommendations"
+              onClick={handleExportPDF}
+              disabled={exportLoading}
+              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              style={{ backgroundColor: "#1a3652" }}
             >
-              <Icon icon="lucide:edit" width="16" />
-              Edit Feedback
+              {exportLoading ? (
+                <Icon icon="eos-icons:loading" width="16" />
+              ) : (
+                <Icon
+                  icon="lucide:file-text"
+                  width="16"
+                  className="transition-transform duration-300 group-hover:translate-y-0.5"
+                />
+              )}
+              {exportLoading ? "Exporting..." : "Export PDF Report"}
             </button>
-          )}
-           {/* Existing export button */}
-          <button
-            type="button"
-            onClick={handleOpenTopicModal}
-            disabled={isLoading}
-            className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            style={{ backgroundColor: "#1a3652" }}
-          >
-            <Icon
-              icon="lucide:arrow-down-to-line"
-              width="16"
-              className="transition-transform duration-300 group-hover:translate-y-0.5"
-            />
-            {isLoading ? 'Generating PDF...' : 'Export Analysis'}
-          </button>
+          </div>
         </div>
-      </div>
-       {/* Filters Section */}
+
+        {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
           <div className="xl:block hidden"></div>
+          {isAdmin && <div className="xl:block hidden"></div>}
           {isSuperAdmin && (
             <Select
               className="select-search"
@@ -882,9 +663,9 @@ return (
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -930,9 +711,9 @@ return (
               No Assessment Results Yet
             </h2>
             <p className="text-neutral-500 max-w-md text-lg">
-              This administrator has been invited to take the assessment, but they
-              haven't completed it yet. Once they finish, you'll see their full
-              performance report here.
+              This administrator has been invited to take the assessment, but
+              they haven't completed it yet. Once they finish, you'll see their
+              full performance report here.
             </p>
             <div className="flex gap-4 mt-4">
               <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">
@@ -1017,22 +798,35 @@ return (
                   </div>
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
                     {detailedPods?.insights?.modelDescription ? (
-                      detailedPods.insights.modelDescription
-                        .split(/[•\n\r]/)
-                        .map((item: string) => item.trim())
-                        .filter((item: string) => item.length > 0)
-                        .map((bullet: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0 mt-0.5"
-                            />
-                            <span className="text-sm font-medium text-[#64748B] leading-snug">
-                              {bullet}
-                            </span>
-                          </div>
-                        ))
+                      (() => {
+                        const mLines = detailedPods.insights.modelDescription
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
+                        const finalMLines = hasMBullets
+                          ? mLines
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
+                          : mLines;
+
+                        return finalMLines.map(
+                          (bullet: string, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <img
+                                src={IconStar}
+                                alt="icon"
+                                className="w-4 h-4 shrink-0 mt-0.5"
+                              />
+                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                                {bullet}
+                              </span>
+                            </div>
+                          ),
+                        );
+                      })()
                     ) : (
                       <>
                         <div className="flex items-center gap-2">
@@ -1147,10 +941,66 @@ return (
                       <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                         Alignment Status
                       </h3>
-                      <p className="text-sm font-semibold text-[#D71818] mt-1 flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 flex bg-[#D71818] rounded-full"></span>
-                        Blind Spot Detected
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="relative" data-twe-dropdown-ref>
+                          <button
+                            className="flex items-center whitespace-nowrap bg-[#EDF5FD] px-3 py-1 text-xs font-bold leading-normal text-[#676767] rounded-[4px]"
+                            type="button"
+                            id="alignmentDeptDropdown"
+                            data-twe-dropdown-toggle-ref
+                            aria-expanded="false"
+                          >
+                            {selectedRadarDept || "Organization Wide"}
+                            <span className="ms-1 w-2 [&>svg]:h-3 [&>svg]:w-3">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </span>
+                          </button>
+                          <ul
+                            className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                            aria-labelledby="alignmentDeptDropdown"
+                            data-twe-dropdown-menu-ref
+                          >
+                            <li>
+                              <button
+                                className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                                onClick={() => setSelectedRadarDept("")}
+                              >
+                                Organization Wide
+                              </button>
+                            </li>
+                            {(depts.length > 0
+                              ? depts
+                              : teamAvgData?.allDepartments || []
+                            ).map((dept: string) => (
+                              <li key={dept}>
+                                <button
+                                  className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                                  onClick={() => setSelectedRadarDept(dept)}
+                                >
+                                  {dept}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <p
+                          className="text-sm font-semibold flex items-center gap-1"
+                          style={{ color: alignmentInfo.color }}
+                        >
+                          <Icon icon={alignmentInfo.icon} width="16" />
+                          {alignmentInfo.status} Status
+                        </p>
+                      </div>
                     </div>
 
                     <div>
@@ -1158,20 +1008,22 @@ return (
                     </div>
                   </div>
                   <div className="sm:w-[400px] w-full my-10">
-                    <RoleProgressChart data={roleData} />
+                    <RoleProgressChart data={roleAverages} />
                   </div>
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> {maxGapInfo.text} (+
-                    {maxGapInfo.value})
+                    <b className="">Largest Gap:</b> Senior Leader VS Employee
+                    (+{alignmentInfo.gap})
                   </p>
                   <div className="sm:mt-16 mt-6 ">
                     <button
                       type="button"
-                      className="ml-auto group text-[#D71818] rounded-full px-4 py-2 flex items-center gap-1.5 font-semibold text-sm uppercase bg-[#FFEBEB]"
+                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider"
+                      style={{
+                        backgroundColor: alignmentInfo.bg,
+                        color: alignmentInfo.color,
+                      }}
                     >
-                      {maxGapInfo.value > 15
-                        ? "Perception Risk Detected"
-                        : "Alignment On Track"}
+                      {alignmentInfo.label}
                     </button>
                   </div>
                   <div></div>
@@ -1240,7 +1092,7 @@ return (
                       data-twe-ripple-init
                       data-twe-ripple-color="light"
                     >
-                      Organization
+                      {selectedRadarDept || "Organization"}
                       <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1256,45 +1108,81 @@ return (
                       </span>
                     </button>
                     <ul
-                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                      className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block max-h-60 overflow-y-auto"
                       aria-labelledby="dropdownMenuButton1"
                       data-twe-dropdown-menu-ref
                     >
                       <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
+                        <button
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                          onClick={() => setSelectedRadarDept("")}
                         >
-                          Action
-                        </a>
+                          Organization
+                        </button>
                       </li>
-                      <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
-                        >
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="block w-full whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          href="#"
-                          data-twe-dropdown-item-ref
-                        >
-                          Something else here
-                        </a>
-                      </li>
+                      {(depts.length > 0
+                        ? depts
+                        : teamAvgData?.allDepartments || []
+                      ).map((dept: string) => (
+                        <li key={dept}>
+                          <button
+                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                            onClick={() => setSelectedRadarDept(dept)}
+                          >
+                            {dept}
+                          </button>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Leader ({teamAvgData?.leaderCount || 0})
+                    </span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(1)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Manager ({teamAvgData?.managerCount || 0})
+                    </span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(2)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(231, 76, 60, 0.6)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Employee ({teamAvgData?.employeeCount || 0})
+                    </span>
+                  </div>
+                </div>
                 <div>
-                  <MultiRadarChart data={radarData} />
+                  <MultiRadarChart
+                    data={radarData}
+                    onLabelSelect={handleDomainChange}
+                    datasetLabels={["Leader", "Manager", "Employee"]}
+                    hiddenIndices={hiddenIndices}
+                  />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]"></div>
             </div>
 
             <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
@@ -1496,10 +1384,14 @@ return (
                 <div className="flex items-center justify-between ">
                   <div>
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Insight for {selectedDomain}
+                      {detailedPods?.insights?.title ||
+                        `Insight for ${selectedSubdomain || selectedDomain}`}
                     </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      Analysis based on organizational health assessment
+                      {detailedPods?.insights?.subtitle ||
+                        (selectedSubdomain
+                          ? `Detailed analysis for ${selectedSubdomain}`
+                          : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
                   <div>
@@ -1508,7 +1400,7 @@ return (
                 </div>
                 <div>
                   <ul className="mt-4 space-y-2">
-                    {displayInsights.map((insight: string, idx: number) => (
+                    {finalInsights.map((insight: string, idx: number) => (
                       <li key={idx} className="feature-list flex gap-2">
                         <img
                           src={IconStar}
@@ -1568,14 +1460,13 @@ return (
                 </div>
               </div>
             </div>
-            
           </>
         ) : (
           <ReportEmptyState role="Org Head" />
         )}
+      </div>
 
-
-         <FeedbackEditorModal
+      <FeedbackEditorModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         domain={selectedDomain}
@@ -1585,61 +1476,11 @@ return (
         rawFeedback={{
           ...detailedPods?.rawFeedback,
           pod360Title: aiInsight?.title,
-          pod360Description: aiInsight?.description
+          pod360Description: aiInsight?.description,
         }}
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
       />
-
-      {isTopicModalOpen && (
-        <TopicSelectorModal
-          initialSelectedTopics={selectedTopics}
-          onClose={handleCloseTopicModal}
-          onSave={handleTopicSave}
-        />
-      )}
-
-      {topicsForPdf.length > 0 && (
-        <div className="pointer-events-none fixed left-0 top-0 -translate-x-[200vw]">
-          <div ref={pdfExportRef} className="w-[794px] bg-white p-8 text-[#1a3652]">
-            <div className="rounded-[24px] bg-gradient-to-r from-[#1a3652] to-[#448bd2] p-6 text-white">
-              <h1 className="text-3xl font-black">POD360 Report Export</h1>
-              <p className="mt-2 text-base font-medium">
-                {userData?.firstName || reportData?.userDetails?.firstName || "Org Head"}{" "}
-                {userData?.lastName || reportData?.userDetails?.lastName || ""}
-              </p>
-              <p className="mt-2 text-sm">
-                Domain: {selectedDomain} {selectedSubdomain ? `| Sub-domain: ${selectedSubdomain}` : ""}
-              </p>
-            </div>
-
-            <div className="mt-6 rounded-2xl bg-[#f4f8fc] p-5">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#5d6b82]">Selected Topics</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {topicsForPdf.map((topic) => (
-                  <span
-                    key={topic}
-                    className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#1a3652]"
-                  >
-                    {topic}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-6">
-              {topicsForPdf.map((topic) => renderPdfTopicSection(topic))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-
-    
-  </div>
-
-
-       
-    </>
   );
 };
 

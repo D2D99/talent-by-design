@@ -12,6 +12,7 @@ import Select from "react-select";
 import { useState, useEffect } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
+import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ReportEmptyState from "../../components/reportEmptyState";
 // import Sidebar from "../../components/sidebar";
@@ -51,10 +52,19 @@ const ManagerReport = () => {
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
+  const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Real dept team avg
 
   // setChartData
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+  const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
+
+  const toggleHiddenIndex = (idx: number) => {
+    setHiddenIndices((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
+    );
+  };
 
   const { user } = useAuth();
   const location = useLocation();
@@ -62,21 +72,28 @@ const ManagerReport = () => {
   const userRole = user?.role?.toLowerCase() || "";
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
+  const isLeader = userRole === "leader";
+  const isManager = userRole === "manager";
+
   const isReportPage = location.pathname.includes("reports");
 
   const [orgs, setOrgs] = useState<string[]>([]);
   const [depts, setDepts] = useState<string[]>([]);
   const [members, setMembers] = useState<any[]>([]);
 
-  const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
-  const [selectedDept, setSelectedDept] = useState<string>("");
+  const [selectedOrg, setSelectedOrg] = useState<string>(
+    searchParams.get("orgName") || user?.orgName || "",
+  );
+  const [selectedDept, setSelectedDept] = useState<string>(
+    searchParams.get("department") || "",
+  );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
   useEffect(() => {
     if (user?.department && !isAdmin && !isSuperAdmin) {
       setSelectedDept(user.department);
     }
-  }, [user, isAdmin, isSuperAdmin]);
+  }, [user, isAdmin, isSuperAdmin, selectedDept]);
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -89,11 +106,23 @@ const ManagerReport = () => {
   useEffect(() => {
     if (selectedOrg) {
       api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
+        const fetchedMembers = res.data.members;
         setDepts(res.data.departments);
-        setMembers(res.data.members);
+        setMembers(fetchedMembers);
+
+        // Pre-select member if userId or email is in query params
+        if (userId || userEmail) {
+          const member = fetchedMembers.find(
+            (m: any) =>
+              (userId && m._id === userId) || (userEmail && m.email === userEmail),
+          );
+          if (member) {
+            setSelectedMember(member);
+          }
+        }
       });
     }
-  }, [selectedOrg]);
+  }, [selectedOrg, userId, userEmail]);
 
   const filteredMembers = members.filter((m) => {
     const roleLower = m.role?.toLowerCase();
@@ -196,9 +225,30 @@ const ManagerReport = () => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
+  // 🆕 Fetch real team avg from backend whenever the viewed manager changes
+  useEffect(() => {
+    const fetchTeamAvg = async () => {
+      if (!userId && !userEmail) return;
+      try {
+        let url = "dashboard/manager-team-avg";
+        const params: string[] = [];
+        if (userId) params.push(`userId=${userId}`);
+        if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
+        if (params.length) url += `?${params.join("&")}`;
+        const res = await api.get(url);
+        setTeamAvgData(res.data);
+      } catch (err) {
+        // Not critical — silently fall back to empty
+        setTeamAvgData(null);
+      }
+    };
+    fetchTeamAvg();
+  }, [userId, userEmail, refreshKey]);
+
   // Handle label selection from Radar Chart
   const handleRadarChartSelection = (label: string) => {
     setSelectedLabel(label);
+    setSelectedSubdomain(label); // Sync radar click with subdomain insight fetching
   };
 
   // Dynamic selection states
@@ -303,6 +353,38 @@ const ManagerReport = () => {
     refreshKey,
   ]);
 
+  const handleExportPDF = async () => {
+    try {
+      setExportLoading(true);
+      const params: any = {};
+      if (userId) params.userId = userId;
+      if (userEmail) params.email = userEmail;
+
+      const response = await api.get("/dashboard/export-pdf", {
+        params,
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const fileName = `POD360_Report_${userData?.firstName || "Participant"}.pdf`;
+      link.setAttribute("download", fileName);
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF Export failed:", err);
+      toast.error("Failed to generate PDF report");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   if (loading) return <SpinnerLoader />;
 
   // Robust triangle data mapping
@@ -321,18 +403,48 @@ const ManagerReport = () => {
 
   const handleDomainChange = (domain: string) => {
     setSelectedDomain(domain);
+    // 🆕 Auto-select first subdomain when domain changes to ensure SpeedMeter updates
+    if (reportData?.scores?.domains?.[domain]?.subdomains) {
+      const firstSub = Object.keys(
+        reportData.scores.domains[domain].subdomains,
+      )[0];
+      setSelectedSubdomain(firstSub);
+    } else {
+      setSelectedSubdomain("");
+    }
   };
 
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
-  const subdomainScore =
-    reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+  const subdomainScore = (() => {
+    const subData =
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
       selectedSubdomain
-    ]?.score || 0;
+      ];
+    if (typeof subData === "object" && subData !== null) {
+      return subData.score || 0;
+    }
+    return Number(subData) || 0;
+  })();
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
-    ? detailedPods.insights.mainText.split(/[•\n\r]/).map((item: string) => item.trim()).filter((item: string) => item.length > 0)
+    ? (() => {
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
+
+  const finalInsights =
+    displayInsights.length > 0
+      ? displayInsights
+      : ["No specific insights available yet."];
 
   const displayKRs =
     detailedPods?.objectives?.items?.map((text: string, i: number) => ({
@@ -346,6 +458,9 @@ const ManagerReport = () => {
   ];
 
   // Calculate radar data dynamically from responses
+  // Manager series = manager's OWN subdomain scores (self-assessment)
+  // Team series    = REAL dept avg from backend
+  // Peer series    = Org-wide benchmark avg (other departments)
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
@@ -353,49 +468,28 @@ const ManagerReport = () => {
     const labels = subdomains;
     const mScores: number[] = [];
     const tScores: number[] = [];
-    const pScores: number[] = [];
 
     labels.forEach((sub) => {
-      const subRes = reportData?.responses?.filter(
-        (r: any) => r.domain === selectedDomain && r.subdomain === sub,
+      // Manager self-assessment score
+      const managerSubData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const mRaw =
+        typeof managerSubData === "object"
+          ? (managerSubData?.score ?? 0)
+          : (managerSubData ?? 0);
+      mScores.push(Number((mRaw / 10).toFixed(1)));
+
+      // Employee avg (same department) - mapped to 'team' dataset for colors
+      const employeeSubScore =
+        teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      tScores.push(
+        employeeSubScore !== null
+          ? Number((employeeSubScore / 10).toFixed(1))
+          : 0,
       );
-
-      const mResponses =
-        subRes?.filter((r: any) => r.stakeholder === "manager") || [];
-      const mAvg =
-        mResponses.length > 0
-          ? mResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / mResponses.length
-          : 0;
-
-      const tResponses =
-        subRes?.filter((r: any) => r.stakeholder === "employee") || [];
-      const tAvg =
-        tResponses.length > 0
-          ? tResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / tResponses.length
-          : 0;
-
-      const pResponses =
-        subRes?.filter((r: any) => r.stakeholder === "leader") || [];
-      const pAvg =
-        pResponses.length > 0
-          ? pResponses.reduce(
-            (acc: number, curr: any) => acc + getNumericScore(curr),
-            0,
-          ) / pResponses.length
-          : 0;
-
-      mScores.push(Number((mAvg / 10).toFixed(1)));
-      tScores.push(Number((tAvg / 10).toFixed(1)));
-      pScores.push(Number((pAvg / 10).toFixed(1)));
     });
 
-    return { labels, manager: mScores, team: tScores, peer: pScores };
+    return { labels, manager: mScores, team: tScores, peer: [] };
   })();
 
   const deltaScores = radarData.team.map((t, i) =>
@@ -422,24 +516,30 @@ const ManagerReport = () => {
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
-                className="ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-white border border-[#1a3652] text-[#1a3652] hover:bg-gray-50 transition-colors"
+                className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 title="Edit AI Insights, Objectives, and Recommendations"
               >
-                <Icon icon="lucide:edit" width="16" />
-                Edit Feedback
+                <Icon icon="lucide:pencil" width="16" />
+                {/* Edit Feedback */}
               </button>
             )}
             <button
               type="button"
+              onClick={handleExportPDF}
+              disabled={exportLoading}
               className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               style={{ backgroundColor: "#1a3652" }}
             >
-              <Icon
-                icon="lucide:arrow-down-to-line"
-                width="16"
-                className="transition-transform duration-300 group-hover:translate-y-0.5"
-              />
-              Export Analysis
+              {exportLoading ? (
+                <Icon icon="eos-icons:loading" width="16" />
+              ) : (
+                <Icon
+                  icon="lucide:file-text"
+                  width="16"
+                  className="transition-transform duration-300 group-hover:translate-y-0.5"
+                />
+              )}
+              {exportLoading ? "Exporting..." : "Export PDF Report"}
             </button>
           </div>
         </div>
@@ -447,6 +547,14 @@ const ManagerReport = () => {
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
+          {isAdmin && <div className="xl:block hidden"></div>}
+
+          {isLeader && <div className="xl:block hidden"></div>}
+          {isLeader && <div className="xl:block hidden"></div>}
+
+          {isManager && <div className="xl:block hidden"></div>}
+
+          {isManager && <div className="xl:block hidden"></div>}
 
           {isSuperAdmin && (
             <Select
@@ -759,10 +867,14 @@ const ManagerReport = () => {
                 <div className="flex items-center justify-between ">
                   <div>
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Insight for {selectedDomain}
+                      {detailedPods?.insights?.title ||
+                        `Insight for ${selectedSubdomain || selectedDomain}`}
                     </h3>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      Overall analysis for this domain
+                      {detailedPods?.insights?.subtitle ||
+                        (selectedSubdomain
+                          ? `Detailed analysis for ${selectedSubdomain}`
+                          : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
                   <div>
@@ -771,7 +883,7 @@ const ManagerReport = () => {
                 </div>
                 <div>
                   <ul className="mt-4 space-y-2">
-                    {displayInsights.map((insight: string, idx: number) => (
+                    {finalInsights.map((insight: string, idx: number) => (
                       <li key={idx} className="feature-list flex gap-2">
                         <img
                           src={IconStar}
@@ -850,22 +962,35 @@ const ManagerReport = () => {
                   </div>
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
                     {detailedPods?.insights?.modelDescription ? (
-                      detailedPods.insights.modelDescription
-                        .split(/[•\n\r]/)
-                        .map((item: string) => item.trim())
-                        .filter((item: string) => item.length > 0)
-                        .map((bullet: string, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="w-4 h-4 shrink-0 mt-0.5"
-                            />
-                            <span className="text-sm font-medium text-[#64748B] leading-snug">
-                              {bullet}
-                            </span>
-                          </div>
-                        ))
+                      (() => {
+                        const mLines = detailedPods.insights.modelDescription
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
+                        const finalMLines = hasMBullets
+                          ? mLines
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
+                          : mLines;
+
+                        return finalMLines.map(
+                          (bullet: string, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <img
+                                src={IconStar}
+                                alt="icon"
+                                className="w-4 h-4 shrink-0 mt-0.5"
+                              />
+                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                                {bullet}
+                              </span>
+                            </div>
+                          ),
+                        );
+                      })()
                     ) : (
                       <>
                         <div className="flex items-center gap-2">
@@ -951,23 +1076,21 @@ const ManagerReport = () => {
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2">
-                  {[detailedPods?.insights?.modelDescription]
-                    .filter(Boolean)
-                    .map((tip: string, idx: number) => (
-                      <li key={idx} className="feature-list flex gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="mt-1 w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal">
-                          {tip}
-                        </span>
-                      </li>
-                    ))}
-                  {!detailedPods?.insights?.modelDescription && (
-                    <li className="text-xs text-gray-400">
-                      Strategic model application details will appear here.
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <li key={idx} className="feature-list flex gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="mt-1 w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm text-[var(--secondary-color)] font-normal">
+                        {kr.text}
+                      </span>
+                    </li>
+                  ))}
+                  {displayKRs.length === 0 && (
+                    <li className="text-xs text-gray-400 italic">
+                      No coaching tips available for this domain.
                     </li>
                   )}
                 </ul>
@@ -1012,21 +1135,39 @@ const ManagerReport = () => {
                     </h3>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-1 mt-6">
-                  <div>
-                    <p className="w-9 h-4 bg-[#448bd26c]"></p>
+                <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">Manager</span>
                   </div>
-                  <div>
-                    <p className="text-sm font-normal text-[#474747]">
-                      Manager Self Assessment
-                    </p>
-                  </div>
+                  {(teamAvgData?.employeeCount > 0 || true) && (
+                    <div
+                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                      onClick={() => toggleHiddenIndex(1)}
+                    >
+                      <span
+                        className="w-5 h-2 rounded-sm inline-block"
+                        style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                      />
+                      <span className="text-xs text-[#474747]">
+                        Employee ({teamAvgData?.employeeCount || 0})
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <RadarChart
                     data={radarData}
                     selectedLabel={selectedLabel}
                     onLabelSelect={handleRadarChartSelection}
+                    datasetLabels={["Manager", "Employee"]}
+                    hiddenIndices={hiddenIndices}
                   />
                 </div>
               </div>
@@ -1036,6 +1177,29 @@ const ManagerReport = () => {
                     <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                       Delta Breakdown
                     </h3>
+                    <p className="text-sm text-[#64748B] mt-1 mb-6 ">
+                      {userData?.firstName ||
+                        reportData?.user?.firstName ||
+                        "Manager"}
+                      :{" "}
+                      <span className="font-bold text-[#448CD2]">
+                        {(
+                          (radarData.manager.reduce((a, b) => a + b, 0) /
+                            (radarData.manager.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
+                      </span>{" "}
+                      Domain Avg vs Employee Avg:{" "}
+                      <span className="font-bold text-[#E74C3C]">
+                        {(
+                          (radarData.team.reduce((a, b) => a + b, 0) /
+                            (radarData.team.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
+                      </span>
+                    </p>
                   </div>
                 </div>
                 <div>
@@ -1043,12 +1207,26 @@ const ManagerReport = () => {
                     labels={radarData.labels}
                     deltaScores={deltaScores}
                     selectedLabel={selectedLabel}
+                    managerScores={radarData.manager}
+                    employeeScores={radarData.team}
                   />
                 </div>
               </div>
             </div>
-            <div className="last-graph mt-8">
-              <ScoreBar score={50} label="hello world" />
+
+            <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px]">
+              <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
+                Overall {selectedDomain} Domain Score —{" "}
+                {userData?.firstName ||
+                  reportData?.user?.firstName ||
+                  "Manager"}
+              </h3>
+              <div className="p-4 pt-0 ">
+                <ScoreBar
+                  score={Math.round(domainScore)}
+                  label={`${userData?.firstName || reportData?.user?.firstName || "Manager"} ${userData?.lastName || reportData?.user?.lastName || ""}`}
+                />
+              </div>
             </div>
           </>
         ) : (

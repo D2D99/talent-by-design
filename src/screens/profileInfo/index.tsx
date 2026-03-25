@@ -285,7 +285,7 @@ const ProfileInfo = () => {
                   <select
                     id="department"
                     disabled={isDeptLocked}
-                    className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${isDeptLocked ? "bg-gray-100 cursor-not-allowed" : ""} ${
+                    className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] capitalize w-full p-3 mt-2 border rounded-lg transition-all ${isDeptLocked ? "bg-gray-100 cursor-not-allowed" : ""} ${
                       errors.department
                         ? "border-red-500"
                         : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -295,13 +295,21 @@ const ProfileInfo = () => {
                     })}
                   >
                     <option value="">Select your department</option>
-                    <option value="hr">HR/People & Culture</option>
-                    <option value="finance">Finance & Accounting</option>
-                    <option value="operations">Operations</option>
-                    <option value="it">IT</option>
-                    <option value="sales">Sales and Marketing</option>
-                    <option value="legal">Legal, Risk & Compliance</option>
-                    <option value="corporate">
+                    <option value="HR/People & Culture">
+                      HR/People & Culture
+                    </option>
+                    <option value="Finance & Accounting">
+                      Finance & Accounting
+                    </option>
+                    <option value="Operations">Operations</option>
+                    <option value="IT">IT</option>
+                    <option value="Sales and Marketing">
+                      Sales and Marketing
+                    </option>
+                    <option value="Legal, Risk & Compliance">
+                      Legal, Risk & Compliance
+                    </option>
+                    <option value="Admin & Corporate Services">
                       Admin & Corporate Services
                     </option>
                   </select>

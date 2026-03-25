@@ -27,9 +27,12 @@ Chart.register(
 
 interface MultiRadarChartProps {
   data: RadarData;
+  onLabelSelect?: (label: string) => void;
+  datasetLabels?: [string, string, string, string?];
+  hiddenIndices?: number[];
 }
 
-const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
+const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [] }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
 
@@ -47,7 +50,7 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
           labels: data.labels,
           datasets: [
             {
-              label: "Manager",
+              label: datasetLabels?.[0] || "Manager",
               data: data.manager,
               backgroundColor: "rgba(74, 144, 226, 0.3)",
               borderColor: "#4A90E2",
@@ -56,9 +59,10 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
+              hidden: hiddenIndices.includes(0),
             },
             {
-              label: "Team",
+              label: datasetLabels?.[1] || "Team",
               data: data.team,
               backgroundColor: "rgba(46, 204, 113, 0.3)",
               borderColor: "#2ECC71",
@@ -67,9 +71,10 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
+              hidden: hiddenIndices.includes(1),
             },
             {
-              label: "Peer",
+              label: datasetLabels?.[2] || "Peer",
               data: data.peer,
               backgroundColor: "rgba(231, 76, 60, 0.3)",
               borderColor: "#E74C3C",
@@ -78,7 +83,20 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
+              hidden: hiddenIndices.includes(2),
             },
+            ...(data.admin && data.admin.length > 0 ? [{
+              label: datasetLabels?.[3] || "Admin",
+              data: data.admin,
+              backgroundColor: "rgba(155, 89, 182, 0.3)",
+              borderColor: "#9B59B6",
+              pointBackgroundColor: "#9B59B6",
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              fill: "origin",
+              hidden: hiddenIndices.includes(3),
+            }] : []),
           ],
         },
         options: {
@@ -107,11 +125,30 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
           },
           plugins: {
             legend: {
-              // position: "top",
               display: false
             },
           },
+          events: ["click"],
         },
+      });
+
+      // Handle click events on the radar chart
+      canvasRef.current?.addEventListener("click", (event) => {
+        if (chartRef.current && chartRef.current.data && onLabelSelect) {
+          const points = chartRef.current.getElementsAtEventForMode(
+            event,
+            "nearest",
+            { intersect: true },
+            true
+          );
+
+          if (points.length > 0) {
+            const label = chartRef.current.data.labels?.[points[0].index];
+            if (label && typeof label === 'string') {
+              onLabelSelect(label);
+            }
+          }
+        }
       });
     }
 
@@ -121,7 +158,7 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data }) => {
         chartRef.current.destroy();
       }
     };
-  }, [data]); // Re-run when data changes
+  }, [data, onLabelSelect, hiddenIndices]); // Re-run when data, onLabelSelect or hiddenIndices changes
 
   return <canvas ref={canvasRef} />;
 };
