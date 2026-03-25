@@ -72,7 +72,9 @@ const AdminReport = () => {
 
   const isAdmin = userRole === "admin";
   const [orgs, setOrgs] = useState<string[]>([]);
-  const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
+  const [selectedOrg, setSelectedOrg] = useState<string>(
+    searchParams.get("orgName") || user?.orgName || "",
+  );
   const [depts, setDepts] = useState<string[]>([]);
 
   useEffect(() => {
@@ -89,11 +91,23 @@ const AdminReport = () => {
   useEffect(() => {
     if (selectedOrg) {
       api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
-        setMembers(res.data.members);
+        const fetchedMembers = res.data.members;
+        setMembers(fetchedMembers);
         setDepts(res.data.departments);
+
+        // Pre-select member if userId or email is in query params
+        if (userId || userEmail) {
+          const member = fetchedMembers.find(
+            (m: any) =>
+              (userId && m._id === userId) || (userEmail && m.email === userEmail),
+          );
+          if (member) {
+            setSelectedMember(member);
+          }
+        }
       });
     }
-  }, [selectedOrg]);
+  }, [selectedOrg, userId, userEmail]);
 
   const filteredMembers = members.filter((m) => {
     const roleLower = m.role?.toLowerCase();
@@ -309,7 +323,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -359,16 +373,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -648,9 +662,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                  value: selectedMember._id,
+                  label: selectedMember.name,
+                }
                 : null
             }
             onChange={(option: any) => {
@@ -792,9 +806,9 @@ const AdminReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(

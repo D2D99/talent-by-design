@@ -116,15 +116,19 @@ const EmployeeReport = () => {
   const [depts, setDepts] = useState<string[]>([]);
   const [members, setMembers] = useState<any[]>([]);
 
-  const [selectedOrg, setSelectedOrg] = useState<string>(user?.orgName || "");
-  const [selectedDept, setSelectedDept] = useState<string>("");
+  const [selectedOrg, setSelectedOrg] = useState<string>(
+    searchParams.get("orgName") || user?.orgName || "",
+  );
+  const [selectedDept, setSelectedDept] = useState<string>(
+    searchParams.get("department") || "",
+  );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
   useEffect(() => {
     if (user?.department && !isAdmin && !isSuperAdmin) {
       setSelectedDept(user.department);
     }
-  }, [user, isAdmin, isSuperAdmin]);
+  }, [user, isAdmin, isSuperAdmin, selectedDept]);
 
   const [reportData, setReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
@@ -154,11 +158,23 @@ const EmployeeReport = () => {
   useEffect(() => {
     if (selectedOrg) {
       api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
+        const fetchedMembers = res.data.members;
         setDepts(res.data.departments);
-        setMembers(res.data.members);
+        setMembers(fetchedMembers);
+
+        // Pre-select member if userId or email is in query params
+        if (userId || userEmail) {
+          const member = fetchedMembers.find(
+            (m: any) =>
+              (userId && m._id === userId) || (userEmail && m.email === userEmail),
+          );
+          if (member) {
+            setSelectedMember(member);
+          }
+        }
       });
     }
-  }, [selectedOrg]);
+  }, [selectedOrg, userId, userEmail]);
 
   const filteredMembers = members.filter((m) => {
     const roleLower = m.role?.toLowerCase();
@@ -373,22 +389,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -513,9 +529,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {

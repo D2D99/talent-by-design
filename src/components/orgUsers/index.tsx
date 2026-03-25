@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import api from "../../services/axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, Ripple, initTWE } from "tw-elements";
 
@@ -40,12 +40,15 @@ const OrgUsers = ({
   hideAdmin = true,
 }: OrgUsersProps) => {
   const { orgName: routeOrgName } = useParams();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDept, setSelectedDept] = useState("");
+  const [departments, setDepartments] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [roleFilter] = useState<string[]>([]);
@@ -92,6 +95,10 @@ const OrgUsers = ({
       );
       setMembers(res.data.members);
       setDetails(res.data.details);
+
+      // Fetch departments as well
+      const filterRes = await api.get(`auth/organization-filters/${targetOrg}`);
+      setDepartments(filterRes.data.departments || []);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load members");
@@ -157,10 +164,13 @@ const OrgUsers = ({
       `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""} ${m.assessmentStatus || ""}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
+
+    const matchesDept = selectedDept === "" || m.department === selectedDept;
+
     const matchesRole =
       roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
 
-    return matchesSearch && matchesRole;
+    return matchesSearch && matchesDept && matchesRole;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -214,19 +224,12 @@ const OrgUsers = ({
         <div className="mb-8 bg-white relative overflow-hidden">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <div>
-              {/* <div
-                className="flex items-center gap-1.5 text-xs font-bold mb-6 cursor-pointer text-[#448CD2] transition-colors w-fit"
-                onClick={() => navigate(-1)}
-              >
-                <Icon icon="material-symbols:arrow-back-rounded" width="16" />
-                <span className="uppercase tracking-wider">Back</span>
-              </div> */}
               <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
                 {details?.orgName || "Organization Users"}
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                currentUser?.role === "manager"
+                  currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -344,88 +347,22 @@ const OrgUsers = ({
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
           />
         </div>
-        {/* <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all md:w-auto w-full ${
-              showFilters
-                ? "bg-[var(--primary-color)] text-white"
-                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300 dark:bg-[var(--app-surface)] dark:text-[#a5cdf3] dark:border-[var(--app-border-color)] dark:hover:border-[#79baf0]"
-            }`}
+
+        <div className="flex items-center gap-2">
+          <select
+            className="px-4 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--primary-color)] text-sm"
+            value={selectedDept}
+            onChange={(e) => setSelectedDept(e.target.value)}
           >
-            <Icon icon="hugeicons:filter" width="16" height="16" />
-            <span>Filters</span>
-            {roleFilter.length > 0 && (
-              <span
-                className={`flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold transition-colors ml-1
-                ${showFilters ? "bg-white text-[var(--primary-color)] dark:bg-[var(--app-surface-soft)] dark:text-[#d8ebff]" : "bg-[var(--primary-color)] text-white"}`}
-              >
-                {roleFilter.length}
-              </span>
-            )}
-          </button>
-        </div> */}
-      </div>
-
-      {/* {showFilters && (
-        <div className="w-full md:w-80 bg-white shadow-[0_0_10px_rgba(68,140,210,0.4)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition-all animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="flex justify-between items-center mb-6 px-5 border-b pb-4 border-gray-100 dark:border-[var(--app-border-color)]/30">
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg text-gray-800 dark:text-[var(--app-heading-color)]">
-                Filters
-              </h3>
-              {roleFilter.length > 0 && (
-                <button
-                  onClick={() => setRoleFilter([])}
-                  className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tighter bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 transition-colors dark:bg-[rgba(121,186,240,0.16)] dark:border-[rgba(121,186,240,0.35)] dark:text-[#cbe4fb]"
-                >
-                  Reset
-                </button>
-              )}
-            </div>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="p-1 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-[var(--app-surface-soft)]"
-            >
-              <Icon icon="material-symbols:close" width="20" />
-            </button>
-          </div>
-
-          <div className="px-5">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2.5 dark:text-[#88a7c4]">
-              Staff Role
-            </label>
-            <div className="space-y-2.5 mt-2">
-              {["leader", "manager", "employee"].map((r) => (
-                <label
-                  key={r}
-                  className="flex items-center gap-3 cursor-pointer group"
-                >
-                  <div className="relative flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={roleFilter.includes(r)}
-                      onChange={() => {
-                        setRoleFilter((prev) =>
-                          prev.includes(r)
-                            ? prev.filter((x) => x !== r)
-                            : [...prev, r],
-                        );
-                      }}
-                      className="w-4.5 h-4.5 rounded border-gray-200 text-blue-600 focus:ring-blue-500/20 accent-blue-600 dark:border-[var(--app-border-color)] dark:bg-[var(--app-surface-muted)]"
-                    />
-                  </div>
-                  <span
-                    className={`text-sm capitalize transition-colors ${roleFilter.includes(r) ? "text-blue-600 font-bold dark:text-[#cbe4fb]" : "text-gray-500 dark:text-[var(--app-text-muted)]"}`}
-                  >
-                    {r}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
+            <option value="">All Departments</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
+            ))}
+          </select>
         </div>
-      )} */}
+      </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
         <table className="w-full text-left border-collapse">
@@ -457,9 +394,21 @@ const OrgUsers = ({
                 </div>
               </th>
               <th className="px-6 py-4 font-semibold">Added On</th>
+              <th
+                className="px-6 py-4 font-semibold"
+                onClick={() => handleSort("department")}
+              >
+                <div className="flex items-center justify-between">
+                  <span>Department</span>
+                  <Icon
+                    icon="mdi:chevron-up-down"
+                    className="opacity-75 size-3.5"
+                  />
+                </div>
+              </th>
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold">Status</th>
-              {/* <th className="px-6 py-4 font-semibold">Score</th> */}
+              <th className="px-6 py-4 font-semibold text-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -487,6 +436,9 @@ const OrgUsers = ({
                   <td className="px-6 py-4 text-sm font-medium text-gray-500">
                     {new Date(member.createdAt).toLocaleDateString()}
                   </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                    {member.department || "—"}
+                  </td>
                   <td className="px-6 py-4">
                     <span className="uppercase text-xs font-bold">
                       {member.role}
@@ -509,37 +461,41 @@ const OrgUsers = ({
                       )}
                     </td>
                   )}
-                  {/* <td className="px-6 py-4">
+                  <td className="px-6 py-4">
                     {member.assessmentStatus === "Completed" ? (
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-gray-800">
-                          {member.lastScore}%
-                        </span>
-                        {member.classification === "High" && (
-                          <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                            High
-                          </span>
-                        )}
-                        {member.classification === "Medium" && (
-                          <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                            Med
-                          </span>
-                        )}
-                        {member.classification === "Low" && (
-                          <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                            Low
-                          </span>
-                        )}
-                      </div>
+                      <button
+                        onClick={() => {
+                          const roleMapping: Record<string, string> = {
+                            superadmin: "org-head",
+                            super_admin: "org-head",
+                            admin: "org-head",
+                            "senior-leader": "senior-leader",
+                            leader: "senior-leader",
+                            manager: "manager",
+                            employee: "employee",
+                          };
+                          const reportType =
+                            roleMapping[member.role.toLowerCase()] ||
+                            "employee";
+                          navigate(
+                            `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || currentUser?.orgName || "")}`,
+                          );
+                        }}
+                        title="View Report"
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors flex items-center gap-1.5"
+                      >
+                        <Icon icon="solar:eye-linear" width="18" />
+                        <span className="text-xs font-bold uppercase tracking-wider">Report</span>
+                      </button>
                     ) : (
-                      <span className="text-gray-300">—</span>
+                      <span className="text-gray-300 text-xs">—</span>
                     )}
-                  </td> */}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="py-20 text-center text-gray-400">
+                <td colSpan={7} className="py-20 text-center text-gray-400">
                   {isLoading ? "Loading directory..." : "No members found."}
                 </td>
               </tr>

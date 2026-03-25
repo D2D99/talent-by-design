@@ -291,7 +291,8 @@ const OrgAssessmentDetails = () => {
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700"
           />
         </div>
-        {/* <div className="flex items-center gap-2">
+      </div>
+      {/* <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all ${
@@ -311,7 +312,6 @@ const OrgAssessmentDetails = () => {
             )}
           </button>
         </div> */}
-      </div>
 
       {/* Filter Sidebar */}
       {/* {showFilters && (
@@ -451,6 +451,7 @@ const OrgAssessmentDetails = () => {
                   </div>
                 </div>
               </th>
+              <th className="px-6 py-4 font-semibold">Department</th>
               <th
                 className="px-6 py-4 font-semibold"
                 onClick={() => handleSort("createdAt")}
@@ -515,6 +516,9 @@ const OrgAssessmentDetails = () => {
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-500">
                       {member.email}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {member.department || "—"}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-500">
                       {new Date(member.createdAt).toLocaleDateString()}

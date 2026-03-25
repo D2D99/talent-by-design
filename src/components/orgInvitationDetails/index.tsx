@@ -266,10 +266,12 @@ const OrgInvitationDetails = () => {
             value={searchTerm}
             autoComplete="off"
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 placeholder:text-gray-400"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700 placeholder:text-gray-400 font-medium"
           />
         </div>
-        {/* <div className="flex items-center gap-2">
+      </div>
+
+      {/* {showFilters &&
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all border font-medium text-sm uppercase tracking-wider md:w-auto w-full ${
@@ -290,7 +292,6 @@ const OrgInvitationDetails = () => {
             )}
           </button>
         </div> */}
-      </div>
 
       {/* {showFilters && (
         <div className="w-full md:w-80 bg-white shadow-[0_0_10px_rgba(68,140,210,0.4)] md:rounded-xl py-5 z-[55] md:absolute fixed md:top-16 top-1/2 right-0 md:translate-y-0 -translate-y-1/2 md:h-auto h-full dark:bg-[var(--app-surface)] dark:border dark:border-[var(--app-border-color)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.35)] transition-all animate-in fade-in slide-in-from-right-4 duration-300">
@@ -434,6 +435,7 @@ const OrgInvitationDetails = () => {
                   </div>
                 </div>
               </th>
+              <th className="px-6 py-4 font-semibold">Department</th>
               <th
                 className="px-6 py-4 font-semibold"
                 onClick={() => handleSort("createdAt")}
@@ -494,6 +496,9 @@ const OrgInvitationDetails = () => {
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-500">
                     {member.email}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                    {member.department || "—"}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-500">
                     {new Date(member.createdAt).toLocaleDateString()}
