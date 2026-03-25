@@ -28,6 +28,7 @@ import MultiRadarChart from "../../charts/multiRadarChart";
 import type { RadarData } from "../../charts/radarChart";
 import RoleProgressChart from "../../components/alignmentStatus";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
+import { Tooltip } from "react-tooltip";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -99,7 +100,8 @@ const AdminReport = () => {
         if (userId || userEmail) {
           const member = fetchedMembers.find(
             (m: any) =>
-              (userId && m._id === userId) || (userEmail && m.email === userEmail),
+              (userId && m._id === userId) ||
+              (userEmail && m.email === userEmail),
           );
           if (member) {
             setSelectedMember(member);
@@ -323,7 +325,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -373,16 +375,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -662,9 +664,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -722,11 +724,37 @@ const AdminReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Organizational Health
-                </h2>
+            <div className="mt-6 grid lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full">
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Organizational Health
+                  </h2>
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      // className="text-[var(--primary-color)]"
+                      id="orgHealth"
+                    >
+                      <Icon icon="ci:info" width="20" height="20" />
+                    </button>
+                    <Tooltip
+                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      anchorSelect="#orgHealth"
+                    >
+                      <p className="mb-2">
+                        A high-level snapshot of overall performance averaged
+                        across People, Operations, and Digital.
+                      </p>
+
+                      <p>
+                        Indicates whether the organization is on track, at risk,
+                        or needs attention, helping you quickly prioritize focus
+                        areas.
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div className="flex flex-wrap gap-3 md:justify-between justify-center items-center mt-6">
                   <div
                     style={{
@@ -738,7 +766,7 @@ const AdminReport = () => {
                   >
                     <CircularProgress
                       value={Math.round(overallScore)}
-                      width={180}
+                      width={250}
                       pathColor={currentStatus.color}
                       trailColor={currentStatus.trail}
                       textColor={currentStatus.color}
@@ -780,16 +808,40 @@ const AdminReport = () => {
                   </div>
                 </div>
               </div>
-              <div className="row-span-2 border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
-                <div className="flex items-center justify-between w-full mb-2">
-                  <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      POD-360™ Model
-                    </h3>
-                    <p className="text-xs text-[#64748B] font-medium">
-                      Interconnectivity of focus areas
-                    </p>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
+                <div className="grid justify-start w-full mb-2">
+                  <div className="flex gap-2">
+                    <div>
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        POD-360™ Model
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        // className="text-[var(--primary-color)]"
+                        id="pod360"
+                      >
+                        <Icon icon="ci:info" width="20" height="20" />
+                      </button>
+                      <Tooltip
+                        className="text-center sm:max-w-md max-w-72 !text-xs"
+                        anchorSelect="#pod360"
+                      >
+                        <p>
+                          Visualizes the balance across People Potential,
+                          Operational Steadiness, and Digital Fluency.​
+                          Highlights strengths, gaps, and misalignment—guiding
+                          where to stabilize, optimize, or accelerate efforts.​
+                        </p>
+                      </Tooltip>
+                    </div>
                   </div>
+
+                  <p className="text-xs text-[#64748B] font-medium">
+                    Interconnectivity of focus areas
+                  </p>
                 </div>
                 <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
                   <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
@@ -806,9 +858,9 @@ const AdminReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -899,7 +951,7 @@ const AdminReport = () => {
                   </div>
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 hidden rounded-[12px] bg-[#448bd21c]">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Trends Analysis
                 </h2>
@@ -1029,15 +1081,43 @@ const AdminReport = () => {
                 </div>
               </div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between ">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Priorities Attention
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        Priorities Attention
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="priAtt"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#priAtt"
+                        >
+                          <p className="mb-2">
+                            Identifies the most critical areas requiring
+                            attention based on current results.
+                          </p>
+
+                          <p>
+                            Provides clear direction on where to stabilize,
+                            optimize, or accelerate efforts.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+
                     <p className="text-sm font-normal text-[#000000] mt-1">
                       Top 3 priorities based on current data
                     </p>
                   </div>
+
                   <div>
                     <img src={Iconamoon} alt="images" />
                   </div>
@@ -1078,9 +1158,36 @@ const AdminReport = () => {
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
                 <div className="flex flex-wrap justify-between items-center gap-2">
-                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Overall Departmental POD Score
-                  </h3>
+                  <div className="flex gap-2">
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Overall Departmental POD Score
+                    </h3>
+
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        // className="text-[var(--primary-color)]"
+                        id="podScore"
+                      >
+                        <Icon icon="ci:info" width="20" height="20" />
+                      </button>
+                      <Tooltip
+                        className="text-center sm:max-w-md max-w-72 !text-xs"
+                        anchorSelect="#podScore"
+                      >
+                        <p className="mb-2">
+                          Compares how Leaders, Managers, and Employees
+                          experience the organization across the three POD
+                          domains.
+                        </p>
+
+                        <p>
+                          Highlights gaps and imbalances that may signal hidden
+                          risks to alignment, adoption, and overall performance.
+                        </p>
+                      </Tooltip>
+                    </div>
+                  </div>
                   <div className="relative" data-twe-dropdown-ref>
                     <button
                       className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base 2xl:text-sm text-[14px] font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -1184,11 +1291,38 @@ const AdminReport = () => {
               </div>
             </div>
 
-            <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Score by domain
-                </h2>
+            <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full">
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Score by domain
+                  </h2>
+
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      // className="text-[var(--primary-color)]"
+                      id="scoreDomain"
+                    >
+                      <Icon icon="ci:info" width="20" height="20" />
+                    </button>
+                    <Tooltip
+                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      anchorSelect="#scoreDomain"
+                    >
+                      <p className="mb-2">
+                        Provides a snapshot of performance within the selected
+                        POD domain.
+                      </p>
+
+                      <p>
+                        Indicates whether this area is a strength to leverage or
+                        a risk requiring attention, helping you focus where
+                        friction may be impacting outcomes.
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -1264,13 +1398,40 @@ const AdminReport = () => {
                   <SpeedMeter value={domainScore} />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Score by sub-domain
-                </h2>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full">
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Score by sub-domain
+                  </h2>
+
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      // className="text-[var(--primary-color)]"
+                      id="scoreSubDomain"
+                    >
+                      <Icon icon="ci:info" width="20" height="20" />
+                    </button>
+                    <Tooltip
+                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      anchorSelect="#scoreSubDomain"
+                    >
+                      <p className="mb-2">
+                        Breaks the domain down into its core components for
+                        deeper insight.
+                      </p>
+
+                      <p>
+                        Helps pinpoint specific drivers of friction or
+                        performance gaps, enabling more targeted action and
+                        coaching.
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
                   <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
                     type="button"
                     id="dropdownSubdomain"
                     data-twe-dropdown-toggle-ref
@@ -1346,7 +1507,7 @@ const AdminReport = () => {
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
+              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full hidden">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Performance Analysis
                 </h2>
@@ -1382,10 +1543,37 @@ const AdminReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                 <div className="flex items-center justify-between ">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      {detailedPods?.insights?.title ||
-                        `Insight for ${selectedSubdomain || selectedDomain}`}
-                    </h3>
+                    <div className="flex gap-2 items-start">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        {detailedPods?.insights?.title ||
+                          `Insight for ${selectedSubdomain || selectedDomain}`}
+                      </h3>
+
+                      <div className="flex items-center mt-1">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="insightDomain"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#insightDomain"
+                        >
+                          <p className="mb-2">
+                            Provides a synthesized interpretation of the data
+                            within this domain.
+                          </p>
+
+                          <p>
+                            Highlights what is happening, why it matters, and
+                            where to focus next to improve performance and
+                            reduce friction.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
                       {detailedPods?.insights?.subtitle ||
                         (selectedSubdomain
@@ -1393,6 +1581,7 @@ const AdminReport = () => {
                           : `Overall analysis for ${selectedDomain}`)}
                     </p>
                   </div>
+
                   <div>
                     <img src={Streamline} alt="images" />
                   </div>
@@ -1415,16 +1604,43 @@ const AdminReport = () => {
                 </div>
               </div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Objectives and Key Results
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        Objectives and Key Results
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="okrs"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#okrs"
+                        >
+                          <p className="mb-2">
+                            Translates insights into measurable actions and
+                            outcomes aligned to strategic priorities.
+                          </p>
+
+                          <p>
+                            Use this a guide for what to execute, track, and
+                            reinforce to drive sustained improvement over time.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>{" "}
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
                       {detailedPods?.objectives?.subtitle ||
                         "Cultivate high-trust, psychologically safe leadership"}
                     </p>
                   </div>
+
                   <div>
                     <img src={Hugeicons} alt="images" />
                   </div>
