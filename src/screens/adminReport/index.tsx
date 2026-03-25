@@ -761,23 +761,36 @@ const AdminReport = () => {
                   return (
                     <>
                       {/* Header Section */}
-                      <div className="flex flex-col sm:flex-row justify-between items-start mb-10 gap-4">
+                      <div className="sm:flex-row justify-between items-start mb-10 gap-4">
                         <div>
-                          <h2 className="text-2xl font-black text-[#0F172A] mb-2.5 tracking-tight">
-                            Organizational Health Index
-                          </h2>
-                          <div className="flex items-center gap-3">
-                            <span
-                              className="text-[11px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
-                              style={{ backgroundColor: status.bg, color: status.text }}
-                            >
-                              {status.label}
-                            </span>
-                            <span className="text-xs text-[#94A3B8] font-medium">Updated just now</span>
+                          <div className="flex gap-2">
+                            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
+                              Organizational Health Index
+                            </h2>
+                            <div className="flex items-center">
+                              <button
+                                type="button"
+                                // className="text-[var(--primary-color)]"
+                                id="orgHealth"
+                              >
+                                <Icon icon="ci:info" width="20" height="20" />
+                              </button>
+                              <Tooltip
+                                className="text-center sm:max-w-md max-w-72 !text-xs"
+                                anchorSelect="#orgHealth"
+                              >
+                                <p className="mb-2">
+                                  A high-level snapshot of overall performance averaged across People, Operations, and Digital.
+                                </p>
+                                <p>
+                                  Indicates whether the organization is on track, at risk, or needs attention, helping you quickly prioritize focus areas.
+                                </p>
+                              </Tooltip>
+                            </div>
                           </div>
                         </div>
                         {/* Legend Pill */}
-                        <div className="flex items-center gap-4 bg-[#F8FAFC] px-4 py-2 rounded-xl border border-[#EEF2F6]">
+                        <div className="flex mt-4 justify-center items-center gap-4  px-4 py-2 rounded-xl ">
                           <div className="flex items-center gap-2">
                             <span className="h-2 w-6 bg-[#30AD43]" />
                             <span className="text-xs font-semibold text-[#64748B]">On Track</span>
@@ -834,7 +847,7 @@ const AdminReport = () => {
                             </div>
                           ))}
                         </div>
-                      </div>            
+                      </div>
                     </>
                   );
                 })()}
