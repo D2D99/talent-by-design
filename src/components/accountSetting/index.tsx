@@ -130,6 +130,7 @@ const AccountSetting = () => {
                 aria-controls="tabs-info"
                 aria-selected="true"
               >
+                General Info
               </a>
             </li>
             <li role="presentation">
@@ -272,7 +273,12 @@ const AccountSetting = () => {
               role="tabpanel"
               aria-labelledby="tabs-password-tab"
             >
-              <form id="password-form" onSubmit={handleSubmit(onSubmit)} noValidate className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-5">
+              <form
+                id="password-form"
+                onSubmit={handleSubmit(onSubmit)}
+                noValidate
+                className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-5"
+              >
                 <div>
                   <label
                     htmlFor="oldPassword"
@@ -284,9 +290,11 @@ const AccountSetting = () => {
                     <input
                       type={showOldPassword ? "text" : "password"}
                       id="oldPassword"
-                      {...register("oldPassword", { required: "Current password is required" })}
+                      {...register("oldPassword", {
+                        required: "Current password is required",
+                      })}
                       autoComplete="current-password"
-                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.oldPassword ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'}`}
+                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.oldPassword ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"}`}
                       placeholder="Enter your current password"
                     />
                     <button
@@ -303,7 +311,11 @@ const AccountSetting = () => {
                       />
                     </button>
                   </div>
-                  {errors.oldPassword && <span className="text-red-500 text-xs mt-1 block">{(errors.oldPassword as any).message}</span>}
+                  {errors.oldPassword && (
+                    <span className="text-red-500 text-xs mt-1 block">
+                      {(errors.oldPassword as any).message}
+                    </span>
+                  )}
                 </div>
 
                 <div>
@@ -319,10 +331,13 @@ const AccountSetting = () => {
                       id="newPassword"
                       {...register("newPassword", {
                         required: "New password is required",
-                        minLength: { value: 8, message: "Minimum 8 characters" }
+                        minLength: {
+                          value: 8,
+                          message: "Minimum 8 characters",
+                        },
                       })}
                       autoComplete="new-password"
-                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.newPassword ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'}`}
+                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.newPassword ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"}`}
                       placeholder="Enter your new password"
                     />
                     <button
@@ -337,7 +352,11 @@ const AccountSetting = () => {
                       />
                     </button>
                   </div>
-                  {errors.newPassword && <span className="text-red-500 text-xs mt-1 block">{(errors.newPassword as any).message}</span>}
+                  {errors.newPassword && (
+                    <span className="text-red-500 text-xs mt-1 block">
+                      {(errors.newPassword as any).message}
+                    </span>
+                  )}
 
                   {newPassword.length > 0 && (
                     <div className="mt-4">
@@ -429,10 +448,11 @@ const AccountSetting = () => {
                       id="confirmPassword"
                       {...register("confirmPassword", {
                         required: "Please confirm your password",
-                        validate: (value) => value === newPassword || "Passwords do not match"
+                        validate: (value) =>
+                          value === newPassword || "Passwords do not match",
                       })}
                       autoComplete="new-password"
-                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.confirmPassword ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'}`}
+                      className={`font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg transition-all pr-12  outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.confirmPassword ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"}`}
                       placeholder="Confirm your new password"
                     />
                     <button
@@ -453,7 +473,11 @@ const AccountSetting = () => {
                       />
                     </button>
                   </div>
-                  {errors.confirmPassword && <span className="text-red-500 text-xs mt-1 block">{(errors.confirmPassword as any).message}</span>}
+                  {errors.confirmPassword && (
+                    <span className="text-red-500 text-xs mt-1 block">
+                      {(errors.confirmPassword as any).message}
+                    </span>
+                  )}
                 </div>
               </form>
             </div>
