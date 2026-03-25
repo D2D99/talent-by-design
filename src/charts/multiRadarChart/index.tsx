@@ -1,48 +1,32 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Chart } from "chart.js";
-// import { radarLabels, managerScores, teamScores, peerScores } from "../data";
-import type { RadarData } from "../radarChart";
+import { RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler } from "chart.js";
 
 // Register necessary Chart.js components
-import {
-  RadarController,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
-
-// Register the components in Chart.js
-Chart.register(
-  RadarController,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Filler
-);
+Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
 interface MultiRadarChartProps {
-  data: RadarData;
+  data: {
+    labels: string[];
+    manager: number[];
+    team: number[];
+    peer?: number[];
+    admin?: number[];
+  };
   onLabelSelect?: (label: string) => void;
-  datasetLabels?: [string, string, string, string?];
+  datasetLabels?: string[];
   hiddenIndices?: number[];
 }
 
-const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [] }) => {
+const MultiRadarChart = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [] }: MultiRadarChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
+  const chartRef = useRef<any>(null);
 
   useEffect(() => {
-    // Cleanup the previous chart if it exists
     if (chartRef.current) {
       chartRef.current.destroy();
     }
 
-    // Create a new chart
     if (canvasRef.current) {
       chartRef.current = new Chart(canvasRef.current, {
         type: "radar",
@@ -52,49 +36,53 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data, onLabelSelect, 
             {
               label: datasetLabels?.[0] || "Manager",
               data: data.manager,
-              backgroundColor: "rgba(74, 144, 226, 0.3)",
+              backgroundColor: "transparent", // No fill inside
               borderColor: "#4A90E2",
-              pointBackgroundColor: "#4A90E2",
               borderWidth: 2,
+              pointBackgroundColor: "#4A90E2",
               pointRadius: 3,
               pointHoverRadius: 5,
-              fill: "origin",
+              fill: "origin", // Allow filling to the center (transparent)
+              borderDash: [5, 5], // Dashed border lines
               hidden: hiddenIndices.includes(0),
             },
             {
               label: datasetLabels?.[1] || "Team",
               data: data.team,
-              backgroundColor: "rgba(46, 204, 113, 0.3)",
+              backgroundColor: "transparent",
               borderColor: "#2ECC71",
-              pointBackgroundColor: "#2ECC71",
               borderWidth: 2,
+              pointBackgroundColor: "#2ECC71",
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
+              borderDash: [5, 5], // Dashed border lines
               hidden: hiddenIndices.includes(1),
             },
             {
               label: datasetLabels?.[2] || "Peer",
-              data: data.peer,
-              backgroundColor: "rgba(231, 76, 60, 0.3)",
+              data: data.peer || [],
+              backgroundColor: "transparent",
               borderColor: "#E74C3C",
-              pointBackgroundColor: "#E74C3C",
               borderWidth: 2,
+              pointBackgroundColor: "#E74C3C",
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
+              borderDash: [5, 5], // Dashed border lines
               hidden: hiddenIndices.includes(2),
             },
             ...(data.admin && data.admin.length > 0 ? [{
               label: datasetLabels?.[3] || "Admin",
               data: data.admin,
-              backgroundColor: "rgba(155, 89, 182, 0.3)",
+              backgroundColor: "transparent",
               borderColor: "#9B59B6",
-              pointBackgroundColor: "#9B59B6",
               borderWidth: 2,
+              pointBackgroundColor: "#9B59B6",
               pointRadius: 3,
               pointHoverRadius: 5,
               fill: "origin",
+              borderDash: [5, 5], // Dashed border lines
               hidden: hiddenIndices.includes(3),
             }] : []),
           ],
@@ -116,27 +104,28 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data, onLabelSelect, 
                 },
               },
               grid: {
-                circular: false,
+                circular: true, // Enable circular grid
+                lineWidth: 1,
+                color: "#CFCFCF", // Grid line color
               },
               angleLines: {
-                color: "#CFCFCF",
+                color: "#CFCFCF", // Angle lines color
               },
             },
           },
           plugins: {
             legend: {
-              display: false
+              display: false,
             },
           },
           events: ["click"],
         },
       });
 
-      // Handle click events on the radar chart
-      canvasRef.current?.addEventListener("click", (event) => {
+      const clickHandler = (event: MouseEvent) => {
         if (chartRef.current && chartRef.current.data && onLabelSelect) {
           const points = chartRef.current.getElementsAtEventForMode(
-            event,
+            event as any,
             "nearest",
             { intersect: true },
             true
@@ -144,21 +133,31 @@ const MultiRadarChart: React.FC<MultiRadarChartProps> = ({ data, onLabelSelect, 
 
           if (points.length > 0) {
             const label = chartRef.current.data.labels?.[points[0].index];
-            if (label && typeof label === 'string') {
+            if (label && typeof label === "string") {
               onLabelSelect(label);
             }
           }
         }
-      });
+      };
+
+      canvasRef.current.addEventListener("click", clickHandler);
+
+      return () => {
+        if (chartRef.current) {
+          chartRef.current.destroy();
+        }
+        if (canvasRef.current) {
+          canvasRef.current.removeEventListener("click", clickHandler);
+        }
+      };
     }
 
-    // Cleanup the chart when the component unmounts
     return () => {
       if (chartRef.current) {
         chartRef.current.destroy();
       }
     };
-  }, [data, onLabelSelect, hiddenIndices]); // Re-run when data, onLabelSelect or hiddenIndices changes
+  }, [data, onLabelSelect, datasetLabels, hiddenIndices]);
 
   return <canvas ref={canvasRef} />;
 };

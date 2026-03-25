@@ -488,43 +488,43 @@ const AdminReport = () => {
 
   const alignmentInfo = (() => {
     const leaderVal =
-      roleAverages.find((r) => r.label === "SENIOR LEADER")?.value || 0;
+      roleAverages.find((r) => r.label.includes("SENIOR LEADER"))?.value || 0;
     const employeeVal =
-      roleAverages.find((r) => r.label === "EMPLOYEE")?.value || 0;
+      roleAverages.find((r) => r.label.includes("EMPLOYEE"))?.value || 0;
     const gap = Math.abs(leaderVal - employeeVal);
 
-    // Leadership Optimism Risk: Leader is High (Green), Employee is Low (Red)
-    if (leaderVal >= 75 && employeeVal < 50) {
+    if (gap > 15) {
       return {
-        label: "Leadership optimism risk",
+        label: "High Variance",
         status: "Red",
         color: "#D71818",
         bg: "#FFEBEB",
         icon: "solar:shield-warning-bold-duotone",
         gap: gap,
+        coachText: "High variance detected (> 15%). This indicates Hidden Risk; leadership perception may be disconnected from employee experience.",
       };
     }
 
-    // Blind Spot Detected: Significant gap but not necessarily optimism risk
-    if (gap > 18) {
+    if (gap < 10) {
       return {
-        label: "Blind spot detected",
-        status: "Amber",
-        color: "#D97706",
-        bg: "#FFFBEB",
-        icon: "solar:eye-broken-bold-duotone",
+        label: "High Alignment",
+        status: "Green",
+        color: "#30AD43",
+        bg: "#F0FDF4",
+        icon: "solar:check-circle-bold-duotone",
         gap: gap,
+        coachText: "Low variance detected. The organization is moving with Aligned Execution.",
       };
     }
 
-    // Alignment Healthy
     return {
-      label: "Alignment healthy",
-      status: "Green",
-      color: "#30AD43",
-      bg: "#F0FDF4",
-      icon: "solar:check-circle-bold-duotone",
+      label: "Moderate Variance",
+      status: "Amber",
+      color: "#D97706",
+      bg: "#FFFBEB",
+      icon: "solar:eye-broken-bold-duotone",
       gap: gap,
+      coachText: "Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.",
     };
   })();
 
@@ -1065,10 +1065,10 @@ const AdminReport = () => {
                     <b className="">Largest Gap:</b> Senior Leader VS Employee
                     (+{alignmentInfo.gap})
                   </p>
-                  <div className="sm:mt-16 mt-6 ">
+                  <div className="sm:mt-8 mt-6">
                     <button
                       type="button"
-                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider"
+                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider mb-4"
                       style={{
                         backgroundColor: alignmentInfo.bg,
                         color: alignmentInfo.color,
@@ -1076,6 +1076,14 @@ const AdminReport = () => {
                     >
                       {alignmentInfo.label}
                     </button>
+                    {/* Coach Voice */}
+                    <div
+                      className="p-3 rounded-xl border text-sm font-medium leading-relaxed"
+                      style={{ backgroundColor: alignmentInfo.bg, borderColor: `${alignmentInfo.color}30`, color: alignmentInfo.color }}
+                    >
+                      <Icon icon={alignmentInfo.icon} className="inline mr-1.5" width="15" />
+                      {alignmentInfo.coachText}
+                    </div>
                   </div>
                   <div></div>
                 </div>
