@@ -27,6 +27,7 @@ import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import RadarChart from "../../charts/radarChart";
 import type { RadarData } from "../../charts/radarChart";
 import GapBarChart from "../../charts/gapBarChart";
+import { Tooltip } from "react-tooltip";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -114,7 +115,8 @@ const ManagerReport = () => {
         if (userId || userEmail) {
           const member = fetchedMembers.find(
             (m: any) =>
-              (userId && m._id === userId) || (userEmail && m.email === userEmail),
+              (userId && m._id === userId) ||
+              (userEmail && m.email === userEmail),
           );
           if (member) {
             setSelectedMember(member);
@@ -418,7 +420,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -429,16 +431,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -607,9 +609,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -668,11 +670,37 @@ const ManagerReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Score by domain
-                </h2>
+            <div className="mt-6 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold capitalize">
+                    Score by domain
+                  </h2>
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      // className="text-[var(--primary-color)]"
+                      id="scoreDomain"
+                    >
+                      <Icon icon="ci:info" width="20" height="20" />
+                    </button>
+                    <Tooltip
+                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      anchorSelect="#scoreDomain"
+                    >
+                      <p className="mb-2">
+                        Provides a snapshot of performance within the selected
+                        POD domain.
+                      </p>
+
+                      <p>
+                        Indicates whether this area is a strength to leverage or
+                        a risk requiring attention, helping you focus where
+                        friction may be impacting outcomes.
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -748,10 +776,37 @@ const ManagerReport = () => {
                   <SpeedMeter value={domainScore} />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Score by sub-domain
-                </h2>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold capitalize">
+                    Score by sub-domain
+                  </h2>
+
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      // className="text-[var(--primary-color)]"
+                      id="scoreSubDomain"
+                    >
+                      <Icon icon="ci:info" width="20" height="20" />
+                    </button>
+                    <Tooltip
+                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      anchorSelect="#scoreSubDomain"
+                    >
+                      <p className="mb-2">
+                        Breaks the domain down into its core components for
+                        deeper insight.
+                      </p>
+
+                      <p>
+                        Helps pinpoint specific drivers of friction or
+                        performance gaps, enabling more targeted action and
+                        coaching.
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
@@ -830,7 +885,7 @@ const ManagerReport = () => {
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full ">
+              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4 rounded-[12px] w-full hidden">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Performance Analysis
                 </h2>
@@ -866,10 +921,37 @@ const ManagerReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                 <div className="flex items-center justify-between ">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      {detailedPods?.insights?.title ||
-                        `Insight for ${selectedSubdomain || selectedDomain}`}
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        {detailedPods?.insights?.title ||
+                          `Insight for ${selectedSubdomain || selectedDomain}`}
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="podInsightDomain"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#podInsightDomain"
+                        >
+                          <p className="mb-2">
+                            Provides a synthesized interpretation of the data
+                            within this domain.
+                          </p>
+
+                          <p>
+                            Highlights what is happening, why it matters, and
+                            where to focus next to improve performance and
+                            reduce friction.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
                       {detailedPods?.insights?.subtitle ||
                         (selectedSubdomain
@@ -901,9 +983,35 @@ const ManagerReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Objectives and Key Results
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        Objectives and Key Results
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="okrs"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#okrs"
+                        >
+                          <p className="mb-2">
+                            Translates insights into measurable actions and
+                            outcomes aligned to strategic priorities.
+                          </p>
+
+                          <p>
+                            Use this a guide for what to execute, track, and
+                            reinforce to drive sustained improvement over time.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
                       Lead team improvements in this domain area
                     </p>
@@ -948,9 +1056,34 @@ const ManagerReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
                 <div className="flex items-center justify-between w-full mb-2">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      POD-360™ Model
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        POD-360™ Model
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="podScore"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#podScore"
+                        >
+                          <p className="mb-2">
+                            Visualizes the balance across People Potential,
+                            Operational Steadiness, and Digital Fluency.
+                          </p>
+
+                          <p>
+                            Highlights strengths, gaps, and misalignment—guiding
+                            where to stabilize, optimize, or accelerate efforts.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
                     <p className="text-xs text-[#64748B] font-medium">
                       Interconnectivity of focus areas
                     </p>
@@ -971,9 +1104,9 @@ const ManagerReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1067,9 +1200,26 @@ const ManagerReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Manager Coaching Tips
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Manager Coaching Tips
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="managerTips"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#managerTips"
+                        >
+                          <p>No Data Found.</p>
+                        </Tooltip>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <img src={StreamlinePlump} alt="images" />
@@ -1101,10 +1251,26 @@ const ManagerReport = () => {
             <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
               <div className="flex items-center justify-between ">
                 <div>
-                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Talent By Design <br />
-                    Recommended Offering
-                  </h3>
+                  <div className="flex gap-2">
+                    <h3 className="sm:text-xl text-lg font-bold capitalize">
+                      Talent By Design Recommended Offering
+                    </h3>
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        // className="text-[var(--primary-color)]"
+                        id="tbdOffering"
+                      >
+                        <Icon icon="ci:info" width="20" height="20" />
+                      </button>
+                      <Tooltip
+                        className="text-center sm:max-w-md max-w-72 !text-xs"
+                        anchorSelect="#tbdOffering"
+                      >
+                        <p>No Data Found.</p>
+                      </Tooltip>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <img src={Healthicons} alt="images" />
@@ -1130,9 +1296,26 @@ const ManagerReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
                 <div className="flex items-center justify-between  ">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Manager VS Team Gap
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Manager VS Team Gap
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="teamGap"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#teamGap"
+                        >
+                          <p>No Data Found.</p>
+                        </Tooltip>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
@@ -1174,9 +1357,26 @@ const ManagerReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Delta Breakdown
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Delta Breakdown
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="deltaBreakdown"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#deltaBreakdown"
+                        >
+                          <p>No Data Found.</p>
+                        </Tooltip>
+                      </div>
+                    </div>
                     <p className="text-sm text-[#64748B] mt-1 mb-6 ">
                       {userData?.firstName ||
                         reportData?.user?.firstName ||
@@ -1215,12 +1415,30 @@ const ManagerReport = () => {
             </div>
 
             <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px]">
-              <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
-                Overall {selectedDomain} Domain Score —{" "}
-                {userData?.firstName ||
-                  reportData?.user?.firstName ||
-                  "Manager"}
-              </h3>
+              <div className="flex gap-2">
+                <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
+                  Overall {selectedDomain} Domain Score —{" "}
+                  {userData?.firstName ||
+                    reportData?.user?.firstName ||
+                    "Manager"}
+                </h3>
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    // className="text-[var(--primary-color)]"
+                    id="overallScore"
+                  >
+                    <Icon icon="ci:info" width="20" height="20" />
+                  </button>
+                  <Tooltip
+                    className="text-center sm:max-w-md max-w-72 !text-xs"
+                    anchorSelect="#overallScore"
+                  >
+                    <p>No Data Found.</p>
+                  </Tooltip>
+                </div>
+              </div>
+
               <div className="p-4 pt-0 ">
                 <ScoreBar
                   score={Math.round(domainScore)}

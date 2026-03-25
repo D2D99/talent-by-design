@@ -21,6 +21,7 @@ import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
 import ReportEmptyState from "../../components/reportEmptyState";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
+import { Tooltip } from "react-tooltip";
 
 // ------ CONSTANTS ------
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
@@ -166,7 +167,8 @@ const EmployeeReport = () => {
         if (userId || userEmail) {
           const member = fetchedMembers.find(
             (m: any) =>
-              (userId && m._id === userId) || (userEmail && m.email === userEmail),
+              (userId && m._id === userId) ||
+              (userEmail && m.email === userEmail),
           );
           if (member) {
             setSelectedMember(member);
@@ -389,22 +391,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -529,9 +531,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -590,9 +592,35 @@ const EmployeeReport = () => {
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               {/* Domain Score Section */}
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
-                <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                  Score by domain
-                </h2>
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold capitalize">
+                    Score by domain
+                  </h2>
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      // className="text-[var(--primary-color)]"
+                      id="scoreDomain"
+                    >
+                      <Icon icon="ci:info" width="20" height="20" />
+                    </button>
+                    <Tooltip
+                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      anchorSelect="#scoreDomain"
+                    >
+                      <p className="mb-2">
+                        Provides a snapshot of performance within the selected
+                        POD domain.
+                      </p>
+
+                      <p>
+                        Indicates whether this area is a strength to leverage or
+                        a risk requiring attention, helping you focus where
+                        friction may be impacting outcomes.
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
@@ -657,9 +685,36 @@ const EmployeeReport = () => {
 
               {/* Subdomain Score Section */}
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
-                <h2 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                  Score by sub-domain
-                </h2>
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold capitalize">
+                    Score by sub-domain
+                  </h2>
+
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      // className="text-[var(--primary-color)]"
+                      id="scoreSubDomain"
+                    >
+                      <Icon icon="ci:info" width="20" height="20" />
+                    </button>
+                    <Tooltip
+                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      anchorSelect="#scoreSubDomain"
+                    >
+                      <p className="mb-2">
+                        Breaks the domain down into its core components for
+                        deeper insight.
+                      </p>
+
+                      <p>
+                        Helps pinpoint specific drivers of friction or
+                        performance gaps, enabling more targeted action and
+                        coaching.
+                      </p>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
                   <button
                     className="ml-auto flex items-center bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
@@ -729,9 +784,35 @@ const EmployeeReport = () => {
                 <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
                   <div className="flex items-center justify-between w-full mb-2 text-left">
                     <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize">
-                        POD-360™ Model
-                      </h3>
+                      <div className="flex gap-2">
+                        <h3 className="sm:text-xl text-lg font-bold capitalize">
+                          POD-360™ Model
+                        </h3>
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            // className="text-[var(--primary-color)]"
+                            id="podScore"
+                          >
+                            <Icon icon="ci:info" width="20" height="20" />
+                          </button>
+                          <Tooltip
+                            className="text-center sm:max-w-md max-w-72 !text-xs"
+                            anchorSelect="#podScore"
+                          >
+                            <p className="mb-2">
+                              Visualizes the balance across People Potential,
+                              Operational Steadiness, and Digital Fluency.
+                            </p>
+
+                            <p>
+                              Highlights strengths, gaps, and
+                              misalignment—guiding where to stabilize, optimize,
+                              or accelerate efforts.
+                            </p>
+                          </Tooltip>
+                        </div>
+                      </div>
                       <p className="text-xs text-[#64748B] font-medium">
                         Interconnectivity of focus areas
                       </p>
@@ -812,10 +893,36 @@ const EmployeeReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-[#EDF5FD]">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                      {detailedPods?.insights?.title ||
-                        `Insight for ${selectedSubdomain || selectedDomain}`}
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="text-xl font-bold capitalize">
+                        {detailedPods?.insights?.title ||
+                          `Insight for ${selectedSubdomain || selectedDomain}`}
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="podInsightDomain"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#podInsightDomain"
+                        >
+                          <p className="mb-2">
+                            Provides a synthesized interpretation of the data
+                            within this domain.
+                          </p>
+
+                          <p>
+                            Highlights what is happening, why it matters, and
+                            where to focus next to improve performance and
+                            reduce friction.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
                     <p className="text-xs text-[#64748B] font-medium">
                       {detailedPods?.insights?.subtitle ||
                         (selectedSubdomain
@@ -844,9 +951,34 @@ const EmployeeReport = () => {
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                      Objectives and Key Results
-                    </h3>
+                    <div className="flex gap-2">
+                      <h3 className="text-xl font-bold capitalize">
+                        Objectives and Key Results
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="okrs"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          anchorSelect="#okrs"
+                        >
+                          <p className="mb-2">
+                            Translates insights into measurable actions and
+                            outcomes aligned to strategic priorities.
+                          </p>
+
+                          <p>
+                            Use this a guide for what to execute, track, and
+                            reinforce to drive sustained improvement over time.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
                     <p className="text-xs text-[#64748B] font-medium">
                       {detailedPods?.objectives?.subtitle ||
                         "Develop essential leadership and EI skills"}
@@ -888,9 +1020,33 @@ const EmployeeReport = () => {
             <div className="mt-6 border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-xl font-bold text-[#1A3652] capitalize">
-                    Talent By Design Recommended Offering
-                  </h3>
+                  <div className="flex gap-2">
+                    <h3 className="text-xl font-bold capitalize">
+                      Talent By Design Recommended Offering
+                    </h3>
+
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        // className="text-[var(--primary-color)]"
+                        id="tbdOffering"
+                      >
+                        <Icon icon="ci:info" width="20" height="20" />
+                      </button>
+                      <Tooltip
+                        className="text-center sm:max-w-md max-w-72 !text-xs"
+                        anchorSelect="#tbdOffering"
+                      >
+                        {/* <p className="mb-2">
+                          Compares how Leaders, Managers, and Employees
+                          experience the organization across the three POD
+                          domains.
+                        </p> */}
+
+                        <p>No Data Found</p>
+                      </Tooltip>
+                    </div>
+                  </div>
                   <p className="text-xs text-[#64748B] font-medium">
                     Selected growth opportunities
                   </p>
