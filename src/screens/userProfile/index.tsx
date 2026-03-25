@@ -115,10 +115,18 @@ const UserProfile = () => {
 
   const MAX_FILE_SIZE_MB = 4;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+  const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error("Only PNG, JPG, and JPEG files are allowed");
+        e.target.value = "";
+        return;
+      }
+
       if (file.size > MAX_FILE_SIZE_BYTES) {
         toast.error(`Profile image size must be less than ${MAX_FILE_SIZE_MB}MB`);
         e.target.value = "";
@@ -132,6 +140,13 @@ const UserProfile = () => {
   const handleOrgLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error("Only PNG, JPG, and JPEG files are allowed");
+        e.target.value = "";
+        return;
+      }
+
       if (file.size > MAX_FILE_SIZE_BYTES) {
         toast.error(`Organization logo size must be less than ${MAX_FILE_SIZE_MB}MB`);
         e.target.value = "";
@@ -261,8 +276,8 @@ const UserProfile = () => {
               <label
                 htmlFor="upload"
                 className={`profile-upload-chip border p-0.5 w-fit rounded-full border-[#4B9BE9]/25 absolute bottom-1 right-0 shadow-sm ${isEditing
-                    ? "cursor-pointer bg-white hover:bg-neutral-50"
-                    : "bg-gray-50 cursor-not-allowed pointer-events-none"
+                  ? "cursor-pointer bg-white hover:bg-neutral-50"
+                  : "bg-gray-50 cursor-not-allowed pointer-events-none"
                   }`}
               >
                 <svg
@@ -571,10 +586,10 @@ const UserProfile = () => {
                       formData.role?.toLowerCase() === "manager"
                     }
                     className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] ${!isEditing ||
-                        formData.role?.toLowerCase() === "leader" ||
-                        formData.role?.toLowerCase() === "manager"
-                        ? "read-only:bg-gray-50 read-only:cursor-not-allowed"
-                        : "focus:border-[var(--primary-color)]"
+                      formData.role?.toLowerCase() === "leader" ||
+                      formData.role?.toLowerCase() === "manager"
+                      ? "read-only:bg-gray-50 read-only:cursor-not-allowed"
+                      : "focus:border-[var(--primary-color)]"
                       }`}
                     placeholder="No Department Assigned"
                   />
