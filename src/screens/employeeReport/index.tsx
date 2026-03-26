@@ -485,7 +485,7 @@ const EmployeeReport = () => {
             <button
               onClick={handlePreview}
               disabled={loadingPreview}
-              className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
+              className="flex hidden items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
             >
               {loadingPreview ? (
                 <Icon icon="line-md:loading-loop" width="16" />
