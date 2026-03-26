@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 // import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
@@ -399,7 +399,7 @@ const LeaderReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -427,16 +427,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -776,9 +776,9 @@ const LeaderReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -880,7 +880,7 @@ const LeaderReport = () => {
                         <div>
                           <div className="flex gap-2">
                             <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
-                              Organizational Health Index
+                              Organizational Health
                             </h2>
                             <div className="flex items-center">
                               <button
@@ -1006,120 +1006,83 @@ const LeaderReport = () => {
                   );
                 })()}
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
-                <div className="grid justify-start w-full mb-2">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
+                <div className="flex flex-wrap justify-between items-center gap-2">
                   <div className="flex gap-2">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        POD-360™ Model
-                      </h3>
-                    </div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Overall Departmental POD Score
+                    </h3>
 
                     <div className="flex items-center">
                       <button
                         type="button"
                         // className="text-[var(--primary-color)]"
-                        id="pod360"
+                        id="podScore"
                       >
                         <Icon icon="ci:info" width="20" height="20" />
                       </button>
                       <Tooltip
                         className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                        anchorSelect="#pod360"
+                        anchorSelect="#podScore"
                       >
+                        <p className="mb-2">
+                          Compares how Leaders, Managers, and Employees
+                          experience the organization across the three POD
+                          domains.
+                        </p>
+
                         <p>
-                          Visualizes the balance across People Potential,
-                          Operational Steadiness, and Digital Fluency.
-                          Highlights strengths, gaps, and misalignment—guiding
-                          where to stabilize, optimize, or accelerate efforts.
+                          Highlights gaps and imbalances that may signal hidden
+                          risks to alignment, adoption, and overall performance.
                         </p>
                       </Tooltip>
                     </div>
                   </div>
-                  <p className="text-xs text-[#64748B] font-medium">
-                    Interconnectivity of focus areas
-                  </p>
                 </div>
-                <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
-                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
-                    <Triangle data={triangleData} />
+                {/* Legend */}
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">Leader</span>
                   </div>
-                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                    {detailedPods?.insights?.modelDescription ? (
-                      (() => {
-                        const mLines = detailedPods.insights.modelDescription
-                          .split(/\r?\n/)
-                          .filter((l: string) => l.trim().length > 0);
-                        const hasMBullets = mLines.some((l: string) =>
-                          l.includes("•"),
-                        );
-                        const finalMLines = hasMBullets
-                          ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
-                          : mLines;
-
-                        return finalMLines.map(
-                          (bullet: string, idx: number) => (
-                            <div key={idx} className="flex items-start gap-2">
-                              <img
-                                src={IconStar}
-                                alt="icon"
-                                className="w-4 h-4 shrink-0 mt-0.5"
-                              />
-                              <span className="text-sm font-medium text-[#64748B] leading-snug">
-                                {bullet}
-                              </span>
-                            </div>
-                          ),
-                        );
-                      })()
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Capability
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Engagement
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Confidence
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Change resilience
-                          </span>
-                        </div>
-                      </>
-                    )}
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(1)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Manager Avg ({teamAvgData?.managerCount || 0})
+                    </span>
                   </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(2)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(231, 76, 60, 0.6)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Employee Avg ({teamAvgData?.employeeCount || 0})
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <MultiRadarChart
+                    data={radarData}
+                    onLabelSelect={handleSubdomainChange}
+                    datasetLabels={["Leader", "Manager Avg", "Employee Avg"]}
+                    hiddenIndices={hiddenIndices}
+                  />
                 </div>
               </div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 hidden rounded-[12px] xl:col-span-2 bg-[#448bd21c]">
@@ -1231,163 +1194,9 @@ const LeaderReport = () => {
                   <div></div>
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Priorities Attention
-                      </h3>
-
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="priAtt"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#priAtt"
-                        >
-                          <p className="mb-2">
-                            Identifies the most critical areas requiring
-                            attention based on current results.
-                          </p>
-
-                          <p>
-                            Provides clear direction on where to stabilize,
-                            optimize, or accelerate efforts.
-                          </p>
-                        </Tooltip>
-                      </div>
-                    </div>
-
-                    <p className="text-sm font-normal text-[#000000] mt-1">
-                      Top 3 priorities based on current data
-                    </p>
-                  </div>
-                  <div>
-                    <img src={Iconamoon} alt="images" />
-                  </div>
-                </div>
-                <div className="mt-4 space-y-4">
-                  {topPriorities.map((item, _idx) => (
-                    <div
-                      key={item.name}
-                      className="flex items-center justify-between"
-                    >
-                      <p
-                        className="text-sm font-semibold flex items-center gap-2"
-                        style={{ color: item.color }}
-                      >
-                        <span
-                          className="w-2.5 h-2.5 flex rounded-full"
-                          style={{ backgroundColor: item.color }}
-                        ></span>
-                        {item.name}
-                      </p>
-                      <p
-                        className="text-sm font-bold"
-                        style={{ color: item.color }}
-                      >
-                        {item.score}%
-                      </p>
-                    </div>
-                  ))}
-                  {topPriorities.length === 0 && (
-                    <p className="text-sm text-gray-500 italic">
-                      No priorities identified yet.
-                    </p>
-                  )}
-                </div>
-              </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  <div className="flex gap-2">
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Overall Departmental POD Score
-                    </h3>
-
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        // className="text-[var(--primary-color)]"
-                        id="podScore"
-                      >
-                        <Icon icon="ci:info" width="20" height="20" />
-                      </button>
-                      <Tooltip
-                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                        anchorSelect="#podScore"
-                      >
-                        <p className="mb-2">
-                          Compares how Leaders, Managers, and Employees
-                          experience the organization across the three POD
-                          domains.
-                        </p>
-
-                        <p>
-                          Highlights gaps and imbalances that may signal hidden
-                          risks to alignment, adoption, and overall performance.
-                        </p>
-                      </Tooltip>
-                    </div>
-                  </div>
-                </div>
-                {/* Legend */}
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(0)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
-                    />
-                    <span className="text-xs text-[#474747]">Leader</span>
-                  </div>
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(1)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(46, 204, 113, 0.7)" }}
-                    />
-                    <span className="text-xs text-[#474747]">
-                      Manager Avg ({teamAvgData?.managerCount || 0})
-                    </span>
-                  </div>
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(2)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(231, 76, 60, 0.6)" }}
-                    />
-                    <span className="text-xs text-[#474747]">
-                      Employee Avg ({teamAvgData?.employeeCount || 0})
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <MultiRadarChart
-                    data={radarData}
-                    onLabelSelect={handleSubdomainChange}
-                    datasetLabels={["Leader", "Manager Avg", "Employee Avg"]}
-                    hiddenIndices={hiddenIndices}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 grid lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+            <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -1603,6 +1412,124 @@ const LeaderReport = () => {
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
+
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
+                <div className="grid justify-start w-full mb-2">
+                  <div className="flex gap-2">
+                    <div>
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        POD-360™ Model
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        // className="text-[var(--primary-color)]"
+                        id="pod360"
+                      >
+                        <Icon icon="ci:info" width="20" height="20" />
+                      </button>
+                      <Tooltip
+                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                        anchorSelect="#pod360"
+                      >
+                        <p>
+                          Visualizes the balance across People Potential,
+                          Operational Steadiness, and Digital Fluency.
+                          Highlights strengths, gaps, and misalignment—guiding
+                          where to stabilize, optimize, or accelerate efforts.
+                        </p>
+                      </Tooltip>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#64748B] font-medium">
+                    Interconnectivity of focus areas
+                  </p>
+                </div>
+                <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
+                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
+                    <Triangle data={triangleData} />
+                  </div>
+                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                    {detailedPods?.insights?.modelDescription ? (
+                      (() => {
+                        const mLines = detailedPods.insights.modelDescription
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
+                        const finalMLines = hasMBullets
+                          ? mLines
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
+                          : mLines;
+
+                        return finalMLines.map(
+                          (bullet: string, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <img
+                                src={IconStar}
+                                alt="icon"
+                                className="w-4 h-4 shrink-0 mt-0.5"
+                              />
+                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                                {bullet}
+                              </span>
+                            </div>
+                          ),
+                        );
+                      })()
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Capability
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Engagement
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Confidence
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Change resilience
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full hidden ">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Performance Analysis
@@ -1768,8 +1695,139 @@ const LeaderReport = () => {
                   )}
                 </div>
               </div>
+
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Coaching Tips
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="managerTips"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#managerTips"
+                        >
+                          <p className="mb-2">
+                            Provides targeted, actionable guidance to support
+                            leaders and teams in improving performance and
+                            adoption.
+                          </p>
+                          <p>
+                            Aligned to key capability areas these tips help
+                            address friction, build consistency, and sustain
+                            progress across the organization.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <img src={StreamlinePlump} alt="images" />
+                  </div>
+                </div>
+                <ul className="mt-4 space-y-2">
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <li key={idx} className="feature-list flex gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="mt-1 w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm text-[var(--secondary-color)] font-normal">
+                        {kr.text}
+                      </span>
+                    </li>
+                  ))}
+                  {displayKRs.length === 0 && (
+                    <li className="text-xs text-gray-400 italic">
+                      No coaching tips available for this domain.
+                    </li>
+                  )}
+                </ul>
+                <div></div>
+              </div>
+
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        Priorities Attention
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="priAtt"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#priAtt"
+                        >
+                          <p className="mb-2">
+                            Identifies the most critical areas requiring
+                            attention based on current results.
+                          </p>
+
+                          <p>
+                            Provides clear direction on where to stabilize,
+                            optimize, or accelerate efforts.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+
+                    <p className="text-sm font-normal text-[#000000] mt-1">
+                      Top 3 priorities based on current data
+                    </p>
+                  </div>
+                  <div>
+                    <img src={Iconamoon} alt="images" />
+                  </div>
+                </div>
+                <div className="mt-4 space-y-4">
+                  {topPriorities.map((item, _idx) => (
+                    <div
+                      key={item.name}
+                      className="flex items-center justify-between"
+                    >
+                      <p
+                        className="text-sm font-semibold flex items-center gap-2"
+                        style={{ color: item.color }}
+                      >
+                        <span
+                          className="w-2.5 h-2.5 flex rounded-full"
+                          style={{ backgroundColor: item.color }}
+                        ></span>
+                        {item.name}
+                      </p>
+                      <p
+                        className="text-sm font-bold"
+                        style={{ color: item.color }}
+                      >
+                        {item.score}%
+                      </p>
+                    </div>
+                  ))}
+                  {topPriorities.length === 0 && (
+                    <p className="text-sm text-gray-500 italic">
+                      No priorities identified yet.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
-            {/*  */}
           </>
         ) : (
           <ReportEmptyState role="Leader" />
