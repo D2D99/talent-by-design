@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ReportEmptyState from "../../components/reportEmptyState";
 import { useAuth } from "../../context/useAuth";
+import ReportPreviewModal from "../../components/reportPreviewModal";
 import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
 import Select from "react-select";
 import Triangle from "../../components/triangle";
@@ -98,6 +99,9 @@ const LeaderReport = () => {
   const [exportLoading, setExportLoading] = useState(false);
   const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Real dept and org avg
   const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
+  const [showPreview, setShowPreview] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -253,6 +257,30 @@ const LeaderReport = () => {
     }
   };
 
+  const handlePreview = async () => {
+    try {
+      setLoadingPreview(true);
+      const qParams = new URLSearchParams();
+      if (userId) qParams.append("userId", userId);
+      if (userEmail) qParams.append("email", userEmail);
+
+      const response = await api.get(
+        `/dashboard/preview-pdf-report?${qParams.toString()}`,
+        {
+          responseType: "blob",
+        },
+      );
+      const url = URL.createObjectURL(response.data);
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(url);
+      setShowPreview(true);
+    } catch (err) {
+      toast.error("Failed to generate preview");
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
+
   const handleExportPDF = async () => {
     try {
       setExportLoading(true);
@@ -371,7 +399,7 @@ const LeaderReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -399,16 +427,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -653,6 +681,20 @@ const LeaderReport = () => {
                 {/* Edit Feedback */}
               </button>
             )}
+
+            <button
+              onClick={handlePreview}
+              disabled={loadingPreview}
+              className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
+            >
+              {loadingPreview ? (
+                <Icon icon="line-md:loading-loop" width="16" />
+              ) : (
+                <Icon icon="solar:document-bold-duotone" width="18" />
+              )}
+              {loadingPreview ? "Loading..." : "Live Lab Preview"}
+            </button>
+
             <button
               type="button"
               onClick={handleExportPDF}
@@ -734,9 +776,9 @@ const LeaderReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -1013,9 +1055,9 @@ const LeaderReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1747,6 +1789,19 @@ const LeaderReport = () => {
           pod360Description: aiInsight?.description,
         }}
         onSuccess={() => setRefreshKey((prev) => prev + 1)}
+      />
+
+      <ReportPreviewModal
+        show={showPreview}
+        onClose={() => {
+          setShowPreview(false);
+          if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+          setPdfUrl(null);
+        }}
+        pdfUrl={pdfUrl}
+        onRefresh={handlePreview}
+        loading={loadingPreview}
+        type="Leader Report Preview"
       />
     </div>
   );

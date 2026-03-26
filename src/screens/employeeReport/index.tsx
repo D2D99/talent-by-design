@@ -21,6 +21,7 @@ import CircularProgress from "../../components/percentageCircle";
 import Triangle from "../../components/triangle";
 import ReportEmptyState from "../../components/reportEmptyState";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
+import ReportPreviewModal from "../../components/reportPreviewModal";
 import { Tooltip } from "react-tooltip";
 
 // ------ CONSTANTS ------
@@ -140,6 +141,9 @@ const EmployeeReport = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null); // Kept state but will hide UI
   const [exportLoading, setExportLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
 
   // Dynamic selection states
   const [selectedDomain, setSelectedDomain] =
@@ -289,6 +293,30 @@ const EmployeeReport = () => {
     fetchReport();
   }, [userId, userEmail, refreshKey]);
 
+  const handlePreview = async () => {
+    try {
+      setLoadingPreview(true);
+      const qParams = new URLSearchParams();
+      if (userId) qParams.append("userId", userId);
+      if (userEmail) qParams.append("email", userEmail);
+
+      const response = await api.get(
+        `/dashboard/preview-pdf-report?${qParams.toString()}`,
+        {
+          responseType: "blob",
+        },
+      );
+      const url = URL.createObjectURL(response.data);
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(url);
+      setShowPreview(true);
+    } catch (err) {
+      toast.error("Failed to generate preview");
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
+
   const handleExportPDF = async () => {
     try {
       setExportLoading(true);
@@ -391,22 +419,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -453,6 +481,20 @@ const EmployeeReport = () => {
                 {/* Edit Feedback */}
               </button>
             )}
+
+            <button
+              onClick={handlePreview}
+              disabled={loadingPreview}
+              className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
+            >
+              {loadingPreview ? (
+                <Icon icon="line-md:loading-loop" width="16" />
+              ) : (
+                <Icon icon="solar:document-bold-duotone" width="18" />
+              )}
+              {loadingPreview ? "Loading..." : "Live Lab Preview"}
+            </button>
+
             <button
               type="button"
               onClick={handleExportPDF}
@@ -531,9 +573,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -1091,6 +1133,19 @@ const EmployeeReport = () => {
           // Also refetch main report to update the header
           // The main fetchReport will run due to refreshKey if we add it to its deps or call manually
         }}
+      />
+
+      <ReportPreviewModal
+        show={showPreview}
+        onClose={() => {
+          setShowPreview(false);
+          if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+          setPdfUrl(null);
+        }}
+        pdfUrl={pdfUrl}
+        onRefresh={handlePreview}
+        loading={loadingPreview}
+        type="Employee Report Preview"
       />
     </div>
   );
