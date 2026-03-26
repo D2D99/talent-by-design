@@ -186,7 +186,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 Edit Feedback: {subdomain || domain}
               </h5>
               <p className="text-sm text-gray-500 mt-1">
-                Press Enter to automatically add a bullet (•).
+                Press Enter to automatically add a bullet (•)
               </p>
             </div>
             <button
@@ -202,7 +202,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
           <div className="relative pb-8 pt-2 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll space-y-4">
             <div>
               <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
-                Pod 360 Model Items (Bullets below Triangle)
+                Pod 360 Model Items
               </label>
               <textarea
                 value={modelDescription}
@@ -218,7 +218,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
             <div>
               <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
-                Insight for Domain (Main Text)
+                Insight for Domain
               </label>
               <textarea
                 value={insight}

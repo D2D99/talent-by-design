@@ -685,7 +685,7 @@ const LeaderReport = () => {
             <button
               onClick={handlePreview}
               disabled={loadingPreview}
-              className="hidden flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
+              className=" flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50 hidden"
             >
               {loadingPreview ? (
                 <Icon icon="line-md:loading-loop" width="16" />
@@ -1664,25 +1664,25 @@ const LeaderReport = () => {
                 </div>
                 <div className="space-y-6">
                   {/* {displayKRs.map((kr: any, idx: number) => ( */}
-                    <div className="flex items-center gap-3 mt-4">
-                      <div className="text-lg-progress">
-                        <CircularProgress
-                          value={100}
-                          width={60}
-                          textColor="#36454F"
-                          pathColor="#1A3652"
-                          trailColor="#D9D9D9"
-                        />
-                      </div>
-                      <div>
-                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                          kr1
-                        </h2>
-                        <p className="text-sm font-normal text-[var(--secondary-color)]">
-                          Lorem ipsum dolor sit amet.
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-3 mt-4">
+                    <div className="text-lg-progress">
+                      <CircularProgress
+                        value={100}
+                        width={60}
+                        textColor="#36454F"
+                        pathColor="#1A3652"
+                        trailColor="#D9D9D9"
+                      />
                     </div>
+                    <div>
+                      <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                        kr1
+                      </h2>
+                      <p className="text-sm font-normal text-[var(--secondary-color)]">
+                        Lorem ipsum dolor sit amet.
+                      </p>
+                    </div>
+                  </div>
                   {/* ))} */}
                   {displayKRs.length === 0 && (
                     <p className="text-sm text-gray-400 italic">

@@ -420,22 +420,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -486,7 +486,7 @@ const EmployeeReport = () => {
             <button
               onClick={handlePreview}
               disabled={loadingPreview}
-              className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
+              className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50 hidden"
             >
               {loadingPreview ? (
                 <Icon icon="line-md:loading-loop" width="16" />
@@ -574,9 +574,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -902,7 +902,7 @@ const EmployeeReport = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="w-full mt-4 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                  <div className="w-full mt-4 pt-4 border-t border-[#F1F5F9] hidden grid-cols-3 gap-2">
                     <div className="text-center">
                       <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
                         People
@@ -1031,26 +1031,26 @@ const EmployeeReport = () => {
                 </div>
                 <div className="space-y-5">
                   {/* {displayKRs.map(( idx: number) => ( */}
-                    <div className="flex items-center gap-4">
-                      <div className="shrink-0">
-                        <CircularProgress
-                          value= {100} //{kr.value}
-                          width={50}
-                          textColor="#1A3652"
-                          pathColor="#1A3652"
-                          trailColor="#E2E8F0"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold text-[#1A3652]">
-                          {/* {kr.label} */}
-                          Lorem ipsum dolor sit amet.
-                        </h4>
-                        <p className="text-xs text-[#64748B] font-medium">
-                          {/* {kr.text} */}
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-4">
+                    <div className="shrink-0">
+                      <CircularProgress
+                        value={100} //{kr.value}
+                        width={50}
+                        textColor="#1A3652"
+                        pathColor="#1A3652"
+                        trailColor="#E2E8F0"
+                      />
                     </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-[#1A3652]">
+                        {/* {kr.label} */}
+                        Lorem ipsum dolor sit amet.
+                      </h4>
+                      <p className="text-xs text-[#64748B] font-medium">
+                        {/* {kr.text} */}
+                      </p>
+                    </div>
+                  </div>
                   {/* ))} */}
                   {displayKRs.length === 0 && (
                     <p className="text-sm text-gray-400 italic">
@@ -1061,9 +1061,7 @@ const EmployeeReport = () => {
               </div>
             </div>
 
-
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6 ">
-
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -1084,7 +1082,7 @@ const EmployeeReport = () => {
                           anchorSelect="#okrs"
                         >
                           <p className="mb-2">
-                             Provides targeted, actionable guidance to support
+                            Provides targeted, actionable guidance to support
                             leaders and teams in improving performance and
                             adoption.
                           </p>
@@ -1104,10 +1102,9 @@ const EmployeeReport = () => {
                   </div>
                   <img src={StreamlinePlump} alt="images" />
                 </div>
-                <div className="space-y-5">
+                <div className="space-y-2">
                   {displayKRs.map((kr: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-4">
-
                       <div>
                         <li key={idx} className="flex gap-2 text-left">
                           <img
@@ -1119,7 +1116,6 @@ const EmployeeReport = () => {
                             {kr.text}
                           </span>
                         </li>
-
                       </div>
                     </div>
                   ))}
@@ -1158,8 +1154,8 @@ const EmployeeReport = () => {
 
                           <p>
                             Highlights curated programs and resources aligned to
-                            your results. These offerings are designed to address
-                            key gaps and strengthen capabilities.
+                            your results. These offerings are designed to
+                            address key gaps and strengthen capabilities.
                           </p>
                         </Tooltip>
                       </div>
@@ -1185,13 +1181,7 @@ const EmployeeReport = () => {
                   ))}
                 </ul>
               </div>
-
-
             </div>
-
-
-
-
           </>
         ) : (
           <ReportEmptyState role="Employee" />

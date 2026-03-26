@@ -364,20 +364,18 @@ const AccountSetting = () => {
                         {[...Array(5)].map((_, i) => (
                           <div
                             key={i}
-                            className={`h-full flex-1 transition-all duration-500 ${
-                              i < strengthCount
+                            className={`h-full flex-1 transition-all duration-500 ${i < strengthCount
                                 ? strengthColor
                                 : "bg-transparent"
-                            }`}
+                              }`}
                           />
                         ))}
                       </div>
                       <p
-                        className={`text-[10px] mt-1 font-bold uppercase ${
-                          strengthCount === 5
+                        className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5
                             ? "text-green-600"
                             : "text-gray-400"
-                        }`}
+                          }`}
                       >
                         Strength:{" "}
                         {strengthCount === 5
