@@ -391,7 +391,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -419,16 +419,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -677,17 +677,13 @@ const AdminReport = () => {
               type="button"
               onClick={handleExportPDF}
               disabled={exportLoading}
-              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              style={{ backgroundColor: "#1a3652" }}
+              className="relative overflow-hidden z-0 text-[var(--white-color)] px-3.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              // style={{ backgroundColor: "#1a3652" }}
             >
               {exportLoading ? (
                 <Icon icon="eos-icons:loading" width="16" />
               ) : (
-                <Icon
-                  icon="lucide:file-text"
-                  width="16"
-                  className="transition-transform duration-300 group-hover:translate-y-0.5"
-                />
+                <Icon icon="pajamas:export" width="16" height="16" />
               )}
               {exportLoading ? "Exporting..." : "Export PDF Report"}
             </button>
@@ -725,9 +721,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -954,362 +950,6 @@ const AdminReport = () => {
                   );
                 })()}
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
-                <div className="grid justify-start w-full mb-2">
-                  <div className="flex gap-2">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        POD-360™ Model
-                      </h3>
-                    </div>
-
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        // className="text-[var(--primary-color)]"
-                        id="pod360"
-                      >
-                        <Icon icon="ci:info" width="20" height="20" />
-                      </button>
-                      <Tooltip
-                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                        anchorSelect="#pod360"
-                      >
-                        <p>
-                          Visualizes the balance across People Potential,
-                          Operational Steadiness, and Digital Fluency.
-                          Highlights strengths, gaps, and misalignment—guiding
-                          where to stabilize, optimize, or accelerate efforts.
-                        </p>
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-[#64748B] font-medium">
-                    Interconnectivity of focus areas
-                  </p>
-                </div>
-                <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
-                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
-                    <Triangle data={triangleData} />
-                  </div>
-                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                    {detailedPods?.insights?.modelDescription ? (
-                      (() => {
-                        const mLines = detailedPods.insights.modelDescription
-                          .split(/\r?\n/)
-                          .filter((l: string) => l.trim().length > 0);
-                        const hasMBullets = mLines.some((l: string) =>
-                          l.includes("•"),
-                        );
-                        const finalMLines = hasMBullets
-                          ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
-                          : mLines;
-
-                        return finalMLines.map(
-                          (bullet: string, idx: number) => (
-                            <div key={idx} className="flex items-start gap-2">
-                              <img
-                                src={IconStar}
-                                alt="icon"
-                                className="w-4 h-4 shrink-0 mt-0.5"
-                              />
-                              <span className="text-sm font-medium text-[#64748B] leading-snug">
-                                {bullet}
-                              </span>
-                            </div>
-                          ),
-                        );
-                      })()
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Capability
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Engagement
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Confidence
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Change resilience
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 hidden rounded-[12px] bg-[#448bd21c]">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Trends Analysis
-                </h2>
-                <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Wellbeing
-                    </span>
-                    <img src={DownArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Improving fast enough
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Improving fast enough
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Lorem Ipsum
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
-                <div>
-                  <div className="flex items-center justify-between mb-4 ">
-                    <div>
-                      <div className="flex gap-2">
-                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                          Alignment Status
-                        </h3>
-                        <div className="flex items-center">
-                          <button
-                            type="button"
-                            // className="text-[var(--primary-color)]"
-                            id="alignStatus"
-                          >
-                            <Icon icon="ci:info" width="20" height="20" />
-                          </button>
-                          <Tooltip
-                            className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                            anchorSelect="#alignStatus"
-                          >
-                            <p>No Data Found.</p>
-                          </Tooltip>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="relative" data-twe-dropdown-ref>
-                          <button
-                            className="flex items-center whitespace-nowrap bg-[#EDF5FD] px-3 py-1 text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
-                            type="button"
-                            id="alignmentDeptDropdown"
-                            data-twe-dropdown-toggle-ref
-                            aria-expanded="false"
-                          >
-                            {selectedRadarDept || "Organization Wide"}
-                            <span className="ms-1 w-2 [&>svg]:h-3 [&>svg]:w-3">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </span>
-                          </button>
-                          <ul
-                            className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                            aria-labelledby="alignmentDeptDropdown"
-                            data-twe-dropdown-menu-ref
-                          >
-                            <li>
-                              <button
-                                className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                                onClick={() => setSelectedRadarDept("")}
-                              >
-                                Organization Wide
-                              </button>
-                            </li>
-                            {(depts.length > 0
-                              ? depts
-                              : teamAvgData?.allDepartments || []
-                            ).map((dept: string) => (
-                              <li key={dept}>
-                                <button
-                                  className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                                  onClick={() => setSelectedRadarDept(dept)}
-                                >
-                                  {dept}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <p
-                          className="text-sm font-semibold flex items-center gap-1 hidden"
-                          style={{ color: alignmentInfo.color }}
-                        >
-                          <Icon icon={alignmentInfo.icon} width="16" />
-                          {alignmentInfo.status} Status
-                        </p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <img src={OuiSecurity} alt="images" />
-                    </div>
-                  </div>
-                  <div className="sm:w-[400px] w-full my-10">
-                    <RoleProgressChart data={roleAverages} />
-                  </div>
-                  <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> Senior Leader VS Employee
-                    (+{alignmentInfo.gap})
-                  </p>
-                  <div className="sm:mt-8 mt-6">
-                    <button
-                      type="button"
-                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider mb-4"
-                      style={{
-                        backgroundColor: alignmentInfo.bg,
-                        color: alignmentInfo.color,
-                      }}
-                    >
-                      {alignmentInfo.label}
-                    </button>
-                    {/* Coach Voice */}
-                    <div
-                      className="p-3 rounded-xl border text-sm font-medium leading-relaxed"
-                      style={{
-                        backgroundColor: alignmentInfo.bg,
-                        borderColor: `${alignmentInfo.color}30`,
-                        color: alignmentInfo.color,
-                      }}
-                    >
-                      <Icon
-                        icon={alignmentInfo.icon}
-                        className="inline mr-1.5"
-                        width="15"
-                      />
-                      {alignmentInfo.coachText}
-                    </div>
-                  </div>
-                  <div></div>
-                </div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Priorities Attention
-                      </h3>
-
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="priAtt"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#priAtt"
-                        >
-                          <p className="mb-2">
-                            Identifies the most critical areas requiring
-                            attention based on current results.
-                          </p>
-
-                          <p>
-                            Provides clear direction on where to stabilize,
-                            optimize, or accelerate efforts.
-                          </p>
-                        </Tooltip>
-                      </div>
-                    </div>
-
-                    <p className="text-sm font-normal text-[#000000] mt-1">
-                      Top 3 priorities based on current data
-                    </p>
-                  </div>
-
-                  <div>
-                    <img src={Iconamoon} alt="images" />
-                  </div>
-                </div>
-                <div className="mt-4 space-y-4">
-                  {topPriorities.map((item, _idx) => (
-                    <div
-                      key={item.name}
-                      className="flex items-center justify-between"
-                    >
-                      <p
-                        className="text-sm font-semibold flex items-center gap-2"
-                        style={{ color: item.color }}
-                      >
-                        <span
-                          className="w-2.5 h-2.5 flex rounded-full"
-                          style={{ backgroundColor: item.color }}
-                        ></span>
-                        {item.name}
-                      </p>
-                      <p
-                        className="text-sm font-bold"
-                        style={{ color: item.color }}
-                      >
-                        {item.score}%
-                      </p>
-                    </div>
-                  ))}
-                  {topPriorities.length === 0 && (
-                    <p className="text-sm text-gray-500 italic">
-                      No priorities identified yet.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
                 <div className="flex flex-wrap justify-between items-center gap-2">
                   <div className="flex gap-2">
@@ -1443,9 +1083,172 @@ const AdminReport = () => {
                   />
                 </div>
               </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 hidden rounded-[12px] bg-[#448bd21c]">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Trends Analysis
+                </h2>
+                <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Wellbeing
+                    </span>
+                    <img src={DownArrow} alt="arrow" />
+                  </li>
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Improving fast enough
+                    </span>
+                    <img src={UpArrow} alt="arrow" />
+                  </li>
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Improving fast enough
+                    </span>
+                    <img src={UpArrow} alt="arrow" />
+                  </li>
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Lorem Ipsum
+                    </span>
+                    <img src={UpArrow} alt="arrow" />
+                  </li>
+                </ul>
+              </div>
             </div>
 
-            <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
+                <div>
+                  <div className="flex items-center justify-between mb-4 ">
+                    <div>
+                      <div className="flex gap-2">
+                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                          Alignment Status
+                        </h3>
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            // className="text-[var(--primary-color)]"
+                            id="alignStatus"
+                          >
+                            <Icon icon="ci:info" width="20" height="20" />
+                          </button>
+                          <Tooltip
+                            className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                            anchorSelect="#alignStatus"
+                          >
+                            <p>No Data Found.</p>
+                          </Tooltip>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="relative" data-twe-dropdown-ref>
+                          <button
+                            className="flex items-center whitespace-nowrap bg-[#EDF5FD] px-3 py-1 text-sm font-medium leading-normal text-[#676767] rounded-[4px]"
+                            type="button"
+                            id="alignmentDeptDropdown"
+                            data-twe-dropdown-toggle-ref
+                            aria-expanded="false"
+                          >
+                            {selectedRadarDept || "Organization Wide"}
+                            <span className="ms-1 w-2 [&>svg]:h-3 [&>svg]:w-3">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </span>
+                          </button>
+                          <ul
+                            className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                            aria-labelledby="alignmentDeptDropdown"
+                            data-twe-dropdown-menu-ref
+                          >
+                            <li>
+                              <button
+                                className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                                onClick={() => setSelectedRadarDept("")}
+                              >
+                                Organization Wide
+                              </button>
+                            </li>
+                            {(depts.length > 0
+                              ? depts
+                              : teamAvgData?.allDepartments || []
+                            ).map((dept: string) => (
+                              <li key={dept}>
+                                <button
+                                  className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                                  onClick={() => setSelectedRadarDept(dept)}
+                                >
+                                  {dept}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <p
+                          className="text-sm font-semibold flex items-center gap-1 hidden"
+                          style={{ color: alignmentInfo.color }}
+                        >
+                          <Icon icon={alignmentInfo.icon} width="16" />
+                          {alignmentInfo.status} Status
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <img src={OuiSecurity} alt="images" />
+                    </div>
+                  </div>
+                  <div className="sm:w-[400px] w-full my-10">
+                    <RoleProgressChart data={roleAverages} />
+                  </div>
+                  <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
+                    <b className="">Largest Gap:</b> Senior Leader VS Employee
+                    (+{alignmentInfo.gap})
+                  </p>
+                  <div className="sm:mt-8 mt-6">
+                    <button
+                      type="button"
+                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider mb-4"
+                      style={{
+                        backgroundColor: alignmentInfo.bg,
+                        color: alignmentInfo.color,
+                      }}
+                    >
+                      {alignmentInfo.label}
+                    </button>
+                    {/* Coach Voice */}
+                    <div
+                      className="p-3 rounded-xl border text-sm font-medium leading-relaxed"
+                      style={{
+                        backgroundColor: alignmentInfo.bg,
+                        borderColor: `${alignmentInfo.color}30`,
+                        color: alignmentInfo.color,
+                      }}
+                    >
+                      <Icon
+                        icon={alignmentInfo.icon}
+                        className="inline mr-1.5"
+                        width="15"
+                      />
+                      {alignmentInfo.coachText}
+                    </div>
+                  </div>
+                  <div></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -1661,6 +1464,125 @@ const AdminReport = () => {
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
+
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
+                <div className="grid justify-start w-full mb-2">
+                  <div className="flex gap-2">
+                    <div>
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        POD-360™ Model
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        // className="text-[var(--primary-color)]"
+                        id="pod360"
+                      >
+                        <Icon icon="ci:info" width="20" height="20" />
+                      </button>
+                      <Tooltip
+                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                        anchorSelect="#pod360"
+                      >
+                        <p>
+                          Visualizes the balance across People Potential,
+                          Operational Steadiness, and Digital Fluency.
+                          Highlights strengths, gaps, and misalignment—guiding
+                          where to stabilize, optimize, or accelerate efforts.
+                        </p>
+                      </Tooltip>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-[#64748B] font-medium">
+                    Interconnectivity of focus areas
+                  </p>
+                </div>
+                <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
+                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
+                    <Triangle data={triangleData} />
+                  </div>
+                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                    {detailedPods?.insights?.modelDescription ? (
+                      (() => {
+                        const mLines = detailedPods.insights.modelDescription
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
+                        const finalMLines = hasMBullets
+                          ? mLines
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
+                          : mLines;
+
+                        return finalMLines.map(
+                          (bullet: string, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <img
+                                src={IconStar}
+                                alt="icon"
+                                className="w-4 h-4 shrink-0 mt-0.5"
+                              />
+                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                                {bullet}
+                              </span>
+                            </div>
+                          ),
+                        );
+                      })()
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Capability
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Engagement
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Confidence
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Change resilience
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full hidden">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Performance Analysis
@@ -1824,6 +1746,82 @@ const AdminReport = () => {
                   {displayKRs.length === 0 && (
                     <p className="text-sm text-gray-400 italic">
                       Strategic key results are being generated.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        Priorities Attention
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="priAtt"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#priAtt"
+                        >
+                          <p className="mb-2">
+                            Identifies the most critical areas requiring
+                            attention based on current results.
+                          </p>
+
+                          <p>
+                            Provides clear direction on where to stabilize,
+                            optimize, or accelerate efforts.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+
+                    <p className="text-sm font-normal text-[#000000] mt-1">
+                      Top 3 priorities based on current data
+                    </p>
+                  </div>
+
+                  <div>
+                    <img src={Iconamoon} alt="images" />
+                  </div>
+                </div>
+                <div className="mt-4 space-y-4">
+                  {topPriorities.map((item, _idx) => (
+                    <div
+                      key={item.name}
+                      className="flex items-center justify-between"
+                    >
+                      <p
+                        className="text-sm font-semibold flex items-center gap-2"
+                        style={{ color: item.color }}
+                      >
+                        <span
+                          className="w-2.5 h-2.5 flex rounded-full"
+                          style={{ backgroundColor: item.color }}
+                        ></span>
+                        {item.name}
+                      </p>
+                      <p
+                        className="text-sm font-bold"
+                        style={{ color: item.color }}
+                      >
+                        {item.score}%
+                      </p>
+                    </div>
+                  ))}
+                  {topPriorities.length === 0 && (
+                    <p className="text-sm text-gray-500 italic">
+                      No priorities identified yet.
                     </p>
                   )}
                 </div>
