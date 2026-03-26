@@ -884,40 +884,42 @@ const ManagerReport = () => {
                       <div className="flex flex-col items-center mb-6 text-center">
                       </div>
 
-                      <div className="flex flex-col gap-8 max-w-5xl mx-auto py-10">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl mx-auto pb-8">
                         {(showAllGaps ? gapInsightsList : topGapsShown).map((gap, idx) => (
-                          <div key={idx} className="bg-white border border-[#448CD2]/10 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                            {/* Decorative Left Accent for minimal UI */}
-                            <div className="flex h-full">
-                              <div className="w-1.5 rounded-l-2xl" style={{ backgroundColor: gap.color }}></div>
+                          <div key={idx} className="bg-white border border-[#E2E8F0] rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex flex-col h-full overflow-hidden">
+                            <div className="flex h-full flex-1">
+                              {/* Left Bold Accent Line */}
+                              <div className="w-[5px] shrink-0" style={{ backgroundColor: gap.color }}></div>
 
-                              <div className="p-6 flex-1">
-                                <div className="flex items-center justify-between mb-5">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-[#EDF5FD] flex items-center justify-center text-[#448CD2]">
-                                      <Icon icon={getDimensionIcon(gap.label)} width="20" />
+                              <div className="p-6 flex-1 flex flex-col w-full">
+                                {/* Header */}
+                                <div className="flex items-start justify-between mb-8">
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-[14px] bg-[#F0F7FF] flex items-center justify-center shrink-0">
+                                      <Icon icon={getDimensionIcon(gap.label)} width="24" className="text-[#4A90E2]" />
                                     </div>
-                                    <div>
-                                      <h5 className="text-[15px] font-black text-[#1A3652] capitalize">{gap.label}</h5>
-                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{gap.indicator} Gap</p>
+                                    <div className="flex flex-col gap-1">
+                                      <h5 className="text-[15px] font-bold text-[#1A3652] capitalize leading-snug">{gap.label}</h5>
+                                      <p className="text-[10px] font-black text-[#94A3B8] uppercase tracking-widest">{gap.indicator} GAP</p>
                                     </div>
                                   </div>
-                                  <div className="flex flex-col items-end">
-                                    <span className="text-[9px] font-black text-slate-400 tracking-widest uppercase mb-0.5">Deviation</span>
-                                    <span className="text-lg font-black" style={{ color: gap.color }}>{gap.absGap}</span>
+                                  <div className="flex flex-col items-end pt-1">
+                                    <span className="text-[9px] font-black text-[#94A3B8] tracking-widest uppercase mb-1">DEVIATION</span>
+                                    <span className="text-[20px] font-bold leading-none" style={{ color: gap.color }}>{gap.absGap}</span>
                                   </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5 pb-5 border-b border-dashed border-slate-100">
-                                  {/* Team Progress */}
-                                  <div className="flex flex-col gap-2.5">
+                                {/* Side-by-Side Progress Bars */}
+                                <div className="flex items-center gap-6 w-full mb-8">
+                                  {/* Team Base */}
+                                  <div className="flex-1 flex flex-col gap-2.5">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
-                                        <Icon icon="solar:users-group-two-rounded-bold" className="text-[#2ECC71]" /> Team Base
+                                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest flex items-center gap-1.5">
+                                        <Icon icon="solar:users-group-two-bold" className="text-[#2ECC71]" width="14" /> TEAM BASE
                                       </span>
-                                      <span className="text-[13px] font-black text-[#2ECC71]">{(gap.teamScore * 10).toFixed(0)}%</span>
+                                      <span className="text-[12px] font-bold text-[#2ECC71]">{(gap.teamScore * 10).toFixed(0)}%</span>
                                     </div>
-                                    <div className="w-full h-2 bg-slate-50 rounded-full overflow-hidden">
+                                    <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
                                       <div
                                         className="h-full bg-[#2ECC71] rounded-full transition-all duration-1000"
                                         style={{ width: `${gap.teamScore * 10}%` }}
@@ -925,15 +927,15 @@ const ManagerReport = () => {
                                     </div>
                                   </div>
 
-                                  {/* Manager Progress */}
-                                  <div className="flex flex-col gap-2.5">
+                                  {/* Manager View */}
+                                  <div className="flex-1 flex flex-col gap-2.5">
                                     <div className="flex items-center justify-between">
-                                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
-                                        <Icon icon="solar:user-id-bold" className="text-[#4A90E2]" /> Manager View
+                                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest flex items-center gap-1.5">
+                                        <Icon icon="solar:user-id-bold" className="text-[#4A90E2]" width="14" /> MANAGER VIEW
                                       </span>
-                                      <span className="text-[13px] font-black text-[#4A90E2]">{(gap.managerScore * 10).toFixed(0)}%</span>
+                                      <span className="text-[12px] font-bold text-[#4A90E2]">{(gap.managerScore * 10).toFixed(0)}%</span>
                                     </div>
-                                    <div className="w-full h-2 bg-slate-50 rounded-full overflow-hidden">
+                                    <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
                                       <div
                                         className="h-full bg-[#4A90E2] rounded-full transition-all duration-1000"
                                         style={{ width: `${gap.managerScore * 10}%` }}
@@ -942,18 +944,19 @@ const ManagerReport = () => {
                                   </div>
                                 </div>
 
-                                {/* AI Coaching Bubble (Minimalist Human Touch) */}
-                                <div className="flex items-start gap-3.5 bg-slate-50 outline outline-1 outline-slate-100/50 p-4 rounded-xl relative">
-                                  {/* Small tail for speech bubble effect */}
-                                  <div className="absolute -left-1.5 top-6 w-3 h-3 bg-slate-50 outline outline-1 outline-slate-100/50 rotate-[-45deg] z-0"></div>
+                                {/* Divider */}
+                                <hr className="border-t border-dashed border-[#E2E8F0] mb-6" />
 
-                                  <div className="w-10 h-10 rounded-full bg-[#448CD2]/10 flex items-center justify-center shrink-0 mt-0.5 relative z-10 border border-white shadow-sm">
-                                    <Icon icon="solar:user-speak-rounded-bold" width="20" className="text-[#448CD2]" />
-                                    <div className="absolute 0 top-0.5 right-0 w-2.5 h-2.5 bg-[#2ECC71] rounded-full border-2 border-white"></div>
+                                {/* AI Coaching Bubble */}
+                                <div className="flex items-start gap-4 bg-[#F8FAFC] p-4 rounded-xl relative mt-auto border border-transparent">
+                                  <div className="absolute -left-1.5 top-6 w-3 h-3 bg-[#F8FAFC] rotate-[-45deg] z-0"></div>
+                                  <div className="w-8 h-8 rounded-full bg-[#E8F2FB] flex items-center justify-center shrink-0 mt-0.5 relative z-10 border-[1.5px] border-white">
+                                    <Icon icon="solar:user-speak-bold" width="16" className="text-[#4A90E2]" />
+                                    <div className="absolute top-0.5 -right-0.5 w-[7px] h-[7px] bg-[#2ECC71] rounded-full border border-white"></div>
                                   </div>
-                                  <div className="flex flex-col gap-1 z-10">
-                                    <h6 className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Executive Advisor</h6>
-                                    <p className="text-[13px] text-[#1A3652]/80 font-medium leading-relaxed italic">
+                                  <div className="flex flex-col gap-1.5 z-10">
+                                    <h6 className="text-[10px] font-bold tracking-[0.15em] text-[#94A3B8] uppercase">EXECUTIVE ADVISOR</h6>
+                                    <p className="text-[12px] text-[#475569] font-medium leading-relaxed italic">
                                       "{gap.insight}"
                                     </p>
                                   </div>
@@ -1549,27 +1552,27 @@ const ManagerReport = () => {
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {displayKRs.map((kr: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-3 mt-4">
-                      <div className="text-lg-progress">
-                        <CircularProgress
-                          value={kr.value}
-                          width={60}
-                          textColor="#36454F"
-                          pathColor="#1A3652"
-                          trailColor="#D9D9D9"
-                        />
-                      </div>
-                      <div>
-                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                          {kr.label}
-                        </h2>
-                        <p className="text-sm font-normal text-[var(--secondary-color)]">
-                          {kr.text}
-                        </p>
-                      </div>
+                  {/* {displayKRs.map((kr: any, idx: number) => ( */}
+                  <div className="flex items-center gap-3 mt-4">
+                    <div className="text-lg-progress">
+                      <CircularProgress
+                        value={100}
+                        width={60}
+                        textColor="#36454F"
+                        pathColor="#1A3652"
+                        trailColor="#D9D9D9"
+                      />
                     </div>
-                  ))}
+                    <div>
+                      <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                        kr1
+                      </h2>
+                      <p className="text-sm font-normal text-[var(--secondary-color)]">
+                        Lorem ipsum dolor sit amet.
+                      </p>
+                    </div>
+                  </div>
+                  {/* ))} */}
                   {displayKRs.length === 0 && (
                     <p className="text-sm text-gray-400 italic">
                       No specific team key results available.
