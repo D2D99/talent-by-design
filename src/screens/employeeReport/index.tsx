@@ -3,6 +3,7 @@ import Streamline from "../../../public/static/img/home/streamline-plump_graph-b
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
 // import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import IconamoonArrow from "../../../public/static/img/icons/iconamoon_arrow.png";
@@ -485,7 +486,7 @@ const EmployeeReport = () => {
             <button
               onClick={handlePreview}
               disabled={loadingPreview}
-              className="flex hidden items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
+              className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
             >
               {loadingPreview ? (
                 <Icon icon="line-md:loading-loop" width="16" />
@@ -1029,11 +1030,11 @@ const EmployeeReport = () => {
                   <img src={Hugeicons} alt="images" className="w-8 h-8" />
                 </div>
                 <div className="space-y-5">
-                  {displayKRs.map((kr: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-4">
+                  {/* {displayKRs.map(( idx: number) => ( */}
+                    <div className="flex items-center gap-4">
                       <div className="shrink-0">
                         <CircularProgress
-                          value={kr.value}
+                          value= {100} //{kr.value}
                           width={50}
                           textColor="#1A3652"
                           pathColor="#1A3652"
@@ -1042,11 +1043,83 @@ const EmployeeReport = () => {
                       </div>
                       <div>
                         <h4 className="text-sm font-bold text-[#1A3652]">
-                          {kr.label}
+                          {/* {kr.label} */}
+                          Lorem ipsum dolor sit amet.
                         </h4>
                         <p className="text-xs text-[#64748B] font-medium">
-                          {kr.text}
+                          {/* {kr.text} */}
                         </p>
+                      </div>
+                    </div>
+                  {/* ))} */}
+                  {displayKRs.length === 0 && (
+                    <p className="text-sm text-gray-400 italic">
+                      No specific key results available.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6 ">
+
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="text-xl font-bold capitalize">
+                        Coaching tips
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="okrs"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#okrs"
+                        >
+                          <p className="mb-2">
+                             Provides targeted, actionable guidance to support
+                            leaders and teams in improving performance and
+                            adoption.
+                          </p>
+
+                          <p>
+                            Aligned to key capability areas these tips help
+                            address friction, build consistency, and sustain
+                            progress across the organization.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <p className="text-xs text-[#64748B] font-medium">
+                      {detailedPods?.objectives?.subtitle ||
+                        "Develop essential leadership and EI skills"}
+                    </p>
+                  </div>
+                  <img src={StreamlinePlump} alt="images" />
+                </div>
+                <div className="space-y-5">
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-4">
+
+                      <div>
+                        <li key={idx} className="flex gap-2 text-left">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 mt-1 shrink-0"
+                          />
+                          <span className="text-sm text-[#64748B] font-medium">
+                            {kr.text}
+                          </span>
+                        </li>
+
                       </div>
                     </div>
                   ))}
@@ -1057,63 +1130,68 @@ const EmployeeReport = () => {
                   )}
                 </div>
               </div>
-            </div>
+              <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="text-xl font-bold capitalize">
+                        Recommended Development Programs
+                      </h3>
 
-            <div className="mt-6 border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="flex gap-2">
-                    <h3 className="text-xl font-bold capitalize">
-                      Recommended Development Programs
-                    </h3>
-
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        // className="text-[var(--primary-color)]"
-                        id="tbdOffering"
-                      >
-                        <Icon icon="ci:info" width="20" height="20" />
-                      </button>
-                      <Tooltip
-                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                        anchorSelect="#tbdOffering"
-                      >
-                        {/* <p className="mb-2">
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="tbdOffering"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#tbdOffering"
+                        >
+                          {/* <p className="mb-2">
                           Compares how Leaders, Managers, and Employees
                           experience the organization across the three POD
                           domains.
                         </p> */}
 
-                        <p>
-                          Highlights curated programs and resources aligned to
-                          your results. These offerings are designed to address
-                          key gaps and strengthen capabilities.
-                        </p>
-                      </Tooltip>
+                          <p>
+                            Highlights curated programs and resources aligned to
+                            your results. These offerings are designed to address
+                            key gaps and strengthen capabilities.
+                          </p>
+                        </Tooltip>
+                      </div>
                     </div>
+                    <p className="text-xs text-[#64748B] font-medium">
+                      Selected growth opportunities
+                    </p>
                   </div>
-                  <p className="text-xs text-[#64748B] font-medium">
-                    Selected growth opportunities
-                  </p>
+                  <img src={Healthicons} alt="images" className="w-8 h-8" />
                 </div>
-                <img src={Healthicons} alt="images" className="w-8 h-8" />
+                <ul className="space-y-2">
+                  {displayRecommendations.map((rec: string, idx: number) => (
+                    <li key={idx} className="flex gap-2 text-left">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 mt-1 shrink-0"
+                      />
+                      <span className="text-sm text-[#64748B] font-medium">
+                        {rec}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-2">
-                {displayRecommendations.map((rec: string, idx: number) => (
-                  <li key={idx} className="flex gap-2 text-left">
-                    <img
-                      src={IconStar}
-                      alt="icon"
-                      className="w-4 h-4 mt-1 shrink-0"
-                    />
-                    <span className="text-sm text-[#64748B] font-medium">
-                      {rec}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+
+
             </div>
+
+
+
+
           </>
         ) : (
           <ReportEmptyState role="Employee" />

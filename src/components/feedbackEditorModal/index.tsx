@@ -232,7 +232,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
             <div>
               <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
-                Objectives & Key Results (Coaching Tips)
+                Coaching Tips
               </label>
               <textarea
                 value={coachingTips}

@@ -1663,11 +1663,11 @@ const LeaderReport = () => {
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {displayKRs.map((kr: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-3 mt-4">
+                  {/* {displayKRs.map((kr: any, idx: number) => ( */}
+                    <div className="flex items-center gap-3 mt-4">
                       <div className="text-lg-progress">
                         <CircularProgress
-                          value={kr.value}
+                          value={100}
                           width={60}
                           textColor="#36454F"
                           pathColor="#1A3652"
@@ -1676,14 +1676,14 @@ const LeaderReport = () => {
                       </div>
                       <div>
                         <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                          {kr.label}
+                          kr1
                         </h2>
                         <p className="text-sm font-normal text-[var(--secondary-color)]">
-                          {kr.text}
+                          Lorem ipsum dolor sit amet.
                         </p>
                       </div>
                     </div>
-                  ))}
+                  {/* ))} */}
                   {displayKRs.length === 0 && (
                     <p className="text-sm text-gray-400 italic">
                       Strategic key results are being generated.

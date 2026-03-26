@@ -450,7 +450,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -461,16 +461,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -731,9 +731,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -822,6 +822,23 @@ const ManagerReport = () => {
                       </div>
                     </div>
                   </div>
+                  {/* 🆕 Premium Tab Switcher */}
+                  <div className="flex justify-center mb-8 w-34 p-4">
+                    <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
+                      <button
+                        onClick={() => setActiveTab("graph")}
+                        className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "graph" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
+                      >
+                        Radar View
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("gaps")}
+                        className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "gaps" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
+                      >
+                        Gap Insights
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
                   <div
@@ -849,124 +866,124 @@ const ManagerReport = () => {
                     </div>
                   )}
                 </div>
-                {/* 🆕 Premium Tab Switcher */}
-                <div className="flex justify-center mb-8">
-                  <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
-                    <button
-                      onClick={() => setActiveTab("graph")}
-                      className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "graph" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
-                    >
-                      Radar View
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("gaps")}
-                      className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "gaps" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
-                    >
-                      Gap Insights
-                    </button>
-                  </div>
-                </div>
+
 
                 <div className="transition-all duration-500 overflow-visible">
                   {activeTab === "graph" ? (
                     <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
-                       <RadarChart
-                          data={radarData}
-                          selectedLabel={selectedLabel}
-                          onLabelSelect={handleRadarChartSelection}
-                          datasetLabels={["Manager", "Employee"]}
-                          hiddenIndices={hiddenIndices}
-                        />
+                      <RadarChart
+                        data={radarData}
+                        selectedLabel={selectedLabel}
+                        onLabelSelect={handleRadarChartSelection}
+                        datasetLabels={["Manager", "Employee"]}
+                        hiddenIndices={hiddenIndices}
+                      />
                     </div>
                   ) : (
                     <div className="py-4 space-y-10">
                       <div className="flex flex-col items-center mb-6 text-center">
                       </div>
 
-                    <div className="flex flex-col gap-8 max-w-5xl mx-auto py-10">
-                      {(showAllGaps ? gapInsightsList : topGapsShown).map((gap, idx) => (
-                        <div key={idx} className="relative overflow-hidden bg-white border border-[#448CD2]/10 rounded-[20px] shadow-sm transition-all hover:shadow-md">
-                           {/* Severity Strip */}
-                           <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: gap.color }}></div>
+                      <div className="flex flex-col gap-8 max-w-5xl mx-auto py-10">
+                        {(showAllGaps ? gapInsightsList : topGapsShown).map((gap, idx) => (
+                          <div key={idx} className="bg-white border border-[#448CD2]/10 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                            {/* Decorative Left Accent for minimal UI */}
+                            <div className="flex h-full">
+                              <div className="w-1.5 rounded-l-2xl" style={{ backgroundColor: gap.color }}></div>
 
-                           <div className="p-8 pl-12">
-                              <div className="flex items-center gap-4 mb-10">
-                                 <div className="w-10 h-10 rounded-xl bg-[#EDF5FD] flex items-center justify-center text-[#448CD2]">
-                                    <Icon icon={getDimensionIcon(gap.label)} width="20" />
-                                 </div>
-                                 <h5 className="text-base font-black text-[#1A3652] uppercase tracking-wider">{gap.label}</h5>
-                              </div>
+                              <div className="p-6 flex-1">
+                                <div className="flex items-center justify-between mb-5">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-[#EDF5FD] flex items-center justify-center text-[#448CD2]">
+                                      <Icon icon={getDimensionIcon(gap.label)} width="20" />
+                                    </div>
+                                    <div>
+                                      <h5 className="text-[15px] font-black text-[#1A3652] capitalize">{gap.label}</h5>
+                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{gap.indicator} Gap</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col items-end">
+                                    <span className="text-[9px] font-black text-slate-400 tracking-widest uppercase mb-0.5">Deviation</span>
+                                    <span className="text-lg font-black" style={{ color: gap.color }}>{gap.absGap}</span>
+                                  </div>
+                                </div>
 
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-10">
-                                 {/* Team Progress */}
-                                 <div className="flex flex-col gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5 pb-5 border-b border-dashed border-slate-100">
+                                  {/* Team Progress */}
+                                  <div className="flex flex-col gap-2.5">
                                     <div className="flex items-center justify-between">
-                                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Team Alignment</span>
-                                       <span className="text-sm font-black text-[#2ECC71]">{(gap.teamScore * 10).toFixed(0)}%</span>
+                                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                                        <Icon icon="solar:users-group-two-rounded-bold" className="text-[#2ECC71]" /> Team Base
+                                      </span>
+                                      <span className="text-[13px] font-black text-[#2ECC71]">{(gap.teamScore * 10).toFixed(0)}%</span>
                                     </div>
-                                    <div className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden">
-                                       <div 
-                                          className="h-full bg-gradient-to-r from-[#2ECC7180] to-[#2ECC71] rounded-full transition-all duration-1000"
-                                          style={{ width: `${gap.teamScore * 10}%` }}
-                                       ></div>
+                                    <div className="w-full h-2 bg-slate-50 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-[#2ECC71] rounded-full transition-all duration-1000"
+                                        style={{ width: `${gap.teamScore * 10}%` }}
+                                      ></div>
                                     </div>
-                                 </div>
+                                  </div>
 
-                                 {/* Manager Progress */}
-                                 <div className="flex flex-col gap-3">
+                                  {/* Manager Progress */}
+                                  <div className="flex flex-col gap-2.5">
                                     <div className="flex items-center justify-between">
-                                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Manager Perception</span>
-                                       <span className="text-sm font-black text-[#4A90E2]">{(gap.managerScore * 10).toFixed(0)}%</span>
+                                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                                        <Icon icon="solar:user-id-bold" className="text-[#4A90E2]" /> Manager View
+                                      </span>
+                                      <span className="text-[13px] font-black text-[#4A90E2]">{(gap.managerScore * 10).toFixed(0)}%</span>
                                     </div>
-                                    <div className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden">
-                                       <div 
-                                          className="h-full bg-gradient-to-r from-[#4A90E280] to-[#4A90E2] rounded-full transition-all duration-1000"
-                                          style={{ width: `${gap.managerScore * 10}%` }}
-                                       ></div>
+                                    <div className="w-full h-2 bg-slate-50 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-[#4A90E2] rounded-full transition-all duration-1000"
+                                        style={{ width: `${gap.managerScore * 10}%` }}
+                                      ></div>
                                     </div>
-                                 </div>
-                              </div>
+                                  </div>
+                                </div>
 
-                              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                                 <div className="flex-1 max-w-2xl">
-                                    <p className="text-[13px] text-[#1A3652]/70 font-bold italic leading-relaxed border-l-2 border-slate-100 pl-6">
-                                       “{gap.insight}”
+                                {/* AI Coaching Bubble (Minimalist Human Touch) */}
+                                <div className="flex items-start gap-3.5 bg-slate-50 outline outline-1 outline-slate-100/50 p-4 rounded-xl relative">
+                                  {/* Small tail for speech bubble effect */}
+                                  <div className="absolute -left-1.5 top-6 w-3 h-3 bg-slate-50 outline outline-1 outline-slate-100/50 rotate-[-45deg] z-0"></div>
+
+                                  <div className="w-10 h-10 rounded-full bg-[#448CD2]/10 flex items-center justify-center shrink-0 mt-0.5 relative z-10 border border-white shadow-sm">
+                                    <Icon icon="solar:user-speak-rounded-bold" width="20" className="text-[#448CD2]" />
+                                    <div className="absolute 0 top-0.5 right-0 w-2.5 h-2.5 bg-[#2ECC71] rounded-full border-2 border-white"></div>
+                                  </div>
+                                  <div className="flex flex-col gap-1 z-10">
+                                    <h6 className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Executive Advisor</h6>
+                                    <p className="text-[13px] text-[#1A3652]/80 font-medium leading-relaxed italic">
+                                      "{gap.insight}"
                                     </p>
-                                 </div>
-                                 <div className="flex flex-col items-end gap-1.5">
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-lg text-white shadow-sm" style={{ backgroundColor: gap.color }}>
-                                       {gap.indicator} — Priority
-                                    </span>
-                                    <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">
-                                       {gap.absGap} pt deviation
-                                    </span>
-                                 </div>
+                                  </div>
+                                </div>
                               </div>
-                           </div>
-                        </div>
-                      ))}
+                            </div>
+                          </div>
+                        ))}
 
-                      {otherGaps.length > 0 && !showAllGaps && (
-                         <button
+                        {otherGaps.length > 0 && !showAllGaps && (
+                          <button
                             onClick={() => setShowAllGaps(true)}
                             className="flex items-center justify-center gap-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-[#448CD2] transition-colors bg-white rounded-2xl border border-dashed border-slate-200"
-                         >
+                          >
                             <Icon icon="solar:double-alt-arrow-down-bold" />
                             Expand {otherGaps.length} more Alignment Insights
-                         </button>
-                      )}
+                          </button>
+                        )}
 
-                      {gapInsightsList.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-20 bg-white border border-dashed border-[#448CD210] rounded-2xl gap-4">
-                           <Icon icon="solar:star-fall-bold-duotone" width="40" className="text-[#30AD43]/30" />
-                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center">Perfect Synchronization Complete</p>
-                        </div>
-                      )}
+                        {gapInsightsList.length === 0 && (
+                          <div className="flex flex-col items-center justify-center py-20 bg-white border border-dashed border-[#448CD210] rounded-2xl gap-4">
+                            <Icon icon="solar:star-fall-bold-duotone" width="40" className="text-[#30AD43]/30" />
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center">Perfect Synchronization Complete</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1302,9 +1319,9 @@ const ManagerReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
