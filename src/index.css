@@ -435,3 +435,7 @@ a {
     justify-content: flex-start;
   }
 }
+
+.scroll-thin {
+  scrollbar-width: thin;
+}

@@ -891,7 +891,7 @@ const LeaderReport = () => {
                                 <Icon icon="ci:info" width="20" height="20" />
                               </button>
                               <Tooltip
-                                className="text-center sm:max-w-md max-w-72 !text-xs"
+                                className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                                 anchorSelect="#orgHealth"
                               >
                                 <p className="mb-2">
@@ -1024,7 +1024,7 @@ const LeaderReport = () => {
                         <Icon icon="ci:info" width="20" height="20" />
                       </button>
                       <Tooltip
-                        className="text-center sm:max-w-md max-w-72 !text-xs"
+                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                         anchorSelect="#pod360"
                       >
                         <p>
@@ -1173,7 +1173,7 @@ const LeaderReport = () => {
                             <Icon icon="ci:info" width="20" height="20" />
                           </button>
                           <Tooltip
-                            className="text-center sm:max-w-md max-w-72 !text-xs"
+                            className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                             anchorSelect="#alignStatus"
                           >
                             <p>No Data Found.</p>
@@ -1248,7 +1248,7 @@ const LeaderReport = () => {
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                           anchorSelect="#priAtt"
                         >
                           <p className="mb-2">
@@ -1322,7 +1322,7 @@ const LeaderReport = () => {
                         <Icon icon="ci:info" width="20" height="20" />
                       </button>
                       <Tooltip
-                        className="text-center sm:max-w-md max-w-72 !text-xs"
+                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                         anchorSelect="#podScore"
                       >
                         <p className="mb-2">
@@ -1403,7 +1403,7 @@ const LeaderReport = () => {
                       <Icon icon="ci:info" width="20" height="20" />
                     </button>
                     <Tooltip
-                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                       anchorSelect="#scoreDomain"
                     >
                       <p className="mb-2">
@@ -1509,7 +1509,7 @@ const LeaderReport = () => {
                       <Icon icon="ci:info" width="20" height="20" />
                     </button>
                     <Tooltip
-                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                       anchorSelect="#scoreSubDomain"
                     >
                       <p className="mb-2">
@@ -1654,7 +1654,7 @@ const LeaderReport = () => {
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                           anchorSelect="#insightDomain"
                         >
                           <p className="mb-2">
@@ -1715,7 +1715,7 @@ const LeaderReport = () => {
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                           anchorSelect="#okrs"
                         >
                           <p className="mb-2">

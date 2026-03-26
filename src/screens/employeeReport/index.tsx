@@ -647,7 +647,7 @@ const EmployeeReport = () => {
                       <Icon icon="ci:info" width="20" height="20" />
                     </button>
                     <Tooltip
-                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                       anchorSelect="#scoreDomain"
                     >
                       <p className="mb-2">
@@ -697,7 +697,7 @@ const EmployeeReport = () => {
                       <li key={d}>
                         <button
                           onClick={() => handleDomainChange(d)}
-                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-bold text-neutral-700 hover:bg-[#EDF5FD]"
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm text-neutral-700 hover:bg-[#EDF5FD]"
                           data-twe-dropdown-item-ref
                         >
                           {d}
@@ -741,7 +741,7 @@ const EmployeeReport = () => {
                       <Icon icon="ci:info" width="20" height="20" />
                     </button>
                     <Tooltip
-                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                       anchorSelect="#scoreSubDomain"
                     >
                       <p className="mb-2">
@@ -839,7 +839,7 @@ const EmployeeReport = () => {
                             <Icon icon="ci:info" width="20" height="20" />
                           </button>
                           <Tooltip
-                            className="text-center sm:max-w-md max-w-72 !text-xs"
+                            className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                             anchorSelect="#podScore"
                           >
                             <p className="mb-2">
@@ -949,7 +949,7 @@ const EmployeeReport = () => {
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                           anchorSelect="#podInsightDomain"
                         >
                           <p className="mb-2">
@@ -1006,7 +1006,7 @@ const EmployeeReport = () => {
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                           anchorSelect="#okrs"
                         >
                           <p className="mb-2">
@@ -1064,7 +1064,7 @@ const EmployeeReport = () => {
                 <div>
                   <div className="flex gap-2">
                     <h3 className="text-xl font-bold capitalize">
-                      Talent By Design Recommended Offering
+                      Recommended Development Programs
                     </h3>
 
                     <div className="flex items-center">
@@ -1076,7 +1076,7 @@ const EmployeeReport = () => {
                         <Icon icon="ci:info" width="20" height="20" />
                       </button>
                       <Tooltip
-                        className="text-center sm:max-w-md max-w-72 !text-xs"
+                        className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                         anchorSelect="#tbdOffering"
                       >
                         {/* <p className="mb-2">
@@ -1085,7 +1085,11 @@ const EmployeeReport = () => {
                           domains.
                         </p> */}
 
-                        <p>No Data Found</p>
+                        <p>
+                          Highlights curated programs and resources aligned to
+                          your results. These offerings are designed to address
+                          key gaps and strengthen capabilities.
+                        </p>
                       </Tooltip>
                     </div>
                   </div>

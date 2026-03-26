@@ -180,10 +180,15 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
         className="pointer-events-none relative flex min-h-full w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-3xl mx-auto px-4"
       >
         <div className="pointer-events-auto relative flex w-full flex-col rounded-xl border-none bg-white bg-clip-padding text-current shadow-lg outline-none max-h-[90vh] overflow-hidden">
-          <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
-            <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
-              Edit Feedback: {subdomain || domain}
-            </h5>
+          <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4">
+            <div>
+              <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
+                Edit Feedback: {subdomain || domain}
+              </h5>
+              <p className="text-sm text-gray-500 mt-1">
+                Press Enter to automatically add a bullet (•).
+              </p>
+            </div>
             <button
               type="button"
               data-twe-modal-dismiss
@@ -194,9 +199,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </button>
           </div>
 
-          <div className="relative sm:py-8 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll space-y-4">
+          <div className="relative pb-8 pt-2 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll space-y-4">
             <div>
-              <label className="block font-bold text-sm text-gray-700">
+              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
                 Pod 360 Model Items (Bullets below Triangle)
               </label>
               <textarea
@@ -206,16 +211,13 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                   handleKeyDown(e, setModelDescription, modelDescription, true)
                 }
                 rows={3}
-                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)]border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Capability, Engagement, Confidence..."
               />
-              <p className="text-[10px] text-gray-400 mt-1">
-                Press Enter to automatically add a bullet (•).
-              </p>
             </div>
 
             <div>
-              <label className="block font-bold text-sm text-gray-700">
+              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
                 Insight for Domain (Main Text)
               </label>
               <textarea
@@ -223,16 +225,13 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 onChange={(e) => setInsight(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, setInsight, insight, true)}
                 rows={4}
-                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Enter insights here..."
               />
-              <p className="text-[10px] text-gray-400 mt-1">
-                Press Enter to automatically add a bullet (•).
-              </p>
             </div>
 
             <div>
-              <label className="block font-bold text-sm text-gray-700">
+              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
                 Objectives & Key Results (Coaching Tips)
               </label>
               <textarea
@@ -242,16 +241,13 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                   handleKeyDown(e, setCoachingTips, coachingTips, true)
                 }
                 rows={4}
-                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Enter objectives/tips here..."
               />
-              <p className="text-[10px] text-gray-400 mt-1">
-                Press Enter to automatically add a bullet (•).
-              </p>
             </div>
 
-            <div>
-              <label className="block font-bold text-sm text-gray-700">
+            {/* <div>
+              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
                 Pod 360 Title
               </label>
               <textarea
@@ -274,11 +270,11 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 placeholder="Enter description here..."
               />
-            </div>
+            </div> */}
 
             <div>
-              <label className="block font-bold text-sm text-gray-700">
-                Talent By Design Recommended Offering
+              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
+                Recommended Development Programs
               </label>
               <textarea
                 value={recommendedPrograms}
@@ -292,12 +288,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                   )
                 }
                 rows={4}
-                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Enter recommendations here..."
               />
-              <p className="text-[10px] text-gray-400 mt-1">
-                Press Enter to automatically add a bullet (•).
-              </p>
             </div>
           </div>
 

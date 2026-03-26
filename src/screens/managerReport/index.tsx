@@ -571,17 +571,13 @@ const ManagerReport = () => {
               type="button"
               onClick={handleExportPDF}
               disabled={exportLoading}
-              className="relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              className="relative overflow-hidden z-0 text-[var(--white-color)] px-3.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               style={{ backgroundColor: "#1a3652" }}
             >
               {exportLoading ? (
                 <Icon icon="eos-icons:loading" width="16" />
               ) : (
-                <Icon
-                  icon="lucide:file-text"
-                  width="16"
-                  className="transition-transform duration-300 group-hover:translate-y-0.5"
-                />
+                <Icon icon="pajamas:export" width="16" height="16" />
               )}
               {exportLoading ? "Exporting..." : "Export PDF Report"}
             </button>
@@ -712,7 +708,142 @@ const ManagerReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                <div className="flex items-center justify-between  ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Manager VS Team Gap
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="teamGap"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#teamGap"
+                        >
+                          <p>
+                            Reveals differences between manager and employee
+                            experiences across key capabilities and identifies
+                            where perception gaps may be impacting alignment,
+                            trust, and effective execution at the team level.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">Manager</span>
+                  </div>
+                  {(teamAvgData?.employeeCount > 0 || true) && (
+                    <div
+                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                      onClick={() => toggleHiddenIndex(1)}
+                    >
+                      <span
+                        className="w-5 h-2 rounded-sm inline-block"
+                        style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                      />
+                      <span className="text-xs text-[#474747]">
+                        Employee ({teamAvgData?.employeeCount || 0})
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <RadarChart
+                    data={radarData}
+                    selectedLabel={selectedLabel}
+                    onLabelSelect={handleRadarChartSelection}
+                    datasetLabels={["Manager", "Employee"]}
+                    hiddenIndices={hiddenIndices}
+                  />
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Delta Breakdown
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="deltaBreakdown"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#deltaBreakdown"
+                        >
+                          <p className="mb-2">
+                            Measures the difference between manager and employee
+                            experiences across key capability areas.
+                          </p>
+                          <p>
+                            Highlights where misalignment exists, how
+                            significant it is, and where it may be impacting
+                            execution, adoption, and overall performance.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <p className="text-sm text-[#64748B] mt-1 mb-6 ">
+                      {userData?.firstName ||
+                        reportData?.user?.firstName ||
+                        "Manager"}
+                      :{" "}
+                      <span className="font-bold text-[#448CD2]">
+                        {(
+                          (radarData.manager.reduce((a, b) => a + b, 0) /
+                            (radarData.manager.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
+                      </span>{" "}
+                      Domain Avg vs Employee Avg:{" "}
+                      <span className="font-bold text-[#E74C3C]">
+                        {(
+                          (radarData.team.reduce((a, b) => a + b, 0) /
+                            (radarData.team.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <GapBarChart
+                    labels={radarData.labels}
+                    deltaScores={deltaScores}
+                    selectedLabel={selectedLabel}
+                    managerScores={radarData.manager}
+                    employeeScores={radarData.team}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold capitalize">
@@ -727,7 +858,7 @@ const ManagerReport = () => {
                       <Icon icon="ci:info" width="20" height="20" />
                     </button>
                     <Tooltip
-                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                       anchorSelect="#scoreDomain"
                     >
                       <p className="mb-2">
@@ -833,7 +964,7 @@ const ManagerReport = () => {
                       <Icon icon="ci:info" width="20" height="20" />
                     </button>
                     <Tooltip
-                      className="text-center sm:max-w-md max-w-72 !text-xs"
+                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                       anchorSelect="#scoreSubDomain"
                     >
                       <p className="mb-2">
@@ -927,174 +1058,7 @@ const ManagerReport = () => {
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4 rounded-[12px] w-full hidden">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Performance Analysis
-                </h2>
-                <div className="flex justify-center gap-4 mt-6">
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Previous Test
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Current Test
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-10">
-                  <MultiLineChart data={trendData} />
-                </div>
-              </div>
-            </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        {detailedPods?.insights?.title ||
-                          `Insight for ${selectedSubdomain || selectedDomain}`}
-                      </h3>
-
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="podInsightDomain"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
-                          anchorSelect="#podInsightDomain"
-                        >
-                          <p className="mb-2">
-                            Provides a synthesized interpretation of the data
-                            within this domain.
-                          </p>
-
-                          <p>
-                            Highlights what is happening, why it matters, and
-                            where to focus next to improve performance and
-                            reduce friction.
-                          </p>
-                        </Tooltip>
-                      </div>
-                    </div>
-                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      {detailedPods?.insights?.subtitle ||
-                        (selectedSubdomain
-                          ? `Detailed analysis for ${selectedSubdomain}`
-                          : `Overall analysis for ${selectedDomain}`)}
-                    </p>
-                  </div>
-                  <div>
-                    <img src={Streamline} alt="images" />
-                  </div>
-                </div>
-                <div>
-                  <ul className="mt-4 space-y-2">
-                    {finalInsights.map((insight: string, idx: number) => (
-                      <li key={idx} className="feature-list flex gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="mt-1 w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal italic">
-                          {insight}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Objectives and Key Results
-                      </h3>
-
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="okrs"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
-                          anchorSelect="#okrs"
-                        >
-                          <p className="mb-2">
-                            Translates insights into measurable actions and
-                            outcomes aligned to strategic priorities.
-                          </p>
-
-                          <p>
-                            Use this a guide for what to execute, track, and
-                            reinforce to drive sustained improvement over time.
-                          </p>
-                        </Tooltip>
-                      </div>
-                    </div>
-                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      Lead team improvements in this domain area
-                    </p>
-                  </div>
-                  <div>
-                    <img src={Hugeicons} alt="images" />
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {displayKRs.map((kr: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-3 mt-4">
-                      <div className="text-lg-progress">
-                        <CircularProgress
-                          value={kr.value}
-                          width={60}
-                          textColor="#36454F"
-                          pathColor="#1A3652"
-                          trailColor="#D9D9D9"
-                        />
-                      </div>
-                      <div>
-                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                          {kr.label}
-                        </h2>
-                        <p className="text-sm font-normal text-[var(--secondary-color)]">
-                          {kr.text}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                  {displayKRs.length === 0 && (
-                    <p className="text-sm text-gray-400 italic">
-                      No specific team key results available.
-                    </p>
-                  )}
-                </div>
-                <div></div>
-              </div>
-            </div>
-            {/*  */}
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
                 <div className="flex items-center justify-between w-full mb-2">
                   <div>
@@ -1111,7 +1075,7 @@ const ManagerReport = () => {
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                           anchorSelect="#podScore"
                         >
                           <p className="mb-2">
@@ -1239,12 +1203,325 @@ const ManagerReport = () => {
                   </div>
                 </div>
               </div>
+
+              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4 rounded-[12px] w-full hidden">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Performance Analysis
+                </h2>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Previous Test
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Current Test
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-10">
+                  <MultiLineChart data={trendData} />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        {detailedPods?.insights?.title ||
+                          `Insight for ${selectedSubdomain || selectedDomain}`}
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="podInsightDomain"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#podInsightDomain"
+                        >
+                          <p className="mb-2">
+                            Provides a synthesized interpretation of the data
+                            within this domain.
+                          </p>
+
+                          <p>
+                            Highlights what is happening, why it matters, and
+                            where to focus next to improve performance and
+                            reduce friction.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                      {detailedPods?.insights?.subtitle ||
+                        (selectedSubdomain
+                          ? `Detailed analysis for ${selectedSubdomain}`
+                          : `Overall analysis for ${selectedDomain}`)}
+                    </p>
+                  </div>
+                  <div>
+                    <img src={Streamline} alt="images" />
+                  </div>
+                </div>
+                <div>
+                  <ul className="mt-4 space-y-2">
+                    {finalInsights.map((insight: string, idx: number) => (
+                      <li key={idx} className="feature-list flex gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="mt-1 w-4 h-4 shrink-0"
+                        />
+                        <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                          {insight}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        Objectives and Key Results
+                      </h3>
+
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="okrs"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#okrs"
+                        >
+                          <p className="mb-2">
+                            Translates insights into measurable actions and
+                            outcomes aligned to strategic priorities.
+                          </p>
+
+                          <p>
+                            Use this a guide for what to execute, track, and
+                            reinforce to drive sustained improvement over time.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                      Lead team improvements in this domain area
+                    </p>
+                  </div>
+                  <div>
+                    <img src={Hugeicons} alt="images" />
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 mt-4">
+                      <div className="text-lg-progress">
+                        <CircularProgress
+                          value={kr.value}
+                          width={60}
+                          textColor="#36454F"
+                          pathColor="#1A3652"
+                          trailColor="#D9D9D9"
+                        />
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                          {kr.label}
+                        </h2>
+                        <p className="text-sm font-normal text-[var(--secondary-color)]">
+                          {kr.text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  {displayKRs.length === 0 && (
+                    <p className="text-sm text-gray-400 italic">
+                      No specific team key results available.
+                    </p>
+                  )}
+                </div>
+                <div></div>
+              </div>
+            </div>
+            {/*  */}
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              {/* <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
+                <div className="flex items-center justify-between w-full mb-2">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        POD-360™ Model
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="podScore"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#podScore"
+                        >
+                          <p className="mb-2">
+                            Visualizes the balance across People Potential,
+                            Operational Steadiness, and Digital Fluency.
+                          </p>
+
+                          <p>
+                            Highlights strengths, gaps, and misalignment—guiding
+                            where to stabilize, optimize, or accelerate efforts.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <p className="text-xs text-[#64748B] font-medium">
+                      Interconnectivity of focus areas
+                    </p>
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
+                  <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                    <Triangle data={triangleData} />
+                  </div>
+                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                    {detailedPods?.insights?.modelDescription ? (
+                      (() => {
+                        const mLines = detailedPods.insights.modelDescription
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasMBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
+                        const finalMLines = hasMBullets
+                          ? mLines
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
+                          : mLines;
+
+                        return finalMLines.map(
+                          (bullet: string, idx: number) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <img
+                                src={IconStar}
+                                alt="icon"
+                                className="w-4 h-4 shrink-0 mt-0.5"
+                              />
+                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                                {bullet}
+                              </span>
+                            </div>
+                          ),
+                        );
+                      })()
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Capability
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Engagement
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Confidence
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm font-medium text-[#64748B]">
+                            Change resilience
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] grid grid-cols-3 gap-2">
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      People
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("people"))}%
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      Operational
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("operational"))}%
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-tighter">
+                      Digital
+                    </p>
+                    <p className="text-sm font-black text-[var(--secondary-color)]">
+                      {Math.round(findDomainScore("digital"))}%
+                    </p>
+                  </div>
+                </div>
+              </div> */}
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
                     <div className="flex gap-2">
                       <h3 className="sm:text-xl text-lg font-bold capitalize">
-                        Manager Coaching Tips
+                        Coaching Tips
                       </h3>
                       <div className="flex items-center">
                         <button
@@ -1255,10 +1532,19 @@ const ManagerReport = () => {
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                           anchorSelect="#managerTips"
                         >
-                          <p>No Data Found.</p>
+                          <p className="mb-2">
+                            Provides targeted, actionable guidance to support
+                            leaders and teams in improving performance and
+                            adoption.
+                          </p>
+                          <p>
+                            Aligned to key capability areas these tips help
+                            address friction, build consistency, and sustain
+                            progress across the organization.
+                          </p>
                         </Tooltip>
                       </div>
                     </div>
@@ -1288,175 +1574,59 @@ const ManagerReport = () => {
                 </ul>
                 <div></div>
               </div>
-            </div>
-            {/*  */}
-            <div className="mt-8 border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-              <div className="flex items-center justify-between ">
-                <div>
-                  <div className="flex gap-2">
-                    <h3 className="sm:text-xl text-lg font-bold capitalize">
-                      Talent By Design Recommended Offering
-                    </h3>
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        // className="text-[var(--primary-color)]"
-                        id="tbdOffering"
-                      >
-                        <Icon icon="ci:info" width="20" height="20" />
-                      </button>
-                      <Tooltip
-                        className="text-center sm:max-w-md max-w-72 !text-xs"
-                        anchorSelect="#tbdOffering"
-                      >
-                        <p>No Data Found.</p>
-                      </Tooltip>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <img src={Healthicons} alt="images" />
-                </div>
-              </div>
-              <ul className="mt-4 space-y-2">
-                {displayRecommendations.map((rec: string, idx: number) => (
-                  <li key={idx} className="feature-list flex gap-2">
-                    <img
-                      src={IconStar}
-                      alt="icon"
-                      className="mt-1 w-4 h-4 shrink-0"
-                    />
-                    <span className="text-sm text-[var(--secondary-color)] font-normal">
-                      {rec}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div></div>
-            </div>
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                <div className="flex items-center justify-between  ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold capitalize">
-                        Manager VS Team Gap
-                      </h3>
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="teamGap"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
-                          anchorSelect="#teamGap"
-                        >
-                          <p>No Data Found.</p>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(0)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
-                    />
-                    <span className="text-xs text-[#474747]">Manager</span>
-                  </div>
-                  {(teamAvgData?.employeeCount > 0 || true) && (
-                    <div
-                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-                      onClick={() => toggleHiddenIndex(1)}
-                    >
-                      <span
-                        className="w-5 h-2 rounded-sm inline-block"
-                        style={{ background: "rgba(46, 204, 113, 0.7)" }}
-                      />
-                      <span className="text-xs text-[#474747]">
-                        Employee ({teamAvgData?.employeeCount || 0})
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <RadarChart
-                    data={radarData}
-                    selectedLabel={selectedLabel}
-                    onLabelSelect={handleRadarChartSelection}
-                    datasetLabels={["Manager", "Employee"]}
-                    hiddenIndices={hiddenIndices}
-                  />
-                </div>
-              </div>
+
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
                     <div className="flex gap-2">
                       <h3 className="sm:text-xl text-lg font-bold capitalize">
-                        Delta Breakdown
+                        Recommended Development Programs
                       </h3>
                       <div className="flex items-center">
                         <button
                           type="button"
                           // className="text-[var(--primary-color)]"
-                          id="deltaBreakdown"
+                          id="tbdOffering"
                         >
                           <Icon icon="ci:info" width="20" height="20" />
                         </button>
                         <Tooltip
-                          className="text-center sm:max-w-md max-w-72 !text-xs"
-                          anchorSelect="#deltaBreakdown"
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#tbdOffering"
                         >
-                          <p>No Data Found.</p>
+                          <p>
+                            Highlights curated programs and resources aligned to
+                            your results. These offerings are designed to
+                            address key gaps and strengthen capabilities.
+                          </p>
                         </Tooltip>
                       </div>
                     </div>
-                    <p className="text-sm text-[#64748B] mt-1 mb-6 ">
-                      {userData?.firstName ||
-                        reportData?.user?.firstName ||
-                        "Manager"}
-                      :{" "}
-                      <span className="font-bold text-[#448CD2]">
-                        {(
-                          (radarData.manager.reduce((a, b) => a + b, 0) /
-                            (radarData.manager.length || 1)) *
-                          10
-                        ).toFixed(0)}
-                        %
-                      </span>{" "}
-                      Domain Avg vs Employee Avg:{" "}
-                      <span className="font-bold text-[#E74C3C]">
-                        {(
-                          (radarData.team.reduce((a, b) => a + b, 0) /
-                            (radarData.team.length || 1)) *
-                          10
-                        ).toFixed(0)}
-                        %
-                      </span>
-                    </p>
+                  </div>
+                  <div>
+                    <img src={Healthicons} alt="images" />
                   </div>
                 </div>
-                <div>
-                  <GapBarChart
-                    labels={radarData.labels}
-                    deltaScores={deltaScores}
-                    selectedLabel={selectedLabel}
-                    managerScores={radarData.manager}
-                    employeeScores={radarData.team}
-                  />
-                </div>
+                <ul className="mt-4 space-y-2">
+                  {displayRecommendations.map((rec: string, idx: number) => (
+                    <li key={idx} className="feature-list flex gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="mt-1 w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm text-[var(--secondary-color)] font-normal">
+                        {rec}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div></div>
               </div>
             </div>
+            {/*  */}
 
-            <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px]">
+            <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px] hidden">
               <div className="flex gap-2">
                 <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
                   Overall {selectedDomain} Domain Score —{" "}
@@ -1473,7 +1643,7 @@ const ManagerReport = () => {
                     <Icon icon="ci:info" width="20" height="20" />
                   </button>
                   <Tooltip
-                    className="text-center sm:max-w-md max-w-72 !text-xs"
+                    className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
                     anchorSelect="#overallScore"
                   >
                     <p>No Data Found.</p>
