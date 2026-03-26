@@ -99,6 +99,15 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 100,
+              right: 100,
+              top: 20,
+              bottom: 20
+            }
+          },
           scales: {
             r: {
               suggestedMin: 0,
@@ -108,9 +117,10 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
                 backdropColor: "transparent",
               },
               pointLabels: {
-                padding: 20,
+                padding: 10,
                 font: {
-                  size: 12,
+                  size: 10,
+                  weight: 'bold'
                 },
               },
               grid: {

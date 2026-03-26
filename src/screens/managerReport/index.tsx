@@ -48,6 +48,8 @@ const ManagerReport = () => {
 
   const [reportData, setReportData] = useState<any>(null);
   const [firstReportData, setFirstReportData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<"graph" | "gaps">("graph");
+  const [showAllGaps, setShowAllGaps] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [hasNoReport, setHasNoReport] = useState(false);
@@ -448,7 +450,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -459,16 +461,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -525,6 +527,88 @@ const ManagerReport = () => {
   const deltaScores = radarData.team.map((t, i) =>
     Number((t - radarData.manager[i]).toFixed(1)),
   );
+
+  // 🆕 Perception Gap Highlights
+  const gapInsights = radarData.labels.map((label, i) => {
+    const mScore = radarData.manager[i];
+    const tScore = radarData.team[i];
+    const gapVal = Number((mScore - tScore).toFixed(1)); // Manager - Team
+    const absGap = Math.abs(gapVal);
+    const direction =
+      gapVal > 0 ? "Manager higher" : gapVal < 0 ? "Team higher" : "Aligned";
+
+    let severity: "Small" | "Medium" | "Large" = "Small";
+    if (absGap >= 2.0) severity = "Large";
+    else if (absGap >= 1.0) severity = "Medium";
+
+    const indicator =
+      severity === "Large"
+        ? "Action Required"
+        : severity === "Medium"
+          ? "Watch"
+          : "Informational";
+    const color =
+      severity === "Large"
+        ? "#E74C3C"
+        : severity === "Medium"
+          ? "#F39C12"
+          : "#3498DB";
+    const bgColor =
+      severity === "Large"
+        ? "#FDECEA"
+        : severity === "Medium"
+          ? "#FFF5E6"
+          : "#EBF5FB";
+
+    let insight = "";
+    if (gapVal > 0) {
+      insight = `${direction.split(" ")[0]}s perceive higher ${label.toLowerCase()} than employees, indicating potential disconnect in how it is experienced on the ground.`;
+      if (label.toLowerCase().includes("adaptability")) {
+        insight =
+          "Managers perceive higher adaptability than employees, indicating potential disconnect in how change is experienced on the ground.";
+      }
+    } else if (gapVal < 0) {
+      insight = `Employees perceive higher ${label.toLowerCase()} than managers, suggesting managers may be underestimating team strengths in this area.`;
+    } else {
+      insight = `Managers and employees are perfectly aligned on ${label.toLowerCase()}.`;
+    }
+
+    return {
+      label,
+      gapVal,
+      absGap,
+      direction,
+      indicator,
+      color,
+      bgColor,
+      insight,
+      severity,
+      teamScore: tScore,
+      managerScore: mScore,
+    };
+  });
+
+  const gapInsightsList = gapInsights.filter((g) => g.absGap > 0);
+  const topGapsShown = gapInsightsList.sort((a, b) => b.absGap - a.absGap).slice(0, 3);
+  const otherGaps = gapInsightsList.sort((a, b) => b.absGap - a.absGap).slice(3);
+
+  const getDimensionIcon = (label: string) => {
+    const l = label.toLowerCase();
+    if (l.includes("mindset") || l.includes("adaptability"))
+      return "solar:re-order-line-duotone";
+    if (l.includes("relational") || l.includes("emotional"))
+      return "solar:heart-bold-duotone";
+    if (l.includes("psychological") || l.includes("health"))
+      return "solar:shield-check-bold-duotone";
+    if (l.includes("people") || l.includes("potential"))
+      return "solar:users-group-rounded-bold-duotone";
+    if (l.includes("operational") || l.includes("steadiness"))
+      return "solar:settings-bold-duotone";
+    if (l.includes("digital") || l.includes("fluency"))
+      return "solar:monitor-bold-duotone";
+    if (l.includes("leadership")) return "solar:star-bold-duotone";
+    return "solar:widget-bold-duotone";
+  };
 
   return (
     <div>
@@ -619,7 +703,7 @@ const ManagerReport = () => {
               placeholder="Select Department"
               options={[
                 { value: "", label: "All Departments" },
-                ...depts.map((d) => ({ value: d, label: d })),
+                ...[...depts].sort().map((d) => ({ value: d, label: d })),
               ]}
               value={
                 [
@@ -647,9 +731,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -765,16 +849,124 @@ const ManagerReport = () => {
                     </div>
                   )}
                 </div>
-                <div>
-                  <RadarChart
-                    data={radarData}
-                    selectedLabel={selectedLabel}
-                    onLabelSelect={handleRadarChartSelection}
-                    datasetLabels={["Manager", "Employee"]}
-                    hiddenIndices={hiddenIndices}
-                  />
+                {/* 🆕 Premium Tab Switcher */}
+                <div className="flex justify-center mb-8">
+                  <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
+                    <button
+                      onClick={() => setActiveTab("graph")}
+                      className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "graph" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
+                    >
+                      Radar View
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("gaps")}
+                      className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeTab === "gaps" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
+                    >
+                      Gap Insights
+                    </button>
+                  </div>
                 </div>
+
+                <div className="transition-all duration-500 overflow-visible">
+                  {activeTab === "graph" ? (
+                    <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
+                       <RadarChart
+                          data={radarData}
+                          selectedLabel={selectedLabel}
+                          onLabelSelect={handleRadarChartSelection}
+                          datasetLabels={["Manager", "Employee"]}
+                          hiddenIndices={hiddenIndices}
+                        />
+                    </div>
+                  ) : (
+                    <div className="py-4 space-y-10">
+                      <div className="flex flex-col items-center mb-6 text-center">
+                      </div>
+
+                    <div className="flex flex-col gap-8 max-w-5xl mx-auto py-10">
+                      {(showAllGaps ? gapInsightsList : topGapsShown).map((gap, idx) => (
+                        <div key={idx} className="relative overflow-hidden bg-white border border-[#448CD2]/10 rounded-[20px] shadow-sm transition-all hover:shadow-md">
+                           {/* Severity Strip */}
+                           <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: gap.color }}></div>
+
+                           <div className="p-8 pl-12">
+                              <div className="flex items-center gap-4 mb-10">
+                                 <div className="w-10 h-10 rounded-xl bg-[#EDF5FD] flex items-center justify-center text-[#448CD2]">
+                                    <Icon icon={getDimensionIcon(gap.label)} width="20" />
+                                 </div>
+                                 <h5 className="text-base font-black text-[#1A3652] uppercase tracking-wider">{gap.label}</h5>
+                              </div>
+
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-10">
+                                 {/* Team Progress */}
+                                 <div className="flex flex-col gap-3">
+                                    <div className="flex items-center justify-between">
+                                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Team Alignment</span>
+                                       <span className="text-sm font-black text-[#2ECC71]">{(gap.teamScore * 10).toFixed(0)}%</span>
+                                    </div>
+                                    <div className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden">
+                                       <div 
+                                          className="h-full bg-gradient-to-r from-[#2ECC7180] to-[#2ECC71] rounded-full transition-all duration-1000"
+                                          style={{ width: `${gap.teamScore * 10}%` }}
+                                       ></div>
+                                    </div>
+                                 </div>
+
+                                 {/* Manager Progress */}
+                                 <div className="flex flex-col gap-3">
+                                    <div className="flex items-center justify-between">
+                                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Manager Perception</span>
+                                       <span className="text-sm font-black text-[#4A90E2]">{(gap.managerScore * 10).toFixed(0)}%</span>
+                                    </div>
+                                    <div className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden">
+                                       <div 
+                                          className="h-full bg-gradient-to-r from-[#4A90E280] to-[#4A90E2] rounded-full transition-all duration-1000"
+                                          style={{ width: `${gap.managerScore * 10}%` }}
+                                       ></div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                 <div className="flex-1 max-w-2xl">
+                                    <p className="text-[13px] text-[#1A3652]/70 font-bold italic leading-relaxed border-l-2 border-slate-100 pl-6">
+                                       “{gap.insight}”
+                                    </p>
+                                 </div>
+                                 <div className="flex flex-col items-end gap-1.5">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-lg text-white shadow-sm" style={{ backgroundColor: gap.color }}>
+                                       {gap.indicator} — Priority
+                                    </span>
+                                    <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">
+                                       {gap.absGap} pt deviation
+                                    </span>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                      ))}
+
+                      {otherGaps.length > 0 && !showAllGaps && (
+                         <button
+                            onClick={() => setShowAllGaps(true)}
+                            className="flex items-center justify-center gap-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-[#448CD2] transition-colors bg-white rounded-2xl border border-dashed border-slate-200"
+                         >
+                            <Icon icon="solar:double-alt-arrow-down-bold" />
+                            Expand {otherGaps.length} more Alignment Insights
+                         </button>
+                      )}
+
+                      {gapInsightsList.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-20 bg-white border border-dashed border-[#448CD210] rounded-2xl gap-4">
+                           <Icon icon="solar:star-fall-bold-duotone" width="40" className="text-[#30AD43]/30" />
+                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center">Perfect Synchronization Complete</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
+            </div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1110,9 +1302,9 @@ const ManagerReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
