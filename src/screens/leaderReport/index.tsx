@@ -615,7 +615,7 @@ const LeaderReport = () => {
       status: "Amber",
       color: "#D97706",
       bg: "#FFFBEB",
-      icon: "solar:eye-broken-bold-duotone",
+      icon: "fluent:eye-lines-20-regular",
       gap: gap,
       largestRole,
       lowestRole,
@@ -1814,8 +1814,8 @@ const LeaderReport = () => {
                     <RoleProgressChart data={roleAverages} />
                   </div>
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> {alignmentInfo.largestRole} VS{" "}
-                    {alignmentInfo.lowestRole} (+{alignmentInfo.gap})
+                    <b className="">Largest Gap:</b> {alignmentInfo.largestRole}{" "}
+                    VS {alignmentInfo.lowestRole} (+{alignmentInfo.gap})
                   </p>
                   <div className="sm:mt-8 mt-6">
                     <button
