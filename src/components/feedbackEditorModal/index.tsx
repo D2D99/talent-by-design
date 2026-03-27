@@ -186,7 +186,15 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 Edit Feedback: {subdomain || domain}
               </h5>
               <p className="text-sm text-gray-500 mt-1">
-                Press Enter to automatically add a bullet (•)
+                Press{" "}
+                <span className="bg-neutral-200/55 text-xs px-1 py-0.5 rounded font-medium capitalize text-red-500">
+                  space
+                </span>{" "}
+                and then{" "}
+                <span className="bg-neutral-200/55 text-xs px-1 py-0.5 rounded font-medium capitalize text-red-500">
+                  Enter
+                </span>{" "}
+                to automatically add a bullet (•)
               </p>
             </div>
             <button
@@ -201,11 +209,15 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
           <div className="relative pb-8 pt-2 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll space-y-4">
             <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
-                Pod 360 Model Items
+              <label
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                htmlFor="pod360-model"
+              >
+                Pod 360 Model
               </label>
               <textarea
                 value={modelDescription}
+                id="pod360-model"
                 onChange={(e) => setModelDescription(e.target.value)}
                 onKeyDown={(e) =>
                   handleKeyDown(e, setModelDescription, modelDescription, true)
@@ -217,21 +229,28 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </div>
 
             <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
-                Insight for Domain
+              <label
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                htmlFor="insightDomains"
+              >
+                Insight for {subdomain || domain}
               </label>
               <textarea
                 value={insight}
                 onChange={(e) => setInsight(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, setInsight, insight, true)}
                 rows={4}
+                id="insightDomains"
                 className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Enter insights here..."
               />
             </div>
 
             <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
+              <label
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                htmlFor="coachingTips"
+              >
                 Coaching Tips
               </label>
               <textarea
@@ -240,6 +259,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 onKeyDown={(e) =>
                   handleKeyDown(e, setCoachingTips, coachingTips, true)
                 }
+                id="coachingTips"
                 rows={4}
                 className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Enter objectives/tips here..."
@@ -273,7 +293,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </div> */}
 
             <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
+              <label
+                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                htmlFor="developmentPrograms"
+              >
                 Recommended Development Programs
               </label>
               <textarea
@@ -288,6 +311,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                   )
                 }
                 rows={4}
+                id="developmentPrograms"
                 className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Enter recommendations here..."
               />

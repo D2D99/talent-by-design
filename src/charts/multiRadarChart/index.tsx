@@ -1,9 +1,25 @@
 import { useEffect, useRef } from "react";
 import { Chart } from "chart.js";
-import { RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler } from "chart.js";
+import {
+  RadarController,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
 
 // Register necessary Chart.js components
-Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
+Chart.register(
+  RadarController,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface MultiRadarChartProps {
   data: {
@@ -18,7 +34,12 @@ interface MultiRadarChartProps {
   hiddenIndices?: number[];
 }
 
-const MultiRadarChart = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [] }: MultiRadarChartProps) => {
+const MultiRadarChart = ({
+  data,
+  onLabelSelect,
+  datasetLabels,
+  hiddenIndices = [],
+}: MultiRadarChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<any>(null);
 
@@ -72,23 +93,36 @@ const MultiRadarChart = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [
               borderDash: [5, 5], // Dashed border lines
               hidden: hiddenIndices.includes(2),
             },
-            ...(data.admin && data.admin.length > 0 ? [{
-              label: datasetLabels?.[3] || "Admin",
-              data: data.admin,
-              backgroundColor: "transparent",
-              borderColor: "#9B59B6",
-              borderWidth: 2,
-              pointBackgroundColor: "#9B59B6",
-              pointRadius: 3,
-              pointHoverRadius: 5,
-              fill: "origin",
-              borderDash: [5, 5], // Dashed border lines
-              hidden: hiddenIndices.includes(3),
-            }] : []),
+            ...(data.admin && data.admin.length > 0
+              ? [
+                  {
+                    label: datasetLabels?.[3] || "Admin",
+                    data: data.admin,
+                    backgroundColor: "transparent",
+                    borderColor: "#9B59B6",
+                    borderWidth: 2,
+                    pointBackgroundColor: "#9B59B6",
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    fill: "origin",
+                    borderDash: [5, 5], // Dashed border lines
+                    hidden: hiddenIndices.includes(3),
+                  },
+                ]
+              : []),
           ],
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 60,
+              right: 60,
+              top: 40,
+              bottom: 40,
+            },
+          },
           scales: {
             r: {
               suggestedMin: 0,
@@ -98,9 +132,17 @@ const MultiRadarChart = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [
                 backdropColor: "transparent",
               },
               pointLabels: {
-                padding: 20,
+                padding: 15,
                 font: {
-                  size: 12,
+                  size: 11,
+                  weight: "bold",
+                },
+                callback: (label: string) => {
+                  if (!label) return "";
+                  const words = label.split(/[\s&/_-]+/);
+                  return words
+                    .map((w) => w.charAt(0).toUpperCase())
+                    .join("");
                 },
               },
               grid: {
@@ -117,8 +159,17 @@ const MultiRadarChart = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [
             legend: {
               display: false,
             },
+            tooltip: {
+              enabled: true,
+              mode: "nearest",
+              intersect: false,
+              callbacks: {
+                title: (tooltipItems) => {
+                  return tooltipItems[0].label; // Full label from data.labels
+                },
+              },
+            },
           },
-          events: ["click"],
         },
       });
 
@@ -140,7 +191,7 @@ const MultiRadarChart = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [
         }
       };
 
-      canvasRef.current.addEventListener("click", clickHandler);
+      canvasRef.current?.addEventListener("click", clickHandler);
 
       return () => {
         if (chartRef.current) {

@@ -92,7 +92,25 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selected
         options: {
           indexAxis: "y",
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
+            y: {
+              ticks: {
+                callback: function (value) {
+                  const label = this.getLabelForValue(value as number);
+                  if (!label) return "";
+                  // Get acronym for multiple words
+                  const words = (label as string).split(/[\s&/_-]+/);
+                  return words
+                    .map((w) => w.charAt(0).toUpperCase())
+                    .join("");
+                },
+                font: {
+                  size: 14,
+                  weight: "bold",
+                },
+              },
+            },
             x: {
               min: -10,
               max: 10,
@@ -110,7 +128,21 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selected
               display: false,
             },
             tooltip: {
-              enabled: false, // Disable tooltips as per original requirement
+              enabled: true,
+              backgroundColor: "#2E3B4E",
+              titleColor: "#ffffff",
+              bodyColor: "#ffffff",
+              padding: 10,
+              displayColors: false,
+              callbacks: {
+                title: (tooltipItems) => {
+                  return tooltipItems[0].label; // Full name from data.labels
+                },
+                label: (tooltipItem) => {
+                  const val = tooltipItem.raw as number;
+                  return `Gap: ${val > 0 ? "+" : ""}${val} pts`;
+                },
+              },
             },
           },
         },
@@ -140,7 +172,7 @@ const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selected
         chart.update(); // Update chart with the new highlight
       }
     }
-  }, [selectedLabel]);
+  }, [selectedLabel, labels]);
 
   return <canvas ref={canvasRef} />;
 };

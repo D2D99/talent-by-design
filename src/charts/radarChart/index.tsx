@@ -102,10 +102,10 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
           maintainAspectRatio: false,
           layout: {
             padding: {
-              left: 100,
-              right: 100,
-              top: 20,
-              bottom: 20
+              left: 60, // Increased from 30 to give labels more room
+              right: 60,
+              top: 40,
+              bottom: 40,
             }
           },
           scales: {
@@ -117,16 +117,24 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
                 backdropColor: "transparent",
               },
               pointLabels: {
-                padding: 10,
+                padding: 15, // Increased padding
                 font: {
-                  size: 10,
-                  weight: 'bold'
+                  size: 11,
+                  weight: "bold",
+                },
+                callback: (label: string) => {
+                  if (!label) return "";
+                  // Get first letter of each word (completed sentence)
+                  const words = label.split(/[\s&/_-]+/);
+                  return words
+                    .map((w) => w.charAt(0).toUpperCase())
+                    .join("");
                 },
               },
               grid: {
                 circular: true, // Enable circular grid
                 lineWidth: 1,
-                color: "#CFCFCF"
+                color: "#CFCFCF",
               },
               angleLines: {
                 color: "#CFCFCF",
@@ -136,10 +144,19 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
           plugins: {
             legend: {
               position: "top",
-              display: false
+              display: false,
+            },
+            tooltip: {
+              enabled: true,
+              mode: "nearest", // Changed from index to nearest for better precision
+              intersect: false, 
+              callbacks: {
+                title: (tooltipItems) => {
+                  return tooltipItems[0].label; // Full label from data.labels
+                },
+              },
             },
           },
-          events: ["click"], // Allow clicks on points
         },
       });
 

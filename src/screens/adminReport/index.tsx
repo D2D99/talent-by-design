@@ -531,11 +531,30 @@ const AdminReport = () => {
   })();
 
   const alignmentInfo = (() => {
-    const leaderVal =
-      roleAverages.find((r) => r.label.includes("SENIOR LEADER"))?.value || 0;
-    const employeeVal =
-      roleAverages.find((r) => r.label.includes("EMPLOYEE"))?.value || 0;
-    const gap = Math.abs(leaderVal - employeeVal);
+    const values = roleAverages.map((r) => r.value).filter((v) => v !== 0);
+    if (values.length === 0)
+      return {
+        label: "No Data",
+        status: "Gray",
+        color: "#ccc",
+        bg: "#eee",
+        gap: 0,
+        icon: "solar:info-circle-bold-duotone",
+        coachText: "Insufficient data to calculate alignment.",
+        largestRole: "N/A",
+        lowestRole: "N/A",
+      };
+
+    const maxVal = Math.max(...values);
+    const minVal = Math.min(...values);
+    const gap = maxVal - minVal;
+
+    const largestRole =
+      roleAverages.find((r) => r.value === maxVal)?.label?.split(" (")[0] ||
+      "N/A";
+    const lowestRole =
+      roleAverages.find((r) => r.value === minVal)?.label?.split(" (")[0] ||
+      "N/A";
 
     if (gap > 15) {
       return {
@@ -545,6 +564,8 @@ const AdminReport = () => {
         bg: "#FFEBEB",
         icon: "solar:shield-warning-bold-duotone",
         gap: gap,
+        largestRole,
+        lowestRole,
         coachText:
           "High variance detected (> 15%). This indicates Hidden Risk; leadership perception may be disconnected from employee experience.",
       };
@@ -558,6 +579,8 @@ const AdminReport = () => {
         bg: "#F0FDF4",
         icon: "solar:check-circle-bold-duotone",
         gap: gap,
+        largestRole,
+        lowestRole,
         coachText:
           "Low variance detected. The organization is moving with Aligned Execution.",
       };
@@ -570,6 +593,8 @@ const AdminReport = () => {
       bg: "#FFFBEB",
       icon: "solar:eye-broken-bold-duotone",
       gap: gap,
+      largestRole,
+      lowestRole,
       coachText:
         "Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.",
     };
@@ -1074,7 +1099,7 @@ const AdminReport = () => {
                     </span>
                   </div>
                 </div>
-                <div>
+                <div className="relative w-full min-h-[450px]">
                   <MultiRadarChart
                     data={radarData}
                     onLabelSelect={handleDomainChange}

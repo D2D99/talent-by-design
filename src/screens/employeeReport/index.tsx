@@ -862,7 +862,7 @@ const EmployeeReport = () => {
                     </div>
                   </div>
                   <div className="flex-1 flex flex-col items-center justify-center py-4 w-full gap-6">
-                    <div className="max-w-[240px]">
+                    <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
                       <Triangle data={triangleData} />
                     </div>
                     <div className="grid grid-cols-1 gap-3 w-full px-4">
@@ -981,7 +981,7 @@ const EmployeeReport = () => {
                       <img
                         src={IconStar}
                         alt="icon"
-                        className="w-4 h-4 mt-1 shrink-0"
+                        className="w-4 h-4 mt-0.5 shrink-0"
                       />
                       <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
                         {insight}
@@ -1100,7 +1100,7 @@ const EmployeeReport = () => {
                         "Develop essential leadership and EI skills"}
                     </p>
                   </div>
-                  <img src={StreamlinePlump} alt="images" />
+                  <img src={StreamlinePlump} alt="images" className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
                   {displayKRs.map((kr: any, idx: number) => (
@@ -1110,7 +1110,7 @@ const EmployeeReport = () => {
                           <img
                             src={IconStar}
                             alt="icon"
-                            className="w-4 h-4 mt-1 shrink-0"
+                            className="w-4 h-4 mt-0.5 shrink-0"
                           />
                           <span className="text-sm text-[#64748B] font-medium">
                             {kr.text}
@@ -1172,7 +1172,7 @@ const EmployeeReport = () => {
                       <img
                         src={IconStar}
                         alt="icon"
-                        className="w-4 h-4 mt-1 shrink-0"
+                        className="w-4 h-4 mt-0.5 shrink-0"
                       />
                       <span className="text-sm text-[#64748B] font-medium">
                         {rec}

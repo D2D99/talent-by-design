@@ -596,7 +596,6 @@ const ManagerReport = () => {
     .sort((a, b) => b.absGap - a.absGap)
     .slice(3);
 
-
   return (
     <div>
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
@@ -779,269 +778,6 @@ const ManagerReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
-                <div className="flex items-center justify-between  ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold capitalize">
-                        Manager VS Team Gap
-                      </h3>
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="teamGap"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#teamGap"
-                        >
-                          <p>
-                            Reveals differences between manager and employee
-                            experiences across key capabilities and identifies
-                            where perception gaps may be impacting alignment,
-                            trust, and effective execution at the team level.
-                          </p>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </div>
-                  {/* 🆕 Premium Tab Switcher */}
-                  {/* <div className="flex justify-center mb-8 p-4"> */}
-                  <div className="inline-flex bg-[var(--light-primary-color)] py-1 px-1.5 rounded-full border border-slate-200 shadow-inner">
-                    <button
-                      onClick={() => setActiveTab("graph")}
-                      className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "graph" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
-                    >
-                      Radar View
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("gaps")}
-                      className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "gaps" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
-                    >
-                      Gap Insights
-                    </button>
-                  </div>
-                  {/* </div> */}
-                </div>
-                <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(0)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
-                    />
-                    <span className="text-xs text-[#474747]">Manager</span>
-                  </div>
-                  {(teamAvgData?.employeeCount > 0 || true) && (
-                    <div
-                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-                      onClick={() => toggleHiddenIndex(1)}
-                    >
-                      <span
-                        className="w-5 h-2 rounded-sm inline-block"
-                        style={{ background: "rgba(46, 204, 113, 0.7)" }}
-                      />
-                      <span className="text-xs text-[#474747]">
-                        Employee ({teamAvgData?.employeeCount || 0})
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="transition-all duration-500 overflow-visible">
-                  {activeTab === "graph" ? (
-                    <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
-                      <RadarChart
-                        data={radarData}
-                        selectedLabel={selectedLabel}
-                        onLabelSelect={handleRadarChartSelection}
-                        datasetLabels={["Manager", "Employee"]}
-                        hiddenIndices={hiddenIndices}
-                      />
-                    </div>
-                  ) : (
-                    <div className="py-4 space-y-10">
-                      <div className="flex flex-col items-center mb-6 text-center"></div>
-
-                      <div className="flex flex-col gap-5 w-full max-w-3xl mx-auto pb-12">
-                        {(showAllGaps ? gapInsightsList : topGapsShown).map((gap, idx) => (
-                          <div
-                            key={idx}
-                            className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
-                          >
-                            <div className="p-6 flex flex-col w-full">
-                              {/* Header: Title & Severity & Gap */}
-                              <div className="flex items-center justify-between mb-6 border-b border-slate-50 pb-4">
-                                <div className="flex items-center gap-3">
-                                  <h5 className="text-[13px] font-black text-[#1A3652] uppercase tracking-[0.05em]">
-                                    {gap.label}
-                                  </h5>
-                                  <span 
-                                    className="text-[9px] font-black px-2 py-0.5 rounded text-white uppercase tracking-widest"
-                                    style={{ backgroundColor: gap.color }}
-                                  >
-                                    {gap.indicator} Priority
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    GAP:
-                                  </span>
-                                  <span
-                                    className="text-base font-black"
-                                    style={{ color: gap.color }}
-                                  >
-                                    {gap.absGap}pt
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Data Section: Compact Bars */}
-                              <div className="grid grid-cols-2 gap-8 mb-6">
-                                {/* Team */}
-                                <div className="space-y-2">
-                                  <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                    <span>Team Alignment</span>
-                                    <span className="text-[#2ECC71]">
-                                      {(gap.teamScore * 10).toFixed(0)}%
-                                    </span>
-                                  </div>
-                                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-[#2ECC71] rounded-full transition-all duration-1000"
-                                      style={{ width: `${gap.teamScore * 10}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-
-                                {/* Manager */}
-                                <div className="space-y-2">
-                                  <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                    <span>Manager View</span>
-                                    <span className="text-[#4A90E2]">
-                                      {(gap.managerScore * 10).toFixed(0)}%
-                                    </span>
-                                  </div>
-                                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-[#4A90E2] rounded-full transition-all duration-1000"
-                                      style={{ width: `${gap.managerScore * 10}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Insight: Simple Text */}
-                              <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                                <p className="text-[11px] text-[#1A3652]/80 font-semibold leading-relaxed">
-                                  {gap.insight}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-
-                        {otherGaps.length > 0 && !showAllGaps && (
-                          <button
-                            onClick={() => setShowAllGaps(true)}
-                            className="flex items-center justify-center gap-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-[#448CD2] transition-colors bg-white rounded-2xl border border-dashed border-slate-200"
-                          >
-                            <Icon icon="solar:double-alt-arrow-down-bold" />
-                            Expand {otherGaps.length} more Alignment Insights
-                          </button>
-                        )}
-
-                        {gapInsightsList.length === 0 && (
-                          <div className="flex flex-col items-center justify-center py-20 bg-white border border-dashed border-[#448CD210] rounded-2xl gap-4">
-                            <Icon
-                              icon="solar:star-fall-bold-duotone"
-                              width="40"
-                              className="text-[#30AD43]/30"
-                            />
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center">
-                              Perfect Synchronization Complete
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold capitalize">
-                        Delta Breakdown
-                      </h3>
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="deltaBreakdown"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#deltaBreakdown"
-                        >
-                          <p className="mb-2">
-                            Measures the difference between manager and employee
-                            experiences across key capability areas.
-                          </p>
-                          <p>
-                            Highlights where misalignment exists, how
-                            significant it is, and where it may be impacting
-                            execution, adoption, and overall performance.
-                          </p>
-                        </Tooltip>
-                      </div>
-                    </div>
-                    <p className="text-sm text-[#64748B] mt-1 mb-6 ">
-                      {userData?.firstName ||
-                        reportData?.user?.firstName ||
-                        "Manager"}
-                      :{" "}
-                      <span className="font-bold text-[#448CD2]">
-                        {(
-                          (radarData.manager.reduce((a, b) => a + b, 0) /
-                            (radarData.manager.length || 1)) *
-                          10
-                        ).toFixed(0)}
-                        %
-                      </span>{" "}
-                      Domain Avg vs Employee Avg:{" "}
-                      <span className="font-bold text-[#E74C3C]">
-                        {(
-                          (radarData.team.reduce((a, b) => a + b, 0) /
-                            (radarData.team.length || 1)) *
-                          10
-                        ).toFixed(0)}
-                        %
-                      </span>
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  <GapBarChart
-                    labels={radarData.labels}
-                    deltaScores={deltaScores}
-                    selectedLabel={selectedLabel}
-                    managerScores={radarData.manager}
-                    employeeScores={radarData.team}
-                  />
-                </div>
-              </div>
-            </div>
-
             <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
                 <div className="flex gap-2">
@@ -1295,7 +1031,7 @@ const ManagerReport = () => {
                   </div>
                 </div>
                 <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
-                  <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
                     <Triangle data={triangleData} />
                   </div>
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
@@ -1478,7 +1214,7 @@ const ManagerReport = () => {
                     </p>
                   </div>
                   <div>
-                    <img src={Streamline} alt="images" />
+                    <img src={Streamline} alt="images" className="w-8 h-8" />
                   </div>
                 </div>
                 <div>
@@ -1535,7 +1271,7 @@ const ManagerReport = () => {
                     </p>
                   </div>
                   <div>
-                    <img src={Hugeicons} alt="images" />
+                    <img src={Hugeicons} alt="images" className="w-8 h-8" />
                   </div>
                 </div>
                 <div className="space-y-6">
@@ -1569,7 +1305,7 @@ const ManagerReport = () => {
                 <div></div>
               </div>
             </div>
-            {/*  */}
+
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
               {/* <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center">
                 <div className="flex items-center justify-between w-full mb-2">
@@ -1608,7 +1344,7 @@ const ManagerReport = () => {
                   </div>
                 </div>
                 <div className="flex-1 flex flex-col px-2 items-start justify-start py-4 w-full gap-4">
-                  <div className="flex-1 max-w-[250px] flex items-center justify-center self-center">
+                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
                     <Triangle data={triangleData} />
                   </div>
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
@@ -1749,7 +1485,11 @@ const ManagerReport = () => {
                     </div>
                   </div>
                   <div>
-                    <img src={StreamlinePlump} alt="images" />
+                    <img
+                      src={StreamlinePlump}
+                      alt="images"
+                      className="w-8 h-8"
+                    />
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2">
@@ -1803,7 +1543,7 @@ const ManagerReport = () => {
                     </div>
                   </div>
                   <div>
-                    <img src={Healthicons} alt="images" />
+                    <img src={Healthicons} alt="images" className="w-8 h-8" />
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2">
@@ -1823,7 +1563,275 @@ const ManagerReport = () => {
                 <div></div>
               </div>
             </div>
-            {/*  */}
+
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px]">
+                <div className="flex items-center justify-between flex-wrap gap-y-5">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Manager VS Team Gap
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="teamGap"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#teamGap"
+                        >
+                          <p>
+                            Reveals differences between manager and employee
+                            experiences across key capabilities and identifies
+                            where perception gaps may be impacting alignment,
+                            trust, and effective execution at the team level.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  </div>
+                  {/* 🆕 Premium Tab Switcher */}
+                  {/* <div className="flex justify-center mb-8 p-4"> */}
+                  <div className="inline-flex bg-[var(--light-primary-color)] py-1 px-1.5 rounded-full border border-slate-200 shadow-inner">
+                    <button
+                      onClick={() => setActiveTab("graph")}
+                      className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "graph" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
+                    >
+                      Radar View
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("gaps")}
+                      className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "gaps" ? "bg-white text-[#448CD2] shadow-sm scale-105" : "text-slate-400 hover:text-slate-600"}`}
+                    >
+                      Gap Insights
+                    </button>
+                  </div>
+                  {/* </div> */}
+                </div>
+                <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">Manager</span>
+                  </div>
+                  {(teamAvgData?.employeeCount > 0 || true) && (
+                    <div
+                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                      onClick={() => toggleHiddenIndex(1)}
+                    >
+                      <span
+                        className="w-5 h-2 rounded-sm inline-block"
+                        style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                      />
+                      <span className="text-xs text-[#474747]">
+                        Employee ({teamAvgData?.employeeCount || 0})
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="transition-all duration-500 overflow-visible">
+                  {activeTab === "graph" ? (
+                    <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
+                      <RadarChart
+                        data={radarData}
+                        selectedLabel={selectedLabel}
+                        onLabelSelect={handleRadarChartSelection}
+                        datasetLabels={["Manager", "Employee"]}
+                        hiddenIndices={hiddenIndices}
+                      />
+                    </div>
+                  ) : (
+                    <div className="py-4 space-y-10">
+                      <div className="flex flex-col items-center mb-6 text-center"></div>
+
+                      <div className="flex flex-col gap-5 w-full max-w-3xl mx-auto pb-12">
+                        {(showAllGaps ? gapInsightsList : topGapsShown).map(
+                          (gap, idx) => (
+                            <div
+                              key={idx}
+                              className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
+                            >
+                              <div className="p-6 flex flex-col w-full">
+                                {/* Header: Title & Severity & Gap */}
+                                <div className="flex items-center justify-between mb-6 border-b border-slate-50 pb-4">
+                                  <div className="flex items-center gap-3">
+                                    <h5 className="text-[13px] font-black text-[#1A3652] uppercase tracking-[0.05em]">
+                                      {gap.label}
+                                    </h5>
+                                    <span
+                                      className="text-[9px] font-black px-2 py-0.5 rounded text-white uppercase tracking-widest"
+                                      style={{ backgroundColor: gap.color }}
+                                    >
+                                      {gap.indicator} Priority
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                      GAP:
+                                    </span>
+                                    <span
+                                      className="text-base font-black"
+                                      style={{ color: gap.color }}
+                                    >
+                                      {gap.absGap}pt
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Data Section: Compact Bars */}
+                                <div className="grid grid-cols-2 gap-8 mb-6">
+                                  {/* Team */}
+                                  <div className="space-y-2">
+                                    <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                      <span>Team Alignment</span>
+                                      <span className="text-[#2ECC71]">
+                                        {(gap.teamScore * 10).toFixed(0)}%
+                                      </span>
+                                    </div>
+                                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-[#2ECC71] rounded-full transition-all duration-1000"
+                                        style={{
+                                          width: `${gap.teamScore * 10}%`,
+                                        }}
+                                      ></div>
+                                    </div>
+                                  </div>
+
+                                  {/* Manager */}
+                                  <div className="space-y-2">
+                                    <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                      <span>Manager View</span>
+                                      <span className="text-[#4A90E2]">
+                                        {(gap.managerScore * 10).toFixed(0)}%
+                                      </span>
+                                    </div>
+                                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-[#4A90E2] rounded-full transition-all duration-1000"
+                                        style={{
+                                          width: `${gap.managerScore * 10}%`,
+                                        }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Insight: Simple Text */}
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                  <p className="text-[11px] text-[#1A3652]/80 font-semibold leading-relaxed">
+                                    {gap.insight}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ),
+                        )}
+
+                        {otherGaps.length > 0 && !showAllGaps && (
+                          <button
+                            onClick={() => setShowAllGaps(true)}
+                            className="flex items-center justify-center gap-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-[#448CD2] transition-colors bg-white rounded-2xl border border-dashed border-slate-200"
+                          >
+                            <Icon icon="solar:double-alt-arrow-down-bold" />
+                            Expand {otherGaps.length} more Alignment Insights
+                          </button>
+                        )}
+
+                        {gapInsightsList.length === 0 && (
+                          <div className="flex flex-col items-center justify-center py-20 bg-white border border-dashed border-[#448CD210] rounded-2xl gap-4">
+                            <Icon
+                              icon="solar:star-fall-bold-duotone"
+                              width="40"
+                              className="text-[#30AD43]/30"
+                            />
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center">
+                              Perfect Synchronization Complete
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Delta Breakdown
+                      </h3>
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          // className="text-[var(--primary-color)]"
+                          id="deltaBreakdown"
+                        >
+                          <Icon icon="ci:info" width="20" height="20" />
+                        </button>
+                        <Tooltip
+                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
+                          anchorSelect="#deltaBreakdown"
+                        >
+                          <p className="mb-2">
+                            Measures the difference between manager and employee
+                            experiences across key capability areas.
+                          </p>
+                          <p>
+                            Highlights where misalignment exists, how
+                            significant it is, and where it may be impacting
+                            execution, adoption, and overall performance.
+                          </p>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <p className="text-sm text-[#64748B] mt-1 mb-6 ">
+                      {userData?.firstName ||
+                        reportData?.user?.firstName ||
+                        "Manager"}
+                      :{" "}
+                      <span className="font-bold text-[#448CD2]">
+                        {(
+                          (radarData.manager.reduce((a, b) => a + b, 0) /
+                            (radarData.manager.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
+                      </span>{" "}
+                      Domain Avg vs Employee Avg:{" "}
+                      <span className="font-bold text-[#E74C3C]">
+                        {(
+                          (radarData.team.reduce((a, b) => a + b, 0) /
+                            (radarData.team.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                  <div className="relative w-full min-h-[450px]">
+                    <GapBarChart
+                      labels={radarData.labels}
+                      deltaScores={deltaScores}
+                      selectedLabel={selectedLabel}
+                      managerScores={radarData.manager}
+                      employeeScores={radarData.team}
+                    />
+                  </div>
+              </div>
+            </div>
 
             <div className="last-graph mt-8 bg-white p-6 border border-[#448CD2] border-opacity-20 rounded-[12px] hidden">
               <div className="flex gap-2">
