@@ -16,6 +16,7 @@ interface UserMember {
   createdAt: string;
   status: string;
   assessmentStatus?: string;
+  lastAssessmentId?: string | null;
 }
 
 interface OrgDetails {
@@ -43,6 +44,8 @@ const OrgAssessmentDetails = () => {
     key: keyof UserMember;
     direction: "asc" | "desc";
   } | null>(null);
+
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const fetchMembers = useCallback(async () => {
     setIsLoading(true);
@@ -152,6 +155,33 @@ const OrgAssessmentDetails = () => {
   const dueMembers = members.filter((m) => m.assessmentStatus === "Due").length;
   const completionRate =
     totalMembers > 0 ? Math.round((completedMembers / totalMembers) * 100) : 0;
+
+  const handleActionClick = (member: UserMember, type: "Report" | "Response") => {
+    setActiveDropdown(null);
+    if (type === "Report") {
+      const roleMapping: Record<string, string> = {
+        superAdmin: "org-head",
+        superadmin: "org-head",
+        super_admin: "org-head",
+        admin: "org-head",
+        "senior-leader": "senior-leader",
+        leader: "senior-leader",
+        manager: "manager",
+        employee: "employee",
+      };
+      const reportType = roleMapping[member.role.toLowerCase()] || "employee";
+      navigate(
+        `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`,
+      );
+    } else {
+      if (member.lastAssessmentId) {
+        const userName = `${member.firstName} ${member.lastName}`;
+        navigate(`/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`);
+      } else {
+        toast.info("No completed assessment found for this member.");
+      }
+    }
+  };
 
   return (
     <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start">
@@ -491,7 +521,7 @@ const OrgAssessmentDetails = () => {
               <th className="px-6 py-4 text-nowrap font-semibold">
                 Assessment Status
               </th>
-              <th className="px-6 py-4 text-center font-semibold">Report</th>
+              <th className="px-6 py-4 text-center font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -531,34 +561,44 @@ const OrgAssessmentDetails = () => {
                     <td className="px-6 py-4">
                       {renderAssessmentBadge(member.assessmentStatus)}
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-center relative">
                       {member.assessmentStatus === "Completed" ? (
-                        <button
-                          onClick={() => {
-                            const roleMapping: Record<string, string> = {
-                              superAdmin: "org-head",
-                              superadmin: "org-head",
-                              super_admin: "org-head",
-                              admin: "org-head",
-                              "senior-leader": "senior-leader",
-                              leader: "senior-leader",
-                              manager: "manager",
-                              employee: "employee",
-                            };
-                            const reportType =
-                              roleMapping[member.role.toLowerCase()] ||
-                              "employee";
-                            navigate(
-                              `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`,
-                            );
-                          }}
-                          className="text-gray-400 hover:text-[#448CD2] transition-colors"
-                          title="View Report"
-                        >
-                          <Icon icon="solar:eye-linear" width="18" />
-                        </button>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => setActiveDropdown(activeDropdown === member._id ? null : member._id)}
+                            className={`p-1.5 rounded-lg transition-all ${activeDropdown === member._id ? "bg-[#448CD2] text-white shadow-md" : "text-gray-400 hover:text-[#448CD2] hover:bg-gray-100"}`}
+                            title="Actions"
+                          >
+                            <Icon icon="solar:menu-dots-bold" width="20" />
+                          </button>
+
+                          {activeDropdown === member._id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-40"
+                                onClick={() => setActiveDropdown(null)}
+                              ></div>
+                              <div className="absolute right-6 top-12 w-48 bg-white border border-gray-100 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] z-50 p-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                <button
+                                  onClick={() => handleActionClick(member, "Report")}
+                                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[#448CD2] rounded-lg transition-colors"
+                                >
+                                  <Icon icon="solar:file-text-bold-duotone" width="18" />
+                                  <span>Report</span>
+                                </button>
+                                <button
+                                  onClick={() => handleActionClick(member, "Response")}
+                                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[#448CD2] rounded-lg transition-colors border-t border-gray-50 mt-1"
+                                >
+                                  <Icon icon="solar:checklist-minimalistic-bold-duotone" width="18" />
+                                  <span>Response</span>
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       ) : (
-                        <span className="text-gray-300">—</span>
+                        <span className="text-gray-300 italic text-xs">No Actions</span>
                       )}
                     </td>
                   </tr>

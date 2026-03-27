@@ -34,6 +34,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EmployeeReport from "./screens/employeeReport";
 import AdminReport from "./screens/adminReport";
+import UserResponseView from "./screens/userResponseView";
 // import { useTheme } from "./context/useTheme";
 
 function App() {
@@ -87,6 +88,10 @@ function App() {
             <Route path="assessment-history" element={<AssessmentHistory />} />
             <Route path="team-assessments" element={<AdminAssessments />} />
             <Route path="org-assessments" element={<SuperAdminStats />} />
+            <Route
+              path="user-responses/:assessmentId"
+              element={<UserResponseView />}
+            />
             <Route path="user-profile" element={<UserProfile />} />
 
             <Route path="settings" element={<AccountSetting />} />

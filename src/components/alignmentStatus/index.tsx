@@ -91,7 +91,7 @@ const RoleProgressChart = ({ data }: Props) => {
                     if (typeof value === 'number') {
                       // Increase the right shift for higher values
                       return value <= 20 ? 15 : 10; // Increase to move the percentage further right
-                    }
+                  }
                     return 4; // Default offset for invalid values
                   },
                   font: { size: 14, weight: 'bold' },

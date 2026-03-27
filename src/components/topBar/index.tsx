@@ -195,7 +195,12 @@ const TopBar = () => {
                   </Link>
                 </li>
                 {pathnames
-                  .filter((value) => value.toLowerCase() !== "dashboard")
+                  .filter((_) => _.toLowerCase() !== "dashboard")
+                  .filter((_, index, arr) => {
+                    // Hide the assessmentId/userId segment that follows user-responses
+                    if (index > 0 && arr[index - 1] === "user-responses") return false;
+                    return true;
+                  })
                   .map((value, index, filteredArray) => {
                     const last = index === filteredArray.length - 1;
                     const decodedValue = decodeURIComponent(value).replace(
@@ -225,7 +230,7 @@ const TopBar = () => {
                     } else if (
                       index > 0 &&
                       filteredArray[index - 1].toLowerCase() ===
-                        "org-assessments"
+                      "org-assessments"
                     ) {
                       displayValue = "Assessment Details";
                     } else if (value.toLowerCase() === "reports") {
@@ -333,11 +338,10 @@ const TopBar = () => {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${
-                      activeTab === tab
-                        ? "text-gray-900"
-                        : "text-gray-400 hover:text-gray-600"
-                    }`}
+                    className={`text-sm font-semibold transition-all duration-200 pb-1 relative ${activeTab === tab
+                      ? "text-gray-900"
+                      : "text-gray-400 hover:text-gray-600"
+                      }`}
                   >
                     {tab}
                     {tab === "All" && unreadCount > 0 && (
@@ -371,13 +375,12 @@ const TopBar = () => {
 
                         {/* Icon Avatar */}
                         <div
-                          className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${
-                            notif.type === "success"
-                              ? "bg-green-50 text-green-600"
-                              : notif.type === "error"
-                                ? "bg-red-50 text-red-600"
-                                : "bg-blue-50 text-[#448CD2]"
-                          }`}
+                          className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${notif.type === "success"
+                            ? "bg-green-50 text-green-600"
+                            : notif.type === "error"
+                              ? "bg-red-50 text-red-600"
+                              : "bg-blue-50 text-[#448CD2]"
+                            }`}
                         >
                           <Icon
                             icon={
