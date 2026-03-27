@@ -624,9 +624,7 @@ const OrgAssessmentDetails = () => {
                           )}
                         </div>
                       ) : (
-                        <span className="text-gray-300 italic text-xs">
-                          No Actions
-                        </span>
+                        <span className="text-gray-300 italic text-xs">⎯</span>
                       )}
                     </td>
                   </tr>

@@ -55,6 +55,7 @@ const UserResponseView = () => {
   const userName = queryParams.get("userName") || "Participant";
 
   const [responses, setResponses] = useState<ResponseData[]>([]);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [openSubdomains, setOpenSubdomains] = useState<string[]>([]);
 
@@ -75,8 +76,13 @@ const UserResponseView = () => {
   const fetchResponses = async () => {
     setLoading(true);
     try {
-      const res = await api.get<any>(`responses/${assessmentId}`);
-      const data = res.data;
+      const respRes = await api.get<any>(`responses/${assessmentId}`);
+      const questionsRes = await api.get<any>(`questions/all`);
+      
+      const qData = Array.isArray(questionsRes.data) ? questionsRes.data : questionsRes.data?.data || [];
+      setQuestions(qData);
+
+      const data = respRes.data;
       if (data && data.responses) {
         setResponses(data.responses);
         if (data.responses.length > 0) {
@@ -371,53 +377,63 @@ const UserResponseView = () => {
                                     {resp.questionStem}
                                   </p>
 
-                                  {/* DETAIL BLOCK (Ans, Insight, Comment) */}
-                                  <div className="mt-2.5 pl-0 space-y-3">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">
-                                        Ans:
-                                      </span>
-                                      <span
-                                        className={`text-xs font-bold px-2 py-0.5 rounded ${resp.value <= 2 ? "text-red-700 bg-red-50" : resp.value === 3 ? "text-amber-700 bg-amber-50" : "text-green-700 bg-green-50"}`}
-                                      >
-                                        {resp.selectedOption ||
-                                          resp.value ||
-                                          "0"}
-                                      </span>
-                                    </div>
+                                  {(() => {
+                                    const relatedQuestion = questions.find(q => q.questionStem === resp.questionStem);
+                                    let actualPrompt = resp.insightPrompt || relatedQuestion?.insightPrompt || "Why did you choose this score?";
+                                    
+                                    if (relatedQuestion?.questionType === "Forced-Choice") {
+                                      if (resp.selectedOption === relatedQuestion?.forcedChoice?.optionA?.label || resp.selectedOption === "A") {
+                                        actualPrompt = relatedQuestion.forcedChoice.optionA.insightPrompt;
+                                      } else if (resp.selectedOption === relatedQuestion?.forcedChoice?.optionB?.label || resp.selectedOption === "B") {
+                                        actualPrompt = relatedQuestion.forcedChoice.optionB.insightPrompt;
+                                      }
+                                    }
 
-                                    {/* Always show InsightPrompt ABOVE Comment if it exists or if comment exists (fallback) */}
-                                    {(resp.insightPrompt || resp.comment) && (
-                                      <div className="flex items-start gap-2">
-                                        <Icon
-                                          icon="fluent-mdl2:insights"
-                                          width="14"
-                                          height="14"
-                                          className="text-blue-300 mt-0.5 shrink-0"
-                                        />
-                                        <div className="flex flex-col">
-                                          <span className="text-[10px] font-bold capitalize text-blue-400 tracking-wide">
-                                            Strategic Insight
+                                    return (resp.insightPrompt || resp.comment || (relatedQuestion && actualPrompt)) && (
+                                      <div className="mt-2.5 pl-0 space-y-3">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">
+                                            Ans:
                                           </span>
-                                          <p className="text-xs font-semibold text-gray-700 leading-relaxed uppercase">
-                                            {resp.insightPrompt ||
-                                              "Why did you choose this score?"}
-                                          </p>
+                                          <span
+                                            className={`text-xs font-bold px-2 py-0.5 rounded ${resp.value <= 2 ? "text-red-700 bg-red-50" : resp.value === 3 ? "text-amber-700 bg-amber-50" : "text-green-700 bg-green-50"}`}
+                                          >
+                                            {resp.selectedOption ||
+                                              resp.value ||
+                                              "0"}
+                                          </span>
                                         </div>
-                                      </div>
-                                    )}
 
-                                    {resp.comment && (
-                                      <div className="flex items-start gap-2">
-                                        <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider mt-0.5">
-                                          Comment:
-                                        </span>
-                                        <p className="text-xs text-gray-600 italic font-medium leading-relaxed">
-                                          "{resp.comment}"
-                                        </p>
+                                        <div className="flex items-start gap-2">
+                                          <Icon
+                                            icon="fluent-mdl2:insights"
+                                            width="14"
+                                            height="14"
+                                            className="text-blue-300 mt-0.5 shrink-0"
+                                          />
+                                          <div className="flex flex-col">
+                                            <span className="text-[10px] font-bold capitalize text-blue-400 tracking-wide">
+                                              Strategic Insight
+                                            </span>
+                                            <p className="text-xs font-semibold text-gray-700 leading-relaxed uppercase">
+                                              {actualPrompt}
+                                            </p>
+                                          </div>
+                                        </div>
+
+                                        {resp.comment && (
+                                          <div className="flex items-start gap-2">
+                                            <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider mt-0.5">
+                                              Comment:
+                                            </span>
+                                            <p className="text-xs text-gray-600 italic font-medium leading-relaxed">
+                                              "{resp.comment}"
+                                            </p>
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
-                                  </div>
+                                    );
+                                  })()}
                                 </div>
                               </div>
 
