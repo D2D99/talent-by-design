@@ -227,7 +227,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </button>
           </div>
 
-          <div className="relative pb-8 pt-2 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll space-y-4">
+          <div className="relative pb-8 pt-2 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll scroll-thin space-y-4">
             <div>
               <label
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
@@ -320,7 +320,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                   className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
                   htmlFor="okrObjectives"
                 >
-                  Objectives and Key Results (OKR Items)
+                  Objectives and Key Results (OKRS)
                 </label>
                 <div className="flex items-center gap-2">
                   <label className="font-bold text-[var(--secondary-color)] text-xs text-gray-500">

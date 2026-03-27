@@ -39,7 +39,6 @@ const OrgAssessmentDetails = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [roleFilter] = useState<string[]>([]);
 
-
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;
     direction: "asc" | "desc";
@@ -156,7 +155,10 @@ const OrgAssessmentDetails = () => {
   const completionRate =
     totalMembers > 0 ? Math.round((completedMembers / totalMembers) * 100) : 0;
 
-  const handleActionClick = (member: UserMember, type: "Report" | "Response") => {
+  const handleActionClick = (
+    member: UserMember,
+    type: "Report" | "Response",
+  ) => {
     setActiveDropdown(null);
     if (type === "Report") {
       const roleMapping: Record<string, string> = {
@@ -176,7 +178,9 @@ const OrgAssessmentDetails = () => {
     } else {
       if (member.lastAssessmentId) {
         const userName = `${member.firstName} ${member.lastName}`;
-        navigate(`/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`);
+        navigate(
+          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`,
+        );
       } else {
         toast.info("No completed assessment found for this member.");
       }
@@ -565,11 +569,20 @@ const OrgAssessmentDetails = () => {
                       {member.assessmentStatus === "Completed" ? (
                         <div className="flex justify-center">
                           <button
-                            onClick={() => setActiveDropdown(activeDropdown === member._id ? null : member._id)}
-                            className={`p-1.5 rounded-lg transition-all ${activeDropdown === member._id ? "bg-[#448CD2] text-white shadow-md" : "text-gray-400 hover:text-[#448CD2] hover:bg-gray-100"}`}
-                            title="Actions"
+                            onClick={() =>
+                              setActiveDropdown(
+                                activeDropdown === member._id
+                                  ? null
+                                  : member._id,
+                              )
+                            }
+                            className={`p-1.5 rounded-full transition-all ${activeDropdown === member._id ? "bg-[#448CD2] text-white shadow-md" : "text-neutral-800 hover:bg-slate-100"}`}
                           >
-                            <Icon icon="solar:menu-dots-bold" width="20" />
+                            <Icon
+                              icon="solar:menu-dots-bold"
+                              width="16"
+                              className="rotate-90"
+                            />
                           </button>
 
                           {activeDropdown === member._id && (
@@ -578,19 +591,32 @@ const OrgAssessmentDetails = () => {
                                 className="fixed inset-0 z-40"
                                 onClick={() => setActiveDropdown(null)}
                               ></div>
-                              <div className="absolute right-6 top-12 w-48 bg-white border border-gray-100 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] z-50 p-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                              <div className="absolute right-12 top-12 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50  overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200  ring-1 ring-black/5">
                                 <button
-                                  onClick={() => handleActionClick(member, "Report")}
-                                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[#448CD2] rounded-lg transition-colors"
+                                  onClick={() =>
+                                    handleActionClick(member, "Report")
+                                  }
+                                  className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
                                 >
-                                  <Icon icon="solar:file-text-bold-duotone" width="18" />
+                                  <Icon
+                                    icon="hugeicons:analysis-text-link"
+                                    width="14"
+                                    height="14"
+                                  />
+
                                   <span>Report</span>
                                 </button>
                                 <button
-                                  onClick={() => handleActionClick(member, "Response")}
-                                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[#448CD2] rounded-lg transition-colors border-t border-gray-50 mt-1"
+                                  onClick={() =>
+                                    handleActionClick(member, "Response")
+                                  }
+                                  className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
                                 >
-                                  <Icon icon="solar:checklist-minimalistic-bold-duotone" width="18" />
+                                  <Icon
+                                    icon="mage:file-3"
+                                    width="14"
+                                    height="14"
+                                  />
                                   <span>Response</span>
                                 </button>
                               </div>
@@ -598,7 +624,9 @@ const OrgAssessmentDetails = () => {
                           )}
                         </div>
                       ) : (
-                        <span className="text-gray-300 italic text-xs">No Actions</span>
+                        <span className="text-gray-300 italic text-xs">
+                          No Actions
+                        </span>
                       )}
                     </td>
                   </tr>
