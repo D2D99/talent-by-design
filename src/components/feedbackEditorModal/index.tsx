@@ -18,8 +18,11 @@ interface FeedbackEditorModalProps {
     modelDescription?: string;
     pod360Title?: string;
     pod360Description?: string;
+    objectives?: string;
+    progressScore?: number;
   };
   onSuccess: () => void;
+  showFullFeedback?: boolean;
 }
 
 const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
@@ -31,6 +34,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
   userEmail,
   rawFeedback,
   onSuccess,
+  showFullFeedback = true,
 }) => {
   const [insight, setInsight] = useState("");
   const [coachingTips, setCoachingTips] = useState("");
@@ -38,6 +42,8 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
   const [modelDescription, setModelDescription] = useState("");
   const [pod360Title, setPod360Title] = useState("");
   const [pod360Description, setPod360Description] = useState("");
+  const [objectives, setObjectives] = useState("");
+  const [progressScore, setProgressScore] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const modalInstance = useRef<any>(null);
@@ -71,6 +77,8 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       setModelDescription(rawFeedback?.modelDescription || "");
       setPod360Title(rawFeedback?.pod360Title || "");
       setPod360Description(rawFeedback?.pod360Description || "");
+      setObjectives(rawFeedback?.objectives || "");
+      setProgressScore(rawFeedback?.progressScore || 0);
 
       if (modalInstance.current) {
         modalInstance.current.show();
@@ -122,9 +130,12 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
       setter(finalBefore + insertion + finalAfter);
 
+      const target = e.currentTarget;
       setTimeout(() => {
         const newPos = updatedCursorPos + insertion.length;
-        e.currentTarget.setSelectionRange(newPos, newPos);
+        if (target) {
+          target.setSelectionRange(newPos, newPos);
+        }
       }, 0);
     } else if (
       value === "" &&
@@ -141,25 +152,34 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
   const handleSave = async () => {
     setLoading(true);
+    const payload = {
+      domain,
+      subdomain,
+      userId,
+      email: userEmail,
+      insight,
+      coachingTips,
+      recommendedPrograms,
+      modelDescription,
+      pod360Title,
+      pod360Description,
+      objectives,
+      progressScore,
+    };
+    console.log("[FeedbackEditor] Saving payload:", payload);
     try {
-      await api.put("dashboard/detailed-insight", {
-        domain,
-        subdomain,
-        userId,
-        email: userEmail,
-        insight,
-        coachingTips,
-        recommendedPrograms,
-        modelDescription,
-        pod360Title,
-        pod360Description,
-      });
+      await api.put("dashboard/detailed-insight", payload);
       toast.success("Feedback updated successfully!");
       onSuccess();
       onClose();
-    } catch (error) {
-      console.error("Error updating feedback:", error);
-      toast.error("Failed to update feedback.");
+    } catch (error: any) {
+      console.error(
+        "[FeedbackEditor] Error updating feedback:",
+        error.response?.data || error.message,
+      );
+      toast.error(
+        error.response?.data?.message || "Failed to update feedback.",
+      );
     } finally {
       setLoading(false);
     }
@@ -246,25 +266,27 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               />
             </div>
 
-            <div>
-              <label
-                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                htmlFor="coachingTips"
-              >
-                Coaching Tips
-              </label>
-              <textarea
-                value={coachingTips}
-                onChange={(e) => setCoachingTips(e.target.value)}
-                onKeyDown={(e) =>
-                  handleKeyDown(e, setCoachingTips, coachingTips, true)
-                }
-                id="coachingTips"
-                rows={4}
-                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
-                placeholder="Enter objectives/tips here..."
-              />
-            </div>
+            {showFullFeedback && (
+              <div>
+                <label
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                  htmlFor="coachingTips"
+                >
+                  Coaching Tips
+                </label>
+                <textarea
+                  value={coachingTips}
+                  onChange={(e) => setCoachingTips(e.target.value)}
+                  onKeyDown={(e) =>
+                    handleKeyDown(e, setCoachingTips, coachingTips, true)
+                  }
+                  id="coachingTips"
+                  rows={4}
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
+                  placeholder="Enter objectives/tips here..."
+                />
+              </div>
+            )}
 
             {/* <div>
               <label className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer">
@@ -293,29 +315,66 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </div> */}
 
             <div>
-              <label
-                className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
-                htmlFor="developmentPrograms"
-              >
-                Recommended Development Programs
-              </label>
+              <div className="flex justify-between items-center px-1">
+                <label
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                  htmlFor="okrObjectives"
+                >
+                  Objectives and Key Results (OKR Items)
+                </label>
+                <div className="flex items-center gap-2">
+                  <label className="font-bold text-[var(--secondary-color)] text-xs text-gray-500">
+                    Set Progress %
+                  </label>
+                  <input
+                    type="number"
+                    value={progressScore}
+                    onChange={(e) => setProgressScore(Number(e.target.value))}
+                    className="w-20 p-1.5 text-xs border rounded-lg focus:border-[var(--primary-color)] outline-none bg-blue-50/30"
+                    min="0"
+                    max="100"
+                  />
+                </div>
+              </div>
               <textarea
-                value={recommendedPrograms}
-                onChange={(e) => setRecommendedPrograms(e.target.value)}
+                value={objectives}
+                onChange={(e) => setObjectives(e.target.value)}
                 onKeyDown={(e) =>
-                  handleKeyDown(
-                    e,
-                    setRecommendedPrograms,
-                    recommendedPrograms,
-                    true,
-                  )
+                  handleKeyDown(e, setObjectives, objectives, true)
                 }
                 rows={4}
-                id="developmentPrograms"
+                id="okrObjectives"
                 className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
-                placeholder="Enter recommendations here..."
+                placeholder="Enter OKR items here (each line will be a Key Result)..."
               />
             </div>
+
+            {showFullFeedback && (
+              <div>
+                <label
+                  className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                  htmlFor="developmentPrograms"
+                >
+                  Recommended Development Programs
+                </label>
+                <textarea
+                  value={recommendedPrograms}
+                  onChange={(e) => setRecommendedPrograms(e.target.value)}
+                  onKeyDown={(e) =>
+                    handleKeyDown(
+                      e,
+                      setRecommendedPrograms,
+                      recommendedPrograms,
+                      true,
+                    )
+                  }
+                  rows={4}
+                  id="developmentPrograms"
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
+                  placeholder="Enter recommendations here..."
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2 bg-white">

@@ -420,22 +420,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -471,7 +471,7 @@ const EmployeeReport = () => {
           </h3>
 
           <div className="flex items-center gap-3">
-            {isSuperAdmin && reportData && (
+            {(isSuperAdmin || isAdmin) && reportData && (
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
@@ -574,9 +574,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -991,13 +991,14 @@ const EmployeeReport = () => {
                 </ul>
               </div>
 
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
-                <div className="flex items-center justify-between mb-4">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between">
                   <div>
                     <div className="flex gap-2">
-                      <h3 className="text-xl font-bold capitalize">
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                         Objectives and Key Results
                       </h3>
+
                       <div className="flex items-center">
                         <button
                           type="button"
@@ -1021,40 +1022,42 @@ const EmployeeReport = () => {
                           </p>
                         </Tooltip>
                       </div>
-                    </div>
-                    <p className="text-xs text-[#64748B] font-medium">
+                    </div>{" "}
+                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
                       {detailedPods?.objectives?.subtitle ||
-                        "Develop essential leadership and EI skills"}
+                        "Cultivate high-trust, psychologically safe leadership"}
                     </p>
                   </div>
-                  <img src={Hugeicons} alt="images" className="w-8 h-8" />
-                </div>
-                <div className="space-y-5">
-                  {/* {displayKRs.map(( idx: number) => ( */}
-                  <div className="flex items-center gap-4">
-                    <div className="shrink-0">
-                      <CircularProgress
-                        value={100} //{kr.value}
-                        width={50}
-                        textColor="#1A3652"
-                        pathColor="#1A3652"
-                        trailColor="#E2E8F0"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#1A3652]">
-                        {/* {kr.label} */}
-                        Lorem ipsum dolor sit amet.
-                      </h4>
-                      <p className="text-xs text-[#64748B] font-medium">
-                        {/* {kr.text} */}
-                      </p>
-                    </div>
+
+                  <div>
+                    <img src={Hugeicons} alt="images" />
                   </div>
-                  {/* ))} */}
+                </div>
+                <div className="space-y-6">
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 mt-4">
+                      <div className="text-lg-progress">
+                        <CircularProgress
+                          value={kr.value}
+                          width={60}
+                          textColor="#36454F"
+                          pathColor="#1A3652"
+                          trailColor="#D9D9D9"
+                        />
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                          {kr.label}
+                        </h2>
+                        <p className="text-sm font-normal text-[var(--secondary-color)]">
+                          {kr.text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                   {displayKRs.length === 0 && (
-                    <p className="text-sm text-gray-400 italic">
-                      No specific key results available.
+                    <p className="text-sm text-gray-500 italic mt-6 font-medium">
+                      No strategic objectives have been defined for this area yet.
                     </p>
                   )}
                 </div>

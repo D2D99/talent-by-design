@@ -399,7 +399,7 @@ const LeaderReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -427,16 +427,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -695,7 +695,7 @@ const LeaderReport = () => {
           </h3>
 
           <div className="flex items-center gap-3">
-            {isSuperAdmin && reportData && (
+            {(isSuperAdmin || isAdmin) && reportData && (
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
@@ -725,7 +725,7 @@ const LeaderReport = () => {
               onClick={handleExportPDF}
               disabled={exportLoading}
               className="relative overflow-hidden z-0 text-[var(--white-color)] px-3.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              // style={{ backgroundColor: "#1a3652" }}
+            // style={{ backgroundColor: "#1a3652" }}
             >
               {exportLoading ? (
                 <Icon icon="eos-icons:loading" width="16" />
@@ -797,9 +797,9 @@ const LeaderReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -1124,9 +1124,9 @@ const LeaderReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1329,30 +1329,30 @@ const LeaderReport = () => {
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {/* {displayKRs.map((kr: any, idx: number) => ( */}
-                  <div className="flex items-center gap-3 mt-4">
-                    <div className="text-lg-progress">
-                      <CircularProgress
-                        value={100}
-                        width={60}
-                        textColor="#36454F"
-                        pathColor="#1A3652"
-                        trailColor="#D9D9D9"
-                      />
+                  {displayKRs.map((kr: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 mt-4">
+                      <div className="text-lg-progress">
+                        <CircularProgress
+                          value={kr.value}
+                          width={60}
+                          textColor="#36454F"
+                          pathColor="#1A3652"
+                          trailColor="#D9D9D9"
+                        />
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                          {kr.label}
+                        </h2>
+                        <p className="text-sm font-normal text-[var(--secondary-color)]">
+                          {kr.text}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                        kr1
-                      </h2>
-                      <p className="text-sm font-normal text-[var(--secondary-color)]">
-                        Lorem ipsum dolor sit amet.
-                      </p>
-                    </div>
-                  </div>
-                  {/* ))} */}
+                  ))}
                   {displayKRs.length === 0 && (
-                    <p className="text-sm text-gray-400 italic">
-                      Strategic key results are being generated.
+                    <p className="text-sm text-gray-500 italic mt-6 font-medium">
+                      No strategic objectives have been defined for this area yet.
                     </p>
                   )}
                 </div>
