@@ -102,6 +102,8 @@ const LeaderReport = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
+  const [isReportReleased, setIsReportReleased] = useState(false);
+  const [releasing, setReleasing] = useState(false);
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -246,6 +248,7 @@ const LeaderReport = () => {
       setFirstReportData(res.data.firstReport || res.data.report);
       setUserData(res.data.user);
       setAiInsight(res.data.aiInsight);
+      setIsReportReleased(res.data.isReleased || res.data.report?.isReleased || false);
       setHasNoReport(false);
     } catch (error: any) {
       console.error("Failed to fetch report:", error);
@@ -278,6 +281,20 @@ const LeaderReport = () => {
       toast.error("Failed to generate preview");
     } finally {
       setLoadingPreview(false);
+    }
+  };
+
+  const handleRelease = async () => {
+    try {
+      setReleasing(true);
+      const payload = { userId, email: userEmail };
+      const res = await api.put("/dashboard/release-report", payload);
+      setIsReportReleased(true);
+      toast.success(res.data.message || "Report released successfully!");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to release report.");
+    } finally {
+      setReleasing(false);
     }
   };
 
@@ -695,17 +712,48 @@ const LeaderReport = () => {
           </h3>
 
           <div className="flex items-center gap-3">
-            {(isSuperAdmin || isAdmin) && reportData && (
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                title="Edit AI Insights, Objectives, and Recommendations"
-              >
-                <Icon icon="lucide:pencil" width="16" />
-                {/* Edit Feedback */}
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {/* Release Section (Super Admin Only) */}
+              {isSuperAdmin && !isReportReleased && reportData && (
+                <button
+                  onClick={handleRelease}
+                  disabled={releasing}
+                  className="flex items-center gap-2 h-10 px-6 bg-[#448cd2] text-white font-black text-[11px] uppercase rounded-full relative overflow-hidden group transition-all duration-500 hover:shadow-[0_0_20px_rgba(68,140,210,0.6)] hover:scale-105 active:scale-95 disabled:opacity-50"
+                  style={{
+                    boxShadow: "0 0 10px rgba(68, 140, 210, 0.3)",
+                    letterSpacing: "0.5px"
+                  }}
+                >
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                  {releasing ? (
+                    <Icon icon="line-md:loading-loop" width="16" />
+                  ) : (
+                    <Icon icon="solar:star-bold-duotone" width="18" className="animate-pulse" />
+                  )}
+                  {releasing ? "Releasing..." : "Approve & Release"}
+                </button>
+              )}
+
+              {/* Status Badge */}
+              {isReportReleased && reportData && (
+                <span className="flex items-center gap-1.5 px-4 py-2 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                  <Icon icon="solar:check-circle-bold-duotone" width="14" />
+                  Released
+                </span>
+              )}
+
+              {/* Edit Feedback Button (SA or Admin viewing someone else) */}
+              {((isSuperAdmin) || (isAdmin && userId !== user?._id)) && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                  title="Edit AI Insights, Objectives, and Recommendations"
+                >
+                  <Icon icon="lucide:pencil" width="16" />
+                </button>
+              )}
+            </div>
 
             <button
               onClick={handlePreview}
@@ -720,20 +768,21 @@ const LeaderReport = () => {
               {loadingPreview ? "Loading..." : "Live Lab Preview"}
             </button>
 
-            <button
-              type="button"
-              onClick={handleExportPDF}
-              disabled={exportLoading}
-              className="relative overflow-hidden z-0 text-[var(--white-color)] px-3.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            // style={{ backgroundColor: "#1a3652" }}
-            >
-              {exportLoading ? (
-                <Icon icon="eos-icons:loading" width="16" />
-              ) : (
-                <Icon icon="pajamas:export" width="16" height="16" />
-              )}
-              {exportLoading ? "Exporting..." : "Export PDF Report"}
-            </button>
+            {(isSuperAdmin || isReportReleased) && (
+              <button
+                type="button"
+                onClick={handleExportPDF}
+                disabled={exportLoading}
+                className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                {exportLoading ? (
+                  <Icon icon="eos-icons:loading" width="16" />
+                ) : (
+                  <Icon icon="pajamas:export" width="16" height="16" />
+                )}
+                {exportLoading ? "Exporting..." : "Export PDF Report"}
+              </button>
+            )}
           </div>
         </div>
 

@@ -103,6 +103,8 @@ const AdminReport = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
+  const [isReportReleased, setIsReportReleased] = useState(false);
+  const [releasing, setReleasing] = useState(false);
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -232,12 +234,15 @@ const AdminReport = () => {
           url = `dashboard/admin?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
         } else if (userId) {
           url = `dashboard/admin?userId=${userId}`;
+        } else if (selectedOrg) {
+          url = `dashboard/admin?orgName=${encodeURIComponent(selectedOrg)}`;
         }
         const res = await api.get(url);
         setReportData(res.data.report);
         setFirstReportData(res.data.firstReport || res.data.report);
         setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
+        setIsReportReleased(res.data.isReleased || res.data.report?.isReleased || false);
         setHasNoReport(false);
       } catch (error: any) {
         console.error("Failed to fetch report:", error);
@@ -255,12 +260,13 @@ const AdminReport = () => {
   // 🆕 NEW: Fetch Org averages
   useEffect(() => {
     const fetchTeamAvg = async () => {
-      if (!userId && !userEmail) return;
+      if (!userId && !userEmail && !selectedOrg) return;
       try {
         let url = "dashboard/manager-team-avg";
         const params: string[] = ["includeSelf=true"];
         if (userId) params.push(`userId=${userId}`);
         if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
+        if (selectedOrg && !userId) params.push(`orgName=${encodeURIComponent(selectedOrg)}`);
         if (selectedRadarDept)
           params.push(`department=${encodeURIComponent(selectedRadarDept)}`);
         if (params.length) url += `?${params.join("&")}`;
@@ -297,12 +303,27 @@ const AdminReport = () => {
     }
   };
 
+  const handleRelease = async () => {
+    try {
+      setReleasing(true);
+      const payload = { userId, email: userEmail };
+      const res = await api.put("/dashboard/release-report", payload);
+      setIsReportReleased(true);
+      toast.success(res.data.message || "Report released successfully!");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to release report.");
+    } finally {
+      setReleasing(false);
+    }
+  };
+
   const handleExportPDF = async () => {
     try {
       setExportLoading(true);
       const params: any = {};
       if (userId) params.userId = userId;
       if (userEmail) params.email = userEmail;
+      if (selectedOrg && !userId) params.orgName = selectedOrg;
 
       const response = await api.get("/dashboard/export-pdf", {
         params,
@@ -674,44 +695,63 @@ const AdminReport = () => {
           </h3>
 
           <div className="flex items-center gap-3">
-            {((isSuperAdmin) || (isAdmin && userId !== user?._id)) && reportData && (
+            <div className="flex items-center gap-2">
+              {/* Release Section (Super Admin Only) */}
+              {isSuperAdmin && !isReportReleased && reportData && (
+                <button
+                  onClick={handleRelease}
+                  disabled={releasing}
+                  className="flex items-center gap-2 h-10 px-6 bg-[#448cd2] text-white font-black text-[11px] uppercase rounded-full relative overflow-hidden group transition-all duration-500 hover:shadow-[0_0_20px_rgba(68,140,210,0.6)] hover:scale-105 active:scale-95 disabled:opacity-50"
+                  style={{
+                    boxShadow: "0 0 10px rgba(68, 140, 210, 0.3)",
+                    letterSpacing: "1px"
+                  }}
+                >
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                  {releasing ? (
+                    <Icon icon="line-md:loading-loop" width="16" />
+                  ) : (
+                    <Icon icon="solar:rocket-bold-duotone" width="18" className="animate-pulse" />
+                  )}
+                  {releasing ? "Releasing..." : "Approve & Release"}
+                </button>
+              )}
+
+              {/* Status Badge (Public to Admins/SAs if released) */}
+              {isReportReleased && reportData && (
+                <span className="flex items-center gap-1.5 px-4 py-2 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                  <Icon icon="solar:check-circle-bold-duotone" width="14" />
+                  Released
+                </span>
+              )}
+
+              {/* Edit Feedback Button (Super Admin or Admin viewing someone else) */}
+              {((isSuperAdmin) || (isAdmin && userId !== user?._id)) && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                  title="Edit AI Insights, Objectives, and Recommendations"
+                >
+                  <Icon icon="lucide:pencil" width="16" />
+                </button>
+              )}
+            </div>
+
+            {(isSuperAdmin || isReportReleased) && (
               <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                title="Edit AI Insights, Objectives, and Recommendations"
+                onClick={handleExportPDF}
+                disabled={exportLoading}
+                className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
               >
-                <Icon icon="lucide:pencil" width="16" />
+                {exportLoading ? (
+                  <Icon icon="eos-icons:loading" width="16" />
+                ) : (
+                  <Icon icon="pajamas:export" width="16" height="16" />
+                )}
+                {exportLoading ? "Exporting..." : "Export PDF Report"}
               </button>
             )}
-
-            <button
-              onClick={handlePreview}
-              disabled={loadingPreview}
-              className=" hidden flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50"
-            >
-              {loadingPreview ? (
-                <Icon icon="line-md:loading-loop" width="16" />
-              ) : (
-                <Icon icon="solar:document-bold-duotone" width="18" />
-              )}
-              {loadingPreview ? "Loading..." : "Live Lab Preview"}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleExportPDF}
-              disabled={exportLoading}
-              className="relative overflow-hidden z-0 text-[var(--white-color)] px-3.5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            // style={{ backgroundColor: "#1a3652" }}
-            >
-              {exportLoading ? (
-                <Icon icon="eos-icons:loading" width="16" />
-              ) : (
-                <Icon icon="pajamas:export" width="16" height="16" />
-              )}
-              {exportLoading ? "Exporting..." : "Export PDF Report"}
-            </button>
           </div>
         </div>
 
