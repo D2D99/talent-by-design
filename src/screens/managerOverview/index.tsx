@@ -4,6 +4,8 @@ import PieChart from "../../charts/pieChart";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { formatDistanceToNow } from "date-fns";
+import CircularProgress from "../../components/percentageCircle";
 
 const ManagerOverview = () => {
   const navigate = useNavigate();
@@ -11,6 +13,8 @@ const ManagerOverview = () => {
     Math.floor(new Date().getMonth() / 3) + 1,
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [viewMode, setViewMode] = useState<"list" | "visual">("visual");
+  const [selectedRole, setSelectedRole] = useState<string>("Employees");
   const [intelData, setIntelData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,56 +38,63 @@ const ManagerOverview = () => {
 
   const { stats, roleBreakdown, activityStream, department } = intelData || {};
 
-  // Map backend stats to UI metrics
+  // For Admin/Leader/Manager, the data keys are different from SuperAdmin
+  const completionRate = stats?.completionRate || 0;
+  const completed = stats?.completedAssessments || 0;
+  const total = stats?.totalMembers || 0;
+  const inProgress = stats?.inProgressAssessments || 0;
+  const pending = stats?.notStartedAssessments || 0;
+
   const displayStats = [
     {
       label: "Team Members",
-      value: stats?.totalMembers?.toString() || "0",
+      value: total.toString(),
       icon: "solar:users-group-rounded-bold-duotone",
       color: "#448CD2",
-      trend: "Active directory",
     },
     {
       label: "Active Invites",
       value: stats?.activeInvites?.toString() || "0",
       icon: "solar:letter-bold-duotone",
       color: "#F59E0B",
-      trend: "Awaiting response",
     },
     {
-      label: "Completed Assessments",
-      value: stats?.completedAssessments?.toString() || "0",
+      label: "Completions",
+      value: completed.toString(),
       icon: "solar:checklist-minimalistic-bold-duotone",
       color: "#10B981",
-      trend: `${stats?.completionRate || 0}% completion`,
     },
     {
-      label: "Pending Assessments",
-      value: (
-        (stats?.totalMembers || 0) - (stats?.completedAssessments || 0)
-      ).toString(),
-      icon: "solar:clipboard-list-bold-duotone",
+      label: "Action Items",
+      value: (total - completed).toString(),
+      icon: "solar:clock-circle-bold-duotone",
       color: "#8E54E9",
-      trend: "Requires attention",
     },
   ];
 
-  const roleData = [
-    roleBreakdown?.employee || 0,
-  ];
   const roleLabels = ["Employees"];
   const roleColors = ["#F59E0B"];
+  const roleData = [roleBreakdown?.employee || 0];
+
+  const totalUsers = roleData.reduce((a, b) => a + b, 0);
+  const getRoleStats = (role: string) => {
+    const idx = roleLabels.indexOf(role);
+    const val = roleData[idx] || 0;
+    const pct = totalUsers > 0 ? ((val / totalUsers) * 100).toFixed(1) : "0";
+    return { val, pct, color: roleColors[idx] };
+  };
 
   return (
     <>
-      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 mb-8 min-h-[calc(100vh-162px)] space-y-6">
-        {/* Header Section */}
+      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] space-y-6">
+
+        {/* ── Header ── */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
             <h1 className="md:text-2xl mb-1 text-xl font-bold text-gray-800">
               Team Intelligence
             </h1>
-            <p className="text-gray-500 text-sm">{department || "Team"} Hub</p>
+            <p className="text-gray-500 text-sm">{department || "Team"} Workspace · Q{selectedQuarter} {selectedYear}</p>
           </div>
 
           <div className="flex items-center gap-5">
@@ -91,7 +102,7 @@ const ManagerOverview = () => {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full px-4 py-1.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-[var(--primary-color)] transition-all"
+                className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full px-4 py-1.5 text-sm font-bold outline-none cursor-pointer"
               >
                 {[2024, 2025, 2026, 2027, 2028].map((y) => (
                   <option key={y} value={y}>{y}</option>
@@ -112,412 +123,257 @@ const ManagerOverview = () => {
           </div>
         </div>
 
-        {/* Quick Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayStats.map((stat: any, idx: number) => (
-            <div
-              key={idx}
-              className="bg-[var(--app-surface)] p-6 rounded-[20px] border border-[var(--app-border-color)] shadow-sm group transition-all duration-300"
-            >
-              <div className="flex items-start justify-between">
-                <div
-                  className="p-3.5 rounded-[12px] transition-transform duration-500 group-hover:scale-110 shadow-sm"
-                  style={{
-                    backgroundColor: `${stat.color}15`,
-                    color: stat.color,
-                  }}
-                >
-                  <Icon icon={stat.icon} width="24" />
-                </div>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-[var(--app-surface-soft)] px-2.5 py-1 rounded-full border border-[var(--app-border-color)]">
-                  {stat.trend}
-                </span>
+        {/* ── Stats Grid ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {displayStats.map((stat, idx) => (
+            <div key={idx} className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5">
+              <div className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
+                <Icon icon={stat.icon} width="24" />
               </div>
-              <div className="mt-8">
-                <h3 className="text-4xl font-black text-[var(--app-heading-color)] tracking-tighter">
-                  {stat.value}
-                </h3>
-                <p className="text-[11px] font-black text-[var(--app-text-muted)] uppercase tracking-[0.2em] mt-2">
-                  {stat.label}
-                </p>
+              <div className="min-w-0">
+                <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wide truncate">{stat.label}</p>
+                <p className="text-2xl font-bold leading-tight mt-0.5" style={{ color: stat.color }}>{stat.value}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          {/* Team Composition (Pie Chart) */}
-          <div className="xl:col-span-4 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col shadow-sm">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h3 className="text-xl font-black text-[var(--app-heading-color)] tracking-tight">
-                  Team Structure
-                </h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                  Role Distribution
-                </p>
+        {/* ── Pulse Row ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { label: "Completion Rate", value: `${completionRate}%`, icon: "solar:user-check-broken", color: "#10b981", badge: completionRate >= 70 ? "Healthy" : "In Progress" },
+            { label: "Pending Invites", value: stats?.activeInvites || 0, icon: "la:stopwatch", color: "#448cd2", badge: "Awaiting Action" },
+            { label: "Strategic Health", value: completionRate >= 50 ? "Strong" : "Growing", icon: "solar:star-broken", color: "#8E54E9", badge: "Team IQ™" },
+          ].map((item, i) => (
+            <div key={i} className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5 justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${item.color}15`, color: item.color }}>
+                  <Icon icon={item.icon} width="20" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-[#5d5d5d] font-medium uppercase tracking-wider">{item.label}</p>
+                  <p className="text-base font-bold text-[#1a3652] truncate max-w-[120px]">{item.value}</p>
+                </div>
               </div>
-              <div className="w-10 h-10 bg-[var(--app-surface-soft)] rounded-full flex items-center justify-center text-[var(--app-text-muted)] border border-[var(--app-border-color)] transition-transform duration-500 hover:rotate-180">
-                <Icon icon="solar:pie-chart-bold-duotone" width="20" />
-              </div>
+              <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full border" style={{ color: item.color, backgroundColor: `${item.color}12`, borderColor: `${item.color}30` }}>
+                {item.badge}
+              </span>
             </div>
+          ))}
+        </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center pt-2">
-              <div className="w-full h-[240px] flex items-center justify-center relative overflow-hidden">
-                <PieChart
-                  labels={roleLabels}
-                  data={roleData}
-                  colors={roleColors}
-                />
-              </div>
-            </div>
-          </div>
+        {/* ── Main 3-col Grid ── */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
 
-          {/* Assessment Lifecycle */}
-          <div className="xl:col-span-5 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--primary-color)]/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-
-            <div className="flex items-center justify-between mb-10 relative z-10">
+          {/* Member Distribution */}
+          <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] shadow-[4px_4px_4px_0_rgba(68,140,210,0.07)] p-5 flex flex-col">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(68,140,210,0.1)]">
               <div>
-                <h3 className="text-xl font-black text-[var(--app-heading-color)] tracking-tight">
-                  Assessment Lifecycle
-                </h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                  Real-time Participation Stream
-                </p>
+                <h3 className="text-sm font-bold text-[#1a3652]">Team Composition</h3>
+                <p className="text-[10px] text-[#5d5d5d] mt-0.5">Role Matrix</p>
               </div>
-              <div className="w-10 h-10 bg-[var(--app-surface-soft)] rounded-full flex items-center justify-center text-[var(--app-text-muted)] border border-[var(--app-border-color)]">
-                <Icon
-                  icon="solar:notification-status-bold-duotone"
-                  width="20"
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-8 relative z-10">
-              {/* Progress Bars for Lifecycle */}
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-wider">
-                    Completed
-                  </span>
-                  <span className="text-sm font-black text-[#10B981]">
-                    {stats?.completedAssessments}{" "}
-                    <span className="text-[10px] text-slate-400 font-bold">
-                      ({stats?.completionRate}%)
-                    </span>
-                  </span>
-                </div>
-                <div className="w-full h-3 bg-[var(--app-surface-soft)] rounded-full border border-[var(--app-border-color)]/30 overflow-hidden">
-                  <div
-                    className="h-full bg-[#10B981] rounded-full transition-all duration-1000"
-                    style={{ width: `${stats?.completionRate}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-wider">
-                    In Progress
-                  </span>
-                  <span className="text-sm font-black text-[#6366F1]">
-                    {stats?.inProgressAssessments || 0}
-                  </span>
-                </div>
-                <div className="w-full h-3 bg-[var(--app-surface-soft)] rounded-full border border-[var(--app-border-color)]/30 overflow-hidden">
-                  <div
-                    className="h-full bg-[#6366F1] rounded-full transition-all duration-1000"
-                    style={{
-                      width: `${stats?.totalMembers > 0 ? ((stats?.inProgressAssessments || 0) / stats?.totalMembers) * 100 : 0}%`,
-                    }}
-                  ></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-wider">
-                    Not Started
-                  </span>
-                  <span className="text-sm font-black text-[#F59E0B]">
-                    {stats?.notStartedAssessments || 0}
-                  </span>
-                </div>
-                <div className="w-full h-3 bg-[var(--app-surface-soft)] rounded-full border border-[var(--app-border-color)]/30 overflow-hidden">
-                  <div
-                    className="h-full bg-[#F59E0B] rounded-full transition-all duration-1000"
-                    style={{
-                      width: `${stats?.totalMembers > 0 ? ((stats?.notStartedAssessments || 0) / stats?.totalMembers) * 100 : 0}%`,
-                    }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* Quick Summary Grid */}
-              <div className="grid grid-cols-2 gap-4 pt-4 relative z-10">
-                <div className="bg-[var(--app-surface-soft)] p-4 rounded-[16px] border border-[var(--app-border-color)] hover:border-[#448CD2]/40 transition-colors">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
-                    Completion Velocity
-                  </p>
-                  <p className="text-lg font-black text-[var(--app-heading-color)] tracking-tight">
-                    {stats?.completionRate > 50 ? 'High' : stats?.completionRate > 20 ? 'Moderate' : 'Developing'}
-                  </p>
-                </div>
-                <div className="bg-[var(--app-surface-soft)] p-4 rounded-[16px] border border-[var(--app-border-color)] hover:border-[#10B981]/40 transition-colors">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
-                    Active Engagement
-                  </p>
-                  <p className="text-lg font-black text-[#10B981] tracking-tight">
-                    {stats?.totalMembers > 0 ? Math.round(((stats?.completedAssessments + (stats?.inProgressAssessments || 0)) / stats?.totalMembers) * 100) : 0}%
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Team Log (List) */}
-          <div className="xl:col-span-3 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-[#448CD2]"></div>
-            <div className="flex items-center justify-between mb-8 relative z-10">
-              <h3 className="text-lg font-bold tracking-tight text-[var(--app-heading-color)]">
-                Team Stream
-              </h3>
-              <Icon
-                icon="solar:history-bold-duotone"
-                className="text-[#448CD2]"
-                width="20"
-              />
-            </div>
-
-            <div className="flex-1 space-y-6 relative z-10 overflow-y-auto max-h-[400px] no-scrollbar">
-              {activityStream?.map((activity: any) => (
-                <div
-                  key={activity.id}
-                  className="flex gap-4 group/item cursor-default"
+              <div className="relative">
+                <select
+                  value={selectedRole}
+                  onChange={(e) => { setSelectedRole(e.target.value); setViewMode("visual"); }}
+                  className="appearance-none bg-[#edf5fd] border border-[rgba(68,140,210,0.25)] text-[var(--primary-color)] text-[10px] font-semibold py-1 pl-2.5 pr-6 rounded-full outline-none cursor-pointer"
                 >
-                  <div className="mt-1">
-                    <div
-                      className={`w-2.5 h-2.5 rounded-full ${activity.type === "completion" ? "bg-[#10B981]" : activity.type === "start" ? "bg-[#6366F1]" : "bg-[#F59E0B]"} shadow-sm`}
-                    ></div>
-                  </div>
-                  <div>
-                    <h4 className="text-[13px] font-bold text-[var(--app-heading-color)] group-hover/item:text-[#448CD2] transition-colors">
-                      {activity.user}
-                    </h4>
-                    <p className="text-[11px] text-[var(--app-text-muted)] mt-1 font-medium italic">
-                      {activity.action}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                        {new Date(activity.time).toLocaleDateString()}
-                      </span>
+                  {roleLabels.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+                <Icon icon="solar:alt-arrow-down-bold" className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary-color)] pointer-events-none" width="9" />
+              </div>
+            </div>
+
+            <div className="flex bg-[#edf5fd] p-0.5 rounded-full mb-4 border border-[rgba(68,140,210,0.15)]">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-full text-[10px] font-semibold transition-all duration-200 ${viewMode === "list" ? "bg-white text-[var(--primary-color)] shadow-sm" : "text-[#5d5d5d]"}`}
+              >
+                <Icon icon="solar:list-bold" width="11" /> Breakdown
+              </button>
+              <button
+                onClick={() => setViewMode("visual")}
+                className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-full text-[10px] font-semibold transition-all duration-200 ${viewMode === "visual" ? "bg-white text-[var(--primary-color)] shadow-sm" : "text-[#5d5d5d]"}`}
+              >
+                <Icon icon="solar:pie-chart-bold" width="11" /> Visual
+              </button>
+            </div>
+
+            <div className="flex-1">
+              {viewMode === "list" ? (
+                <div className="space-y-3">
+                  {roleLabels.map((role, idx) => {
+                    const val = roleData[idx] || 0;
+                    const pct = totalUsers > 0 ? (val / totalUsers) * 100 : 0;
+                    return (
+                      <div key={role} className="cursor-pointer group" onClick={() => { setSelectedRole(role); setViewMode("visual"); }}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-[11px] font-semibold text-[#5d5d5d] group-hover:text-[var(--primary-color)] transition-colors">{role}</span>
+                          <span className="text-[11px] font-bold text-[#1a3652]">{val} <span className="text-[9px] text-[#5d5d5d] font-normal">({pct.toFixed(0)}%)</span></span>
+                        </div>
+                        <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">
+                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 3)}%`, backgroundColor: roleColors[idx] }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center animate-in slide-in-from-bottom-1 duration-300">
+                  <div className="w-full bg-[#edf5fd] rounded-xl border border-[rgba(68,140,210,0.12)] px-4 py-3 flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-[9px] font-semibold text-[#5d5d5d] uppercase tracking-wider">{selectedRole}</p>
+                      <span className="text-3xl font-bold" style={{ color: getRoleStats(selectedRole).color }}>{getRoleStats(selectedRole).pct}%</span>
+                      <span className="text-[10px] text-[#5d5d5d] ml-1.5">of total</span>
+                    </div>
+                    <div className="bg-white rounded-lg px-3 py-2 border border-[rgba(68,140,210,0.15)] text-center shadow-sm">
+                      <span className="text-xl font-bold text-[#1a3652] block">{getRoleStats(selectedRole).val}</span>
+                      <span className="text-[8px] text-[#5d5d5d] uppercase tracking-widest">People</span>
                     </div>
                   </div>
+                  <div className="w-full flex items-center justify-center">
+                    <PieChart labels={roleLabels} data={roleData} colors={roleColors} />
+                  </div>
                 </div>
-              ))}
-              {(!activityStream || activityStream.length === 0) && (
-                <p className="text-xs text-slate-400 italic text-center py-10 opacity-50">
-                  Pulse sequence initiated...
-                </p>
               )}
             </div>
           </div>
-        </div>
 
-        {/* ── Health Strip ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: "Completion Rate", value: `${stats?.completionRate || 0}%`, icon: "solar:chart-square-bold-duotone", color: "#10B981", bg: "bg-[#10B981]/8", sub: stats?.completionRate >= 70 ? "On track" : stats?.completionRate >= 40 ? "Progressing" : "Needs focus" },
-            { label: "Not Started", value: stats?.notStartedAssessments || 0, icon: "solar:hourglass-bold-duotone", color: "#F59E0B", bg: "bg-[#F59E0B]/8", sub: "Awaiting action" },
-            { label: "In Progress", value: stats?.inProgressAssessments || 0, icon: "solar:refresh-circle-bold-duotone", color: "#6366F1", bg: "bg-[#6366F1]/8", sub: "Active sessions" },
-            { label: "Team Size", value: stats?.totalMembers || 0, icon: "solar:users-group-rounded-bold-duotone", color: "#448CD2", bg: "bg-[#448CD2]/8", sub: department || "Your Team" },
-          ].map((item, i) => (
-            <div key={i} className="bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-6 flex flex-col gap-3 hover:shadow-md transition-all cursor-default">
-              <div className={`w-10 h-10 ${item.bg} rounded-[12px] flex items-center justify-center`}>
-                <Icon icon={item.icon} width="20" style={{ color: item.color }} />
-              </div>
-              <div>
-                <p className="text-2xl font-black text-[var(--app-heading-color)] tracking-tight">{item.value}</p>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{item.label}</p>
-              </div>
-              <p className="text-[10px] font-bold mt-auto" style={{ color: item.color }}>{item.sub}</p>
-            </div>
-          ))}
-        </div>
+          {/* Team Health (Circular Progress Bar) */}
+          <div className="xl:col-span-4 flex flex-col gap-4">
+            <div className="flex-1 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#10b981]/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all duration-1000 group-hover:scale-150 group-hover:bg-[#10b981]/10"></div>
+              <h3 className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-[0.2em] mb-6">Team Health</h3>
 
-        {/* ── Pipeline + Quick Actions ── */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">Team Pipeline</h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Assessment lifecycle</p>
+              <div className="relative inline-flex items-center justify-center mb-8">
+                <CircularProgress
+                  value={completionRate}
+                  pathColor="#10b981"
+                  trailColor="rgba(16, 185, 129, 0.1)"
+                  textColor="#1a3652"
+                  width={160}
+                />
               </div>
-              <Icon icon="solar:graph-bold-duotone" className="text-[#448CD2]" width="22" />
-            </div>
-            <div className="space-y-4">
-              {[
-                { label: "Completed", value: stats?.completedAssessments || 0, total: stats?.totalMembers || 1, color: "#10B981" },
-                { label: "In Progress", value: stats?.inProgressAssessments || 0, total: stats?.totalMembers || 1, color: "#6366F1" },
-                { label: "Not Started", value: stats?.notStartedAssessments || 0, total: stats?.totalMembers || 1, color: "#F59E0B" },
-                { label: "Pending Invites", value: stats?.activeInvites || 0, total: stats?.totalMembers || 1, color: "#448CD2" },
-              ].map((row, i) => (
-                <div key={i}>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-wider">{row.label}</span>
-                    <span className="text-[11px] font-black" style={{ color: row.color }}>{row.value}</span>
+
+              <div className="grid grid-cols-2 gap-3 w-full relative z-10">
+                {[
+                  { label: "Completed", value: completed, color: "#10B981" },
+                  { label: "In Progress", value: inProgress, color: "#6366F1" },
+                  { label: "Pending", value: pending, color: "#F59E0B" },
+                  { label: "Total Team", value: total, color: "#448CD2" },
+                ].map((item, i) => (
+                  <div key={i} className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-current transition-colors" style={{ color: item.color } as any}>
+                    <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">{item.value}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider block mt-1">{item.label}</span>
                   </div>
-                  <div className="w-full h-2 bg-[var(--app-surface-soft)] rounded-full overflow-hidden border border-[var(--app-border-color)]/30">
-                    <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${row.total > 0 ? Math.min(100, Math.round((row.value / row.total) * 100)) : 0}%`, backgroundColor: row.color }}></div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            <button
+              onClick={() => navigate("/dashboard/org-assessments")}
+              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-[20px] shadow-lg flex items-center justify-between text-white group hover:shadow-2xl transition-all"
+            >
+              <div className="text-left relative z-10">
+                <p className="text-[9px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">Manager Panel</p>
+                <h4 className="text-base font-black tracking-wide">Review Team Data</h4>
+              </div>
+              <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all">
+                <Icon icon="solar:arrow-right-up-bold" width="20" />
+              </div>
+            </button>
           </div>
 
-          <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
-            <div className="flex items-center justify-between">
+          {/* Activity Stream */}
+          <div className="xl:col-span-4 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-[#448CD2]"></div>
+            <div className="flex items-center justify-between mb-8 relative z-10">
               <div>
-                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">Quick Actions</h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Manager controls</p>
+                <h3 className="text-lg font-black text-[var(--app-heading-color)] tracking-tight">Team Feed</h3>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Live Updates</p>
               </div>
-              <Icon icon="solar:settings-bold-duotone" className="text-[#8E54E9]" width="22" />
+              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10b981]/10 text-[#10b981] rounded-full text-[9px] font-black uppercase tracking-wider border border-[#10b981]/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" /> Live
+              </span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: "View Team", icon: "solar:users-group-rounded-bold-duotone", color: "#448CD2", path: "/dashboard/users" },
-                { label: "Assessments", icon: "solar:document-bold-duotone", color: "#10B981", path: "/dashboard/org-assessments" },
-                { label: "Invitations", icon: "solar:letter-bold-duotone", color: "#F59E0B", path: "/dashboard/invite" },
-                { label: "Reports", icon: "solar:chart-2-bold-duotone", color: "#8E54E9", path: "/dashboard/reports" },
-              ].map((action, i) => (
-                <button
-                  key={i}
-                  onClick={() => navigate(action.path)}
-                  className="flex flex-col items-center justify-center gap-3 p-5 bg-[var(--app-surface-soft)] rounded-[18px] border border-[var(--app-border-color)] hover:shadow-md transition-all group"
-                  style={{ color: action.color } as any}
-                >
-                  <div className="w-12 h-12 rounded-[14px] flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: `${action.color}15` }}>
-                    <Icon icon={action.icon} width="24" />
+
+            <div className="flex-1 space-y-5 overflow-y-auto no-scrollbar max-h-[350px] relative z-10">
+              {activityStream?.length > 0 ? activityStream.map((log: any, i: number) => (
+                <div key={i} className="flex gap-4 group/item cursor-default">
+                  <div className="mt-1">
+                    <div className={`w-3 h-3 rounded-full flex shrink-0 items-center justify-center ${log.type === "completion" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}>
+                      <span className="text-[6px] font-bold text-white uppercase">{log.user?.[0] || "?"}</span>
+                    </div>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[var(--app-text-muted)] group-hover:text-[var(--app-heading-color)] transition-colors">{action.label}</span>
-                </button>
-              ))}
+                  <div className="min-w-0">
+                    <p className="text-[12px] font-black text-[var(--app-heading-color)] truncate">{log.user}</p>
+                    <p className="text-[11px] text-[var(--app-text-muted)] mt-1 font-medium italic">{log.action}</p>
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 block">
+                      {log.time ? formatDistanceToNow(new Date(log.time), { addSuffix: true }) : 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              )) : (
+                <p className="text-xs text-slate-400 italic text-center py-10 opacity-50">Pulse monitoring...</p>
+              )}
             </div>
+
+            <button
+              onClick={() => navigate("/dashboard/notifications")}
+              className="w-full mt-6 py-4 bg-[var(--app-surface-soft)] border border-[var(--app-border-color)] rounded-[14px] text-[10px] font-black uppercase tracking-widest text-[var(--app-text-muted)] hover:bg-[#448CD2] hover:text-white transition-all shadow-sm"
+            >
+              Analyze Productivity
+            </button>
           </div>
         </div>
 
-        {/* ── AI Insights + Engagement ── */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-          {/* AI Insight Panel */}
-          <div className="xl:col-span-2 bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">AI-Powered Observations</h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">POD Insights™ Engine</p>
-              </div>
-              <div className="w-9 h-9 bg-[#8E54E9]/10 rounded-[12px] flex items-center justify-center">
-                <Icon icon="solar:magic-stick-3-bold-duotone" className="text-[#8E54E9]" width="18" />
-              </div>
+        {/* ── AI Insights Board ── */}
+        <div className="bg-[var(--app-surface-soft)] rounded-[20px] border border-[var(--app-border-color)] p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-[#8E54E9]/10 rounded-xl flex items-center justify-center">
+              <Icon icon="solar:magic-stick-3-bold-duotone" className="text-[#8E54E9]" width="22" />
             </div>
-            <div className="space-y-4">
-              {[
-                {
-                  icon: "solar:graph-up-bold",
-                  color: "#10B981",
-                  bg: "bg-[#10B981]/10",
-                  title: "Completion Momentum",
-                  body: stats?.completionRate >= 70
-                    ? `Your team is performing strongly at ${stats?.completionRate}% completion — above the recommended 70% threshold. Maintain momentum with consistent check-ins.`
-                    : stats?.completionRate >= 40
-                      ? `Completion rate stands at ${stats?.completionRate}%. Team is progressing well. Focus on members who haven't started to push past the 70% mark.`
-                      : `Completion is at ${stats?.completionRate || 0}%. Consider scheduling a team-wide kickoff session to re-energize engagement.`,
-                },
-                {
-                  icon: "solar:users-group-rounded-bold-duotone",
-                  color: "#448CD2",
-                  bg: "bg-[#448CD2]/10",
-                  title: "Team Readiness",
-                  body: stats?.totalMembers > 0
-                    ? `Your team of ${stats?.totalMembers} has ${stats?.completedAssessments || 0} completed assessments. ${(stats?.inProgressAssessments || 0) > 0 ? `${stats.inProgressAssessments} member(s) are currently active.` : "No active sessions in progress."}`
-                    : "No team members found for the selected period. Invite your team to begin their assessment journey.",
-                },
-                {
-                  icon: "solar:hourglass-bold-duotone",
-                  color: "#F59E0B",
-                  bg: "bg-[#F59E0B]/10",
-                  title: "Attention Required",
-                  body: (stats?.notStartedAssessments || 0) > 0
-                    ? `${stats.notStartedAssessments} team member(s) have not yet started their assessment. Early follow-up can significantly improve quarterly outcomes.`
-                    : "All team members have initiated their assessments. Great discipline across the board!",
-                },
-              ].map((obs, i) => (
-                <div key={i} className="flex gap-4 p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)]/50 hover:border-[var(--app-border-color)] transition-colors">
-                  <div className={`w-9 h-9 shrink-0 ${obs.bg} rounded-[10px] flex items-center justify-center mt-0.5`}>
-                    <Icon icon={obs.icon} width="18" style={{ color: obs.color }} />
-                  </div>
-                  <div>
-                    <h4 className="text-[12px] font-black text-[var(--app-heading-color)] mb-1">{obs.title}</h4>
-                    <p className="text-[11px] text-[var(--app-text-muted)] leading-relaxed">{obs.body}</p>
-                  </div>
-                </div>
-              ))}
+            <div>
+              <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">AI-Powered Observations</h3>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">POD Insights™ Manager Intelligence</p>
             </div>
           </div>
-
-          {/* Quarter Scorecard */}
-          <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">Q{selectedQuarter} Scorecard</h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{selectedYear} cycle</p>
-              </div>
-              <div className="px-2.5 py-1 bg-[#448CD2]/10 rounded-full border border-[#448CD2]/20">
-                <span className="text-[9px] font-black text-[#448CD2] uppercase tracking-widest">Q{selectedQuarter} · {selectedYear}</span>
-              </div>
-            </div>
-
-            {/* Big ring */}
-            <div className="flex flex-col items-center py-4">
-              <div className="relative w-36 h-36">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="42" fill="transparent" stroke="var(--app-surface-soft)" strokeWidth="10" />
-                  <circle
-                    cx="50" cy="50" r="42" fill="transparent"
-                    stroke="#10B981" strokeWidth="10"
-                    strokeDasharray="264"
-                    strokeDashoffset={264 - (264 * (stats?.completionRate || 0)) / 100}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-black text-[var(--app-heading-color)] tracking-tighter">{stats?.completionRate || 0}%</span>
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Complete</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                { label: "Completed", value: stats?.completedAssessments || 0, color: "#10B981" },
-                { label: "Not Started", value: stats?.notStartedAssessments || 0, color: "#F59E0B" },
-                { label: "In Progress", value: stats?.inProgressAssessments || 0, color: "#6366F1" },
-                { label: "Pending Joins", value: stats?.activeInvites || 0, color: "#448CD2" },
-              ].map((kv, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-[var(--app-border-color)]/40 last:border-b-0">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: kv.color }}></span>
-                    <span className="text-[11px] font-bold text-[var(--app-text-muted)] uppercase tracking-wider">{kv.label}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                icon: "solar:graph-up-bold", color: "#10B981", bg: "bg-[#10B981]/10",
+                title: "Team Momentum",
+                desc: completionRate >= 70
+                  ? `Your team has strong throughput at ${completionRate}% completion. Quarterly readiness is high.`
+                  : `Current throughput is at ${completionRate}%. Re-engaging the ${pending} pending members will close the gap.`,
+              },
+              {
+                icon: "solar:buildings-2-bold-duotone", color: "#448CD2", bg: "bg-[#448CD2]/10",
+                title: "Report Status",
+                desc: `${completed} reports are ready for review. Assessment quality is consistent across onboarded members.`,
+              },
+              {
+                icon: "solar:shield-warning-bold-duotone", color: "#F59E0B", bg: "bg-[#F59E0B]/10",
+                title: "Deployment Risk",
+                desc: (stats?.activeInvites || 0) > 0
+                  ? `${stats.activeInvites} invites are still pending adoption. Send a reminder to ensure full team participation.`
+                  : "Deployment is at 100% capacity. No active risks identified in the current lifecycle cycle.",
+              },
+            ].map((obs, i) => (
+              <div key={i} className="bg-white p-4 rounded-xl border border-[rgba(68,140,210,0.1)] hover:border-[rgba(68,140,210,0.3)] transition-all">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`w-8 h-8 rounded-lg ${obs.bg} flex items-center justify-center`} style={{ color: obs.color }}>
+                    <Icon icon={obs.icon} width="18" />
                   </div>
-                  <span className="text-sm font-black text-[var(--app-heading-color)]">{kv.value}</span>
+                  <h4 className="text-[13px] font-bold text-[#1a3652]">{obs.title}</h4>
                 </div>
-              ))}
-            </div>
+                <p className="text-[11px] text-gray-500 leading-relaxed">{obs.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
-        {/* Strategic Prompt Section */}
+
+        {/* ── Strategic Insight Banner ── */}
         <div className="bg-gradient-to-r from-[#448CD2] to-[#1a3652] rounded-[24px] p-8 text-white relative overflow-hidden shadow-2xl group">
           <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/10 transition-colors"></div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
@@ -528,17 +384,16 @@ const ManagerOverview = () => {
               <div>
                 <h2 className="text-2xl font-black tracking-tight leading-none mb-2">Team Insight</h2>
                 <p className="text-sm text-blue-100/80 font-medium max-w-md leading-relaxed">
-                  {intelData?.strategicInsight || "Assessments indicate a collective strength in Operational Flow. Consider focusing on maintaining this momentum."}
+                  Excellent engagement! Your team shows strong <strong className="text-white">'Strategic Alignment'</strong>. {intelData?.strategicInsight || "Results indicate high readiness for growth."}
                 </p>
               </div>
             </div>
-            <button
-              className="bg-white text-[#1a3652] px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all whitespace-nowrap cursor-default"
-            >
-              View Assessments
+            <button className="bg-white text-[#1a3652] px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all whitespace-nowrap cursor-default">
+              Review Results
             </button>
           </div>
         </div>
+
       </div>
     </>
   );

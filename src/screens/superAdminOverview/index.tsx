@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import PieChart from "../../charts/pieChart";
 import ReportPreviewModal from "../../components/reportPreviewModal";
+import CircularProgress from "../../components/percentageCircle";
 
 const SuperAdminOverview = () => {
   const navigate = useNavigate();
@@ -462,44 +463,18 @@ const SuperAdminOverview = () => {
                 Overall Health
               </h3>
 
-              <div className="relative inline-flex items-center justify-center mb-6">
-                <div className="w-40 h-40 rounded-full border-[12px] border-[var(--app-surface-soft)] flex flex-col items-center justify-center shadow-inner relative z-10 bg-[var(--app-surface)]">
-                  <span className="text-5xl font-black text-[var(--app-heading-color)] tracking-tighter leading-none">
-                    {intelData?.participation?.rate || 0}<span className="text-2xl text-slate-400">%</span>
-                  </span>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">
-                    Platform Healthy
-                  </span>
-                </div>
-                <svg
-                  className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none scale-[1.07] drop-shadow-lg opacity-90"
-                  viewBox="0 0 100 100"
-                >
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="44"
-                    fill="transparent"
-                    stroke="url(#hGrad)"
-                    strokeWidth="8"
-                    strokeDasharray="276"
-                    strokeDashoffset={
-                      276 - (276 * (intelData?.participation?.rate || 0)) / 100
-                    }
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                  <defs>
-                    <linearGradient id="hGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#10b981" />
-                      <stop offset="100%" stopColor="#059669" />
-                    </linearGradient>
-                  </defs>
-                </svg>
+              <div className="relative inline-flex items-center justify-center mb-8">
+                <CircularProgress
+                  value={intelData?.participation?.rate || 0}
+                  pathColor="#448cd2"
+                  trailColor="rgba(68, 140, 210, 0.1)"
+                  textColor="#1a3652"
+                  width={160}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3 w-full relative z-10">
-                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#10b981]/30 transition-colors">
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#448cd2]/30 transition-colors">
                   <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                     {intelData?.participation?.completed || 0}
                   </span>
