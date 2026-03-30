@@ -46,8 +46,6 @@ const OrgUsers = ({
   const [details, setDetails] = useState<OrgDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDept, setSelectedDept] = useState("");
-  const [departments, setDepartments] = useState<string[]>([]);
   // const [isDeleting, setIsDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -62,6 +60,11 @@ const OrgUsers = ({
   } | null>(null);
 
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const currentUserRole = currentUser?.role?.toLowerCase();
+  const showDepartmentColumn =
+    currentUserRole === "admin" ||
+    currentUserRole === "superadmin" ||
+    currentUserRole === "super_admin";
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -95,10 +98,6 @@ const OrgUsers = ({
       );
       setMembers(res.data.members);
       setDetails(res.data.details);
-
-      // Fetch departments as well
-      const filterRes = await api.get(`auth/organization-filters/${targetOrg}`);
-      setDepartments(filterRes.data.departments || []);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load members");
@@ -165,12 +164,10 @@ const OrgUsers = ({
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-    const matchesDept = selectedDept === "" || m.department === selectedDept;
-
     const matchesRole =
       roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
 
-    return matchesSearch && matchesDept && matchesRole;
+    return matchesSearch && matchesRole;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -348,20 +345,6 @@ const OrgUsers = ({
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <select
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--primary-color)] text-sm"
-            value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            {departments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
@@ -394,18 +377,20 @@ const OrgUsers = ({
                 </div>
               </th>
               <th className="px-6 py-4 font-semibold">Added On</th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("department")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Department</span>
-                  <Icon
-                    icon="mdi:chevron-up-down"
-                    className="opacity-75 size-3.5"
-                  />
-                </div>
-              </th>
+              {showDepartmentColumn && (
+                <th
+                  className="px-6 py-4 font-semibold"
+                  onClick={() => handleSort("department")}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Department</span>
+                    <Icon
+                      icon="mdi:chevron-up-down"
+                      className="opacity-75 size-3.5"
+                    />
+                  </div>
+                </th>
+              )}
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold">Status</th>
               <th className="px-6 py-4 font-semibold text-nowrap">Actions</th>
@@ -436,9 +421,11 @@ const OrgUsers = ({
                   <td className="px-6 py-4 text-sm font-medium text-gray-500">
                     {new Date(member.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {member.department || "—"}
-                  </td>
+                  {showDepartmentColumn && (
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {member.department || "—"}
+                    </td>
+                  )}
                   <td className="px-6 py-4">
                     <span className="uppercase text-xs font-bold">
                       {member.role}
@@ -495,7 +482,7 @@ const OrgUsers = ({
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="py-20 text-center text-gray-400">
+                <td`r`n                  colSpan={showDepartmentColumn ? 8 : 7}`r`n                  className="py-20 text-center text-gray-400"`r`n                >
                   {isLoading ? "Loading directory..." : "No members found."}
                 </td>
               </tr>
@@ -613,3 +600,4 @@ const OrgUsers = ({
 };
 
 export default OrgUsers;
+

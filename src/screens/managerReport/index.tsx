@@ -87,7 +87,6 @@ const ManagerReport = () => {
   const isReportPage = location.pathname.includes("reports");
 
   const [orgs, setOrgs] = useState<string[]>([]);
-  const [depts, setDepts] = useState<string[]>([]);
   const [members, setMembers] = useState<any[]>([]);
 
   const [selectedOrg, setSelectedOrg] = useState<string>(
@@ -116,7 +115,6 @@ const ManagerReport = () => {
     if (selectedOrg) {
       api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
         const fetchedMembers = res.data.members;
-        setDepts(res.data.departments);
         setMembers(fetchedMembers);
 
         // Pre-select member if userId or email is in query params
@@ -714,27 +712,6 @@ const ManagerReport = () => {
               onChange={(option: any) => {
                 setSelectedOrg(option?.value || "");
                 setSelectedDept("");
-                setSelectedMember(null);
-              }}
-            />
-          )}
-
-          {(isSuperAdmin || isAdmin) && (
-            <Select
-              className="select-search"
-              placeholder="Select Department"
-              options={[
-                { value: "", label: "All Departments" },
-                ...[...depts].sort().map((d) => ({ value: d, label: d })),
-              ]}
-              value={
-                [
-                  { value: "", label: "All Departments" },
-                  ...depts.map((d) => ({ value: d, label: d })),
-                ].find((o) => o.value === selectedDept) || null
-              }
-              onChange={(option: any) => {
-                setSelectedDept(option?.value || "");
                 setSelectedMember(null);
               }}
             />
