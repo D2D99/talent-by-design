@@ -272,7 +272,9 @@ const EmployeeReport = () => {
         setReportData(res.data.report);
         setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
-        setIsReportReleased(res.data.isReleased || res.data.report?.isReleased || false);
+        setIsReportReleased(
+          res.data.isReleased || res.data.report?.isReleased || false,
+        );
         setHasNoReport(false);
 
         const domainKeys = Object.keys(ROLE_DOMAIN_SUBDOMAINS.employee);
@@ -437,22 +439,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -488,7 +490,6 @@ const EmployeeReport = () => {
           </h3>
 
           <div className="flex items-center gap-3">
-
             <button
               onClick={handlePreview}
               disabled={loadingPreview}
@@ -503,22 +504,30 @@ const EmployeeReport = () => {
             </button>
 
             <div className="flex items-center gap-2">
+              {/* Edit Feedback Button (SA or Admin viewing someone else) */}
+              {(isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                  title="Edit AI Insights, Objectives, and Recommendations"
+                >
+                  <Icon icon="lucide:pencil" width="16" />
+                </button>
+              )}
+
               {/* Release Section (Super Admin Only) */}
               {isSuperAdmin && !isReportReleased && reportData && (
                 <button
                   onClick={handleRelease}
                   disabled={releasing}
-                  className="flex items-center gap-2 h-10 px-6 bg-[#448cd2] text-white font-black text-[11px] uppercase rounded-full relative overflow-hidden group transition-all duration-500 hover:shadow-[0_0_20px_rgba(68,140,210,0.6)] hover:scale-105 active:scale-95 disabled:opacity-50"
-                  style={{
-                    boxShadow: "0 0 10px rgba(68, 140, 210, 0.3)",
-                    letterSpacing: "0.5px"
-                  }}
+                  className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                   {releasing ? (
                     <Icon icon="line-md:loading-loop" width="16" />
                   ) : (
-                    <Icon icon="solar:star-bold-duotone" width="18" className="animate-pulse" />
+                    <Icon icon="solar:star-bold-duotone" width="16" />
                   )}
                   {releasing ? "Releasing..." : "Approve & Release"}
                 </button>
@@ -530,18 +539,6 @@ const EmployeeReport = () => {
                   <Icon icon="solar:check-circle-bold-duotone" width="14" />
                   Released
                 </span>
-              )}
-
-              {/* Edit Feedback Button (SA or Admin viewing someone else) */}
-              {((isSuperAdmin) || (isAdmin && userId !== user?._id)) && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                  title="Edit AI Insights, Objectives, and Recommendations"
-                >
-                  <Icon icon="lucide:pencil" width="16" />
-                </button>
               )}
             </div>
 
@@ -625,9 +622,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -1081,7 +1078,7 @@ const EmployeeReport = () => {
                   </div>
 
                   <div>
-                    <img src={Hugeicons} alt="images" />
+                    <img src={Hugeicons} alt="images" className="w-8 h-8" />
                   </div>
                 </div>
                 <div className="space-y-6">
@@ -1108,7 +1105,8 @@ const EmployeeReport = () => {
                   ))}
                   {displayKRs.length === 0 && (
                     <p className="text-sm text-gray-500 italic mt-6 font-medium">
-                      No strategic objectives have been defined for this area yet.
+                      No strategic objectives have been defined for this area
+                      yet.
                     </p>
                   )}
                 </div>

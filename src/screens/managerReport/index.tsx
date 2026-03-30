@@ -221,7 +221,9 @@ const ManagerReport = () => {
         setFirstReportData(res.data.firstReport || res.data.report);
         setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
-        setIsReportReleased(res.data.isReleased || res.data.report?.isReleased || false);
+        setIsReportReleased(
+          res.data.isReleased || res.data.report?.isReleased || false,
+        );
         setHasNoReport(false);
       } catch (error: any) {
         if (error.response?.status === 404) {
@@ -467,7 +469,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -478,16 +480,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -638,14 +640,18 @@ const ManagerReport = () => {
                   className="flex items-center gap-2 h-10 px-6 bg-[#448cd2] text-white font-black text-[11px] uppercase rounded-full relative overflow-hidden group transition-all duration-500 hover:shadow-[0_0_20px_rgba(68,140,210,0.6)] hover:scale-105 active:scale-95 disabled:opacity-50"
                   style={{
                     boxShadow: "0 0 10px rgba(68, 140, 210, 0.3)",
-                    letterSpacing: "0.5px"
+                    letterSpacing: "0.5px",
                   }}
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                   {releasing ? (
                     <Icon icon="line-md:loading-loop" width="16" />
                   ) : (
-                    <Icon icon="solar:star-bold-duotone" width="18" className="animate-pulse" />
+                    <Icon
+                      icon="solar:star-bold-duotone"
+                      width="18"
+                      className="animate-pulse"
+                    />
                   )}
                   {releasing ? "Releasing..." : "Approve & Release"}
                 </button>
@@ -660,7 +666,7 @@ const ManagerReport = () => {
               )}
 
               {/* Edit Feedback Button (SA or Admin viewing someone else) */}
-              {((isSuperAdmin) || (isAdmin && userId !== user?._id)) && (
+              {(isSuperAdmin || (isAdmin && userId !== user?._id)) && (
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(true)}
@@ -753,9 +759,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -1081,9 +1087,9 @@ const ManagerReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1334,7 +1340,8 @@ const ManagerReport = () => {
                   ))}
                   {displayKRs.length === 0 && (
                     <p className="text-sm text-gray-500 italic mt-6 font-medium">
-                      No strategic objectives have been defined for this area yet.
+                      No strategic objectives have been defined for this area
+                      yet.
                     </p>
                   )}
                 </div>
@@ -1934,7 +1941,7 @@ const ManagerReport = () => {
         loading={loadingPreview}
         type="Manager Report Preview"
       />
-    </div >
+    </div>
   );
 };
 export default ManagerReport;
