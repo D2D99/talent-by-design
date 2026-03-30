@@ -5,6 +5,7 @@ import api from "../../services/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, Ripple, initTWE } from "tw-elements";
+import { useAuth } from "../../context/useAuth";
 
 interface UserMember {
   _id: string;
@@ -55,6 +56,12 @@ const OrgUsers = ({
 
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
+
+  const { user } = useAuth();
+
+  const userRole = user?.role?.toLowerCase() || "";
+  const isSuperAdmin = userRole === "superAdmin" || userRole === "super_admin";
+  const isAdmin = userRole === "admin";
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;
@@ -229,7 +236,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                  currentUser?.role === "manager"
+                currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -348,20 +355,22 @@ const OrgUsers = ({
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <select
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--primary-color)] text-sm"
-            value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            {departments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
-            ))}
-          </select>
-        </div>
+        {(isSuperAdmin || isAdmin) && (
+          <div className="flex items-center gap-2">
+            <select
+              className="px-4 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--primary-color)] text-sm"
+              value={selectedDept}
+              onChange={(e) => setSelectedDept(e.target.value)}
+            >
+              <option value="">All Departments</option>
+              {departments.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
@@ -394,18 +403,20 @@ const OrgUsers = ({
                 </div>
               </th>
               <th className="px-6 py-4 font-semibold">Added On</th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("department")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Department</span>
-                  <Icon
-                    icon="mdi:chevron-up-down"
-                    className="opacity-75 size-3.5"
-                  />
-                </div>
-              </th>
+              {(isSuperAdmin || isAdmin) && (
+                <th
+                  className="px-6 py-4 font-semibold cursor-pointer"
+                  onClick={() => handleSort("department")}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Department</span>
+                    <Icon
+                      icon="mdi:chevron-up-down"
+                      className="opacity-75 size-3.5"
+                    />
+                  </div>
+                </th>
+              )}
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold">Status</th>
               <th className="px-6 py-4 font-semibold text-nowrap">Actions</th>
@@ -436,9 +447,11 @@ const OrgUsers = ({
                   <td className="px-6 py-4 text-sm font-medium text-gray-500">
                     {new Date(member.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {member.department || "—"}
-                  </td>
+                  {(isSuperAdmin || isAdmin) && (
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {member.department || "—"}
+                    </td>
+                  )}
                   <td className="px-6 py-4">
                     <span className="uppercase text-xs font-bold">
                       {member.role}
@@ -485,7 +498,9 @@ const OrgUsers = ({
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors flex items-center gap-1.5"
                       >
                         <Icon icon="solar:eye-linear" width="18" />
-                        <span className="text-xs font-bold uppercase tracking-wider">Report</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">
+                          Report
+                        </span>
                       </button>
                     ) : (
                       <span className="text-gray-300 text-xs">—</span>
