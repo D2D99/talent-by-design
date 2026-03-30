@@ -1,13 +1,13 @@
 import { Icon } from "@iconify/react";
 import { useState, useEffect } from "react";
 import PieChart from "../../charts/pieChart";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import ManagerReport from "../managerReport";
 
 const ManagerOverview = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [selectedQuarter, setSelectedQuarter] = useState(
     Math.floor(new Date().getMonth() / 3) + 1,
   );
