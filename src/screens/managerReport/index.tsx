@@ -589,8 +589,9 @@ const ManagerReport = () => {
   });
 
   const gapInsightsList = gapInsights.filter((g) => g.absGap > 0);
-  const topGapsShown = gapInsightsList.sort((a, b) => b.absGap - a.absGap).slice(0, 3);
-  const otherGaps = gapInsightsList.sort((a, b) => b.absGap - a.absGap).slice(3);
+  const sortedGapInsights = [...gapInsightsList].sort((a, b) => b.absGap - a.absGap);
+  const topGapsShown = sortedGapInsights.slice(0, 3);
+  const otherGaps = sortedGapInsights.slice(3);
 
   const getDimensionIcon = (label: string) => {
     const l = label.toLowerCase();
@@ -879,92 +880,172 @@ const ManagerReport = () => {
                         />
                     </div>
                   ) : (
-                    <div className="py-4 space-y-10">
-                      <div className="flex flex-col items-center mb-6 text-center">
-                      </div>
-
-                    <div className="flex flex-col gap-8 max-w-5xl mx-auto py-10">
-                      {(showAllGaps ? gapInsightsList : topGapsShown).map((gap, idx) => (
-                        <div key={idx} className="relative overflow-hidden bg-white border border-[#448CD2]/10 rounded-[20px] shadow-sm transition-all hover:shadow-md">
-                           {/* Severity Strip */}
-                           <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: gap.color }}></div>
-
-                           <div className="p-8 pl-12">
-                              <div className="flex items-center gap-4 mb-10">
-                                 <div className="w-10 h-10 rounded-xl bg-[#EDF5FD] flex items-center justify-center text-[#448CD2]">
-                                    <Icon icon={getDimensionIcon(gap.label)} width="20" />
-                                 </div>
-                                 <h5 className="text-base font-black text-[#1A3652] uppercase tracking-wider">{gap.label}</h5>
+                    <div className="py-4">
+                      <div className="rounded-[20px] border border-[#448CD2]/10 bg-[#F8FBFE] p-4 sm:p-6">
+                        <div className="flex flex-col gap-4 border-b border-[#448CD2]/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="max-w-2xl">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#448CD2] shadow-sm">
+                                <Icon icon="solar:eye-scan-bold-duotone" width="24" />
                               </div>
-
-                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-10">
-                                 {/* Team Progress */}
-                                 <div className="flex flex-col gap-3">
-                                    <div className="flex items-center justify-between">
-                                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Team Alignment</span>
-                                       <span className="text-sm font-black text-[#2ECC71]">{(gap.teamScore * 10).toFixed(0)}%</span>
-                                    </div>
-                                    <div className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden">
-                                       <div 
-                                          className="h-full bg-gradient-to-r from-[#2ECC7180] to-[#2ECC71] rounded-full transition-all duration-1000"
-                                          style={{ width: `${gap.teamScore * 10}%` }}
-                                       ></div>
-                                    </div>
-                                 </div>
-
-                                 {/* Manager Progress */}
-                                 <div className="flex flex-col gap-3">
-                                    <div className="flex items-center justify-between">
-                                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Manager Perception</span>
-                                       <span className="text-sm font-black text-[#4A90E2]">{(gap.managerScore * 10).toFixed(0)}%</span>
-                                    </div>
-                                    <div className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden">
-                                       <div 
-                                          className="h-full bg-gradient-to-r from-[#4A90E280] to-[#4A90E2] rounded-full transition-all duration-1000"
-                                          style={{ width: `${gap.managerScore * 10}%` }}
-                                       ></div>
-                                    </div>
-                                 </div>
+                              <div>
+                                <h3 className="text-xl font-bold text-[#1A3652]">
+                                  Gap Insights
+                                </h3>
+                                <p className="text-sm text-[#64748B]">
+                                  Largest perception differences between manager and team across the measured capabilities.
+                                </p>
                               </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-3">
+                            <div className="min-w-[130px] rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-[#448CD2]/10">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#64748B]">
+                                Active Gaps
+                              </p>
+                              <p className="mt-1 text-2xl font-black text-[#1A3652]">
+                                {gapInsightsList.length}
+                              </p>
+                            </div>
+                            <div className="min-w-[130px] rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-[#448CD2]/10">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#64748B]">
+                                Top Priority
+                              </p>
+                              <p className="mt-1 text-sm font-bold text-[#1A3652]">
+                                {topGapsShown[0]?.label || "No major gap"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
 
-                              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                                 <div className="flex-1 max-w-2xl">
-                                    <p className="text-[13px] text-[#1A3652]/70 font-bold italic leading-relaxed border-l-2 border-slate-100 pl-6">
-                                       “{gap.insight}”
+                        <div className="mt-6 flex flex-col gap-5">
+                          {(showAllGaps ? sortedGapInsights : topGapsShown).map((gap, idx) => (
+                            <div
+                              key={idx}
+                              className="overflow-hidden rounded-[20px] border border-[#448CD2]/10 bg-white shadow-[0_12px_30px_-24px_rgba(26,54,82,0.45)]"
+                            >
+                              <div
+                                className="flex flex-col gap-5 border-b border-[#448CD2]/10 px-5 py-5 sm:px-6 lg:flex-row lg:items-start lg:justify-between"
+                                style={{ backgroundColor: gap.bgColor }}
+                              >
+                                <div className="flex items-start gap-4">
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-[#448CD2] shadow-sm">
+                                    <Icon icon={getDimensionIcon(gap.label)} width="28" />
+                                  </div>
+                                  <div>
+                                    <div className="flex flex-wrap items-center gap-3">
+                                      <h5 className="text-base font-black uppercase tracking-[0.16em] text-[#1A3652]">
+                                        {gap.label}
+                                      </h5>
+                                      <span
+                                        className="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white"
+                                        style={{ backgroundColor: gap.color }}
+                                      >
+                                        {gap.indicator}
+                                      </span>
+                                    </div>
+                                    <p className="mt-2 text-sm font-medium text-[#64748B]">
+                                      {gap.direction} by {gap.absGap} points
                                     </p>
-                                 </div>
-                                 <div className="flex flex-col items-end gap-1.5">
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-lg text-white shadow-sm" style={{ backgroundColor: gap.color }}>
-                                       {gap.indicator} — Priority
-                                    </span>
-                                    <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">
-                                       {gap.absGap} pt deviation
-                                    </span>
-                                 </div>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 sm:min-w-[240px]">
+                                  <div className="rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-[#448CD2]/10">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">
+                                      Team
+                                    </p>
+                                    <p className="mt-1 text-xl font-black text-[#2ECC71]">
+                                      {(gap.teamScore * 10).toFixed(0)}%
+                                    </p>
+                                  </div>
+                                  <div className="rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-[#448CD2]/10">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">
+                                      Manager
+                                    </p>
+                                    <p className="mt-1 text-xl font-black text-[#4A90E2]">
+                                      {(gap.managerScore * 10).toFixed(0)}%
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                           </div>
-                        </div>
-                      ))}
 
-                      {otherGaps.length > 0 && !showAllGaps && (
-                         <button
-                            onClick={() => setShowAllGaps(true)}
-                            className="flex items-center justify-center gap-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-[#448CD2] transition-colors bg-white rounded-2xl border border-dashed border-slate-200"
-                         >
-                            <Icon icon="solar:double-alt-arrow-down-bold" />
-                            Expand {otherGaps.length} more Alignment Insights
-                         </button>
-                      )}
+                              <div className="grid gap-5 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_260px]">
+                                <div className="rounded-[18px] border border-[#448CD2]/10 bg-[#F8FBFE] p-5">
+                                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#64748B]">
+                                    What this means
+                                  </p>
+                                  <p className="mt-3 text-sm font-medium leading-7 text-[#1A3652]">
+                                    {gap.insight}
+                                  </p>
+                                </div>
 
-                      {gapInsightsList.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-20 bg-white border border-dashed border-[#448CD210] rounded-2xl gap-4">
-                           <Icon icon="solar:star-fall-bold-duotone" width="40" className="text-[#30AD43]/30" />
-                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center">Perfect Synchronization Complete</p>
+                                <div className="space-y-4 rounded-[18px] border border-[#448CD2]/10 bg-white p-5">
+                                  <div>
+                                    <div className="mb-2 flex items-center justify-between">
+                                      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#64748B]">
+                                        Team Alignment
+                                      </span>
+                                      <span className="text-sm font-bold text-[#2ECC71]">
+                                        {(gap.teamScore * 10).toFixed(0)}%
+                                      </span>
+                                    </div>
+                                    <div className="h-2.5 overflow-hidden rounded-full bg-[#E8F6EC]">
+                                      <div
+                                        className="h-full rounded-full bg-gradient-to-r from-[#2ECC71]/60 to-[#2ECC71]"
+                                        style={{ width: `${gap.teamScore * 10}%` }}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div className="mb-2 flex items-center justify-between">
+                                      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#64748B]">
+                                        Manager Perception
+                                      </span>
+                                      <span className="text-sm font-bold text-[#4A90E2]">
+                                        {(gap.managerScore * 10).toFixed(0)}%
+                                      </span>
+                                    </div>
+                                    <div className="h-2.5 overflow-hidden rounded-full bg-[#EAF2FC]">
+                                      <div
+                                        className="h-full rounded-full bg-gradient-to-r from-[#4A90E2]/60 to-[#4A90E2]"
+                                        style={{ width: `${gap.managerScore * 10}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+
+                          {otherGaps.length > 0 && !showAllGaps && (
+                            <button
+                              onClick={() => setShowAllGaps(true)}
+                              className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-[#448CD2]/20 bg-white px-4 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-[#64748B] transition-colors hover:text-[#448CD2]"
+                            >
+                              <Icon icon="solar:double-alt-arrow-down-bold" />
+                              Expand {otherGaps.length} more alignment insights
+                            </button>
+                          )}
+
+                          {gapInsightsList.length === 0 && (
+                            <div className="flex flex-col items-center justify-center gap-4 rounded-[20px] border border-dashed border-[#448CD2]/20 bg-white px-6 py-16 text-center">
+                              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EDF5FD] text-[#30AD43]">
+                                <Icon icon="solar:star-fall-bold-duotone" width="32" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#1A3652]">
+                                  Perfect Synchronization
+                                </p>
+                                <p className="mt-2 text-sm text-[#64748B]">
+                                  Manager and team responses are currently aligned across all tracked dimensions.
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                      </div>
+                    </div >               )}
               </div>
             </div>
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
