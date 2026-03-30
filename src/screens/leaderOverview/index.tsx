@@ -1,13 +1,12 @@
 import { Icon } from "@iconify/react";
 import { useState, useEffect } from "react";
 import PieChart from "../../charts/pieChart";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
-import LeaderReport from "../leaderReport";
 
 const LeaderOverview = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [selectedQuarter, setSelectedQuarter] = useState(
     Math.floor(new Date().getMonth() / 3) + 1,
   );
@@ -255,6 +254,26 @@ const LeaderOverview = () => {
                   ></div>
                 </div>
               </div>
+
+              {/* Quick Summary Grid */}
+              <div className="grid grid-cols-2 gap-4 pt-4 relative z-10">
+                <div className="bg-[var(--app-surface-soft)] p-4 rounded-[16px] border border-[var(--app-border-color)] hover:border-[#448CD2]/40 transition-colors">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
+                    Completion Velocity
+                  </p>
+                  <p className="text-lg font-black text-[var(--app-heading-color)] tracking-tight">
+                    {stats?.completionRate > 50 ? 'High' : stats?.completionRate > 20 ? 'Moderate' : 'Developing'}
+                  </p>
+                </div>
+                <div className="bg-[var(--app-surface-soft)] p-4 rounded-[16px] border border-[var(--app-border-color)] hover:border-[#10B981]/40 transition-colors">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
+                    Active Engagement
+                  </p>
+                  <p className="text-lg font-black text-[#10B981] tracking-tight">
+                    {stats?.totalMembers > 0 ? Math.round(((stats?.completedAssessments + (stats?.inProgressAssessments || 0)) / stats?.totalMembers) * 100) : 0}%
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -307,7 +326,223 @@ const LeaderOverview = () => {
           </div>
         </div>
 
-        {/* Strategic Prompt Section */}
+        {/* ── Health Strip ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            {
+              label: "Completion Rate",
+              value: `${stats?.completionRate || 0}%`,
+              icon: "solar:chart-square-bold-duotone",
+              color: "#10B981",
+              bg: "bg-[#10B981]/8",
+              sub: stats?.completionRate >= 70 ? "On track" : stats?.completionRate >= 40 ? "Progressing" : "Needs focus",
+            },
+            {
+              label: "Not Started",
+              value: stats?.notStartedAssessments || 0,
+              icon: "solar:hourglass-bold-duotone",
+              color: "#F59E0B",
+              bg: "bg-[#F59E0B]/8",
+              sub: "Awaiting action",
+            },
+            {
+              label: "In Progress",
+              value: stats?.inProgressAssessments || 0,
+              icon: "solar:refresh-circle-bold-duotone",
+              color: "#6366F1",
+              bg: "bg-[#6366F1]/8",
+              sub: "Active sessions",
+            },
+            {
+              label: "Team Size",
+              value: stats?.totalMembers || 0,
+              icon: "solar:users-group-rounded-bold-duotone",
+              color: "#448CD2",
+              bg: "bg-[#448CD2]/8",
+              sub: department || "Department",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-6 flex flex-col gap-3 hover:shadow-md transition-all group cursor-default"
+            >
+              <div className={`w-10 h-10 ${item.bg} rounded-[12px] flex items-center justify-center`}>
+                <Icon icon={item.icon} width="20" style={{ color: item.color }} />
+              </div>
+              <div>
+                <p className="text-2xl font-black text-[var(--app-heading-color)] tracking-tight">{item.value}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{item.label}</p>
+              </div>
+              <p className="text-[10px] font-bold mt-auto" style={{ color: item.color }}>{item.sub}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Focus Areas & Recent Action ── */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Key Focus Areas */}
+          <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">Assessment Pipeline</h3>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Lifecycle at a glance</p>
+              </div>
+              <Icon icon="solar:graph-bold-duotone" className="text-[#448CD2]" width="22" />
+            </div>
+            <div className="space-y-4">
+              {[
+                { label: "Completed", value: stats?.completedAssessments || 0, total: stats?.totalMembers || 1, color: "#10B981" },
+                { label: "In Progress", value: stats?.inProgressAssessments || 0, total: stats?.totalMembers || 1, color: "#6366F1" },
+                { label: "Not Started", value: stats?.notStartedAssessments || 0, total: stats?.totalMembers || 1, color: "#F59E0B" },
+                { label: "Invited (Pending Join)", value: stats?.activeInvites || 0, total: stats?.totalMembers || 1, color: "#448CD2" },
+              ].map((row, i) => (
+                <div key={i}>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-wider">{row.label}</span>
+                    <span className="text-[11px] font-black" style={{ color: row.color }}>{row.value}</span>
+                  </div>
+                  <div className="w-full h-2 bg-[var(--app-surface-soft)] rounded-full overflow-hidden border border-[var(--app-border-color)]/30">
+                    <div
+                      className="h-full rounded-full transition-all duration-1000"
+                      style={{ width: `${row.total > 0 ? Math.min(100, Math.round((row.value / row.total) * 100)) : 0}%`, backgroundColor: row.color }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">Quick Actions</h3>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Department controls</p>
+              </div>
+              <Icon icon="solar:settings-bold-duotone" className="text-[#8E54E9]" width="22" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "View Team", icon: "solar:users-group-rounded-bold-duotone", color: "#448CD2", path: "/dashboard/users" },
+                { label: "Assessments", icon: "solar:document-bold-duotone", color: "#10B981", path: "/dashboard/org-assessments" },
+                { label: "Invitations", icon: "solar:letter-bold-duotone", color: "#F59E0B", path: "/dashboard/invite" },
+                { label: "Reports", icon: "solar:chart-2-bold-duotone", color: "#8E54E9", path: "/dashboard/reports" },
+              ].map((action, i) => (
+                <button
+                  key={i}
+                  onClick={() => navigate(action.path)}
+                  className="flex flex-col items-center justify-center gap-3 p-5 bg-[var(--app-surface-soft)] rounded-[18px] border border-[var(--app-border-color)] hover:border-current hover:shadow-md transition-all group"
+                  style={{ color: action.color } as any}
+                >
+                  <div
+                    className="w-12 h-12 rounded-[14px] flex items-center justify-center group-hover:scale-110 transition-transform"
+                    style={{ backgroundColor: `${action.color}15` }}
+                  >
+                    <Icon icon={action.icon} width="24" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[var(--app-text-muted)] group-hover:text-[var(--app-heading-color)] transition-colors">{action.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── AI Insights + Quarter Scorecard ── */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div className="xl:col-span-2 bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">AI-Powered Observations</h3>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">POD Insights™ Engine</p>
+              </div>
+              <div className="w-9 h-9 bg-[#8E54E9]/10 rounded-[12px] flex items-center justify-center">
+                <Icon icon="solar:magic-stick-3-bold-duotone" className="text-[#8E54E9]" width="18" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              {[
+                {
+                  icon: "solar:graph-up-bold", color: "#10B981", bg: "bg-[#10B981]/10",
+                  title: "Completion Momentum",
+                  body: stats?.completionRate >= 70
+                    ? `Department is performing strongly at ${stats?.completionRate}% completion — above the platform benchmark. Sustain this with structured review cycles.`
+                    : stats?.completionRate >= 40
+                      ? `Completion rate stands at ${stats?.completionRate}%. Good progress. Target the ${(stats?.notStartedAssessments || 0)} not-yet-started members next.`
+                      : `At ${stats?.completionRate || 0}% completion, a structured team-wide initiative is recommended this quarter.`,
+                },
+                {
+                  icon: "solar:users-group-rounded-bold-duotone", color: "#448CD2", bg: "bg-[#448CD2]/10",
+                  title: "Department Readiness",
+                  body: stats?.totalMembers > 0
+                    ? `${stats.totalMembers} department members tracked. ${stats?.completedAssessments || 0} have completed assessments${(stats?.inProgressAssessments || 0) > 0 ? `, with ${stats.inProgressAssessments} in active progress` : ''}.`
+                    : "No members found for this period. Expand your team invitations to begin tracking department readiness.",
+                },
+                {
+                  icon: "solar:shield-warning-bold-duotone", color: "#F59E0B", bg: "bg-[#F59E0B]/10",
+                  title: "Risk Indicator",
+                  body: (stats?.notStartedAssessments || 0) > 0
+                    ? `${stats.notStartedAssessments} member(s) haven't started yet. Proactive outreach before mid-quarter can prevent a bottleneck at deadline.`
+                    : "No risk detected. Full team participation has been initiated. Keep monitoring for drop-offs.",
+                },
+              ].map((obs, i) => (
+                <div key={i} className="flex gap-4 p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)]/50 hover:border-[var(--app-border-color)] transition-colors">
+                  <div className={`w-9 h-9 shrink-0 ${obs.bg} rounded-[10px] flex items-center justify-center mt-0.5`}>
+                    <Icon icon={obs.icon} width="18" style={{ color: obs.color }} />
+                  </div>
+                  <div>
+                    <h4 className="text-[12px] font-black text-[var(--app-heading-color)] mb-1">{obs.title}</h4>
+                    <p className="text-[11px] text-[var(--app-text-muted)] leading-relaxed">{obs.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">Q{selectedQuarter} Scorecard</h3>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{selectedYear} cycle</p>
+              </div>
+              <div className="px-2.5 py-1 bg-[#448CD2]/10 rounded-full border border-[#448CD2]/20">
+                <span className="text-[9px] font-black text-[#448CD2] uppercase tracking-widest">Q{selectedQuarter} · {selectedYear}</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center py-4">
+              <div className="relative w-36 h-36">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="transparent" stroke="var(--app-surface-soft)" strokeWidth="10" />
+                  <circle cx="50" cy="50" r="42" fill="transparent" stroke="#10B981" strokeWidth="10"
+                    strokeDasharray="264"
+                    strokeDashoffset={264 - (264 * (stats?.completionRate || 0)) / 100}
+                    strokeLinecap="round" className="transition-all duration-1000"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-black text-[var(--app-heading-color)] tracking-tighter">{stats?.completionRate || 0}%</span>
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Complete</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {[
+                { label: "Completed", value: stats?.completedAssessments || 0, color: "#10B981" },
+                { label: "Not Started", value: stats?.notStartedAssessments || 0, color: "#F59E0B" },
+                { label: "In Progress", value: stats?.inProgressAssessments || 0, color: "#6366F1" },
+                { label: "Pending Joins", value: stats?.activeInvites || 0, color: "#448CD2" },
+              ].map((kv, i) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-[var(--app-border-color)]/40 last:border-b-0">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: kv.color }}></span>
+                    <span className="text-[11px] font-bold text-[var(--app-text-muted)] uppercase tracking-wider">{kv.label}</span>
+                  </div>
+                  <span className="text-sm font-black text-[var(--app-heading-color)]">{kv.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+          {/* Strategic Prompt Section */}
         <div className="bg-gradient-to-r from-[#448CD2] to-[#1a3652] rounded-[24px] p-8 text-white relative overflow-hidden shadow-2xl group">
           <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/10 transition-colors"></div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
@@ -330,13 +565,9 @@ const LeaderOverview = () => {
               </div>
             </div>
             <button
-              onClick={() => {
-                const reportEl = document.getElementById("leader-report-section");
-                if (reportEl) reportEl.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="bg-white text-[#1a3652] px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all"
+              className="bg-white text-[#1a3652] px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all whitespace-nowrap cursor-default"
             >
-              Review Full Report
+              View Assessments
             </button>
           </div>
         </div>

@@ -454,22 +454,25 @@ const SuperAdminOverview = () => {
           </div>
 
           {/* Community Health */}
-          <div className="xl:col-span-4 flex flex-col gap-3">
-            <div className="flex-1 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] shadow-[4px_4px_4px_0_rgba(68,140,210,0.07)] p-5 flex flex-col items-center justify-center text-center">
-              <p className="text-[9px] font-bold text-[var(--primary-color)] uppercase tracking-widest mb-4">
+          <div className="xl:col-span-4 flex flex-col gap-4">
+            <div className="flex-1 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#10b981]/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all duration-1000 group-hover:scale-150 group-hover:bg-[#10b981]/10"></div>
+
+              <h3 className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-[0.2em] mb-6">
                 Overall Health
-              </p>
-              <div className="relative inline-flex items-center justify-center mb-4">
-                <div className="w-36 h-36 rounded-full border-[10px] border-[#edf5fd] flex flex-col items-center justify-center">
-                  <span className="text-4xl font-bold text-[#1a3652] leading-none">
-                    {intelData?.participation?.rate || 100}%
+              </h3>
+
+              <div className="relative inline-flex items-center justify-center mb-6">
+                <div className="w-40 h-40 rounded-full border-[12px] border-[var(--app-surface-soft)] flex flex-col items-center justify-center shadow-inner relative z-10 bg-[var(--app-surface)]">
+                  <span className="text-5xl font-black text-[var(--app-heading-color)] tracking-tighter leading-none">
+                    {intelData?.participation?.rate || 0}<span className="text-2xl text-slate-400">%</span>
                   </span>
-                  <span className="text-[9px] font-medium text-[#5d5d5d] mt-1">
-                    Platform healthy
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                    Platform Healthy
                   </span>
                 </div>
                 <svg
-                  className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none scale-105"
+                  className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none scale-[1.07] drop-shadow-lg opacity-90"
                   viewBox="0 0 100 100"
                 >
                   <circle
@@ -478,37 +481,54 @@ const SuperAdminOverview = () => {
                     r="44"
                     fill="transparent"
                     stroke="url(#hGrad)"
-                    strokeWidth="9"
+                    strokeWidth="8"
                     strokeDasharray="276"
                     strokeDashoffset={
-                      276 - (276 * (intelData?.participation?.rate || 100)) / 100
+                      276 - (276 * (intelData?.participation?.rate || 0)) / 100
                     }
                     strokeLinecap="round"
-                    className="transition-all duration-1000"
+                    className="transition-all duration-1000 ease-out"
                   />
                   <defs>
                     <linearGradient id="hGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#2d5d8c" />
-                      <stop offset="100%" stopColor="#448cd2" />
+                      <stop offset="0%" stopColor="#10b981" />
+                      <stop offset="100%" stopColor="#059669" />
                     </linearGradient>
                   </defs>
                 </svg>
               </div>
-              <div className="grid grid-cols-2 gap-2.5 w-full">
-                <div className="p-3 bg-[#edf5fd] rounded-lg border border-[rgba(68,140,210,0.12)]">
-                  <span className="text-lg font-bold text-[#10b981] block">
+
+              <div className="grid grid-cols-2 gap-3 w-full relative z-10">
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#10b981]/30 transition-colors">
+                  <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                     {intelData?.participation?.completed || 0}
                   </span>
-                  <span className="text-[9px] font-semibold text-[#5d5d5d] uppercase tracking-wider">
+                  <span className="text-[9px] font-bold text-[#10b981] uppercase tracking-wider block mt-1">
                     Completed
                   </span>
                 </div>
-                <div className="p-3 bg-[#edf5fd] rounded-lg border border-[rgba(68,140,210,0.12)]">
-                  <span className="text-lg font-bold text-[var(--primary-color)] block">
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#6366f1]/30 transition-colors">
+                  <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                     {intelData?.participation?.assigned || 0}
                   </span>
-                  <span className="text-[9px] font-semibold text-[#5d5d5d] uppercase tracking-wider">
+                  <span className="text-[9px] font-bold text-[#6366f1] uppercase tracking-wider block mt-1">
                     Assigned
+                  </span>
+                </div>
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#F59E0B]/30 transition-colors">
+                  <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
+                    {intelData?.participation?.pending || 0}
+                  </span>
+                  <span className="text-[9px] font-bold text-[#F59E0B] uppercase tracking-wider block mt-1">
+                    Pending
+                  </span>
+                </div>
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#448CD2]/30 transition-colors">
+                  <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
+                    {intelData?.stats?.[0]?.value || 0}
+                  </span>
+                  <span className="text-[9px] font-bold text-[#448CD2] uppercase tracking-wider block mt-1">
+                    Orgs
                   </span>
                 </div>
               </div>
@@ -516,62 +536,64 @@ const SuperAdminOverview = () => {
 
             <button
               onClick={() => navigate("/dashboard/org-assessments")}
-              className="bg-gradient-to-r from-[#1a3652] to-[var(--primary-color)] px-5 py-4 rounded-xl shadow-[4px_4px_14px_rgba(68,140,210,0.2)] flex items-center justify-between text-white group hover:shadow-[4px_6px_20px_rgba(68,140,210,0.3)] hover:scale-[1.01] transition-all active:scale-[0.99]"
+              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-[20px] shadow-lg flex items-center justify-between text-white group hover:shadow-2xl hover:scale-[1.01] transition-all active:scale-[0.99] border border-white/10"
             >
-              <div className="text-left">
-                <p className="text-[9px] font-medium text-[#c7e0f8] uppercase tracking-widest mb-0.5">
-                  Governance
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+              <div className="text-left relative z-10">
+                <p className="text-[9px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
+                  Governance Module
                 </p>
-                <h4 className="text-sm font-bold">Audit Client Portfolios</h4>
+                <h4 className="text-base font-black tracking-wide">Audit Client Portfolios</h4>
               </div>
-              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center border border-white/25 group-hover:bg-white/30 transition-all">
-                <Icon icon="solar:arrow-right-up-bold" width="17" />
+              <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all relative z-10">
+                <Icon icon="solar:arrow-right-up-bold" width="20" />
               </div>
             </button>
           </div>
 
           {/* Team Stream */}
-          <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] shadow-[4px_4px_4px_0_rgba(68,140,210,0.07)] p-5 flex flex-col">
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(68,140,210,0.1)]">
+          <div className="xl:col-span-4 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-[#448CD2]"></div>
+
+            <div className="flex items-center justify-between mb-8 relative z-10">
               <div>
-                <h3 className="text-sm font-bold text-[#1a3652]">Team Stream</h3>
-                <p className="text-[10px] text-[#5d5d5d] mt-0.5">
-                  Live activity feed
+                <h3 className="text-lg font-black text-[var(--app-heading-color)] tracking-tight">Global Stream</h3>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                  Live platform feed
                 </p>
               </div>
-              <span className="flex items-center gap-1 px-2.5 py-1 bg-[#10b981]/10 text-[#10b981] rounded-full text-[9px] font-semibold uppercase border border-[#10b981]/20">
-                <span className="w-1 h-1 rounded-full bg-[#10b981] animate-pulse" />
+              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10b981]/10 text-[#10b981] rounded-full text-[9px] font-black uppercase tracking-wider border border-[#10b981]/20 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
                 Live
               </span>
             </div>
-            <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar max-h-[300px] pr-1">
-              {recentActivities.length > 0 ? (
+
+            <div className="flex-1 space-y-5 overflow-y-auto no-scrollbar max-h-[350px] relative z-10">
+              {recentActivities?.length > 0 ? (
                 recentActivities.map((log: any, i: number) => (
                   <div
                     key={log.id || i}
-                    className="flex gap-2.5 p-2.5 rounded-lg hover:bg-[#f5faff] transition-colors group cursor-default"
+                    className="flex gap-4 group/item cursor-default"
                   >
-                    <div
-                      className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm"
-                      style={{
-                        background:
-                          log.type === "submission"
-                            ? "linear-gradient(135deg,#10b981,#059669)"
-                            : "linear-gradient(135deg,#448cd2,#2d5d8c)",
-                      }}
-                    >
-                      {(log.org || "?")[0].toUpperCase()}
+                    <div className="mt-1">
+                      <div
+                        className={`w-3 h-3 rounded-full flex flex-shrink-0 items-center justify-center ${log.type === "submission" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}
+                      >
+                        <span className="text-[6px] font-bold text-white uppercase">{log.org?.[0] || "?"}</span>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-[#1a3652] leading-tight truncate group-hover:text-[var(--primary-color)] transition-colors">
+                    <div>
+                      <h4 className="text-[13px] font-black text-[var(--app-heading-color)] group-hover/item:text-[var(--primary-color)] transition-colors truncate max-w-[180px]">
                         {log.org}
-                      </p>
-                      <p className="text-[10px] text-[#5d5d5d] mt-0.5 leading-snug">
+                      </h4>
+                      <p className="text-[11px] text-[var(--app-text-muted)] mt-1 font-medium italic">
                         {log.action}
                       </p>
-                      <span className="text-[9px] text-[#5d5d5d] opacity-40 mt-0.5 block">
-                        {log.time}
-                      </span>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                          {log.time ? new Date(log.time).toLocaleDateString() : 'Just now'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -579,21 +601,71 @@ const SuperAdminOverview = () => {
                 <div className="flex-1 flex flex-col items-center justify-center py-16">
                   <Icon
                     icon="solar:history-bold-duotone"
-                    width="36"
-                    className="text-[#5d5d5d] opacity-20"
+                    width="40"
+                    className="text-slate-300 dark:text-slate-600 opacity-50"
                   />
-                  <p className="text-[10px] text-[#5d5d5d] opacity-40 uppercase tracking-widest mt-3">
-                    No activity yet
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">
+                    Monitoring grid...
                   </p>
                 </div>
               )}
             </div>
+
             <button
               onClick={() => navigate("/dashboard/notifications")}
-              className="w-full mt-4 py-2 bg-[#edf5fd] text-[var(--primary-color)] text-[10px] font-semibold uppercase tracking-widest rounded-lg hover:bg-[#e4f0fc] transition-all border border-[rgba(68,140,210,0.2)]"
+              className="w-full mt-6 py-4 bg-[var(--app-surface-soft)] border border-[var(--app-border-color)] rounded-[14px] text-[10px] font-black uppercase tracking-[0.25em] text-[var(--app-text-muted)] hover:bg-[#448CD2] hover:text-white hover:border-[#448CD2] transition-all duration-300 relative z-10"
             >
-              See full activity log
+              Analyze Data Stream
             </button>
+          </div>
+        </div>
+
+
+        {/* ── AI-Powered Platform Observations ── */}
+        <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">AI-Powered Platform Observations</h3>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">POD Insights™ Super Admin Intelligence</p>
+            </div>
+            <div className="w-9 h-9 bg-[#8E54E9]/10 rounded-[12px] flex items-center justify-center">
+              <Icon icon="solar:magic-stick-3-bold-duotone" className="text-[#8E54E9]" width="18" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                icon: "solar:graph-up-bold", color: "#10B981", bg: "bg-[#10B981]/10",
+                title: "Platform Momentum",
+                body: (intelData?.participation?.rate || 0) >= 70
+                  ? `Platform completion is at ${intelData?.participation?.rate || 0}% — exceeding the 70% benchmark. ${intelData?.stats?.[0]?.value || 0} active organizations are contributing to a strong Q${selectedQuarter} cycle.`
+                  : (intelData?.participation?.rate || 0) >= 40
+                    ? `Completion rate stands at ${intelData?.participation?.rate || 0}%across ${intelData?.stats?.[0]?.value || 0} organizations. Targeted org-level outreach can push this past the 70% platform benchmark.`
+                    : `Completion is below benchmark at ${intelData?.participation?.rate || 0}%. Consider escalating outreach across all ${intelData?.stats?.[0]?.value || 0} client organizations.`,
+              },
+              {
+                icon: "solar:buildings-2-bold-duotone", color: "#448CD2", bg: "bg-[#448CD2]/10",
+                title: "Organizational Coverage",
+                body: `${intelData?.stats?.[1]?.value || 0} users are registered across ${intelData?.stats?.[0]?.value || 0} organizations. The most active group this quarter is ${Object.entries(intelData?.completionByRole || {}).sort(([, a], [, b]) => (b as number) - (a as number))[0]?.[0] || 'N/A'}. ${intelData?.participation?.pending || 0} assessments are still pending platform-wide.`,
+              },
+              {
+                icon: "solar:shield-check-bold-duotone", color: "#F59E0B", bg: "bg-[#F59E0B]/10",
+                title: "Client Health Signal",
+                body: (intelData?.participation?.pending || 0) > 10
+                  ? `${intelData?.participation?.pending || 0} assessments remain pending. Priority intervention is recommended for organizations with zero completions this quarter to maintain platform integrity.`
+                  : `Pending queue is healthy at ${intelData?.participation?.pending || 0}. Platform data integrity is strong. Continue monitoring role-level compliance across all organizations.`,
+              },
+            ].map((obs, i) => (
+              <div key={i} className="flex gap-4 p-5 bg-[var(--app-surface-soft)] rounded-[18px] border border-[var(--app-border-color)]/50 hover:border-[var(--app-border-color)] transition-colors">
+                <div className={`w-10 h-10 shrink-0 ${obs.bg} rounded-[12px] flex items-center justify-center mt-0.5`}>
+                  <Icon icon={obs.icon} width="20" style={{ color: obs.color }} />
+                </div>
+                <div>
+                  <h4 className="text-[12px] font-black text-[var(--app-heading-color)] mb-1.5">{obs.title}</h4>
+                  <p className="text-[11px] text-[var(--app-text-muted)] leading-relaxed">{obs.body}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
