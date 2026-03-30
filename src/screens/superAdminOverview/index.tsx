@@ -12,7 +12,7 @@ const SuperAdminOverview = () => {
   const [selectedQuarter, setSelectedQuarter] = useState(
     Math.floor(new Date().getMonth() / 3) + 1,
   );
-  const [selectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("visual");
   const [selectedRole, setSelectedRole] = useState<string>("Administrators");
 
@@ -169,16 +169,27 @@ const SuperAdminOverview = () => {
               </div>
             </div>
             <div className="flex items-center gap-5">
-              <div className="flex items-center justify-end bg-[#edf5fd] p-1 rounded-full border border-[rgba(68,140,210,0.2)]">
-                {[1, 2, 3, 4].map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => setSelectedQuarter(q)}
-                    className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${selectedQuarter === q ? "bg-[var(--primary-color)] text-white shadow-sm" : "text-[#5d5d5d] hover:text-[var(--primary-color)]"}`}
-                  >
-                    Q{q}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2">
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full px-4 py-1.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-[var(--primary-color)] transition-all"
+                >
+                  {[2024, 2025, 2026, 2027, 2028].map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+                <div className="flex items-center justify-end bg-[#edf5fd] p-1 rounded-full border border-[rgba(68,140,210,0.2)]">
+                  {[1, 2, 3, 4].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => setSelectedQuarter(q)}
+                      className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${selectedQuarter === q ? "bg-[var(--primary-color)] text-white shadow-sm" : "text-[#5d5d5d] hover:text-[var(--primary-color)]"}`}
+                    >
+                      Q{q}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="px-1.5 py-0.5 bg-[#edf5fd] border border-[rgba(68,140,210,0.2)] rounded-full flex items-center gap-1">
                 <Icon

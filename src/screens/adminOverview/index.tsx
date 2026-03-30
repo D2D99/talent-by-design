@@ -7,7 +7,10 @@ import SpinnerLoader from "../../components/spinnerLoader";
 
 const AdminOverview = () => {
   const navigate = useNavigate();
-  const [timeRange, setTimeRange] = useState("This Month");
+  const [selectedQuarter, setSelectedQuarter] = useState(
+    Math.floor(new Date().getMonth() / 3) + 1,
+  );
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [intelData, setIntelData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +18,7 @@ const AdminOverview = () => {
     const fetchIntelligence = async () => {
       try {
         const res = await api.get(
-          `assessment/admin/intelligence?range=${timeRange}`,
+          `assessment/admin/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`,
         );
         setIntelData(res.data);
       } catch (error) {
@@ -25,7 +28,7 @@ const AdminOverview = () => {
       }
     };
     fetchIntelligence();
-  }, [timeRange]);
+  }, [selectedQuarter, selectedYear]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -86,16 +89,29 @@ const AdminOverview = () => {
             <p className="text-gray-500 text-sm">Internal Workspace Hub</p>
           </div>
 
-          <div className="flex items-center gap-3 bg-[var(--app-surface-soft)] p-1.5 rounded-[14px] border border-[var(--app-border-color)]">
-            {["This Week", "This Month", "Quarterly"].map((range) => (
-              <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={`px-5 py-2.5 rounded-[10px] text-[11px] font-black uppercase tracking-widest transition-all ${timeRange === range ? "bg-[var(--primary-color)] text-white shadow-md" : "text-[var(--app-text-muted)] hover:text-[var(--primary-color)]"}`}
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full px-4 py-1.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-[var(--primary-color)] transition-all"
               >
-                {range}
-              </button>
-            ))}
+                {[2024, 2025, 2026, 2027, 2028].map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+              <div className="flex items-center justify-end bg-[#edf5fd] p-1 rounded-full border border-[rgba(68,140,210,0.2)]">
+                {[1, 2, 3, 4].map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => setSelectedQuarter(q)}
+                    className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${selectedQuarter === q ? "bg-[var(--primary-color)] text-white shadow-sm" : "text-[#5d5d5d] hover:text-[var(--primary-color)]"}`}
+                  >
+                    Q{q}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
