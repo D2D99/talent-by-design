@@ -158,39 +158,18 @@ const ManagerOverview = () => {
                   Role Distribution
                 </p>
               </div>
-              <div className="w-10 h-10 bg-[var(--app-surface-soft)] rounded-full flex items-center justify-center text-[var(--app-text-muted)] border border-[var(--app-border-color)]">
+              <div className="w-10 h-10 bg-[var(--app-surface-soft)] rounded-full flex items-center justify-center text-[var(--app-text-muted)] border border-[var(--app-border-color)] transition-transform duration-500 hover:rotate-180">
                 <Icon icon="solar:pie-chart-bold-duotone" width="20" />
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center">
-              <div className="w-full h-[220px] flex items-center justify-center">
+            <div className="flex-1 flex flex-col items-center justify-center pt-2">
+              <div className="w-full h-[240px] flex items-center justify-center relative overflow-hidden">
                 <PieChart
                   labels={roleLabels}
                   data={roleData}
                   colors={roleColors}
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-4 w-full mt-8">
-                {roleLabels.map((label, i) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-3 p-3 bg-[var(--app-surface-soft)] rounded-[12px] border border-[var(--app-border-color)]/30"
-                  >
-                    <div
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: roleColors[i] }}
-                    ></div>
-                    <div>
-                      <p className="text-[10px] font-black text-[var(--app-heading-color)] uppercase tracking-wider">
-                        {label}
-                      </p>
-                      <p className="text-[10px] font-bold text-slate-400">
-                        {roleData[i]} members
-                      </p>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -360,20 +339,6 @@ const ManagerOverview = () => {
             </button>
           </div>
         </div>
-
-        {/* Footer Branding */}
-        <div className="flex flex-col items-center pt-10 pb-4 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-1 h-1 rounded-full bg-[var(--primary-color)]"></div>
-            <p className="text-[10px] font-black text-[var(--app-text-muted)] uppercase tracking-[1em] ml-1">
-              Team Hub
-            </p>
-          </div>
-          <img src="/static/img/home/logo.svg" className="h-6" alt="logo" />
-        </div>
-      </div>
-      <div id="manager-report-section">
-        <ManagerReport />
       </div>
     </>
   );

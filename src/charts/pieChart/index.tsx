@@ -22,18 +22,23 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
         const textColor = getComputedStyle(document.documentElement).getPropertyValue('--app-text-muted') || '#5d5d5d';
         const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--app-surface') || '#ffffff';
 
+        const hasZeroData = data.every(val => val === 0);
+        const displayData = hasZeroData ? [1] : data;
+        const displayLabels = hasZeroData ? ["No data currently available"] : labels;
+        const displayColors = hasZeroData ? (isDarkMode ? ["#334155"] : ["#cbd5e1"]) : (colors || ["#448CD2", "#10b981", "#8E54E9", "#f59e0b"]);
+
         if (canvasRef.current && data.length > 0) {
             chartRef.current = new Chart(canvasRef.current, {
                 type: "pie",
                 data: {
-                    labels: labels,
+                    labels: displayLabels,
                     datasets: [
                         {
-                            data: data,
-                            backgroundColor: colors || ["#448CD2", "#10b981", "#8E54E9", "#f59e0b"],
+                            data: displayData,
+                            backgroundColor: displayColors,
                             borderColor: borderColor,
                             borderWidth: 2,
-                            hoverOffset: 12
+                            hoverOffset: hasZeroData ? 0 : 12
                         },
                     ],
                 },
@@ -57,6 +62,7 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
                             }
                         },
                         tooltip: {
+                            enabled: !hasZeroData,
                             backgroundColor: isDarkMode ? '#1e293b' : '#0f172a',
                             titleFont: { size: 12, weight: 'bold' },
                             bodyFont: { size: 11 },
@@ -64,6 +70,7 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
                             cornerRadius: 8,
                             callbacks: {
                                 label: (context) => {
+                                    if (hasZeroData) return " No data available";
                                     const total = context.dataset.data.reduce((a, b) => a + (b as number), 0);
                                     const value = context.parsed as number;
                                     const percentage = ((value / total) * 100).toFixed(1) + "%";
