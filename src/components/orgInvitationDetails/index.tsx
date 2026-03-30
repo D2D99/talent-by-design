@@ -182,9 +182,10 @@ const OrgInvitationDetails = () => {
               </div>
               <div className="p-3 bg-blue-200/50 rounded-lg">
                 <Icon
-                  icon="solar:users-group-rounded-bold"
-                  className="text-[var(--primary-color)]"
+                  icon="solar:users-group-two-rounded-line-duotone"
                   width="24"
+                  height="24"
+                  className="text-[var(--primary-color)]"
                 />
               </div>
             </div>
@@ -202,9 +203,10 @@ const OrgInvitationDetails = () => {
               </div>
               <div className="p-3 bg-green-200/50 rounded-lg">
                 <Icon
-                  icon="solar:check-circle-bold"
-                  className="text-green-600"
+                  icon="prime:check-circle"
                   width="24"
+                  className="text-green-600"
+                  height="24"
                 />
               </div>
             </div>
@@ -222,9 +224,10 @@ const OrgInvitationDetails = () => {
               </div>
               <div className="p-3 bg-yellow-200/50 rounded-lg">
                 <Icon
-                  icon="solar:clock-circle-bold"
+                  icon="formkit:time"
                   className="text-yellow-600"
                   width="24"
+                  height="24"
                 />
               </div>
             </div>
@@ -242,9 +245,10 @@ const OrgInvitationDetails = () => {
               </div>
               <div className="p-3 bg-red-200/50 rounded-lg">
                 <Icon
-                  icon="solar:close-circle-bold"
-                  className="text-red-600"
+                  icon="solar:close-circle-line-duotone"
                   width="24"
+                  height="24"
+                  className="text-red-600"
                 />
               </div>
             </div>
@@ -262,7 +266,7 @@ const OrgInvitationDetails = () => {
           />
           <input
             type="text"
-            placeholder="Search by name, email, role..."
+            placeholder="Search by name, email, dept, role..."
             value={searchTerm}
             autoComplete="off"
             onChange={(e) => setSearchTerm(e.target.value)}

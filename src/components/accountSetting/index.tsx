@@ -364,18 +364,20 @@ const AccountSetting = () => {
                         {[...Array(5)].map((_, i) => (
                           <div
                             key={i}
-                            className={`h-full flex-1 transition-all duration-500 ${i < strengthCount
+                            className={`h-full flex-1 transition-all duration-500 ${
+                              i < strengthCount
                                 ? strengthColor
                                 : "bg-transparent"
-                              }`}
+                            }`}
                           />
                         ))}
                       </div>
                       <p
-                        className={`text-[10px] mt-1 font-bold uppercase ${strengthCount === 5
+                        className={`text-[10px] mt-1 font-bold uppercase ${
+                          strengthCount === 5
                             ? "text-green-600"
                             : "text-gray-400"
-                          }`}
+                        }`}
                       >
                         Strength:{" "}
                         {strengthCount === 5
@@ -486,15 +488,13 @@ const AccountSetting = () => {
               aria-labelledby="tabs-notification-tab"
             >
               <div className="space-y-6 max-w-2xl">
-                <div className="bg-blue-50/50 p-4 rounded-lg flex items-start gap-3 border border-blue-100">
+                <div className="bg-blue-50/50 p-4 rounded-lg flex items-start gap-2.5 border border-blue-100">
                   <Icon
-                    icon="solar:info-circle-bold"
-                    className="text-[#448CD2] w-6 h-6 flex-shrink-0 mt-0.5"
+                    icon="ph:info"
+                    className="text-[#448CD2] w-5 h-5 flex-shrink-0 mt-0.5"
                   />
                   <div>
-                    <h5 className="font-bold text-[#1a3652] text-sm">
-                      Control your alerts
-                    </h5>
+                    <h5 className="font-bold text-sm">Control your alerts</h5>
                     <p className="text-xs text-gray-500 mt-1">
                       Choose how you want to be notified about important
                       updates. Changes are saved automatically.

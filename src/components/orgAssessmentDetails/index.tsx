@@ -219,9 +219,10 @@ const OrgAssessmentDetails = () => {
               </div>
               <div className="p-3 bg-blue-200/50 rounded-lg">
                 <Icon
-                  icon="solar:users-group-rounded-bold"
+                  icon="heroicons:users"
                   className="text-[var(--primary-color)]"
                   width="24"
+                  height="24"
                 />
               </div>
             </div>
@@ -239,7 +240,7 @@ const OrgAssessmentDetails = () => {
               </div>
               <div className="p-3 bg-green-200/50 rounded-lg">
                 <Icon
-                  icon="solar:check-circle-bold"
+                  icon="prime:check-circle"
                   className="text-green-600"
                   width="24"
                 />
@@ -259,7 +260,7 @@ const OrgAssessmentDetails = () => {
               </div>
               <div className="p-3 bg-yellow-200/50 rounded-lg">
                 <Icon
-                  icon="solar:hourglass-bold"
+                  icon="basil:sand-watch-outline"
                   className="text-yellow-600"
                   width="24"
                 />
@@ -279,7 +280,7 @@ const OrgAssessmentDetails = () => {
               </div>
               <div className="p-3 bg-red-200/50 rounded-lg">
                 <Icon
-                  icon="solar:bell-bold"
+                  icon="wordpress:pending"
                   className="text-red-600"
                   width="24"
                 />
@@ -299,7 +300,7 @@ const OrgAssessmentDetails = () => {
               </div>
               <div className="p-3 bg-purple-200/50 rounded-lg">
                 <Icon
-                  icon="solar:pie-chart-2-bold"
+                  icon="heroicons:chart-pie"
                   className="text-purple-600"
                   width="24"
                 />
@@ -319,7 +320,7 @@ const OrgAssessmentDetails = () => {
           />
           <input
             type="text"
-            placeholder="Search by name, email, role..."
+            placeholder="Search by name, email, dept, role..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-[#448CD2] focus:ring-1 focus:ring-[#448CD2] transition-all text-gray-700"

@@ -59,21 +59,6 @@ const SuperAdminStats = () => {
             </p>
           </div>
         </div>
-
-        <div className="relative flex-1 max-w-md">
-          <Icon
-            icon="tabler:search"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            width="20"
-          />
-          <input
-            type="text"
-            placeholder="Search organizations..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
-          />
-        </div>
       </div>
 
       {/* Stats Cards */}
@@ -106,6 +91,23 @@ const SuperAdminStats = () => {
           color="text-orange-600"
           bgColor="bg-orange-200/25"
         />
+      </div>
+
+      <div className="flex justify-end mb-6 mt-14">
+        <div className="relative flex-1 max-w-md">
+          <Icon
+            icon="tabler:search"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            width="20"
+          />
+          <input
+            type="text"
+            placeholder="Search organizations..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
+          />
+        </div>
       </div>
 
       <div className="grid">

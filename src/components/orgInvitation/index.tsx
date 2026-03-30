@@ -744,11 +744,17 @@ const OrgInvitation = () => {
                           </td>
                           <td className="px-6 py-4 text-xs">
                             {isSuperAdmin ? (
-                              <div className="flex items-center gap-2 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100">
-                                <Icon
+                              <div className="flex items-center gap-1 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100">
+                                {/* <Icon
                                   icon="solar:users-group-rounded-bold"
                                   width="12"
+                                /> */}
+                                <Icon
+                                  icon="solar:users-group-two-rounded-line-duotone"
+                                  width="14"
+                                  height="14"
                                 />
+
                                 <span className="font-bold">
                                   {item.totalUsers || 0}
                                 </span>
