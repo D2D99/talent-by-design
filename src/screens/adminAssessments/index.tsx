@@ -54,7 +54,7 @@ const AdminAssessments = () => {
   const handleResetAssessment = async (memberId: string) => {
     setIsProcessing(true);
     try {
-      await api.post(`/auth/reset-individual-assessment/${memberId}`);
+      await api.delete(`/auth/reset-assessment/${memberId}`);
       toast.success("Assessment reset successfully");
       fetchMembers();
       // Close modal
@@ -112,101 +112,46 @@ const AdminAssessments = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-[var(--primary-color)] uppercase tracking-wider">
-                Total Team
-              </p>
-              <p className="text-2xl font-bold text-[var(--primary-color)] mt-1">
-                {members.length}
-              </p>
+        {[
+          {
+            label: "Total Team",
+            value: members.length,
+            icon: "solar:users-group-two-rounded-broken",
+            color: "#448CD2",
+            bg: "bg-blue-50/50"
+          },
+          {
+            label: "Completed",
+            value: members.filter((m) => m.assessmentStatus === "Completed").length,
+            icon: "prime:check-circle",
+            color: "#10B981",
+            bg: "bg-green-50/50"
+          },
+          {
+            label: "In Progress",
+            value: members.filter((m) => m.assessmentStatus === "In Progress").length,
+            icon: "basil:sand-watch-outline",
+            color: "#6366F1",
+            bg: "bg-indigo-50/50"
+          },
+          {
+            label: "Not Started",
+            value: members.filter((m) => !m.assessmentStatus || m.assessmentStatus === "Not Started").length,
+            icon: "hugeicons:time-04",
+            color: "#F59E0B",
+            bg: "bg-amber-50/50"
+          }
+        ].map((stat, i) => (
+          <div key={i} className={`border border-neutral-100 rounded-xl p-5 flex items-center gap-5 transition-all hover:shadow-md bg-white`}>
+            <div className={`w-12 h-12 rounded-lg shrink-0 flex items-center justify-center`} style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
+              <Icon icon={stat.icon} width="24" height="24" />
             </div>
-            <div className="p-3 bg-blue-200/50 rounded-lg">
-              <Icon
-                icon="solar:users-group-two-rounded-broken"
-                className="text-[var(--primary-color)]"
-                width="24"
-                height="24"
-              />
+            <div>
+              <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{stat.label}</p>
+              <p className="text-2xl font-bold leading-tight mt-0.5" style={{ color: stat.color }}>{stat.value}</p>
             </div>
           </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
-                Completed
-              </p>
-              <p className="text-2xl font-bold text-green-600 mt-1">
-                {
-                  members.filter((m) => m.assessmentStatus === "Completed")
-                    .length
-                }
-              </p>
-            </div>
-            <div className="p-3 bg-green-200/50 rounded-lg">
-              <Icon
-                icon="prime:check-circle"
-                width="24"
-                height="24"
-                className="text-green-600"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                In Progress
-              </p>
-              <p className="text-2xl font-bold text-blue-600 mt-1">
-                {
-                  members.filter((m) => m.assessmentStatus === "In Progress")
-                    .length
-                }
-              </p>
-            </div>
-            <div className="p-3 bg-blue-200/50 rounded-lg">
-              <Icon
-                icon="basil:sand-watch-outline"
-                width="24"
-                height="24"
-                className="text-blue-600"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">
-                Not Started
-              </p>
-              <p className="text-2xl font-bold text-amber-600 mt-1">
-                {
-                  members.filter(
-                    (m) =>
-                      !m.assessmentStatus ||
-                      m.assessmentStatus === "Not Started",
-                  ).length
-                }
-              </p>
-            </div>
-            <div className="p-3 bg-amber-200/50 rounded-lg">
-              <Icon
-                icon="hugeicons:time-04"
-                width="24"
-                height="24"
-                className="text-amber-600"
-              />
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="flex justify-end mt-14 mb-8">
@@ -218,7 +163,7 @@ const AdminAssessments = () => {
           />
           <input
             type="text"
-            placeholder="Search team members by name, email, dept..."
+            placeholder="Search team members by name, email..."
             value={searchTerm}
             autoComplete="off"
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -235,7 +180,6 @@ const AdminAssessments = () => {
               <th className="px-6 py-4 font-semibold">#</th>
               <th className="px-6 py-4 font-semibold">Name</th>
               <th className="px-6 py-4 font-semibold">Email</th>
-              <th className="px-6 py-4 font-semibold">Department</th>
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold text-nowrap">
                 Assessment Status
@@ -287,9 +231,6 @@ const AdminAssessments = () => {
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {member.email}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {member.department || "—"}
-                  </td>
                   <td className="px-6 py-4">
                     <span className="uppercase text-xs font-bold ">
                       {member.role}
@@ -299,15 +240,14 @@ const AdminAssessments = () => {
                     <span
                       className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center
-                         ${
-                           status === "Completed"
-                             ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
-                             : status === "In Progress"
-                               ? "bg-blue-100 text-blue-600 border-blue-600"
-                               : status === "Due"
-                                 ? "bg-amber-100 text-amber-600 border-amber-600"
-                                 : "bg-gray-100 text-gray-400 border-gray-400"
-                         }`}
+                         ${status === "Completed"
+                          ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
+                          : status === "In Progress"
+                            ? "bg-blue-100 text-blue-600 border-blue-600"
+                            : status === "Due"
+                              ? "bg-amber-100 text-amber-600 border-amber-600"
+                              : "bg-gray-100 text-gray-400 border-gray-400"
+                        }`}
                     >
                       {status}
                     </span>
@@ -316,24 +256,22 @@ const AdminAssessments = () => {
                     <div className="pt-2">
                       <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-700 ease-out ${
-                            percentage === 100
-                              ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
-                              : percentage >= 50
-                                ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
-                                : "bg-gradient-to-r from-amber-400 to-amber-500"
-                          }`}
+                          className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
+                            ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
+                            : percentage >= 50
+                              ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
+                              : "bg-gradient-to-r from-amber-400 to-amber-500"
+                            }`}
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
                       <span
-                        className={`text-xs font-semibold w-10 ${
-                          percentage === 100
-                            ? "text-green-600"
-                            : percentage >= 50
-                              ? "text-[#448CD2]"
-                              : "text-neutral-300"
-                        }`}
+                        className={`text-xs font-semibold w-10 ${percentage === 100
+                          ? "text-green-600"
+                          : percentage >= 50
+                            ? "text-[#448CD2]"
+                            : "text-neutral-300"
+                          }`}
                       >
                         {percentage}%
                       </span>

@@ -508,6 +508,8 @@ const ManagerReport = () => {
     "No specific recommendations available for this domain yet.",
   ];
 
+  const displayCoachingTips = detailedPods?.coachingTips?.items || [];
+
   // Calculate radar data dynamically from responses
   // Manager series = manager's OWN subdomain scores (self-assessment)
   // Team series    = REAL dept avg from backend
@@ -1480,7 +1482,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2">
-                  {displayKRs.map((kr: any, idx: number) => (
+                  {displayCoachingTips.map((tip: string, idx: number) => (
                     <li key={idx} className="feature-list flex gap-2">
                       <img
                         src={IconStar}
@@ -1488,11 +1490,11 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                         className="mt-1 w-4 h-4 shrink-0"
                       />
                       <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {kr.text}
+                        {tip}
                       </span>
                     </li>
                   ))}
-                  {displayKRs.length === 0 && (
+                  {displayCoachingTips.length === 0 && (
                     <li className="text-xs text-gray-400 italic">
                       No coaching tips available for this domain.
                     </li>

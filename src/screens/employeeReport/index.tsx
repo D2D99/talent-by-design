@@ -469,6 +469,8 @@ const EmployeeReport = () => {
       value: detailedPods.objectives.progress || 0,
     })) || [];
 
+  const displayCoachingTips = detailedPods?.coachingTips?.items || [];
+
   const displayRecommendations = detailedPods?.recommendations?.items || [
     "No specific recommendations available for this domain yet.",
   ];
@@ -1109,6 +1111,58 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                     </p>
                   )}
                 </div>
+              </div>
+
+              <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="text-xl font-bold capitalize">
+                        Coaching Tips
+                      </h3>
+
+                      <div className="flex items-center">
+                        <EditableTooltip
+                          id="coachingTips"
+                          defaultContent={
+                            <>
+                              <p className="mb-2">
+                                Provides targeted, actionable guidance to support
+                                leaders and teams in improving performance and
+                                adoption.
+                              </p>
+                              <p>
+                                Aligned to key capability areas these tips help
+                                address friction, build consistency, and sustain
+                                progress across the organization.
+                              </p>
+                            </>
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <img src={StreamlinePlump} alt="images" className="w-8 h-8" />
+                </div>
+                <ul className="space-y-2">
+                  {displayCoachingTips.map((tip: string, idx: number) => (
+                    <li key={idx} className="flex gap-2 text-left">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 mt-0.5 shrink-0"
+                      />
+                      <span className="text-sm text-[#64748B] font-medium">
+                        {tip}
+                      </span>
+                    </li>
+                  ))}
+                  {displayCoachingTips.length === 0 && (
+                    <li className="text-xs text-gray-400 italic">
+                      No coaching tips available for this domain.
+                    </li>
+                  )}
+                </ul>
               </div>
               <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
                 <div className="flex items-center justify-between mb-4">

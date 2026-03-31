@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
 import IconStar from "../../../public/static/img/icons/ic-star.svg";
 import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
-// import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
 // import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
 // import LastGraph from "../../../public/static/img/home/last-graph.svg";
 // import kri from "../../../public/static/img/home/kdi1111.svg";
@@ -415,7 +415,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -443,16 +443,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -466,6 +466,8 @@ const AdminReport = () => {
       text: text,
       value: detailedPods.objectives.progress || 0,
     })) || [];
+
+  const displayCoachingTips = detailedPods?.coachingTips?.items || [];
 
   // const displayRecommendations = detailedPods?.recommendations?.items || [
   //   "No specific recommendations available for this domain yet.",
@@ -793,9 +795,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                  value: selectedMember._id,
+                  label: selectedMember.name,
+                }
                 : null
             }
             onChange={(option: any) => {
@@ -1081,9 +1083,9 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1299,7 +1301,64 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8"></div>
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                <div className="flex items-center justify-between ">
+                  <div>
+                    <div className="flex gap-2">
+                      <h3 className="sm:text-xl text-lg font-bold capitalize">
+                        Coaching Tips
+                      </h3>
+                      <div className="flex items-center">
+                        <EditableTooltip
+                          id="coachingTips"
+                          defaultContent={
+                            <>
+                              <p className="mb-2">
+                                Provides targeted, actionable guidance to support
+                                leaders and teams in improving performance and
+                                adoption.
+                              </p>
+                              <p>
+                                Aligned to key capability areas these tips help
+                                address friction, build consistency, and sustain
+                                progress across the organization.
+                              </p>
+                            </>
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <img
+                      src={StreamlinePlump}
+                      alt="images"
+                      className="w-8 h-8"
+                    />
+                  </div>
+                </div>
+                <ul className="mt-4 space-y-2">
+                  {displayCoachingTips.map((tip: string, idx: number) => (
+                    <li key={idx} className="feature-list flex gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="mt-1 w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm text-[var(--secondary-color)] font-normal">
+                        {tip}
+                      </span>
+                    </li>
+                  ))}
+                  {displayCoachingTips.length === 0 && (
+                    <li className="text-xs text-gray-400 italic">
+                      No coaching tips available for this domain.
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
 
             <div className="mt-8 grid lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">

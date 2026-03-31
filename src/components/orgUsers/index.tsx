@@ -246,7 +246,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                currentUser?.role === "manager"
+                  currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -265,87 +265,58 @@ const OrgUsers = ({
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4 ">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-[var(--primary-color)] uppercase tracking-wider">
-                    Total Active
-                  </p>
-                  <p className="text-2xl font-bold text-[var(--primary-color)] mt-1">
-                    {acceptedUsers}
-                  </p>
+            {[
+              {
+                label: "Total Active",
+                value: acceptedUsers,
+                icon: "solar:bill-list-broken",
+                color: "#448CD2",
+              },
+              {
+                label: "Team Leaders",
+                value: roleStats.leaders,
+                icon: "solar:user-broken",
+                color: "#6366F1",
+              },
+              {
+                label: "Managers",
+                value: roleStats.managers,
+                icon: "solar:users-group-rounded-broken",
+                color: "#F59E0B",
+              },
+              {
+                label: "Employees",
+                value: roleStats.employees,
+                icon: "solar:users-group-two-rounded-broken",
+                color: "#10B981",
+              },
+            ].map((stat, i) => (
+              <div
+                key={i}
+                className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5 transition-all hover:shadow-md"
+              >
+                <div
+                  className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${stat.color}15`,
+                    color: stat.color,
+                  }}
+                >
+                  <Icon icon={stat.icon} width="24" height="24" />
                 </div>
-                <div className="p-3 bg-blue-200/50 rounded-lg">
-                  <Icon
-                    className="text-[var(--primary-color)]"
-                    icon="solar:bill-list-broken"
-                    width="24"
-                    height="24"
-                  />
+                <div className="min-w-0">
+                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider truncate">
+                    {stat.label}
+                  </p>
+                  <p
+                    className="text-2xl font-bold leading-tight mt-0.5"
+                    style={{ color: stat.color }}
+                  >
+                    {stat.value}
+                  </p>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 border border-indigo-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
-                    Team Leaders
-                  </p>
-                  <p className="text-2xl font-bold text-indigo-600 mt-1">
-                    {roleStats.leaders}
-                  </p>
-                </div>
-                <div className="p-3 bg-indigo-200/50 rounded-lg">
-                  <Icon
-                    className="text-indigo-600"
-                    icon="solar:user-broken"
-                    width="24"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">
-                    Managers
-                  </p>
-                  <p className="text-2xl font-bold text-amber-600 mt-1">
-                    {roleStats.managers}
-                  </p>
-                </div>
-                <div className="p-3 bg-amber-200/50 rounded-lg">
-                  <Icon
-                    icon="solar:users-group-rounded-broken"
-                    className="text-amber-600"
-                    width="24"
-                    height="24"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
-                    EMPLOYEES
-                  </p>
-                  <p className="text-2xl font-bold text-green-600 mt-1">
-                    {roleStats.employees}
-                  </p>
-                </div>
-                <div className="p-3 bg-green-200/50 rounded-lg">
-                  <Icon
-                    className="text-green-600"
-                    icon="solar:users-group-two-rounded-broken"
-                    width="24"
-                  />
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       )}

@@ -474,6 +474,8 @@ const LeaderReport = () => {
   //   "No specific recommendations available for this domain yet.",
   // ];
 
+  const displayCoachingTips = detailedPods?.coachingTips?.items || [];
+
   const topPriorities = Object.entries(reportData?.scores?.domains || {})
     .sort(([, a]: any, [, b]: any) => a.score - b.score)
     .slice(0, 3)
@@ -1365,7 +1367,7 @@ Aligned to key capability areas these tips help address friction, build consiste
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2">
-                  {displayKRs.map((kr: any, idx: number) => (
+                  {displayCoachingTips.map((tip: string, idx: number) => (
                     <li key={idx} className="feature-list flex gap-2">
                       <img
                         src={IconStar}
@@ -1373,11 +1375,11 @@ Aligned to key capability areas these tips help address friction, build consiste
                         className="mt-0.5 w-4 h-4 shrink-0"
                       />
                       <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {kr.text}
+                        {tip}
                       </span>
                     </li>
                   ))}
-                  {displayKRs.length === 0 && (
+                  {displayCoachingTips.length === 0 && (
                     <li className="text-xs text-gray-400 italic">
                       No coaching tips available for this domain.
                     </li>
@@ -1724,7 +1726,7 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     </div>
                   </div>
                   {/* <div className="sm:w-[400px] w-full my-10"> */}
-                    <RoleProgressChart data={roleAverages} />
+                  <RoleProgressChart data={roleAverages} />
                   {/* </div> */}
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
                     <b className="">Largest Gap:</b> {alignmentInfo.largestRole}{" "}
