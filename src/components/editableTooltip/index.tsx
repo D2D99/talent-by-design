@@ -6,189 +6,218 @@ import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
 
 interface EditableTooltipProps {
-    id: string;
-    defaultContent: string | React.ReactNode;
-    className?: string;
+  id: string;
+  defaultContent: string | React.ReactNode;
+  className?: string;
 }
 
 const EditableTooltip: React.FC<EditableTooltipProps> = ({
-    id,
-    defaultContent,
-    className = "",
+  id,
+  defaultContent,
+  className = "",
 }) => {
-    const { tooltips, updateTooltip } = useTooltipContext();
-    const { user } = useAuth();
-    const [isEditing, setIsEditing] = useState(false);
-    const [content, setContent] = useState("");
-    const [loading, setLoading] = useState(false);
+  const { tooltips, updateTooltip } = useTooltipContext();
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (tooltips[id]) {
-            setContent(tooltips[id].content);
-        } else if (typeof defaultContent === "string") {
-            setContent(defaultContent);
-        }
-    }, [tooltips, id, defaultContent]);
+  useEffect(() => {
+    if (tooltips[id]) {
+      setContent(tooltips[id].content);
+    } else if (typeof defaultContent === "string") {
+      setContent(defaultContent);
+    }
+  }, [tooltips, id, defaultContent]);
 
-    const userRole = user?.role?.toLowerCase();
-    const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
-
-    const handleSave = async () => {
-        setLoading(true);
-        try {
-            await updateTooltip(id, content);
-            toast.success("Tooltip updated successfully");
-            setIsEditing(false);
-        } catch (error) {
-            toast.error("Failed to update tooltip");
-        } finally {
-            setLoading(false);
-        }
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isEditing) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
     };
+  }, [isEditing]);
 
-    const displayContent = tooltips[id]?.content || defaultContent;
+  const userRole = user?.role?.toLowerCase();
+  const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
 
-    // Helper to get text representation of content for the editor
-    const getTextForEditor = () => {
-        if (tooltips[id]?.content) return tooltips[id].content;
-        if (typeof defaultContent === "string") return defaultContent;
-        // If it's a ReactNode, we can't easily convert to string, so we'll leave it empty unless we convert the source.
-        return "";
-    };
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await updateTooltip(id, content);
+      toast.success("Tooltip updated successfully");
+      setIsEditing(false);
+    } catch (error) {
+      toast.error("Failed to update tooltip");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleOpenEdit = () => {
-        setContent(getTextForEditor());
-        setIsEditing(true);
-    };
+  const displayContent = tooltips[id]?.content || defaultContent;
 
-    const handleClearAll = () => {
-        if (window.confirm("Are you sure you want to clear all tooltip content? This will make the tooltip show nothing unless you add new content.")) {
-            setContent("");
-        }
-    };
+  // Helper to get text representation of content for the editor
+  const getTextForEditor = () => {
+    if (tooltips[id]?.content) return tooltips[id].content;
+    if (typeof defaultContent === "string") return defaultContent;
+    // If it's a ReactNode, we can't easily convert to string, so we'll leave it empty unless we convert the source.
+    return "";
+  };
 
-    return (
-        <div className={`flex items-center ${className}`}>
-            <button
-                type="button"
-                id={id}
-                className="text-gray-400 hover:text-[#448CD2] transition-colors"
-                title={isSuperAdmin ? "Hover to view, Click Edit to modify" : "Info"}
-            >
-                <Icon icon="ci:info" width="20" height="20" />
-            </button>
-            <Tooltip
-                className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs z-[9999] !p-4 !rounded-xl !bg-white !text-gray-800 shadow-2xl border border-gray-100"
-                anchorSelect={`#${id}`}
-                clickable
-            >
-                <div className="flex flex-col gap-3">
-                    {typeof displayContent === "string" ? (
-                        displayContent.split("\n\n").map((p, i) => (
-                            <p key={i} className="leading-relaxed">
-                                {p}
-                            </p>
-                        ))
-                    ) : (
-                        displayContent
-                    )}
+  const handleOpenEdit = () => {
+    setContent(getTextForEditor());
+    setIsEditing(true);
+  };
 
-                    {isSuperAdmin && (
-                        <div className="flex justify-end gap-2 mt-2">
-                            <button
-                                onClick={handleOpenEdit}
-                                className="text-[#448CD2] hover:text-[#3a76b1] text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full transition-all"
-                            >
-                                <Icon icon="lucide:pencil" width="12" />
-                                Edit Tooltip
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </Tooltip>
+  const handleClearAll = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to clear all tooltip content? This will make the tooltip show nothing unless you add new content.",
+      )
+    ) {
+      setContent("");
+    }
+  };
 
-            {isEditing && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                            <div>
-                                <h3 className="text-lg font-black text-[#1A3652] uppercase tracking-tight">
-                                    Edit Tooltip Content
-                                </h3>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
-                                    ID: <span className="text-[#448CD2]">{id}</span>
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setIsEditing(false)}
-                                className="text-gray-400 hover:text-gray-600 transition-colors bg-white p-2 rounded-full hover:bg-gray-100"
-                            >
-                                <Icon icon="material-symbols:close" width="24" />
-                            </button>
-                        </div>
+  return (
+    <div className={`flex items-center ${className}`}>
+      <button
+        type="button"
+        id={id}
+        className="text-gray-400 hover:text-[#448CD2] transition-colors"
+        title={isSuperAdmin ? "Hover to view, Click Edit to modify" : "Info"}
+      >
+        <Icon icon="ci:info" width="20" height="20" />
+      </button>
+      <Tooltip
+        className="sm:max-w-xl max-w-80 sm:!text-base !text-sm z-[9999] !p-4 !rounded-xl !bg-[#222] !opacity-100 shadow-2xl border border-gray-100"
+        anchorSelect={`#${id}`}
+        clickable
+      >
+        <div className="flex flex-col gap-3">
+          {typeof displayContent === "string"
+            ? displayContent.split("\n\n").map((p, i) => (
+                <p key={i} className="leading-relaxed">
+                  {p}
+                </p>
+              ))
+            : displayContent}
 
-                        <div className="p-6">
-                            <div className="mb-4">
-                                <div className="flex justify-between items-end mb-2 px-1">
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                        Content Editor
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={handleClearAll}
-                                            className="text-red-500 hover:text-red-600 text-[9px] font-black uppercase tracking-widest flex items-center gap-1"
-                                        >
-                                            <Icon icon="solar:trash-bin-trash-bold-duotone" width="12" />
-                                            Clear All
-                                        </button>
-                                        <button
-                                            onClick={() => setContent(typeof defaultContent === "string" ? defaultContent : "")}
-                                            className="text-[#448CD2] hover:text-[#3a76b1] text-[9px] font-black uppercase tracking-widest flex items-center gap-1"
-                                        >
-                                            <Icon icon="solar:refresh-bold-duotone" width="12" />
-                                            Reset Default
-                                        </button>
-                                    </div>
-                                </div>
-                                <textarea
-                                    className="w-full border-2 border-gray-100 rounded-xl p-4 min-h-[250px] text-sm font-medium text-gray-700 outline-none focus:border-[#448CD2] focus:ring-4 focus:ring-blue-50 transition-all resize-none shadow-inner"
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    placeholder="Enter tooltip content here..."
-                                    autoFocus
-                                />
-                                <p className="text-[10px] text-gray-400 mt-3 px-1 italic flex items-center gap-1.5">
-                                    <Icon icon="solar:info-circle-bold-duotone" width="14" className="text-[#448CD2]" />
-                                    Use double newlines (Enter twice) to separate paragraphs.
-                                </p>
-                            </div>
-
-                            <div className="flex justify-end gap-3 pt-2">
-                                <button
-                                    onClick={() => setIsEditing(false)}
-                                    className="px-6 py-2.5 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-all"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    disabled={loading}
-                                    className="bg-gradient-to-r from-[#1A3652] to-[#448CD2] text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
-                                >
-                                    {loading ? (
-                                        <Icon icon="line-md:loading-loop" width="14" />
-                                    ) : (
-                                        <Icon icon="solar:diskette-bold-duotone" width="16" />
-                                    )}
-                                    {loading ? "Saving..." : "Save Changes"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+          {isSuperAdmin && (
+            <div className="flex justify-end gap-2 mt-2">
+              <button
+                onClick={handleOpenEdit}
+                className="text-[#448CD2] hover:text-[#3a76b1] text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 bg-blue-50 p-2 rounded-full transition-all"
+              >
+                <Icon icon="lucide:pencil" width="14" />
+                {/* Edit Tooltip */}
+              </button>
+            </div>
+          )}
         </div>
-    );
+      </Tooltip>
+
+      {isEditing && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 p-4">
+          <div className="pointer-events-auto relative flex w-full flex-col rounded-xl border-none bg-white bg-clip-padding text-current shadow-lg outline-none max-w-3xl mx-auto max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
+              <div>
+                <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
+                  Edit Tooltip Content
+                </h5>
+                {/* <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                  ID: <span className="text-[#448CD2]">{id}</span>
+                </p> */}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                aria-label="Close"
+                className="box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
+              >
+                <Icon icon="material-symbols:close" width="24" />
+              </button>
+            </div>
+
+            <div className="relative sm:py-8 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-auto">
+              <div className="mb-4">
+                <div className="flex justify-between items-end mb-2 px-1">
+                  <label className="block font-bold text-sm text-gray-700">
+                    Content Editor
+                  </label>
+                  <div className="flex gap-2.5">
+                    <button
+                      onClick={handleClearAll}
+                      className="text-red-500 hover:text-red-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1"
+                    >
+                      <Icon
+                        icon="solar:trash-bin-trash-outline"
+                        width="12"
+                        height="12"
+                      />
+                      <span className="sm:block hidden">Clear All</span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        setContent(
+                          typeof defaultContent === "string"
+                            ? defaultContent
+                            : "",
+                        )
+                      }
+                      className="text-[#448CD2] hover:text-[#3a76b1] text-[10px] font-black uppercase tracking-widest flex items-center gap-1"
+                    >
+                      <Icon icon="solar:refresh-bold-duotone" width="12" />
+                      <span className="sm:block hidden">Reset Default</span>
+                    </button>
+                  </div>
+                </div>
+                <textarea
+                  className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-100 disabled:pointer-events-none
+              "
+                  rows={10}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Enter tooltip content here..."
+                  autoFocus
+                />
+                {/* <p className="text-[10px] text-gray-400 mt-3 px-1 italic flex items-center gap-1.5">
+                  <Icon
+                    icon="solar:info-circle-bold-duotone"
+                    width="14"
+                    className="text-[#448CD2]"
+                  />
+                  Use double newlines (Enter twice) to separate paragraphs.
+                </p> */}
+              </div>
+            </div>
+
+            <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4 gap-2 bg-white">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={loading}
+                className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 disabled:pointer-events-none"
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default EditableTooltip;

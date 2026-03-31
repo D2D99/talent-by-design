@@ -415,7 +415,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -443,16 +443,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -793,9 +793,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -1081,9 +1081,9 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1197,14 +1197,14 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                           defaultContent={
                             <>
                               <p className="mb-2">
-                                Provides a synthesized interpretation of the data
-                                within this domain.
+                                Provides a synthesized interpretation of the
+                                data within this domain.
                               </p>
 
                               <p>
-                                Highlights what is happening, why it matters, and
-                                where to focus next to improve performance and
-                                reduce friction.
+                                Highlights what is happening, why it matters,
+                                and where to focus next to improve performance
+                                and reduce friction.
                               </p>
                             </>
                           }
@@ -1466,13 +1466,15 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                       defaultContent={
                         <>
                           <p className="mb-2">
-                            Compares how Leaders, Managers, and Employees experience
-                            the organization across the three POD domains.
+                            Compares how Leaders, Managers, and Employees
+                            experience the organization across the three POD
+                            domains.
                           </p>
 
                           <p>
-                            Highlights gaps and imbalances that may signal hidden
-                            risks to alignment, adoption, and overall performance.
+                            Highlights gaps and imbalances that may signal
+                            hidden risks to alignment, adoption, and overall
+                            performance.
                           </p>
                         </>
                       }
