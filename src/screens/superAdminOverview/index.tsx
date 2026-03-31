@@ -483,8 +483,6 @@ const SuperAdminOverview = () => {
           {/* Community Health */}
           <div className="xl:col-span-4 flex flex-col gap-4">
             <div className="flex-1 bg-[var(--app-surface)] rounded-xl border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#10b981]/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all duration-1000 group-hover:scale-150 group-hover:bg-[#10b981]/10"></div>
-
               <h3 className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-[0.2em] mb-6">
                 Overall Health
               </h3>
@@ -596,13 +594,13 @@ const SuperAdminOverview = () => {
                       <p className="text-[11px] text-[var(--app-text-muted)] mt-1 font-medium italic">
                         {log.action}
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
+                      {/* <div className="flex items-center gap-2 mt-2">
                         <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
                           {log.time
                             ? new Date(log.time).toLocaleDateString()
                             : "Just now"}
                         </span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 ))
