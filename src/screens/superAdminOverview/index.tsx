@@ -341,6 +341,7 @@ const SuperAdminOverview = () => {
                   People across your platform
                 </p>
               </div>
+              {viewMode === "visual" && (
               <div className="relative">
                 <select
                   value={selectedRole}
@@ -362,6 +363,7 @@ const SuperAdminOverview = () => {
                   width="9"
                 />
               </div>
+              )}
             </div>
 
             {/* Toggle */}
@@ -625,7 +627,7 @@ const SuperAdminOverview = () => {
               Analyze Data Stream
             </button>
           </div>
-        </div>
+        </div> 
 
         {/* ── AI-Powered Platform Observations ── */}
         <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
