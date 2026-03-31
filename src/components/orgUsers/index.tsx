@@ -246,7 +246,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                  currentUser?.role === "manager"
+                currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -277,9 +277,10 @@ const OrgUsers = ({
                 </div>
                 <div className="p-3 bg-blue-200/50 rounded-lg">
                   <Icon
-                    icon="solar:users-group-rounded-bold"
                     className="text-[var(--primary-color)]"
+                    icon="solar:bill-list-broken"
                     width="24"
+                    height="24"
                   />
                 </div>
               </div>
@@ -297,8 +298,8 @@ const OrgUsers = ({
                 </div>
                 <div className="p-3 bg-indigo-200/50 rounded-lg">
                   <Icon
-                    icon="solar:medal-star-bold"
                     className="text-indigo-600"
+                    icon="solar:user-broken"
                     width="24"
                   />
                 </div>
@@ -317,9 +318,10 @@ const OrgUsers = ({
                 </div>
                 <div className="p-3 bg-amber-200/50 rounded-lg">
                   <Icon
-                    icon="solar:shield-user-bold"
+                    icon="solar:users-group-rounded-broken"
                     className="text-amber-600"
                     width="24"
+                    height="24"
                   />
                 </div>
               </div>
@@ -337,8 +339,8 @@ const OrgUsers = ({
                 </div>
                 <div className="p-3 bg-green-200/50 rounded-lg">
                   <Icon
-                    icon="solar:user-broken"
                     className="text-green-600"
+                    icon="solar:users-group-two-rounded-broken"
                     width="24"
                   />
                 </div>
@@ -364,8 +366,6 @@ const OrgUsers = ({
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
           />
         </div>
-
-
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
@@ -479,7 +479,7 @@ const OrgUsers = ({
             )}
           </tbody>
         </table>
-      </div >
+      </div>
 
       <Pagination
         totalItems={filteredMembers.length}
@@ -585,7 +585,7 @@ const OrgUsers = ({
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
