@@ -13,7 +13,7 @@ const ManagerOverview = () => {
     Math.floor(new Date().getMonth() / 3) + 1,
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [viewMode, setViewMode] = useState<"list" | "visual">("visual");
+  const [viewMode, setViewMode] = useState<"list" | "visual">("list");
   const [selectedRole, setSelectedRole] = useState<string>("Employees");
   const [intelData, setIntelData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -49,25 +49,25 @@ const ManagerOverview = () => {
     {
       label: "Team Members",
       value: total.toString(),
-      icon: "solar:users-group-rounded-bold-duotone",
+      icon: "solar:users-group-two-rounded-broken",
       color: "#448CD2",
     },
     {
       label: "Active Invites",
       value: stats?.activeInvites?.toString() || "0",
-      icon: "solar:letter-bold-duotone",
+      icon: "solar:letter-broken",
       color: "#F59E0B",
     },
     {
       label: "Completions",
       value: completed.toString(),
-      icon: "solar:checklist-minimalistic-bold-duotone",
+      icon: "solar:checklist-minimalistic-broken",
       color: "#10B981",
     },
     {
       label: "Action Items",
       value: (total - completed).toString(),
-      icon: "solar:clock-circle-bold-duotone",
+      icon: "solar:clock-circle-broken",
       color: "#8E54E9",
     },
   ];
@@ -88,51 +88,74 @@ const ManagerOverview = () => {
     <>
       <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] space-y-6">
         {/* ── Header ── */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div>
-            <h1 className="md:text-2xl mb-1 text-xl font-bold text-gray-800">
-              Team Intelligence
-            </h1>
-            <p className="text-gray-500 text-sm">
-              {department || "Team"} Workspace · Q{selectedQuarter}{" "}
-              {selectedYear}
-            </p>
-          </div>
+        <div className="">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="md:text-2xl mb-1 text-xl font-bold text-gray-800">
+                    Team Intelligence
+                  </h1>
+                </div>
+                <p className="text-gray-500 text-sm">
+                  {department || "Team"} Workspace · Q{selectedQuarter}{" "}
+                  {selectedYear}
+                </p>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2">
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full px-4 py-1.5 text-sm font-bold outline-none cursor-pointer"
-              >
-                {[2024, 2025, 2026, 2027, 2028].map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-              <div className="flex items-center justify-end bg-[#edf5fd] p-1 rounded-full border border-[rgba(68,140,210,0.2)]">
-                {[1, 2, 3, 4].map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => setSelectedQuarter(q)}
-                    className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${selectedQuarter === q ? "bg-[var(--primary-color)] text-white shadow-sm" : "text-[#5d5d5d] hover:text-[var(--primary-color)]"}`}
+            <div className="flex items-center gap-5">
+              <div className="flex items-center gap-2">
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 -right-1 top-0 flex items-center pr-3 pointer-events-none">
+                    <svg
+                      className="size-3 text-[var(--primary-color)]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full ps-3 pe-6 py-1.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-[var(--primary-color)] transition-all appearance-none"
                   >
-                    Q{q}
-                  </button>
-                ))}
+                    {[2024, 2025, 2026, 2027, 2028].map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center justify-end bg-[#edf5fd] p-1 rounded-full border border-[rgba(68,140,210,0.2)]">
+                  {[1, 2, 3, 4].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => setSelectedQuarter(q)}
+                      className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${selectedQuarter === q ? "bg-[var(--primary-color)] text-white shadow-sm" : "text-[#5d5d5d] hover:text-[var(--primary-color)]"}`}
+                    >
+                      Q{q}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* ── Stats Grid ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 pt-5 xl:grid-cols-4 gap-3">
           {displayStats.map((stat, idx) => (
             <div
               key={idx}
-              className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5"
+              className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full flex items-center gap-5 flex-nowrap"
             >
               <div
                 className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
@@ -144,7 +167,7 @@ const ManagerOverview = () => {
                 <Icon icon={stat.icon} width="24" />
               </div>
               <div className="min-w-0">
-                <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wide truncate">
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-wide truncate">
                   {stat.label}
                 </p>
                 <p
@@ -158,8 +181,8 @@ const ManagerOverview = () => {
           ))}
         </div>
 
-        {/* ── Pulse Row ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* ── Pulse Row — 3 quick-read cards ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {[
             {
               label: "Completion Rate",
@@ -185,7 +208,7 @@ const ManagerOverview = () => {
           ].map((item, i) => (
             <div
               key={i}
-              className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5 justify-between"
+              className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full flex items-start justify-between"
             >
               <div className="flex items-center gap-2.5">
                 <div
@@ -198,10 +221,10 @@ const ManagerOverview = () => {
                   <Icon icon={item.icon} width="20" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#5d5d5d] font-medium uppercase tracking-wider">
+                  <p className="text-xs text-[#5d5d5d] font-medium">
                     {item.label}
                   </p>
-                  <p className="text-base font-bold text-[#1a3652] truncate max-w-[120px]">
+                  <p className="text-base font-bold text-[#1a3652] capitalize leading-tight max-w-[120px] truncate">
                     {item.value}
                   </p>
                 </div>
@@ -223,7 +246,7 @@ const ManagerOverview = () => {
         {/* ── Main 3-col Grid ── */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
           {/* Member Distribution */}
-          <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] shadow-[4px_4px_4px_0_rgba(68,140,210,0.07)] p-5 flex flex-col">
+          <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] p-5 flex flex-col">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(68,140,210,0.1)]">
               <div>
                 <h3 className="text-sm font-bold text-[#1a3652]">
@@ -348,8 +371,7 @@ const ManagerOverview = () => {
 
           {/* Team Health (Circular Progress Bar) */}
           <div className="xl:col-span-4 flex flex-col gap-4">
-            <div className="flex-1 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#10b981]/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all duration-1000 group-hover:scale-150 group-hover:bg-[#10b981]/10"></div>
+            <div className="flex-1 bg-[var(--app-surface)] rounded-xl border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
               <h3 className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-[0.2em] mb-6">
                 Team Health
               </h3>
@@ -373,13 +395,15 @@ const ManagerOverview = () => {
                 ].map((item, i) => (
                   <div
                     key={i}
-                    className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-current transition-colors"
-                    style={{ color: item.color } as any}
+                    className="p-4 bg-[var(--app-surface-soft)] rounded-xl transition-colors"
                   >
                     <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                       {item.value}
                     </span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider block mt-1">
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider block mt-1"
+                      style={{ color: item.color }}
+                    >
                       {item.label}
                     </span>
                   </div>
@@ -389,17 +413,18 @@ const ManagerOverview = () => {
 
             <button
               onClick={() => navigate("/dashboard/org-assessments")}
-              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-[20px] shadow-lg flex items-center justify-between text-white group hover:shadow-2xl transition-all"
+              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-[20px] shadow-lg flex items-center justify-between text-white group hover:shadow-2xl hover:scale-[1.01] transition-all active:scale-[0.99] border border-white/10"
             >
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
               <div className="text-left relative z-10">
-                <p className="text-[9px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
+                <p className="text-[10px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
                   Manager Panel
                 </p>
                 <h4 className="text-base font-black tracking-wide">
                   Review Team Data
                 </h4>
               </div>
-              <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all">
+              <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all relative z-10">
                 <Icon icon="solar:arrow-right-up-bold" width="20" />
               </div>
             </button>
@@ -470,28 +495,29 @@ const ManagerOverview = () => {
         </div>
 
         {/* ── AI Insights Board ── */}
-        <div className="bg-[var(--app-surface-soft)] rounded-[20px] border border-[var(--app-border-color)] p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-[#8E54E9]/10 rounded-xl flex items-center justify-center">
-              <Icon
-                icon="solar:magic-stick-3-bold-duotone"
-                className="text-[#8E54E9]"
-                width="22"
-              />
-            </div>
+        <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
+          <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">
                 AI-Powered Observations
               </h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
                 POD Insights™ Manager Intelligence
               </p>
             </div>
+            <div className="w-9 h-9 bg-[#8E54E9]/10 rounded-[12px] flex items-center justify-center">
+              <Icon
+                className="text-[#8E54E9]"
+                icon="solar:magic-stick-3-line-duotone"
+                width="20"
+                height="20"
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 xl:grid-cols-3 gap-4">
             {[
               {
-                icon: "solar:graph-up-bold",
+                icon: "solar:graph-broken",
                 color: "#10B981",
                 bg: "bg-[#10B981]/10",
                 title: "Team Momentum",
@@ -501,14 +527,14 @@ const ManagerOverview = () => {
                     : `Current throughput is at ${completionRate}%. Re-engaging the ${pending} pending members will close the gap.`,
               },
               {
-                icon: "solar:buildings-2-bold-duotone",
+                icon: "solar:buildings-2-broken",
                 color: "#448CD2",
                 bg: "bg-[#448CD2]/10",
                 title: "Report Status",
                 desc: `${completed} reports are ready for review. Assessment quality is consistent across onboarded members.`,
               },
               {
-                icon: "solar:shield-warning-bold-duotone",
+                icon: "oui:security-signal",
                 color: "#F59E0B",
                 bg: "bg-[#F59E0B]/10",
                 title: "Deployment Risk",
@@ -520,22 +546,25 @@ const ManagerOverview = () => {
             ].map((obs, i) => (
               <div
                 key={i}
-                className="bg-white p-4 rounded-xl border border-[rgba(68,140,210,0.1)] hover:border-[rgba(68,140,210,0.3)] transition-all"
+                className="flex gap-4 p-4 bg-[rgba(68,140,210,0.1)] rounded-xl transition-colors"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className={`w-8 h-8 rounded-lg ${obs.bg} flex items-center justify-center`}
+                <div
+                  className={`w-10 h-10 shrink-0 ${obs.bg} rounded-[12px] flex items-center justify-center mt-0.5`}
+                >
+                  <Icon
+                    icon={obs.icon}
+                    width="20"
                     style={{ color: obs.color }}
-                  >
-                    <Icon icon={obs.icon} width="18" />
-                  </div>
-                  <h4 className="text-[13px] font-bold text-[#1a3652]">
+                  />
+                </div>
+                <div>
+                  <h4 className="text-[12px] font-black text-[var(--app-heading-color)] mb-1.5">
                     {obs.title}
                   </h4>
+                  <p className="text-[11px] text-[var(--app-text-muted)] leading-relaxed">
+                    {obs.desc}
+                  </p>
                 </div>
-                <p className="text-[11px] text-gray-500 leading-relaxed">
-                  {obs.desc}
-                </p>
               </div>
             ))}
           </div>
