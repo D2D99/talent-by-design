@@ -28,7 +28,7 @@ import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import RadarChart from "../../charts/radarChart";
 import type { RadarData } from "../../charts/radarChart";
 import GapBarChart from "../../charts/gapBarChart";
-import { Tooltip } from "react-tooltip";
+import EditableTooltip from "../../components/editableTooltip";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -469,7 +469,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -480,16 +480,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -759,9 +759,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -827,28 +827,12 @@ const ManagerReport = () => {
                     Score by domain
                   </h2>
                   <div className="flex items-center">
-                    <button
-                      type="button"
-                      // className="text-[var(--primary-color)]"
+                    <EditableTooltip
                       id="scoreDomain"
-                    >
-                      <Icon icon="ci:info" width="20" height="20" />
-                    </button>
-                    <Tooltip
-                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                      anchorSelect="#scoreDomain"
-                    >
-                      <p className="mb-2">
-                        Provides a snapshot of performance within the selected
-                        POD domain.
-                      </p>
+                      defaultContent="Provides a snapshot of performance within the selected POD domain.
 
-                      <p>
-                        Indicates whether this area is a strength to leverage or
-                        a risk requiring attention, helping you focus where
-                        friction may be impacting outcomes.
-                      </p>
-                    </Tooltip>
+Indicates whether this area is a strength to leverage or a risk requiring attention, helping you focus where friction may be impacting outcomes."
+                    />
                   </div>
                 </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
@@ -933,28 +917,23 @@ const ManagerReport = () => {
                   </h2>
 
                   <div className="flex items-center">
-                    <button
-                      type="button"
-                      // className="text-[var(--primary-color)]"
+                    <EditableTooltip
                       id="scoreSubDomain"
-                    >
-                      <Icon icon="ci:info" width="20" height="20" />
-                    </button>
-                    <Tooltip
-                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                      anchorSelect="#scoreSubDomain"
-                    >
-                      <p className="mb-2">
-                        Breaks the domain down into its core components for
-                        deeper insight.
-                      </p>
+                      defaultContent={
+                        <>
+                          <p className="mb-2">
+                            Breaks the domain down into its core components for
+                            deeper insight.
+                          </p>
 
-                      <p>
-                        Helps pinpoint specific drivers of friction or
-                        performance gaps, enabling more targeted action and
-                        coaching.
-                      </p>
-                    </Tooltip>
+                          <p>
+                            Helps pinpoint specific drivers of friction or
+                            performance gaps, enabling more targeted action and
+                            coaching.
+                          </p>
+                        </>
+                      }
+                    />
                   </div>
                 </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
@@ -1044,27 +1023,22 @@ const ManagerReport = () => {
                         POD-360™ Model
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="podScore"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#podScore"
-                        >
-                          <p className="mb-2">
-                            Visualizes the balance across People Potential,
-                            Operational Steadiness, and Digital Fluency.
-                          </p>
+                          defaultContent={
+                            <>
+                              <p className="mb-2">
+                                Visualizes the balance across People Potential,
+                                Operational Steadiness, and Digital Fluency.
+                              </p>
 
-                          <p>
-                            Highlights strengths, gaps, and misalignment—guiding
-                            where to stabilize, optimize, or accelerate efforts.
-                          </p>
-                        </Tooltip>
+                              <p>
+                                Highlights strengths, gaps, and misalignment—guiding
+                                where to stabilize, optimize, or accelerate efforts.
+                              </p>
+                            </>
+                          }
+                        />
                       </div>
                     </div>
                     <p className="text-xs text-[#64748B] font-medium">
@@ -1087,9 +1061,9 @@ const ManagerReport = () => {
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                              .filter((l: string) => l.includes("•"))
-                              .map((l: string) => l.replace(/•/g, "").trim())
-                              .filter((l: string) => l.length > 0)
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1224,28 +1198,23 @@ const ManagerReport = () => {
                       </h3>
 
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="podInsightDomain"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#podInsightDomain"
-                        >
-                          <p className="mb-2">
-                            Provides a synthesized interpretation of the data
-                            within this domain.
-                          </p>
+                        <EditableTooltip
+                          id="insightDomain"
+                          defaultContent={
+                            <>
+                              <p className="mb-2">
+                                Provides a synthesized interpretation of the data
+                                within this domain.
+                              </p>
 
-                          <p>
-                            Highlights what is happening, why it matters, and
-                            where to focus next to improve performance and
-                            reduce friction.
-                          </p>
-                        </Tooltip>
+                              <p>
+                                Highlights what is happening, why it matters, and
+                                where to focus next to improve performance and
+                                reduce friction.
+                              </p>
+                            </>
+                          }
+                        />
                       </div>
                     </div>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
@@ -1285,27 +1254,12 @@ const ManagerReport = () => {
                       </h3>
 
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="okrs"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#okrs"
-                        >
-                          <p className="mb-2">
-                            Translates insights into measurable actions and
-                            outcomes aligned to strategic priorities.
-                          </p>
+                          defaultContent="Translates insights into measurable actions and outcomes aligned to strategic priorities.
 
-                          <p>
-                            Use this a guide for what to execute, track, and
-                            reinforce to drive sustained improvement over time.
-                          </p>
-                        </Tooltip>
+Use this a guide for what to execute, track, and reinforce to drive sustained improvement over time."
+                        />
                       </div>
                     </div>
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
@@ -1358,27 +1312,22 @@ const ManagerReport = () => {
                         POD-360™ Model
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="podScore"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#podScore"
-                        >
-                          <p className="mb-2">
-                            Visualizes the balance across People Potential,
-                            Operational Steadiness, and Digital Fluency.
-                          </p>
+                          defaultContent={
+                            <>
+                              <p className="mb-2">
+                                Visualizes the balance across People Potential,
+                                Operational Steadiness, and Digital Fluency.
+                              </p>
 
-                          <p>
-                            Highlights strengths, gaps, and misalignment—guiding
-                            where to stabilize, optimize, or accelerate efforts.
-                          </p>
-                        </Tooltip>
+                              <p>
+                                Highlights strengths, gaps, and misalignment—guiding
+                                where to stabilize, optimize, or accelerate efforts.
+                              </p>
+                            </>
+                          }
+                        />
                       </div>
                     </div>
                     <p className="text-xs text-[#64748B] font-medium">
@@ -1502,28 +1451,23 @@ const ManagerReport = () => {
                         Coaching Tips
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="managerTips"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#managerTips"
-                        >
-                          <p className="mb-2">
-                            Provides targeted, actionable guidance to support
-                            leaders and teams in improving performance and
-                            adoption.
-                          </p>
-                          <p>
-                            Aligned to key capability areas these tips help
-                            address friction, build consistency, and sustain
-                            progress across the organization.
-                          </p>
-                        </Tooltip>
+                        <EditableTooltip
+                          id="coachingTips"
+                          defaultContent={
+                            <>
+                              <p className="mb-2">
+                                Provides targeted, actionable guidance to support
+                                leaders and teams in improving performance and
+                                adoption.
+                              </p>
+                              <p>
+                                Aligned to key capability areas these tips help
+                                address friction, build consistency, and sustain
+                                progress across the organization.
+                              </p>
+                            </>
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1565,23 +1509,16 @@ const ManagerReport = () => {
                         Recommended Development Programs
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="tbdOffering"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#tbdOffering"
-                        >
-                          <p>
-                            Highlights curated programs and resources aligned to
-                            your results. These offerings are designed to
-                            address key gaps and strengthen capabilities.
-                          </p>
-                        </Tooltip>
+                          defaultContent={
+                            <p>
+                              Highlights curated programs and resources aligned to
+                              your results. These offerings are designed to
+                              address key gaps and strengthen capabilities.
+                            </p>
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1616,24 +1553,17 @@ const ManagerReport = () => {
                         Manager VS Team Gap
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="teamGap"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#teamGap"
-                        >
-                          <p>
-                            Reveals differences between manager and employee
-                            experiences across key capabilities and identifies
-                            where perception gaps may be impacting alignment,
-                            trust, and effective execution at the team level.
-                          </p>
-                        </Tooltip>
+                          defaultContent={
+                            <p>
+                              Reveals differences between manager and employee
+                              experiences across key capabilities and identifies
+                              where perception gaps may be impacting alignment,
+                              trust, and effective execution at the team level.
+                            </p>
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1816,27 +1746,12 @@ const ManagerReport = () => {
                         Delta Breakdown
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="deltaBreakdown"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#deltaBreakdown"
-                        >
-                          <p className="mb-2">
-                            Measures the difference between manager and employee
-                            experiences across key capability areas.
-                          </p>
-                          <p>
-                            Highlights where misalignment exists, how
-                            significant it is, and where it may be impacting
-                            execution, adoption, and overall performance.
-                          </p>
-                        </Tooltip>
+                          defaultContent="Measures the difference between manager and employee experiences across key capability areas.
+
+Highlights where misalignment exists, how significant it is, and where it may be impacting execution, adoption, and overall performance."
+                        />
                       </div>
                     </div>
                     <p className="text-sm text-[#64748B] mt-1 mb-6 ">
@@ -1885,19 +1800,10 @@ const ManagerReport = () => {
                     "Manager"}
                 </h3>
                 <div className="flex items-center">
-                  <button
-                    type="button"
-                    // className="text-[var(--primary-color)]"
+                  <EditableTooltip
                     id="overallScore"
-                  >
-                    <Icon icon="ci:info" width="20" height="20" />
-                  </button>
-                  <Tooltip
-                    className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                    anchorSelect="#overallScore"
-                  >
-                    <p>No Data Found.</p>
-                  </Tooltip>
+                    defaultContent={<p>No Data Found.</p>}
+                  />
                 </div>
               </div>
 

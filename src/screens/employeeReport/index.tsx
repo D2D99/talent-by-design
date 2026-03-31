@@ -23,7 +23,7 @@ import Triangle from "../../components/triangle";
 import ReportEmptyState from "../../components/reportEmptyState";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import ReportPreviewModal from "../../components/reportPreviewModal";
-import { Tooltip } from "react-tooltip";
+import EditableTooltip from "../../components/editableTooltip";
 
 // ------ CONSTANTS ------
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
@@ -439,22 +439,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -622,9 +622,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -688,28 +688,12 @@ const EmployeeReport = () => {
                     Score by domain
                   </h2>
                   <div className="flex items-center">
-                    <button
-                      type="button"
-                      // className="text-[var(--primary-color)]"
+                    <EditableTooltip
                       id="scoreDomain"
-                    >
-                      <Icon icon="ci:info" width="20" height="20" />
-                    </button>
-                    <Tooltip
-                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                      anchorSelect="#scoreDomain"
-                    >
-                      <p className="mb-2">
-                        Provides a snapshot of performance within the selected
-                        POD domain.
-                      </p>
+                      defaultContent="Provides a snapshot of performance within the selected POD domain.
 
-                      <p>
-                        Indicates whether this area is a strength to leverage or
-                        a risk requiring attention, helping you focus where
-                        friction may be impacting outcomes.
-                      </p>
-                    </Tooltip>
+Indicates whether this area is a strength to leverage or a risk requiring attention, helping you focus where friction may be impacting outcomes."
+                    />
                   </div>
                 </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
@@ -782,28 +766,23 @@ const EmployeeReport = () => {
                   </h2>
 
                   <div className="flex items-center">
-                    <button
-                      type="button"
-                      // className="text-[var(--primary-color)]"
+                    <EditableTooltip
                       id="scoreSubDomain"
-                    >
-                      <Icon icon="ci:info" width="20" height="20" />
-                    </button>
-                    <Tooltip
-                      className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                      anchorSelect="#scoreSubDomain"
-                    >
-                      <p className="mb-2">
-                        Breaks the domain down into its core components for
-                        deeper insight.
-                      </p>
+                      defaultContent={
+                        <>
+                          <p className="mb-2">
+                            Breaks the domain down into its core components for
+                            deeper insight.
+                          </p>
 
-                      <p>
-                        Helps pinpoint specific drivers of friction or
-                        performance gaps, enabling more targeted action and
-                        coaching.
-                      </p>
-                    </Tooltip>
+                          <p>
+                            Helps pinpoint specific drivers of friction or
+                            performance gaps, enabling more targeted action and
+                            coaching.
+                          </p>
+                        </>
+                      }
+                    />
                   </div>
                 </div>
                 <div className="relative mt-2" data-twe-dropdown-ref>
@@ -880,28 +859,17 @@ const EmployeeReport = () => {
                           POD-360™ Model
                         </h3>
                         <div className="flex items-center">
-                          <button
-                            type="button"
-                            // className="text-[var(--primary-color)]"
-                            id="podScore"
-                          >
-                            <Icon icon="ci:info" width="20" height="20" />
-                          </button>
-                          <Tooltip
-                            className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                            anchorSelect="#podScore"
-                          >
-                            <p className="mb-2">
-                              Visualizes the balance across People Potential,
-                              Operational Steadiness, and Digital Fluency.
-                            </p>
-
-                            <p>
-                              Highlights strengths, gaps, and
-                              misalignment—guiding where to stabilize, optimize,
-                              or accelerate efforts.
-                            </p>
-                          </Tooltip>
+                          <EditableTooltip
+                            id="pod360"
+                            defaultContent={
+                              <p>
+                                Visualizes the balance across People Potential,
+                                Operational Steadiness, and Digital Fluency.
+                                Highlights strengths, gaps, and misalignment—guiding
+                                where to stabilize, optimize, or accelerate efforts.
+                              </p>
+                            }
+                          />
                         </div>
                       </div>
                       <p className="text-xs text-[#64748B] font-medium">
@@ -990,28 +958,12 @@ const EmployeeReport = () => {
                           `Insight for ${selectedSubdomain || selectedDomain}`}
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="podInsightDomain"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#podInsightDomain"
-                        >
-                          <p className="mb-2">
-                            Provides a synthesized interpretation of the data
-                            within this domain.
-                          </p>
+                        <EditableTooltip
+                          id="insightDomain"
+                          defaultContent="Provides a synthesized interpretation of the data within this domain.
 
-                          <p>
-                            Highlights what is happening, why it matters, and
-                            where to focus next to improve performance and
-                            reduce friction.
-                          </p>
-                        </Tooltip>
+Highlights what is happening, why it matters, and where to focus next to improve performance and reduce friction."
+                        />
                       </div>
                     </div>
                     <p className="text-xs text-[#64748B] font-medium">
@@ -1048,27 +1000,12 @@ const EmployeeReport = () => {
                       </h3>
 
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="okrs"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#okrs"
-                        >
-                          <p className="mb-2">
-                            Translates insights into measurable actions and
-                            outcomes aligned to strategic priorities.
-                          </p>
+                          defaultContent="Translates insights into measurable actions and outcomes aligned to strategic priorities.
 
-                          <p>
-                            Use this a guide for what to execute, track, and
-                            reinforce to drive sustained improvement over time.
-                          </p>
-                        </Tooltip>
+Use this a guide for what to execute, track, and reinforce to drive sustained improvement over time."
+                        />
                       </div>
                     </div>{" "}
                     <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
@@ -1122,29 +1059,24 @@ const EmployeeReport = () => {
                         Coaching tips
                       </h3>
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
-                          id="okrs"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#okrs"
-                        >
-                          <p className="mb-2">
-                            Provides targeted, actionable guidance to support
-                            leaders and teams in improving performance and
-                            adoption.
-                          </p>
+                        <EditableTooltip
+                          id="coachingTips"
+                          defaultContent={
+                            <>
+                              <p className="mb-2">
+                                Provides targeted, actionable guidance to support
+                                leaders and teams in improving performance and
+                                adoption.
+                              </p>
 
-                          <p>
-                            Aligned to key capability areas these tips help
-                            address friction, build consistency, and sustain
-                            progress across the organization.
-                          </p>
-                        </Tooltip>
+                              <p>
+                                Aligned to key capability areas these tips help
+                                address friction, build consistency, and sustain
+                                progress across the organization.
+                              </p>
+                            </>
+                          }
+                        />
                       </div>
                     </div>
                     <p className="text-xs text-[#64748B] font-medium">
@@ -1187,29 +1119,16 @@ const EmployeeReport = () => {
                       </h3>
 
                       <div className="flex items-center">
-                        <button
-                          type="button"
-                          // className="text-[var(--primary-color)]"
+                        <EditableTooltip
                           id="tbdOffering"
-                        >
-                          <Icon icon="ci:info" width="20" height="20" />
-                        </button>
-                        <Tooltip
-                          className="text-center sm:max-w-xl max-w-80 sm:!text-sm !text-xs"
-                          anchorSelect="#tbdOffering"
-                        >
-                          {/* <p className="mb-2">
-                          Compares how Leaders, Managers, and Employees
-                          experience the organization across the three POD
-                          domains.
-                        </p> */}
-
-                          <p>
-                            Highlights curated programs and resources aligned to
-                            your results. These offerings are designed to
-                            address key gaps and strengthen capabilities.
-                          </p>
-                        </Tooltip>
+                          defaultContent={
+                            <p>
+                              Highlights curated programs and resources aligned to
+                              your results. These offerings are designed to
+                              address key gaps and strengthen capabilities.
+                            </p>
+                          }
+                        />
                       </div>
                     </div>
                     <p className="text-xs text-[#64748B] font-medium">

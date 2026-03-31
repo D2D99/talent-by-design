@@ -20,8 +20,8 @@ import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
 
-import LeaderOverview from "./screens/leaderOverview";
-import ManagerOverview from "./screens/managerOverview";
+// import LeaderOverview from "./screens/leaderOverview";
+// import ManagerOverview from "./screens/managerOverview";
 import "react-tooltip/dist/react-tooltip.css";
 import UserProfile from "./screens/userProfile";
 import SessionPopup from "./components/sessionPopup";
@@ -35,79 +35,83 @@ import "react-toastify/dist/ReactToastify.css";
 import EmployeeReport from "./screens/employeeReport";
 import AdminReport from "./screens/adminReport";
 import UserResponseView from "./screens/userResponseView";
-// import { useTheme } from "./context/useTheme";
+import { TooltipProvider } from "./context/TooltipContext";
+import ManagerReport from "./screens/managerReport";
+import LeaderReport from "./screens/leaderReport";
 
 function App() {
   // const { theme } = useTheme();
 
   return (
-    <AuthProvider>
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      // theme={theme}
-      />
-      <SessionPopup />
+    <TooltipProvider>
+      <AuthProvider>
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        // theme={theme}
+        />
+        <SessionPopup />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/after-register" element={<AfterRegister />} />
-        <Route path="/after-send-email" element={<AfterSendEmail />} />
-        <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/start-assessment" element={<StartAssessment />} />
-        <Route path="/assessment-question" element={<AssessmentQuestion />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/after-register" element={<AfterRegister />} />
+          <Route path="/after-send-email" element={<AfterSendEmail />} />
+          <Route path="/new-password" element={<NewPassword />} />
+          <Route path="/start-assessment" element={<StartAssessment />} />
+          <Route path="/assessment-question" element={<AssessmentQuestion />} />
 
-        <Route path="/profile-info" element={<ProfileInfo />} />
+          <Route path="/profile-info" element={<ProfileInfo />} />
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />}>
-            <Route index element={<OverviewRoute />} />
-            <Route path="questions" element={<CrudQuestion />} />
-            <Route path="invite" element={<OrgInvitation />} />
-            <Route
-              path="organization/:orgName"
-              element={<OrgInvitationDetails />}
-            />
-            <Route
-              path="org-assessments/:orgName"
-              element={<OrgAssessmentDetails />}
-            />
-            <Route path="users" element={<OrgUsers />} />
-            <Route path="notifications" element={<NotificationHistory />} />
-            <Route path="assessment-history" element={<AssessmentHistory />} />
-            <Route path="team-assessments" element={<AdminAssessments />} />
-            <Route path="org-assessments" element={<SuperAdminStats />} />
-            <Route
-              path="user-responses/:assessmentId"
-              element={<UserResponseView />}
-            />
-            <Route path="user-profile" element={<UserProfile />} />
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />}>
+              <Route index element={<OverviewRoute />} />
+              <Route path="questions" element={<CrudQuestion />} />
+              <Route path="invite" element={<OrgInvitation />} />
+              <Route
+                path="organization/:orgName"
+                element={<OrgInvitationDetails />}
+              />
+              <Route
+                path="org-assessments/:orgName"
+                element={<OrgAssessmentDetails />}
+              />
+              <Route path="users" element={<OrgUsers />} />
+              <Route path="notifications" element={<NotificationHistory />} />
+              <Route path="assessment-history" element={<AssessmentHistory />} />
+              <Route path="team-assessments" element={<AdminAssessments />} />
+              <Route path="org-assessments" element={<SuperAdminStats />} />
+              <Route
+                path="user-responses/:assessmentId"
+                element={<UserResponseView />}
+              />
+              <Route path="user-profile" element={<UserProfile />} />
 
-            <Route path="settings" element={<AccountSetting />} />
+              <Route path="settings" element={<AccountSetting />} />
 
-            {/* Reports */}
-            <Route path="reports/org-head" element={<AdminReport />} />
-            <Route path="reports/senior-leader" element={<LeaderOverview />} />
-            <Route path="reports/manager" element={<ManagerOverview />} />
-            <Route path="reports/employee" element={<EmployeeReport />} />
-            {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
+              {/* Reports */}
+              <Route path="reports/org-head" element={<AdminReport />} />
+              <Route path="reports/senior-leader" element={<LeaderReport />} />
+              <Route path="reports/manager" element={<ManagerReport />} />
+              <Route path="reports/employee" element={<EmployeeReport />} />
+              {/* <Route path="reports/employee" element={<EmployeeReport />} /> */}
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
-    </AuthProvider>
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </AuthProvider>
+    </TooltipProvider>
   );
 }
 
