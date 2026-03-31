@@ -25,10 +25,6 @@ const AdminAssessments = () => {
   const [members, setMembers] = useState<UserMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDept, setSelectedDept] = useState("");
-  const [departments, setDepartments] = useState<string[]>([]);
-  const [roleFilter] = useState<string[]>([]);
-  const [statusFilter] = useState<string[]>([]);
   const [resetingId, setResetingId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const resetModalInstance = useRef<any>(null);
@@ -44,11 +40,6 @@ const AdminAssessments = () => {
       const res = await api.get("auth/organization-members");
       setMembers(res.data.members || []);
 
-      // Fetch departments for filtering (using the user's organization)
-      if (user?.orgName) {
-        const filterRes = await api.get(`auth/organization-filters/${user.orgName}`);
-        setDepartments(filterRes.data.departments || []);
-      }
     } catch (err) {
       toast.error("Failed to load team members");
     } finally {
@@ -94,15 +85,7 @@ const AdminAssessments = () => {
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-    const matchesDept = selectedDept === "" || m.department === selectedDept;
-
-    const matchesRole =
-      roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
-    const matchesStatus =
-      statusFilter.length === 0 ||
-      statusFilter.includes(m.assessmentStatus?.toLowerCase() || "");
-
-    return matchesSearch && matchesDept && matchesRole && matchesStatus;
+    return matchesSearch;
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -133,26 +116,103 @@ const AdminAssessments = () => {
           />
           <input
             type="text"
-            placeholder="Search team members..."
+            placeholder="Search team members by name, email..."
             value={searchTerm}
+            autoComplete="off"
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] text-gray-700"
           />
         </div>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <select
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--primary-color)] text-sm shadow-sm"
-            value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            {departments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
-            ))}
-          </select>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-[var(--primary-color)] uppercase tracking-wider">
+                Total Team
+              </p>
+              <p className="text-2xl font-bold text-[var(--primary-color)] mt-1">
+                {members.length}
+              </p>
+            </div>
+            <div className="p-3 bg-blue-200/50 rounded-lg">
+              <Icon
+                icon="solar:users-group-rounded-bold"
+                className="text-[var(--primary-color)]"
+                width="24"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
+                Completed
+              </p>
+              <p className="text-2xl font-bold text-green-600 mt-1">
+                {members.filter((m) => m.assessmentStatus === "Completed").length}
+              </p>
+            </div>
+            <div className="p-3 bg-green-200/50 rounded-lg">
+              <Icon
+                icon="solar:check-circle-bold"
+                className="text-green-600"
+                width="24"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                In Progress
+              </p>
+              <p className="text-2xl font-bold text-blue-600 mt-1">
+                {
+                  members.filter((m) => m.assessmentStatus === "In Progress")
+                    .length
+                }
+              </p>
+            </div>
+            <div className="p-3 bg-blue-200/50 rounded-lg">
+              <Icon
+                icon="solar:play-circle-bold"
+                className="text-blue-600"
+                width="24"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">
+                Not Started
+              </p>
+              <p className="text-2xl font-bold text-amber-600 mt-1">
+                {
+                  members.filter(
+                    (m) =>
+                      !m.assessmentStatus || m.assessmentStatus === "Not Started",
+                  ).length
+                }
+              </p>
+            </div>
+            <div className="p-3 bg-amber-200/50 rounded-lg">
+              <Icon
+                icon="solar:clock-circle-bold"
+                className="text-amber-600"
+                width="24"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

@@ -221,6 +221,18 @@ const OrgUsers = ({
     (m) => m.status === "Accept",
   ).length;
 
+  const roleStats = {
+    leaders: nonAdminMembers.filter(
+      (m) => m.status === "Accept" && m.role.toLowerCase().includes("leader"),
+    ).length,
+    managers: nonAdminMembers.filter(
+      (m) => m.status === "Accept" && m.role.toLowerCase() === "manager",
+    ).length,
+    employees: nonAdminMembers.filter(
+      (m) => m.status === "Accept" && m.role.toLowerCase() === "employee",
+    ).length,
+  };
+
   return (
     <div
       className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start"}`}
@@ -252,12 +264,12 @@ const OrgUsers = ({
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4 ">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold text-[var(--primary-color)] uppercase tracking-wider">
-                    Total Active Members
+                    Total Active
                   </p>
                   <p className="text-2xl font-bold text-[var(--primary-color)] mt-1">
                     {acceptedUsers}
@@ -273,19 +285,59 @@ const OrgUsers = ({
               </div>
             </div>
 
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 border border-indigo-200 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+                    Team Leaders
+                  </p>
+                  <p className="text-2xl font-bold text-indigo-600 mt-1">
+                    {roleStats.leaders}
+                  </p>
+                </div>
+                <div className="p-3 bg-indigo-200/50 rounded-lg">
+                  <Icon
+                    icon="solar:medal-star-bold"
+                    className="text-indigo-600"
+                    width="24"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">
+                    Managers
+                  </p>
+                  <p className="text-2xl font-bold text-amber-600 mt-1">
+                    {roleStats.managers}
+                  </p>
+                </div>
+                <div className="p-3 bg-amber-200/50 rounded-lg">
+                  <Icon
+                    icon="solar:shield-user-bold"
+                    className="text-amber-600"
+                    width="24"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
-                    Assessment Accepted
+                    EMPLOYEES
                   </p>
                   <p className="text-2xl font-bold text-green-600 mt-1">
-                    {acceptedUsers}
+                    {roleStats.employees}
                   </p>
                 </div>
                 <div className="p-3 bg-green-200/50 rounded-lg">
                   <Icon
-                    icon="solar:check-circle-bold"
+                    icon="solar:user-broken"
                     className="text-green-600"
                     width="24"
                   />
@@ -313,7 +365,7 @@ const OrgUsers = ({
           />
         </div>
 
-        
+
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
