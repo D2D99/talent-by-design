@@ -72,7 +72,7 @@ const Ring = ({
         strokeWidth="8"
         strokeDasharray={circ}
         strokeDashoffset={strokeDashoffset}
-        strokeLinecap="round"
+        strokeLinecap="butt"
         transform="rotate(-90 100 100)"
         style={{ transition: "stroke-dashoffset 1s ease-out" }}
       />
