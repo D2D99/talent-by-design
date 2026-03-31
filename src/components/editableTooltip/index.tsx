@@ -95,7 +95,7 @@ const EditableTooltip: React.FC<EditableTooltipProps> = ({
             </button>
             {!isEditing && (
                 <Tooltip
-                    className="sm:max-w-xl max-w-80 sm:!text-base !text-sm z-[9999] !p-4 !rounded-xl !bg-[#222] !opacity-100 shadow-2xl border border-gray-100"
+                    className="sm:max-w-xl max-w-80 sm:!text-base !text-sm z-[99] !p-4 !rounded-xl !bg-[#222] !opacity-100 shadow-2xl border border-gray-100"
                     anchorSelect={`#${id}`}
                     clickable
                     delayHide={0}
