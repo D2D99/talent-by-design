@@ -439,22 +439,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -624,9 +624,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -867,8 +867,9 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                               <p>
                                 Visualizes the balance across People Potential,
                                 Operational Steadiness, and Digital Fluency.
-                                Highlights strengths, gaps, and misalignment—guiding
-                                where to stabilize, optimize, or accelerate efforts.
+                                Highlights strengths, gaps, and
+                                misalignment—guiding where to stabilize,
+                                optimize, or accelerate efforts.
                               </p>
                             }
                           />
@@ -1053,7 +1054,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
             </div>
 
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6 ">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+              {/* <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="flex gap-2">
@@ -1111,7 +1112,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                     </p>
                   )}
                 </div>
-              </div>
+              </div> */}
 
               <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
                 <div className="flex items-center justify-between mb-4">
@@ -1127,9 +1128,9 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                           defaultContent={
                             <>
                               <p className="mb-2">
-                                Provides targeted, actionable guidance to support
-                                leaders and teams in improving performance and
-                                adoption.
+                                Provides targeted, actionable guidance to
+                                support leaders and teams in improving
+                                performance and adoption.
                               </p>
                               <p>
                                 Aligned to key capability areas these tips help
@@ -1177,8 +1178,8 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                           id="tbdOffering"
                           defaultContent={
                             <p>
-                              Highlights curated programs and resources aligned to
-                              your results. These offerings are designed to
+                              Highlights curated programs and resources aligned
+                              to your results. These offerings are designed to
                               address key gaps and strengthen capabilities.
                             </p>
                           }

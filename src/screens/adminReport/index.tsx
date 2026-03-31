@@ -415,7 +415,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -443,16 +443,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -795,9 +795,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -1083,9 +1083,9 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                         );
                         const finalMLines = hasMBullets
                           ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                           : mLines;
 
                         return finalMLines.map(
@@ -1183,7 +1183,7 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -1301,8 +1301,8 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-6">
+              <div className="hidden border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                 <div className="flex items-center justify-between ">
                   <div>
                     <div className="flex gap-2">
@@ -1315,9 +1315,9 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                           defaultContent={
                             <>
                               <p className="mb-2">
-                                Provides targeted, actionable guidance to support
-                                leaders and teams in improving performance and
-                                adoption.
+                                Provides targeted, actionable guidance to
+                                support leaders and teams in improving
+                                performance and adoption.
                               </p>
                               <p>
                                 Aligned to key capability areas these tips help
