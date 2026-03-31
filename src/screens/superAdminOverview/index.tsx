@@ -14,14 +14,16 @@ const SuperAdminOverview = () => {
     Math.floor(new Date().getMonth() / 3) + 1,
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [viewMode, setViewMode] = useState<"list" | "visual">("visual");
+  const [viewMode, setViewMode] = useState<"list" | "visual">("list");
   const [selectedRole, setSelectedRole] = useState<string>("Administrators");
 
   const [intelData, setIntelData] = useState<any>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
-  const [currentPreviewType, setCurrentPreviewType] = useState<"individual" | "master">("individual");
+  const [currentPreviewType, setCurrentPreviewType] = useState<
+    "individual" | "master"
+  >("individual");
 
   const handlePreview = async (type: "individual" | "master") => {
     setLoadingPreview(true);
@@ -40,7 +42,9 @@ const SuperAdminOverview = () => {
       setShowPreview(true);
     } catch (error) {
       console.error("Failed to generate preview:", error);
-      alert("Error generating preview. Ensure at least one assessment exists in the system.");
+      alert(
+        "Error generating preview. Ensure at least one assessment exists in the system.",
+      );
     } finally {
       setLoadingPreview(false);
     }
@@ -171,15 +175,34 @@ const SuperAdminOverview = () => {
             </div>
             <div className="flex items-center gap-5">
               <div className="flex items-center gap-2">
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full px-4 py-1.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-[var(--primary-color)] transition-all"
-                >
-                  {[2024, 2025, 2026, 2027, 2028].map((y) => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 -right-1 top-0 flex items-center pr-3 pointer-events-none">
+                    <svg
+                      className="size-3 text-[var(--primary-color)]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full ps-3 pe-6 py-1.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-[var(--primary-color)] transition-all appearance-none"
+                  >
+                    {[2025, 2026, 2027, 2028].map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="flex items-center justify-end bg-[#edf5fd] p-1 rounded-full border border-[rgba(68,140,210,0.2)]">
                   {[1, 2, 3, 4].map((q) => (
                     <button
@@ -211,12 +234,14 @@ const SuperAdminOverview = () => {
           {stats.map((stat: any, index: number) => (
             <div
               key={index}
-              className="bg-white border border-neutral-100 rounded-xl p-4
-              flex items-center gap-5 flex-nowrap"
+              className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full flex items-center gap-5 flex-nowrap"
             >
               <div
                 className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
-                style={{ backgroundColor: `${stat.color}15`, color: stat.color }}
+                style={{
+                  backgroundColor: `${stat.color}15`,
+                  color: stat.color,
+                }}
               >
                 <Icon icon={stat.icon} width="24" />
               </div>
@@ -239,7 +264,7 @@ const SuperAdminOverview = () => {
         </div>
 
         {/* ── Pulse Row — 3 quick-read cards ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {[
             {
               label: "Assessments completed",
@@ -268,8 +293,7 @@ const SuperAdminOverview = () => {
           ].map((item, i) => (
             <div
               key={i}
-              className="bg-white border border-neutral-100 rounded-xl p-4
-              flex items-center gap-5 justify-between"
+              className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full flex items-start justify-between"
             >
               <div className="flex items-center gap-2.5">
                 <div
@@ -307,7 +331,7 @@ const SuperAdminOverview = () => {
         {/* ── Main 3-col grid ── */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
           {/* Member Distribution */}
-          <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] shadow-[4px_4px_4px_0_rgba(68,140,210,0.07)] p-5 flex flex-col">
+          <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] p-5 flex flex-col">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(68,140,210,0.1)]">
               <div>
                 <h3 className="text-sm font-bold text-[#1a3652]">
@@ -456,7 +480,7 @@ const SuperAdminOverview = () => {
 
           {/* Community Health */}
           <div className="xl:col-span-4 flex flex-col gap-4">
-            <div className="flex-1 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
+            <div className="flex-1 bg-[var(--app-surface)] rounded-xl border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#10b981]/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all duration-1000 group-hover:scale-150 group-hover:bg-[#10b981]/10"></div>
 
               <h3 className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-[0.2em] mb-6">
@@ -474,35 +498,35 @@ const SuperAdminOverview = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3 w-full relative z-10">
-                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#448cd2]/30 transition-colors">
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-xl transition-colors">
                   <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                     {intelData?.participation?.completed || 0}
                   </span>
-                  <span className="text-[9px] font-bold text-[#10b981] uppercase tracking-wider block mt-1">
+                  <span className="text-[10px] font-bold text-[#10b981] uppercase tracking-wider block mt-1">
                     Completed
                   </span>
                 </div>
-                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#6366f1]/30 transition-colors">
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-xl transition-colors">
                   <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                     {intelData?.participation?.assigned || 0}
                   </span>
-                  <span className="text-[9px] font-bold text-[#6366f1] uppercase tracking-wider block mt-1">
+                  <span className="text-[10px] font-bold text-[#6366f1] uppercase tracking-wider block mt-1">
                     Assigned
                   </span>
                 </div>
-                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#F59E0B]/30 transition-colors">
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-xl transition-colors">
                   <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                     {intelData?.participation?.pending || 0}
                   </span>
-                  <span className="text-[9px] font-bold text-[#F59E0B] uppercase tracking-wider block mt-1">
+                  <span className="text-[10px] font-bold text-[#F59E0B] uppercase tracking-wider block mt-1">
                     Pending
                   </span>
                 </div>
-                <div className="p-4 bg-[var(--app-surface-soft)] rounded-[16px] border border-[var(--app-border-color)] hover:border-[#448CD2]/30 transition-colors">
+                <div className="p-4 bg-[var(--app-surface-soft)] rounded-xl transition-colors">
                   <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
                     {intelData?.stats?.[0]?.value || 0}
                   </span>
-                  <span className="text-[9px] font-bold text-[#448CD2] uppercase tracking-wider block mt-1">
+                  <span className="text-[10px] font-bold text-[#448CD2] uppercase tracking-wider block mt-1">
                     Orgs
                   </span>
                 </div>
@@ -515,10 +539,12 @@ const SuperAdminOverview = () => {
             >
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
               <div className="text-left relative z-10">
-                <p className="text-[9px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
+                <p className="text-[10px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
                   Governance Module
                 </p>
-                <h4 className="text-base font-black tracking-wide">Audit Client Portfolios</h4>
+                <h4 className="text-base font-black tracking-wide">
+                  Audit Client Portfolios
+                </h4>
               </div>
               <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all relative z-10">
                 <Icon icon="solar:arrow-right-up-bold" width="20" />
@@ -532,7 +558,9 @@ const SuperAdminOverview = () => {
 
             <div className="flex items-center justify-between mb-8 relative z-10">
               <div>
-                <h3 className="text-lg font-black text-[var(--app-heading-color)] tracking-tight">Global Stream</h3>
+                <h3 className="text-lg font-black text-[var(--app-heading-color)] tracking-tight">
+                  Global Stream
+                </h3>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
                   Live platform feed
                 </p>
@@ -552,9 +580,11 @@ const SuperAdminOverview = () => {
                   >
                     <div className="mt-1">
                       <div
-                        className={`w-3 h-3 rounded-full flex flex-shrink-0 items-center justify-center ${log.type === "submission" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}
+                        className={`size-5 rounded-full flex flex-shrink-0 items-center justify-center ${log.type === "submission" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}
                       >
-                        <span className="text-[6px] font-bold text-white uppercase">{log.org?.[0] || "?"}</span>
+                        <span className="text-[8px] font-semibold text-white uppercase">
+                          {log.org?.[0] || "?"}
+                        </span>
                       </div>
                     </div>
                     <div>
@@ -566,7 +596,9 @@ const SuperAdminOverview = () => {
                       </p>
                       <div className="flex items-center gap-2 mt-2">
                         <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                          {log.time ? new Date(log.time).toLocaleDateString() : 'Just now'}
+                          {log.time
+                            ? new Date(log.time).toLocaleDateString()
+                            : "Just now"}
                         </span>
                       </div>
                     </div>
@@ -595,49 +627,78 @@ const SuperAdminOverview = () => {
           </div>
         </div>
 
-
         {/* ── AI-Powered Platform Observations ── */}
         <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">AI-Powered Platform Observations</h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">POD Insights™ Super Admin Intelligence</p>
+              <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">
+                AI-Powered Platform Observations
+              </h3>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                POD Insights™ Super Admin Intelligence
+              </p>
             </div>
             <div className="w-9 h-9 bg-[#8E54E9]/10 rounded-[12px] flex items-center justify-center">
-              <Icon icon="solar:magic-stick-3-bold-duotone" className="text-[#8E54E9]" width="18" />
+              <Icon
+                className="text-[#8E54E9]"
+                icon="solar:magic-stick-3-line-duotone"
+                width="20"
+                height="20"
+              />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 xl:grid-cols-3 gap-4">
             {[
               {
-                icon: "solar:graph-up-bold", color: "#10B981", bg: "bg-[#10B981]/10",
+                icon: "solar:graph-broken",
+                color: "#10B981",
+                bg: "bg-[#10B981]/10",
                 title: "Platform Momentum",
-                body: (intelData?.participation?.rate || 0) >= 70
-                  ? `Platform completion is at ${intelData?.participation?.rate || 0}% — exceeding the 70% benchmark. ${intelData?.stats?.[0]?.value || 0} active organizations are contributing to a strong Q${selectedQuarter} cycle.`
-                  : (intelData?.participation?.rate || 0) >= 40
-                    ? `Completion rate stands at ${intelData?.participation?.rate || 0}%across ${intelData?.stats?.[0]?.value || 0} organizations. Targeted org-level outreach can push this past the 70% platform benchmark.`
-                    : `Completion is below benchmark at ${intelData?.participation?.rate || 0}%. Consider escalating outreach across all ${intelData?.stats?.[0]?.value || 0} client organizations.`,
+                body:
+                  (intelData?.participation?.rate || 0) >= 70
+                    ? `Platform completion is at ${intelData?.participation?.rate || 0}% — exceeding the 70% benchmark. ${intelData?.stats?.[0]?.value || 0} active organizations are contributing to a strong Q${selectedQuarter} cycle.`
+                    : (intelData?.participation?.rate || 0) >= 40
+                      ? `Completion rate stands at ${intelData?.participation?.rate || 0}%across ${intelData?.stats?.[0]?.value || 0} organizations. Targeted org-level outreach can push this past the 70% platform benchmark.`
+                      : `Completion is below benchmark at ${intelData?.participation?.rate || 0}%. Consider escalating outreach across all ${intelData?.stats?.[0]?.value || 0} client organizations.`,
               },
               {
-                icon: "solar:buildings-2-bold-duotone", color: "#448CD2", bg: "bg-[#448CD2]/10",
+                icon: "solar:buildings-2-broken",
+                color: "#448CD2",
+                bg: "bg-[#448CD2]/10",
                 title: "Organizational Coverage",
-                body: `${intelData?.stats?.[1]?.value || 0} users are registered across ${intelData?.stats?.[0]?.value || 0} organizations. The most active group this quarter is ${Object.entries(intelData?.completionByRole || {}).sort(([, a], [, b]) => (b as number) - (a as number))[0]?.[0] || 'N/A'}. ${intelData?.participation?.pending || 0} assessments are still pending platform-wide.`,
+                body: `${intelData?.stats?.[1]?.value || 0} users are registered across ${intelData?.stats?.[0]?.value || 0} organizations. The most active group this quarter is ${Object.entries(intelData?.completionByRole || {}).sort(([, a], [, b]) => (b as number) - (a as number))[0]?.[0] || "N/A"}. ${intelData?.participation?.pending || 0} assessments are still pending platform-wide.`,
               },
               {
-                icon: "solar:shield-check-bold-duotone", color: "#F59E0B", bg: "bg-[#F59E0B]/10",
+                icon: "oui:security-signal",
+                color: "#F59E0B",
+                bg: "bg-[#F59E0B]/10",
                 title: "Client Health Signal",
-                body: (intelData?.participation?.pending || 0) > 10
-                  ? `${intelData?.participation?.pending || 0} assessments remain pending. Priority intervention is recommended for organizations with zero completions this quarter to maintain platform integrity.`
-                  : `Pending queue is healthy at ${intelData?.participation?.pending || 0}. Platform data integrity is strong. Continue monitoring role-level compliance across all organizations.`,
+                body:
+                  (intelData?.participation?.pending || 0) > 10
+                    ? `${intelData?.participation?.pending || 0} assessments remain pending. Priority intervention is recommended for organizations with zero completions this quarter to maintain platform integrity.`
+                    : `Pending queue is healthy at ${intelData?.participation?.pending || 0}. Platform data integrity is strong. Continue monitoring role-level compliance across all organizations.`,
               },
             ].map((obs, i) => (
-              <div key={i} className="flex gap-4 p-5 bg-[var(--app-surface-soft)] rounded-[18px] border border-[var(--app-border-color)]/50 hover:border-[var(--app-border-color)] transition-colors">
-                <div className={`w-10 h-10 shrink-0 ${obs.bg} rounded-[12px] flex items-center justify-center mt-0.5`}>
-                  <Icon icon={obs.icon} width="20" style={{ color: obs.color }} />
+              <div
+                key={i}
+                className="flex gap-4 p-4 bg-[rgba(68,140,210,0.1)] rounded-xl transition-colors"
+              >
+                <div
+                  className={`w-10 h-10 shrink-0 ${obs.bg} rounded-[12px] flex items-center justify-center mt-0.5`}
+                >
+                  <Icon
+                    icon={obs.icon}
+                    width="20"
+                    style={{ color: obs.color }}
+                  />
                 </div>
                 <div>
-                  <h4 className="text-[12px] font-black text-[var(--app-heading-color)] mb-1.5">{obs.title}</h4>
-                  <p className="text-[11px] text-[var(--app-text-muted)] leading-relaxed">{obs.body}</p>
+                  <h4 className="text-[12px] font-black text-[var(--app-heading-color)] mb-1.5">
+                    {obs.title}
+                  </h4>
+                  <p className="text-[11px] text-[var(--app-text-muted)] leading-relaxed">
+                    {obs.body}
+                  </p>
                 </div>
               </div>
             ))}
@@ -645,17 +706,22 @@ const SuperAdminOverview = () => {
         </div>
 
         {/* ── Report Laboratory: Live Preview ── */}
-        <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_12px_rgba(68,140,210,0.08)] p-5 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-5 transition-all hover:shadow-[4px_4px_20px_rgba(68,140,210,0.12)]">
+        <div className="bg-white border border-[#448CD2] border-opacity-20 p-5 rounded-xl flex flex-col xl:flex-row items-start justify-between gap-5 transition-all">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#edf5fd] to-white rounded-xl flex items-center justify-center text-[var(--primary-color)] shadow-sm border border-[#448CD21A]">
-              <Icon icon="solar:document-bold-duotone" width="28" />
+            <div className="w-12 h-12 bg-gradient-to-br from-[#edf5fd] to-white rounded-xl flex items-center justify-center text-[var(--primary-color)]">
+              <Icon icon="solar:document-broken" width="28" height="28" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#1a3652]">Report Live Laboratory</h3>
-              <p className="text-xs text-gray-500">Super Admin Mode: Real-time validation of POD-360™ dossier layout and PDF service logic.</p>
+              <h3 className="text-lg font-bold text-[#1a3652]">
+                Report Live Laboratory
+              </h3>
+              <p className="text-xs text-gray-500">
+                Super Admin Mode: Real-time validation of POD-360™ dossier
+                layout and PDF service logic.
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
             <button
               disabled={loadingPreview}
               onClick={() => handlePreview("individual")}
@@ -664,14 +730,14 @@ const SuperAdminOverview = () => {
               {loadingPreview && currentPreviewType === "individual" ? (
                 <Icon icon="line-md:loading-loop" width="16" />
               ) : (
-                <Icon icon="solar:user-bold" width="16" />
+                <Icon icon="solar:user-broken" width="16" height="16" />
               )}
               Sample Participant
             </button>
             <button
               disabled={loadingPreview}
               onClick={() => handlePreview("master")}
-              className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-[var(--primary-color)] to-[#1a3652] text-white font-bold text-xs rounded-lg hover:opacity-95 transition-all shadow-md flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
+              className="flex-1  sm:flex-none px-6 py-2.5 bg-gradient-to-r from-[var(--primary-color)] to-[#1a3652] text-white font-bold text-xs rounded-lg hover:opacity-95 transition-all shadow-md flex hidden items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
             >
               {loadingPreview && currentPreviewType === "master" ? (
                 <Icon icon="line-md:loading-loop" width="16" />
@@ -684,12 +750,13 @@ const SuperAdminOverview = () => {
         </div>
 
         {/* ── AI Insights Footer ── */}
-        <div className="bg-white border border-[rgba(68,140,210,0.2)] shadow-[4px_4px_4px_0_rgba(68,140,210,0.06)] px-5 py-4 rounded-xl flex flex-col sm:flex-row items-start gap-4">
-          <div className="flex items-center gap-3 shrink-0 px-4 py-3 bg-[#edf5fd] rounded-xl border border-[rgba(68,140,210,0.15)]">
+        <div className="bg-white border border-[rgba(68,140,210,0.2)]  px-5 py-4 rounded-xl flex flex-col sm:flex-row items-start gap-4">
+          <div className="flex items-start gap-3 shrink-0 px-4 py-3 bg-[#edf5fd] rounded-xl border border-[rgba(68,140,210,0.15)]">
             <Icon
-              icon="solar:magic-stick-3-bold-duotone"
-              className="text-[var(--primary-color)]"
-              width="22"
+              icon="solar:magic-stick-3-line-duotone"
+              width="20"
+              height="20"
+              className="text-[var(--primary-color)] mt-1"
             />
             <div>
               <span className="text-[9px] font-bold text-[var(--primary-color)] uppercase tracking-widest block">
@@ -707,13 +774,13 @@ const SuperAdminOverview = () => {
                 className="flex gap-3 items-start p-3 rounded-lg border border-[rgba(68,140,210,0.1)] hover:border-[rgba(68,140,210,0.25)] hover:bg-[#fafcff] transition-all group"
               >
                 <div
-                  className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center ${insight.type === "positive" ? "bg-[#10b981]/10 text-[#10b981]" : "bg-[var(--primary-color)]/10 text-[var(--primary-color)]"}`}
+                  className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center ${insight.type === "positive" ? "bg-[#10b981]/10 text-[#10b981]" : "bg-blue-50 text-[var(--primary-color)]"}`}
                 >
                   <Icon
                     icon={
                       insight.type === "positive"
-                        ? "solar:graph-up-bold"
-                        : "solar:notification-lines-bold"
+                        ? "solar:graph-broken"
+                        : "solar:notification-unread-lines-broken"
                     }
                     width="16"
                   />
