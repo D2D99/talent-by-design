@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import api from "../../services/axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import { useAuth } from "../../context/useAuth";
@@ -41,14 +41,13 @@ const OrgUsers = ({
   hideAdmin = true,
 }: OrgUsersProps) => {
   const { orgName: routeOrgName } = useParams();
-  const navigate = useNavigate();
 
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDept, setSelectedDept] = useState("");
-  const [departments, setDepartments] = useState<string[]>([]);
+  const selectedDept = "";
+  // const [departments, setDepartments] = useState<string[]>([]);
   // const [isDeleting, setIsDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -103,9 +102,9 @@ const OrgUsers = ({
       setMembers(res.data.members);
       setDetails(res.data.details);
 
-      // Fetch departments as well
-      const filterRes = await api.get(`auth/organization-filters/${targetOrg}`);
-      setDepartments(filterRes.data.departments || []);
+      // // Fetch departments as well
+      // const filterRes = await api.get(`auth/organization-filters/${targetOrg}`);
+      // setDepartments(filterRes.data.departments || []);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load members");
@@ -142,6 +141,9 @@ const OrgUsers = ({
   const filteredMembers = sortedMembers.filter((m) => {
     // Exclude admins
     if (hideAdmin && m.role.toLowerCase() === "admin") return false;
+
+    // Filter out non-accepted users (Pending/Expired)
+    if (m.status !== "Accept") return false;
 
     // 🚀 ROLE-BASED FILTERING FOR LEADERS/MANAGERS
     if (currentUser) {
@@ -215,12 +217,8 @@ const OrgUsers = ({
   const nonAdminMembers = members.filter((m) =>
     hideAdmin ? m.role.toLowerCase() !== "admin" : true,
   );
-  const totalUsers = nonAdminMembers.length;
   const acceptedUsers = nonAdminMembers.filter(
     (m) => m.status === "Accept",
-  ).length;
-  const pendingUsers = nonAdminMembers.filter(
-    (m) => m.status === "Pending",
   ).length;
 
   return (
@@ -236,7 +234,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                currentUser?.role === "manager"
+                  currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -254,15 +252,15 @@ const OrgUsers = ({
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
             <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4 ">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold text-[var(--primary-color)] uppercase tracking-wider">
-                    Total Users
+                    Total Active Members
                   </p>
                   <p className="text-2xl font-bold text-[var(--primary-color)] mt-1">
-                    {totalUsers}
+                    {acceptedUsers}
                   </p>
                 </div>
                 <div className="p-3 bg-blue-200/50 rounded-lg">
@@ -279,7 +277,7 @@ const OrgUsers = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
-                    Accepted
+                    Assessment Accepted
                   </p>
                   <p className="text-2xl font-bold text-green-600 mt-1">
                     {acceptedUsers}
@@ -289,46 +287,6 @@ const OrgUsers = ({
                   <Icon
                     icon="solar:check-circle-bold"
                     className="text-green-600"
-                    width="24"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border border-yellow-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-yellow-600 uppercase tracking-wider">
-                    Pending
-                  </p>
-                  <p className="text-2xl font-bold text-yellow-600 mt-1">
-                    {pendingUsers}
-                  </p>
-                </div>
-                <div className="p-3 bg-yellow-200/50 rounded-lg">
-                  <Icon
-                    icon="solar:clock-circle-bold"
-                    className="text-yellow-600"
-                    width="24"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-red-600 uppercase tracking-wider">
-                    Expired
-                  </p>
-                  <p className="text-2xl font-bold text-red-600 mt-1">
-                    {totalUsers - acceptedUsers - pendingUsers}
-                  </p>
-                </div>
-                <div className="p-3 bg-red-200/50 rounded-lg">
-                  <Icon
-                    icon="solar:close-circle-bold"
-                    className="text-red-600"
                     width="24"
                   />
                 </div>
@@ -355,22 +313,7 @@ const OrgUsers = ({
           />
         </div>
 
-        {(isSuperAdmin || isAdmin) && (
-          <div className="flex items-center gap-2">
-            <select
-              className="px-4 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--primary-color)] text-sm"
-              value={selectedDept}
-              onChange={(e) => setSelectedDept(e.target.value)}
-            >
-              <option value="">All Departments</option>
-              {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
@@ -419,7 +362,6 @@ const OrgUsers = ({
               )}
               <th className="px-6 py-4 font-semibold">Role</th>
               <th className="px-6 py-4 font-semibold">Status</th>
-              <th className="px-6 py-4 font-semibold text-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -474,50 +416,18 @@ const OrgUsers = ({
                       )}
                     </td>
                   )}
-                  <td className="px-6 py-4">
-                    {member.assessmentStatus === "Completed" ? (
-                      <button
-                        onClick={() => {
-                          const roleMapping: Record<string, string> = {
-                            superadmin: "org-head",
-                            super_admin: "org-head",
-                            admin: "org-head",
-                            "senior-leader": "senior-leader",
-                            leader: "senior-leader",
-                            manager: "manager",
-                            employee: "employee",
-                          };
-                          const reportType =
-                            roleMapping[member.role.toLowerCase()] ||
-                            "employee";
-                          navigate(
-                            `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || currentUser?.orgName || "")}`,
-                          );
-                        }}
-                        title="View Report"
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors flex items-center gap-1.5"
-                      >
-                        <Icon icon="solar:eye-linear" width="18" />
-                        <span className="text-xs font-bold uppercase tracking-wider">
-                          Report
-                        </span>
-                      </button>
-                    ) : (
-                      <span className="text-gray-300 text-xs">—</span>
-                    )}
-                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="py-20 text-center text-gray-400">
+                <td colSpan={6} className="py-20 text-center text-gray-400">
                   {isLoading ? "Loading directory..." : "No members found."}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </div >
 
       <Pagination
         totalItems={filteredMembers.length}
@@ -623,7 +533,7 @@ const OrgUsers = ({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

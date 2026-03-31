@@ -1585,44 +1585,47 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                   </div>
                   {/* </div> */}
                 </div>
-                <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(0)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
-                    />
-                    <span className="text-xs text-[#474747]">Manager</span>
-                  </div>
-                  {(teamAvgData?.employeeCount > 0 || true) && (
-                    <div
-                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-                      onClick={() => toggleHiddenIndex(1)}
-                    >
-                      <span
-                        className="w-5 h-2 rounded-sm inline-block"
-                        style={{ background: "rgba(46, 204, 113, 0.7)" }}
-                      />
-                      <span className="text-xs text-[#474747]">
-                        Employee ({teamAvgData?.employeeCount || 0})
-                      </span>
-                    </div>
-                  )}
-                </div>
+
 
                 <div className="transition-all duration-500 overflow-visible">
                   {activeTab === "graph" ? (
-                    <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
-                      <RadarChart
-                        data={radarData}
-                        selectedLabel={selectedLabel}
-                        onLabelSelect={handleRadarChartSelection}
-                        datasetLabels={["Manager", "Employee"]}
-                        hiddenIndices={hiddenIndices}
-                      />
-                    </div>
+                    <>
+                      <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
+                        <div
+                          className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                          onClick={() => toggleHiddenIndex(0)}
+                        >
+                          <span
+                            className="w-5 h-2 rounded-sm inline-block"
+                            style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                          />
+                          <span className="text-xs text-[#474747]">Manager</span>
+                        </div>
+                        {(teamAvgData?.employeeCount > 0 || true) && (
+                          <div
+                            className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                            onClick={() => toggleHiddenIndex(1)}
+                          >
+                            <span
+                              className="w-5 h-2 rounded-sm inline-block"
+                              style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                            />
+                            <span className="text-xs text-[#474747]">
+                              Employee ({teamAvgData?.employeeCount || 0})
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
+                        <RadarChart
+                          data={radarData}
+                          selectedLabel={selectedLabel}
+                          onLabelSelect={handleRadarChartSelection}
+                          datasetLabels={["Manager", "Employee"]}
+                          hiddenIndices={hiddenIndices}
+                        />
+                      </div>
+                    </>
                   ) : (
                     <div className="py-4 space-y-10">
                       <div className="flex flex-col items-center mb-6 text-center"></div>
