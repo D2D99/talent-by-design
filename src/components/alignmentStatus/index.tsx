@@ -34,11 +34,17 @@ const RoleProgressChart = ({ data }: Props) => {
   const options: ChartOptions<'bar'> = {
     indexAxis: 'y',
     responsive: true,
+    layout: {
+      padding: {
+        right: 50, 
+      }
+    },
     plugins: {
       legend: { display: false },
       tooltip: { enabled: false },
       datalabels: {
         clamp: true,
+        clip: false,
       },
     },
     scales: {

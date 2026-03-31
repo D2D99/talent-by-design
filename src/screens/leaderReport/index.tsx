@@ -1723,9 +1723,9 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                       <img src={OuiSecurity} alt="images" className="w-8 h-8" />
                     </div>
                   </div>
-                  <div className="sm:w-[400px] w-full my-10">
+                  {/* <div className="sm:w-[400px] w-full my-10"> */}
                     <RoleProgressChart data={roleAverages} />
-                  </div>
+                  {/* </div> */}
                   <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
                     <b className="">Largest Gap:</b> {alignmentInfo.largestRole}{" "}
                     VS {alignmentInfo.lowestRole} (+{alignmentInfo.gap})
