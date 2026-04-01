@@ -75,8 +75,8 @@ const EditableTooltip: React.FC<EditableTooltipProps> = ({
     };
 
     // Helper to get text representation of content for the editor
-    const getTextForEditor = () => {
-        if (tooltips[id]?.content) return tooltips[id].content;
+    const getTextForEditor = (resetToDefault = false) => {
+        if (!resetToDefault && tooltips[id]?.content) return tooltips[id].content;
         if (typeof defaultContent === "string") return defaultContent;
         return extractTextFromNode(defaultContent).trim();
     };
@@ -177,13 +177,7 @@ const EditableTooltip: React.FC<EditableTooltipProps> = ({
                                             <span className="sm:block hidden">Clear All</span>
                                         </button>
                                         <button
-                                            onClick={() =>
-                                                setContent(
-                                                    typeof defaultContent === "string"
-                                                        ? defaultContent
-                                                        : "",
-                                                )
-                                            }
+                                            onClick={() => setContent(getTextForEditor(true))}
                                             className="text-[#448CD2] hover:text-[#3a76b1] text-[10px] font-black uppercase tracking-widest flex items-center gap-1"
                                         >
                                             <Icon icon="solar:refresh-bold-duotone" width="12" />
