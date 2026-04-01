@@ -325,8 +325,8 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 >
                   Objectives and Key Results (OKRS)
                 </label>
-                <div className="flex items-center gap-2">
-                  <label className="font-bold text-[var(--secondary-color)] text-xs text-gray-500">
+                <div className="flex items-center gap-2 hidden">
+                  <label className="font-bold text-[var(--secondary-color)] text-xs text-gray-500 hidden">
                     Set Progress %
                   </label>
                   <input
