@@ -641,7 +641,7 @@ const ManagerReport = () => {
     };
   });
 
-  const gapInsightsList = gapInsights.filter((g) => g.absGap > 0);
+  const gapInsightsList = gapInsights.filter((g) => g.absGap >= 0);
   const topGapsShown = gapInsightsList
     .sort((a, b) => b.absGap - a.absGap)
     .slice(0, 3);
