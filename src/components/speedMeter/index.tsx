@@ -112,7 +112,7 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
               style: {
                 fontSize: "32px",
                 fontWeight: "900",
-                color: "#1a3652",
+                color: "#000",
                 textOutline: "none",
                 fontFamily: "Outfit, sans-serif",
               },
