@@ -342,27 +342,27 @@ const SuperAdminOverview = () => {
                 </p>
               </div>
               {viewMode === "visual" && (
-              <div className="relative">
-                <select
-                  value={selectedRole}
-                  onChange={(e) => {
-                    setSelectedRole(e.target.value);
-                    setViewMode("visual");
-                  }}
-                  className="appearance-none bg-[#edf5fd] border border-[rgba(68,140,210,0.25)] text-[var(--primary-color)] text-[10px] font-semibold py-1 pl-2.5 pr-6 rounded-full outline-none cursor-pointer"
-                >
-                  {roleLabels.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-                <Icon
-                  icon="solar:alt-arrow-down-bold"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary-color)] pointer-events-none"
-                  width="9"
-                />
-              </div>
+                <div className="relative">
+                  <select
+                    value={selectedRole}
+                    onChange={(e) => {
+                      setSelectedRole(e.target.value);
+                      setViewMode("visual");
+                    }}
+                    className="appearance-none bg-[#edf5fd] border border-[rgba(68,140,210,0.25)] text-[var(--primary-color)] text-[10px] font-semibold py-1 pl-2.5 pr-6 rounded-full outline-none cursor-pointer"
+                  >
+                    {roleLabels.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  <Icon
+                    icon="solar:alt-arrow-down-bold"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary-color)] pointer-events-none"
+                    width="9"
+                  />
+                </div>
               )}
             </div>
 
@@ -535,7 +535,7 @@ const SuperAdminOverview = () => {
 
             <button
               onClick={() => navigate("/dashboard/org-assessments")}
-              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-[20px] shadow-lg flex items-center justify-between text-white group hover:shadow-2xl hover:scale-[1.01] transition-all active:scale-[0.99] border border-white/10"
+              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl shadow-lg flex items-center justify-between text-white"
             >
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
               <div className="text-left relative z-10">
@@ -625,7 +625,7 @@ const SuperAdminOverview = () => {
               Analyze Data Stream
             </button>
           </div>
-        </div> 
+        </div>
 
         {/* ── AI-Powered Platform Observations ── */}
         <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">

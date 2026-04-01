@@ -118,37 +118,55 @@ const AdminAssessments = () => {
             value: members.length,
             icon: "solar:users-group-two-rounded-broken",
             color: "#448CD2",
-            bg: "bg-blue-50/50"
+            bg: "bg-blue-50/50",
           },
           {
             label: "Completed",
-            value: members.filter((m) => m.assessmentStatus === "Completed").length,
+            value: members.filter((m) => m.assessmentStatus === "Completed")
+              .length,
             icon: "prime:check-circle",
             color: "#10B981",
-            bg: "bg-green-50/50"
+            bg: "bg-green-50/50",
           },
           {
             label: "In Progress",
-            value: members.filter((m) => m.assessmentStatus === "In Progress").length,
+            value: members.filter((m) => m.assessmentStatus === "In Progress")
+              .length,
             icon: "basil:sand-watch-outline",
             color: "#6366F1",
-            bg: "bg-indigo-50/50"
+            bg: "bg-indigo-50/50",
           },
           {
             label: "Not Started",
-            value: members.filter((m) => !m.assessmentStatus || m.assessmentStatus === "Not Started").length,
+            value: members.filter(
+              (m) =>
+                !m.assessmentStatus || m.assessmentStatus === "Not Started",
+            ).length,
             icon: "hugeicons:time-04",
             color: "#F59E0B",
-            bg: "bg-amber-50/50"
-          }
+            bg: "bg-amber-50/50",
+          },
         ].map((stat, i) => (
-          <div key={i} className={`border border-neutral-100 rounded-xl p-5 flex items-center gap-5 transition-all hover:shadow-md bg-white`}>
-            <div className={`w-12 h-12 rounded-lg shrink-0 flex items-center justify-center`} style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
+          <div
+            key={i}
+            className={`border border-neutral-100 rounded-xl p-5 flex items-center gap-5 transition-all bg-white`}
+          >
+            <div
+              className={`w-12 h-12 rounded-lg shrink-0 flex items-center justify-center`}
+              style={{ backgroundColor: `${stat.color}15`, color: stat.color }}
+            >
               <Icon icon={stat.icon} width="24" height="24" />
             </div>
             <div>
-              <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{stat.label}</p>
-              <p className="text-2xl font-bold leading-tight mt-0.5" style={{ color: stat.color }}>{stat.value}</p>
+              <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+                {stat.label}
+              </p>
+              <p
+                className="text-2xl font-bold leading-tight mt-0.5"
+                style={{ color: stat.color }}
+              >
+                {stat.value}
+              </p>
             </div>
           </div>
         ))}
@@ -240,14 +258,15 @@ const AdminAssessments = () => {
                     <span
                       className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center
-                         ${status === "Completed"
-                          ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
-                          : status === "In Progress"
-                            ? "bg-blue-100 text-blue-600 border-blue-600"
-                            : status === "Due"
-                              ? "bg-amber-100 text-amber-600 border-amber-600"
-                              : "bg-gray-100 text-gray-400 border-gray-400"
-                        }`}
+                         ${
+                           status === "Completed"
+                             ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
+                             : status === "In Progress"
+                               ? "bg-blue-100 text-blue-600 border-blue-600"
+                               : status === "Due"
+                                 ? "bg-amber-100 text-amber-600 border-amber-600"
+                                 : "bg-gray-100 text-gray-400 border-gray-400"
+                         }`}
                     >
                       {status}
                     </span>
@@ -256,22 +275,24 @@ const AdminAssessments = () => {
                     <div className="pt-2">
                       <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
-                            ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
-                            : percentage >= 50
-                              ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
-                              : "bg-gradient-to-r from-amber-400 to-amber-500"
-                            }`}
+                          className={`h-full rounded-full transition-all duration-700 ease-out ${
+                            percentage === 100
+                              ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
+                              : percentage >= 50
+                                ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
+                                : "bg-gradient-to-r from-amber-400 to-amber-500"
+                          }`}
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
                       <span
-                        className={`text-xs font-semibold w-10 ${percentage === 100
-                          ? "text-green-600"
-                          : percentage >= 50
-                            ? "text-[#448CD2]"
-                            : "text-neutral-300"
-                          }`}
+                        className={`text-xs font-semibold w-10 ${
+                          percentage === 100
+                            ? "text-green-600"
+                            : percentage >= 50
+                              ? "text-[#448CD2]"
+                              : "text-neutral-300"
+                        }`}
                       >
                         {percentage}%
                       </span>

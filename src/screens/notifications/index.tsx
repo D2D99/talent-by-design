@@ -119,7 +119,7 @@ const NotificationHistory = () => {
             )}
             {tab === "Unread" &&
               notifications.filter((n) => !n.isRead).length > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full shadow-sm">
+                <span className="ml-2 bg-white text-[var(--primary-color)] text-xs px-1.5 py-0.5 rounded-full shadow-sm">
                   {notifications.filter((n) => !n.isRead).length}
                 </span>
               )}

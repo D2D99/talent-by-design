@@ -235,18 +235,18 @@ const OrgUsers = ({
 
   return (
     <div
-      className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start"}`}
+      className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]"}`}
     >
       {!isEmbedded && (
-        <div className="mb-8 bg-white relative overflow-hidden">
-          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+        <div className="mb-14 bg-white relative overflow-hidden">
+          <div className="flex items-center justify-between md:mb-6 flex-wrap gap-4">
             <div>
               <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
                 {details?.orgName || "Organization Users"}
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                  currentUser?.role === "manager"
+                currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -264,7 +264,7 @@ const OrgUsers = ({
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-0">
             {[
               {
                 label: "Total Active",
@@ -293,7 +293,7 @@ const OrgUsers = ({
             ].map((stat, i) => (
               <div
                 key={i}
-                className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5 transition-all hover:shadow-md"
+                className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5 transition-all"
               >
                 <div
                   className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
@@ -339,117 +339,119 @@ const OrgUsers = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50/50 border-b border-gray-100">
-              <th className="px-6 py-4 font-semibold">#</th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("firstName")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Name</span>
-                  <Icon
-                    icon="mdi:chevron-up-down"
-                    className="opacity-75 size-3.5"
-                  />
-                </div>
-              </th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("email")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Email</span>
-                  <Icon
-                    icon="mdi:chevron-up-down"
-                    className="opacity-75 size-3.5"
-                  />
-                </div>
-              </th>
-              <th className="px-6 py-4 font-semibold">Added On</th>
-              {(isSuperAdmin || isAdmin) && (
+      <div className="grid">
+        <div className="overflow-x-auto rounded-xl border border-gray-100  border-b-0">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-6 py-4 font-semibold">#</th>
                 <th
-                  className="px-6 py-4 font-semibold cursor-pointer"
-                  onClick={() => handleSort("department")}
+                  className="px-6 py-4 font-semibold"
+                  onClick={() => handleSort("firstName")}
                 >
                   <div className="flex items-center justify-between">
-                    <span>Department</span>
+                    <span>Name</span>
                     <Icon
                       icon="mdi:chevron-up-down"
                       className="opacity-75 size-3.5"
                     />
                   </div>
                 </th>
-              )}
-              <th className="px-6 py-4 font-semibold">Role</th>
-              <th className="px-6 py-4 font-semibold">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.length > 0 ? (
-              currentData.map((member, index) => (
-                <tr
-                  key={member._id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                <th
+                  className="px-6 py-4 font-semibold"
+                  onClick={() => handleSort("email")}
                 >
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                    {indexOfFirstItem + index + 1}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium">
-                    <span className="font-bold text-gray-800 tracking-tight text-nowrap">
-                      {member.firstName === "-" ? (
-                        <span className="text-gray-300 font-black">—</span>
-                      ) : (
-                        `${member.firstName} ${member.lastName}`
-                      )}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {member.email}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {new Date(member.createdAt).toLocaleDateString()}
-                  </td>
-                  {(isSuperAdmin || isAdmin) && (
-                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                      {member.department || "—"}
-                    </td>
-                  )}
-                  <td className="px-6 py-4">
-                    <span className="uppercase text-xs font-bold">
-                      {member.role}
-                    </span>
-                  </td>
-                  {showStatusColumn && (
-                    <td className="px-6 py-4">
-                      {member.status === "Accept" ? (
-                        <span className="bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center">
-                          Accepted
-                        </span>
-                      ) : member.status === "Pending" ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center bg-[#FFF8EE] text-[#E39631] border-[#E39631]">
-                          Pending
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center bg-[#FFEEEE] text-[#D71818] border-[#D71818]">
-                          Expired
-                        </span>
-                      )}
-                    </td>
-                  )}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="py-20 text-center text-gray-400">
-                  {isLoading ? "Loading directory..." : "No members found."}
-                </td>
+                  <div className="flex items-center justify-between">
+                    <span>Email</span>
+                    <Icon
+                      icon="mdi:chevron-up-down"
+                      className="opacity-75 size-3.5"
+                    />
+                  </div>
+                </th>
+                <th className="px-6 py-4 font-semibold">Added On</th>
+                {(isSuperAdmin || isAdmin) && (
+                  <th
+                    className="px-6 py-4 font-semibold cursor-pointer"
+                    onClick={() => handleSort("department")}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Department</span>
+                      <Icon
+                        icon="mdi:chevron-up-down"
+                        className="opacity-75 size-3.5"
+                      />
+                    </div>
+                  </th>
+                )}
+                <th className="px-6 py-4 font-semibold">Role</th>
+                <th className="px-6 py-4 font-semibold">Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentData.length > 0 ? (
+                currentData.map((member, index) => (
+                  <tr
+                    key={member._id}
+                    className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                      {indexOfFirstItem + index + 1}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium">
+                      <span className="font-bold text-gray-800 tracking-tight text-nowrap">
+                        {member.firstName === "-" ? (
+                          <span className="text-gray-300 font-black">—</span>
+                        ) : (
+                          `${member.firstName} ${member.lastName}`
+                        )}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {member.email}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {new Date(member.createdAt).toLocaleDateString()}
+                    </td>
+                    {(isSuperAdmin || isAdmin) && (
+                      <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                        {member.department || "—"}
+                      </td>
+                    )}
+                    <td className="px-6 py-4">
+                      <span className="uppercase text-xs font-bold">
+                        {member.role}
+                      </span>
+                    </td>
+                    {showStatusColumn && (
+                      <td className="px-6 py-4">
+                        {member.status === "Accept" ? (
+                          <span className="bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center">
+                            Accepted
+                          </span>
+                        ) : member.status === "Pending" ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center bg-[#FFF8EE] text-[#E39631] border-[#E39631]">
+                            Pending
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center bg-[#FFEEEE] text-[#D71818] border-[#D71818]">
+                            Expired
+                          </span>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-20 text-center text-gray-400">
+                    {isLoading ? "Loading directory..." : "No members found."}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Pagination

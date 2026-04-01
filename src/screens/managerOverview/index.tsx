@@ -224,7 +224,7 @@ const ManagerOverview = () => {
                   <p className="text-xs text-[#5d5d5d] font-medium">
                     {item.label}
                   </p>
-                  <p className="text-base font-bold text-[#1a3652] capitalize leading-tight max-w-[120px] truncate">
+                  <p className="text-base font-bold capitalize leading-tight max-w-[120px] truncate">
                     {item.value}
                   </p>
                 </div>
@@ -254,27 +254,29 @@ const ManagerOverview = () => {
                 </h3>
                 <p className="text-[10px] text-[#5d5d5d] mt-0.5">Role Matrix</p>
               </div>
-              <div className="relative">
-                <select
-                  value={selectedRole}
-                  onChange={(e) => {
-                    setSelectedRole(e.target.value);
-                    setViewMode("visual");
-                  }}
-                  className="appearance-none bg-[#edf5fd] border border-[rgba(68,140,210,0.25)] text-[var(--primary-color)] text-[10px] font-semibold py-1 pl-2.5 pr-6 rounded-full outline-none cursor-pointer"
-                >
-                  {roleLabels.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-                <Icon
-                  icon="solar:alt-arrow-down-bold"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary-color)] pointer-events-none"
-                  width="9"
-                />
-              </div>
+              {viewMode === "visual" && (
+                <div className="relative">
+                  <select
+                    value={selectedRole}
+                    onChange={(e) => {
+                      setSelectedRole(e.target.value);
+                      setViewMode("visual");
+                    }}
+                    className="appearance-none bg-[#edf5fd] border border-[rgba(68,140,210,0.25)] text-[var(--primary-color)] text-[10px] font-semibold py-1 pl-2.5 pr-6 rounded-full outline-none cursor-pointer"
+                  >
+                    {roleLabels.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  <Icon
+                    icon="solar:alt-arrow-down-bold"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary-color)] pointer-events-none"
+                    width="9"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex bg-[#edf5fd] p-0.5 rounded-full mb-4 border border-[rgba(68,140,210,0.15)]">
@@ -413,7 +415,7 @@ const ManagerOverview = () => {
 
             <button
               onClick={() => navigate("/dashboard/org-assessments")}
-              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-[20px] shadow-lg flex items-center justify-between text-white group hover:shadow-2xl hover:scale-[1.01] transition-all active:scale-[0.99] border border-white/10"
+              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl flex items-center justify-between text-white"
             >
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
               <div className="text-left relative z-10">
@@ -454,9 +456,9 @@ const ManagerOverview = () => {
                   <div key={i} className="flex gap-4 group/item cursor-default">
                     <div className="mt-1">
                       <div
-                        className={`w-3 h-3 rounded-full flex shrink-0 items-center justify-center ${log.type === "completion" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}
+                        className={`size-5 rounded-full flex shrink-0 items-center justify-center ${log.type === "completion" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}
                       >
-                        <span className="text-[6px] font-bold text-white uppercase">
+                        <span className="text-[8px] font-bold text-white uppercase">
                           {log.user?.[0] || "?"}
                         </span>
                       </div>
@@ -468,7 +470,7 @@ const ManagerOverview = () => {
                       <p className="text-[11px] text-[var(--app-text-muted)] mt-1 font-medium italic">
                         {log.action}
                       </p>
-                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 block">
+                      <span className="text-[8px] hidden font-black text-slate-400 uppercase tracking-widest mt-1 block">
                         {log.time
                           ? formatDistanceToNow(new Date(log.time), {
                               addSuffix: true,
@@ -571,11 +573,11 @@ const ManagerOverview = () => {
         </div>
 
         {/* ── Strategic Insight Banner ── */}
-        <div className="bg-gradient-to-r from-[#448CD2] to-[#1a3652] rounded-[24px] p-8 text-white relative overflow-hidden shadow-2xl group">
-          <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/10 transition-colors"></div>
+        <div className="bg-gradient-to-r from-[#448CD2] to-[#1a3652] rounded-[24px] p-8 text-white relative overflow-hidden shadow-2xl ">
+          {/* <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/10 transition-colors"></div> */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
             <div className="flex items-center gap-8">
-              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[22px] flex items-center justify-center text-white border border-white/20 shadow-xl transform group-hover:scale-105 transition-transform">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[22px] flex items-center justify-center text-white border border-white/20 transform group-hover:scale-105 transition-transform">
                 <Icon
                   icon="solar:lightbulb-bolt-bold-duotone"
                   width="40"
@@ -594,7 +596,7 @@ const ManagerOverview = () => {
                 </p>
               </div>
             </div>
-            <button className="bg-white text-[#1a3652] px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all whitespace-nowrap cursor-default">
+            <button className="bg-white text-[#1a3652] px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em]  transition-all whitespace-nowrap cursor-pointer">
               Review Results
             </button>
           </div>
