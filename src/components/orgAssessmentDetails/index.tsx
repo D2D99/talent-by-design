@@ -592,7 +592,7 @@ const OrgAssessmentDetails = () => {
                                 className="fixed inset-0 z-40"
                                 onClick={() => setActiveDropdown(null)}
                               ></div>
-                              <div className="absolute right-12 top-12 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50  overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200  ring-1 ring-black/5">
+                              <div className={`absolute right-12 ${index >= currentData.length - 2 ? "bottom-0 right-20" : "bottom-0 right-20"} w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5`}>
                                 <button
                                   onClick={() =>
                                     handleActionClick(member, "Report")
