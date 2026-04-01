@@ -471,23 +471,23 @@ const OrgInvitation = () => {
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
                       className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
-                          ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
-                          : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
+                        ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
+                        : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
                         }`}
                     >
                       <div className="relative mb-3 flex flex-col items-center pointer-events-none">
                         <div
                           className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${isDragging
-                              ? "opacity-100"
-                              : "opacity-0 group-hover/upload:opacity-100"
+                            ? "opacity-100"
+                            : "opacity-0 group-hover/upload:opacity-100"
                             }`}
                         ></div>
                         <Icon
                           icon="logos:csv"
                           width="36"
                           className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${isDragging
-                              ? "scale-110"
-                              : "group-hover/upload:scale-110"
+                            ? "scale-110"
+                            : "group-hover/upload:scale-110"
                             }`}
                         />
                       </div>
@@ -771,8 +771,8 @@ const OrgInvitation = () => {
                               }
                               disabled={!canDelete}
                               className={`p-2 rounded-full transition-all ${canDelete
-                                  ? "text-red-600 hover:bg-red-50"
-                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                                ? "text-red-600 hover:bg-red-50"
+                                : "text-gray-300 cursor-not-allowed opacity-50"
                                 }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
@@ -858,7 +858,6 @@ const OrgInvitation = () => {
                       id="email"
                       value={email}
                       name="modalEmail"
-                      autoComplete="off"
                       autoComplete="off"
                       onChange={(e) => {
                         setEmail(e.target.value);
