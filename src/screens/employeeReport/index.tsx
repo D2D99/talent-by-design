@@ -25,6 +25,32 @@ import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import ReportPreviewModal from "../../components/reportPreviewModal";
 import EditableTooltip from "../../components/editableTooltip";
 
+const SkeletonPod = () => (
+  <div className="animate-pulse border-[1px] border-[#448CD2] border-opacity-10 p-4 rounded-[12px] bg-white h-full min-h-[220px]">
+    <div className="flex justify-between items-start mb-6">
+      <div className="space-y-3 w-2/3">
+        <div className="h-5 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-3 bg-gray-200 rounded w-full"></div>
+      </div>
+      <div className="h-8 w-8 bg-gray-100 rounded-full"></div>
+    </div>
+    <div className="space-y-4">
+      <div className="flex gap-2 items-center">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-full"></div>
+      </div>
+      <div className="flex gap-2 items-center">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-[90%]"></div>
+      </div>
+      <div className="flex gap-2 items-center hidden sm:flex">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-[80%]"></div>
+      </div>
+    </div>
+  </div>
+);
+
 // ------ CONSTANTS ------
 const ROLE_DOMAIN_SUBDOMAINS: Record<string, Record<string, string[]>> = {
   admin: {
@@ -136,6 +162,7 @@ const EmployeeReport = () => {
   const [reportData, setReportData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [podsLoading, setPodsLoading] = useState(false);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [isReportReleased, setIsReportReleased] = useState(false);
@@ -372,6 +399,7 @@ const EmployeeReport = () => {
   // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
   useEffect(() => {
     const fetchDetailedPods = async () => {
+      setPodsLoading(true);
       try {
         // Build URL: pass email for guest employees, and include subdomain
         let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
@@ -382,13 +410,13 @@ const EmployeeReport = () => {
         }
         const res = await api.get(url);
         setDetailedPods(res.data.pods);
-      } catch (error) {
-        console.error("Failed to fetch detailed pods:", error);
       } finally {
+        setPodsLoading(false);
       }
     };
 
-    if (reportData) {
+    const hasSubdomains = !!(reportData?.scores?.domains?.[selectedDomain]?.subdomains && Object.keys(reportData.scores.domains[selectedDomain].subdomains).length > 0);
+    if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
     }
   }, [
@@ -420,7 +448,9 @@ const EmployeeReport = () => {
     }
   };
 
-  if (loading) return <SpinnerLoader />; // Assuming SpinnerLoader is defined elsewhere
+  const isInitialLoading = loading;
+
+  if (isInitialLoading) return <SpinnerLoader />;
 
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
@@ -439,22 +469,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+    selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -624,9 +654,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -951,110 +981,120 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-[#EDF5FD]">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="text-xl font-bold capitalize">
-                        {detailedPods?.insights?.title ||
-                          `Insight for ${selectedSubdomain || selectedDomain}`}
-                      </h3>
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="insightDomain"
-                          defaultContent="Provides a synthesized interpretation of the data within this domain.
+            {/* Detailed Insight Pods with Skeleton Loading */}
+            {podsLoading ? (
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+              </div>
+            ) : (
+              <>
+                <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6">
+                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-[#EDF5FD]">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="text-xl font-bold capitalize">
+                            {detailedPods?.insights?.title ||
+                              `Insight for ${selectedSubdomain || selectedDomain}`}
+                          </h3>
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="insightDomain"
+                              defaultContent="Provides a synthesized interpretation of the data within this domain.
 
 Highlights what is happening, why it matters, and where to focus next to improve performance and reduce friction."
-                        />
-                      </div>
-                    </div>
-                    <p className="text-xs text-[#64748B] font-medium">
-                      {detailedPods?.insights?.subtitle ||
-                        (selectedSubdomain
-                          ? `Detailed analysis for ${selectedSubdomain}`
-                          : `Overall analysis for ${selectedDomain}`)}
-                    </p>
-                  </div>
-                  <img src={Streamline} alt="images" className="w-8 h-8" />
-                </div>
-                <ul className="space-y-3">
-                  {finalInsights.map((insight: string, idx: number) => (
-                    <li key={idx} className="flex gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="w-4 h-4 mt-0.5 shrink-0"
-                      />
-                      <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
-                        {insight}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Objectives and Key Results
-                      </h3>
-
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="okrs"
-                          defaultContent="Translates insights into measurable actions and outcomes aligned to strategic priorities.
-
-Use this a guide for what to execute, track, and reinforce to drive sustained improvement over time."
-                        />
-                      </div>
-                    </div>{" "}
-                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      {detailedPods?.objectives?.subtitle ||
-                        "Cultivate high-trust, psychologically safe leadership"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <img src={Hugeicons} alt="images" className="w-8 h-8" />
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {displayKRs.map((kr: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-3 mt-4">
-                      <div className="text-lg-progress">
-                        <CircularProgress
-                          value={kr.value}
-                          width={60}
-                          textColor="#36454F"
-                          pathColor="#1A3652"
-                          trailColor="#D9D9D9"
-                        />
-                      </div>
-                      <div>
-                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                          {kr.label}
-                        </h2>
-                        <p className="text-sm font-normal text-[var(--secondary-color)]">
-                          {kr.text}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-[#64748B] font-medium">
+                          {detailedPods?.insights?.subtitle ||
+                            (selectedSubdomain
+                              ? `Detailed analysis for ${selectedSubdomain}`
+                              : `Overall analysis for ${selectedDomain}`)}
                         </p>
                       </div>
+                      <img src={Streamline} alt="images" className="w-8 h-8" />
                     </div>
-                  ))}
-                  {displayKRs.length === 0 && (
-                    <p className="text-sm text-gray-500 italic mt-6 font-medium">
-                      No strategic objectives have been defined for this area
-                      yet.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+                    <ul className="space-y-3">
+                      {finalInsights.map((insight: string, idx: number) => (
+                        <li key={idx} className="flex gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 mt-0.5 shrink-0"
+                          />
+                          <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
+                            {insight}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6 ">
-              {/* <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            Objectives and Key Results
+                          </h3>
+
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="okrs"
+                              defaultContent="Translates insights into measurable actions and outcomes aligned to strategic priorities.
+
+Use this a guide for what to execute, track, and reinforce to drive sustained improvement over time."
+                            />
+                          </div>
+                        </div>{" "}
+                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                          {detailedPods?.objectives?.subtitle ||
+                            "Cultivate high-trust, psychologically safe leadership"}
+                        </p>
+                      </div>
+
+                      <div>
+                        <img src={Hugeicons} alt="images" className="w-8 h-8" />
+                      </div>
+                    </div>
+                    <div className="space-y-6">
+                      {displayKRs.map((kr: any, idx: number) => (
+                        <div key={idx} className="flex items-center gap-3 mt-4">
+                          <div className="text-lg-progress">
+                            <CircularProgress
+                              value={kr.value}
+                              width={60}
+                              textColor="#36454F"
+                              pathColor="#1A3652"
+                              trailColor="#D9D9D9"
+                            />
+                          </div>
+                          <div>
+                            <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                              {kr.label}
+                            </h2>
+                            <p className="text-sm font-normal text-[var(--secondary-color)]">
+                              {kr.text}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      {displayKRs.length === 0 && (
+                        <p className="text-sm text-gray-500 italic mt-6 font-medium">
+                          No strategic objectives have been defined for this area
+                          yet.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-6 ">
+                  {/* <div className="border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="flex gap-2">
@@ -1114,100 +1154,102 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                 </div>
               </div> */}
 
-              <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="text-xl font-bold capitalize">
-                        Coaching Tips
-                      </h3>
+                  <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="text-xl font-bold capitalize">
+                            Coaching Tips
+                          </h3>
 
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="coachingTips"
-                          defaultContent={
-                            <>
-                              <p className="mb-2">
-                                Provides targeted, actionable guidance to
-                                support leaders and teams in improving
-                                performance and adoption.
-                              </p>
-                              <p>
-                                Aligned to key capability areas these tips help
-                                address friction, build consistency, and sustain
-                                progress across the organization.
-                              </p>
-                            </>
-                          }
-                        />
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="coachingTips"
+                              defaultContent={
+                                <>
+                                  <p className="mb-2">
+                                    Provides targeted, actionable guidance to
+                                    support leaders and teams in improving
+                                    performance and adoption.
+                                  </p>
+                                  <p>
+                                    Aligned to key capability areas these tips help
+                                    address friction, build consistency, and sustain
+                                    progress across the organization.
+                                  </p>
+                                </>
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
+                      <img src={StreamlinePlump} alt="images" className="w-8 h-8" />
                     </div>
+                    <ul className="space-y-2">
+                      {displayCoachingTips.map((tip: string, idx: number) => (
+                        <li key={idx} className="flex gap-2 text-left">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 mt-0.5 shrink-0"
+                          />
+                          <span className="text-sm text-[#64748B] font-medium">
+                            {tip}
+                          </span>
+                        </li>
+                      ))}
+                      {displayCoachingTips.length === 0 && (
+                        <li className="text-xs text-gray-400 italic">
+                          No coaching tips available for this domain.
+                        </li>
+                      )}
+                    </ul>
                   </div>
-                  <img src={StreamlinePlump} alt="images" className="w-8 h-8" />
-                </div>
-                <ul className="space-y-2">
-                  {displayCoachingTips.map((tip: string, idx: number) => (
-                    <li key={idx} className="flex gap-2 text-left">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="w-4 h-4 mt-0.5 shrink-0"
-                      />
-                      <span className="text-sm text-[#64748B] font-medium">
-                        {tip}
-                      </span>
-                    </li>
-                  ))}
-                  {displayCoachingTips.length === 0 && (
-                    <li className="text-xs text-gray-400 italic">
-                      No coaching tips available for this domain.
-                    </li>
-                  )}
-                </ul>
-              </div>
-              <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="text-xl font-bold capitalize">
-                        Recommended Development Programs
-                      </h3>
+                  <div className=" border-[1px] border-[#448CD2] border-opacity-20 p-6 rounded-[12px] bg-white">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="text-xl font-bold capitalize">
+                            Recommended Development Programs
+                          </h3>
 
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="tbdOffering"
-                          defaultContent={
-                            <p>
-                              Highlights curated programs and resources aligned
-                              to your results. These offerings are designed to
-                              address key gaps and strengthen capabilities.
-                            </p>
-                          }
-                        />
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="tbdOffering"
+                              defaultContent={
+                                <p>
+                                  Highlights curated programs and resources aligned
+                                  to your results. These offerings are designed to
+                                  address key gaps and strengthen capabilities.
+                                </p>
+                              }
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-[#64748B] font-medium">
+                          Selected growth opportunities
+                        </p>
                       </div>
+                      <img src={Healthicons} alt="images" className="w-8 h-8" />
                     </div>
-                    <p className="text-xs text-[#64748B] font-medium">
-                      Selected growth opportunities
-                    </p>
+                    <ul className="space-y-2">
+                      {displayRecommendations.map((rec: string, idx: number) => (
+                        <li key={idx} className="flex gap-2 text-left">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="w-4 h-4 mt-0.5 shrink-0"
+                          />
+                          <span className="text-sm text-[#64748B] font-medium">
+                            {rec}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <img src={Healthicons} alt="images" className="w-8 h-8" />
                 </div>
-                <ul className="space-y-2">
-                  {displayRecommendations.map((rec: string, idx: number) => (
-                    <li key={idx} className="flex gap-2 text-left">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="w-4 h-4 mt-0.5 shrink-0"
-                      />
-                      <span className="text-sm text-[#64748B] font-medium">
-                        {rec}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+              </>
+            )}
           </>
         ) : (
           <ReportEmptyState role="Employee" />

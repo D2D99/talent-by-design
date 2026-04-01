@@ -80,6 +80,32 @@ const Ring = ({
   );
 };
 
+const SkeletonPod = () => (
+  <div className="animate-pulse border-[1px] border-[#448CD2] border-opacity-10 p-4 rounded-[12px] bg-white h-full min-h-[220px]">
+    <div className="flex justify-between items-start mb-6">
+      <div className="space-y-3 w-2/3">
+        <div className="h-5 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-3 bg-gray-200 rounded w-full"></div>
+      </div>
+      <div className="h-8 w-8 bg-gray-100 rounded-full"></div>
+    </div>
+    <div className="space-y-4">
+      <div className="flex gap-2 items-center">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-full"></div>
+      </div>
+      <div className="flex gap-2 items-center">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-[90%]"></div>
+      </div>
+      <div className="flex gap-2 items-center hidden sm:flex">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-[80%]"></div>
+      </div>
+    </div>
+  </div>
+);
+
 const LeaderReport = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -93,6 +119,8 @@ const LeaderReport = () => {
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [hasNoReport, setHasNoReport] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [podsLoading, setPodsLoading] = useState(false);
+  const [teamAvgLoading, setTeamAvgLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null);
@@ -341,6 +369,7 @@ const LeaderReport = () => {
   useEffect(() => {
     const fetchTeamAvg = async () => {
       if (!userId && !userEmail) return;
+      setTeamAvgLoading(true);
       try {
         let url = "dashboard/manager-team-avg"; // It works for leaders too (finds their dept members)
         const params: string[] = [];
@@ -349,8 +378,8 @@ const LeaderReport = () => {
         if (params.length) url += `?${params.join("&")}`;
         const res = await api.get(url);
         setTeamAvgData(res.data);
-      } catch (err) {
-        setTeamAvgData(null);
+      } finally {
+        setTeamAvgLoading(false);
       }
     };
     fetchTeamAvg();
@@ -372,6 +401,7 @@ const LeaderReport = () => {
   // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
   useEffect(() => {
     const fetchDetailedPods = async () => {
+      setPodsLoading(true);
       try {
         let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
         if (userEmail) {
@@ -381,12 +411,13 @@ const LeaderReport = () => {
         }
         const res = await api.get(url);
         setDetailedPods(res.data.pods);
-      } catch (error) {
-        console.error("Failed to fetch detailed pods:", error);
+      } finally {
+        setPodsLoading(false);
       }
     };
 
-    if (reportData) {
+    const hasSubdomains = !!(reportData?.scores?.domains?.[selectedDomain]?.subdomains && Object.keys(reportData.scores.domains[selectedDomain].subdomains).length > 0);
+    if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
     }
   }, [
@@ -398,7 +429,9 @@ const LeaderReport = () => {
     refreshKey,
   ]);
 
-  if (loading) return <SpinnerLoader />;
+  const isInitialLoading = loading || teamAvgLoading;
+
+  if (isInitialLoading) return <SpinnerLoader />;
 
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
@@ -1237,215 +1270,227 @@ Highlights strengths, gaps, and misalignment—guiding where to stabilize, optim
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2 items-start">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        {detailedPods?.insights?.title ||
-                          `Insight for ${selectedSubdomain || selectedDomain}`}
-                      </h3>
+            {/* Detailed Insight Pods with Skeleton Loading */}
+            {podsLoading ? (
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+              </div>
+            ) : (
+              <>
+                <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2 items-start">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            {detailedPods?.insights?.title ||
+                              `Insight for ${selectedSubdomain || selectedDomain}`}
+                          </h3>
 
-                      <div className="flex items-center mt-1">
-                        <EditableTooltip
-                          id="insightDomain"
-                          defaultContent="Provides a synthesized interpretation of the data within this domain.
+                          <div className="flex items-center mt-1">
+                            <EditableTooltip
+                              id="insightDomain"
+                              defaultContent="Provides a synthesized interpretation of the data within this domain.
 
 Highlights what is happening, why it matters, and where to focus next to improve performance and reduce friction."
-                        />
-                      </div>
-                    </div>
-                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      {detailedPods?.insights?.subtitle ||
-                        (selectedSubdomain
-                          ? `Detailed analysis for ${selectedSubdomain}`
-                          : `Overall analysis for ${selectedDomain}`)}
-                    </p>
-                  </div>
-                  <div>
-                    <img src={Streamline} alt="images" className="w-8 h-8" />
-                  </div>
-                </div>
-                <div>
-                  <ul className="mt-4 space-y-2">
-                    {finalInsights.map((insight: string, idx: number) => (
-                      <li key={idx} className="feature-list flex gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="mt-0.5 w-4 h-4 shrink-0"
-                        />
-                        <span className="text-sm text-[var(--secondary-color)] font-normal italic">
-                          {insight}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Objectives and Key Results
-                      </h3>
-
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="okrs"
-                          defaultContent="Translates insights into measurable actions and outcomes aligned to strategic priorities.
-
-Use this a guide for what to execute, track, and reinforce to drive sustained improvement over time."
-                        />
-                      </div>
-                    </div>
-                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                      {detailedPods?.objectives?.subtitle ||
-                        "Cultivate high-trust, psychologically safe leadership"}
-                    </p>
-                  </div>
-                  <div>
-                    <img src={Hugeicons} alt="images" className="w-8 h-8" />
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {displayKRs.map((kr: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-3 mt-4">
-                      <div className="text-lg-progress">
-                        <CircularProgress
-                          value={kr.value}
-                          width={60}
-                          textColor="#36454F"
-                          pathColor="#1A3652"
-                          trailColor="#D9D9D9"
-                        />
-                      </div>
-                      <div>
-                        <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                          {kr.label}
-                        </h2>
-                        <p className="text-sm font-normal text-[var(--secondary-color)]">
-                          {kr.text}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                          {detailedPods?.insights?.subtitle ||
+                            (selectedSubdomain
+                              ? `Detailed analysis for ${selectedSubdomain}`
+                              : `Overall analysis for ${selectedDomain}`)}
                         </p>
                       </div>
+                      <div>
+                        <img src={Streamline} alt="images" className="w-8 h-8" />
+                      </div>
                     </div>
-                  ))}
-                  {displayKRs.length === 0 && (
-                    <p className="text-sm text-gray-500 italic mt-6 font-medium">
-                      No strategic objectives have been defined for this area
-                      yet.
-                    </p>
-                  )}
-                </div>
-              </div>
+                    <div>
+                      <ul className="mt-4 space-y-2">
+                        {finalInsights.map((insight: string, idx: number) => (
+                          <li key={idx} className="feature-list flex gap-2">
+                            <img
+                              src={IconStar}
+                              alt="icon"
+                              className="mt-0.5 w-4 h-4 shrink-0"
+                            />
+                            <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                              {insight}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            Objectives and Key Results
+                          </h3>
 
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold capitalize">
-                        Coaching Tips
-                      </h3>
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="coachingTips"
-                          defaultContent="Provides targeted, actionable guidance to support leaders and teams in improving performance and adoption.
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="okrs"
+                              defaultContent="Translates insights into measurable actions and outcomes aligned to strategic priorities.
+
+Use this a guide for what to execute, track, and reinforce to drive sustained improvement over time."
+                            />
+                          </div>
+                        </div>
+                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                          {detailedPods?.objectives?.subtitle ||
+                            "Cultivate high-trust, psychologically safe leadership"}
+                        </p>
+                      </div>
+                      <div>
+                        <img src={Hugeicons} alt="images" className="w-8 h-8" />
+                      </div>
+                    </div>
+                    <div className="space-y-6">
+                      {displayKRs.map((kr: any, idx: number) => (
+                        <div key={idx} className="flex items-center gap-3 mt-4">
+                          <div className="text-lg-progress">
+                            <CircularProgress
+                              value={kr.value}
+                              width={60}
+                              textColor="#36454F"
+                              pathColor="#1A3652"
+                              trailColor="#D9D9D9"
+                            />
+                          </div>
+                          <div>
+                            <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                              {kr.label}
+                            </h2>
+                            <p className="text-sm font-normal text-[var(--secondary-color)]">
+                              {kr.text}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      {displayKRs.length === 0 && (
+                        <p className="text-sm text-gray-500 italic mt-6 font-medium">
+                          No strategic objectives have been defined for this area
+                          yet.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="sm:text-xl text-lg font-bold capitalize">
+                            Coaching Tips
+                          </h3>
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="coachingTips"
+                              defaultContent="Provides targeted, actionable guidance to support leaders and teams in improving performance and adoption.
 
 Aligned to key capability areas these tips help address friction, build consistency, and sustain progress across the organization."
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <img
+                          src={StreamlinePlump}
+                          alt="images"
+                          className="w-8 h-8"
                         />
                       </div>
                     </div>
+                    <ul className="mt-4 space-y-2">
+                      {displayCoachingTips.map((tip: string, idx: number) => (
+                        <li key={idx} className="feature-list flex gap-2">
+                          <img
+                            src={IconStar}
+                            alt="icon"
+                            className="mt-0.5 w-4 h-4 shrink-0"
+                          />
+                          <span className="text-sm text-[var(--secondary-color)] font-normal">
+                            {tip}
+                          </span>
+                        </li>
+                      ))}
+                      {displayCoachingTips.length === 0 && (
+                        <li className="text-xs text-gray-400 italic">
+                          No coaching tips available for this domain.
+                        </li>
+                      )}
+                    </ul>
+                    <div></div>
                   </div>
-                  <div>
-                    <img
-                      src={StreamlinePlump}
-                      alt="images"
-                      className="w-8 h-8"
-                    />
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {displayCoachingTips.map((tip: string, idx: number) => (
-                    <li key={idx} className="feature-list flex gap-2">
-                      <img
-                        src={IconStar}
-                        alt="icon"
-                        className="mt-0.5 w-4 h-4 shrink-0"
-                      />
-                      <span className="text-sm text-[var(--secondary-color)] font-normal">
-                        {tip}
-                      </span>
-                    </li>
-                  ))}
-                  {displayCoachingTips.length === 0 && (
-                    <li className="text-xs text-gray-400 italic">
-                      No coaching tips available for this domain.
-                    </li>
-                  )}
-                </ul>
-                <div></div>
-              </div>
 
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Priorities Attention
-                      </h3>
+                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            Priorities Attention
+                          </h3>
 
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="priAtt"
-                          defaultContent="Identifies the most critical areas requiring attention based on current results.
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="priAtt"
+                              defaultContent="Identifies the most critical areas requiring attention based on current results.
 
 Provides clear direction on where to stabilize, optimize, or accelerate efforts."
-                        />
+                            />
+                          </div>
+                        </div>
+
+                        <p className="text-sm font-normal text-[#000000] mt-1">
+                          Top 3 priorities based on current data
+                        </p>
+                      </div>
+                      <div>
+                        <img src={Iconamoon} alt="images" className="w-8 h-8" />
                       </div>
                     </div>
-
-                    <p className="text-sm font-normal text-[#000000] mt-1">
-                      Top 3 priorities based on current data
-                    </p>
-                  </div>
-                  <div>
-                    <img src={Iconamoon} alt="images" className="w-8 h-8" />
-                  </div>
-                </div>
-                <div className="mt-4 space-y-4">
-                  {topPriorities.map((item, _idx) => (
-                    <div
-                      key={item.name}
-                      className="flex items-center justify-between"
-                    >
-                      <p
-                        className="text-sm font-semibold flex items-center gap-2"
-                        style={{ color: item.color }}
-                      >
-                        <span
-                          className="w-2.5 h-2.5 flex rounded-full"
-                          style={{ backgroundColor: item.color }}
-                        ></span>
-                        {item.name}
-                      </p>
-                      <p
-                        className="text-sm font-bold"
-                        style={{ color: item.color }}
-                      >
-                        {item.score}%
-                      </p>
+                    <div className="mt-4 space-y-4">
+                      {topPriorities.map((item, _idx) => (
+                        <div
+                          key={item.name}
+                          className="flex items-center justify-between"
+                        >
+                          <p
+                            className="text-sm font-semibold flex items-center gap-2"
+                            style={{ color: item.color }}
+                          >
+                            <span
+                              className="w-2.5 h-2.5 flex rounded-full"
+                              style={{ backgroundColor: item.color }}
+                            ></span>
+                            {item.name}
+                          </p>
+                          <p
+                            className="text-sm font-bold"
+                            style={{ color: item.color }}
+                          >
+                            {item.score}%
+                          </p>
+                        </div>
+                      ))}
+                      {topPriorities.length === 0 && (
+                        <p className="text-sm text-gray-500 italic">
+                          No priorities identified yet.
+                        </p>
+                      )}
                     </div>
-                  ))}
-                  {topPriorities.length === 0 && (
-                    <p className="text-sm text-gray-500 italic">
-                      No priorities identified yet.
-                    </p>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
 
             <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">
