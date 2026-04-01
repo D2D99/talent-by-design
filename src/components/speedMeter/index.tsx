@@ -24,6 +24,15 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
           type: "gauge",
           height: "100%", // Ensure the chart scales to the div size
         },
+        tooltip: {
+          enabled: true,
+          valueSuffix: "%",
+          headerFormat: "",
+          pointFormat: "<b>{point.y}%</b>",
+          style: {
+            fontSize: "14px",
+          },
+        },
 
         // Removed the title from the options
         title: undefined,
@@ -97,9 +106,21 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
             },
 
             dataLabels: {
-              enabled: false, // Disable data labels
+              enabled: true,
+              borderWidth: 0,
+              y: 55,
+              style: {
+                fontSize: "32px",
+                fontWeight: "900",
+                color: "#1a3652",
+                textOutline: "none",
+                fontFamily: "Outfit, sans-serif",
+              },
+              formatter: function (this: any) {
+                return this.y + "%";
+              },
             },
-          } as any, // Cast the series as `any` to bypass strict typing
+          } as any,
         ],
 
         // Add responsiveness and ensure needle stays in correct place
