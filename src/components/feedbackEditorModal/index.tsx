@@ -171,6 +171,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       await api.put("dashboard/detailed-insight", payload);
       toast.success("Feedback updated successfully!");
       onSuccess();
+      if (modalInstance.current) {
+        modalInstance.current.hide();
+      }
       onClose();
     } catch (error: any) {
       console.error(

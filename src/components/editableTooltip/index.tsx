@@ -60,12 +60,25 @@ const EditableTooltip: React.FC<EditableTooltipProps> = ({
 
     const displayContent = tooltips[id]?.content || defaultContent;
 
+    const extractTextFromNode = (node: any): string => {
+        if (typeof node === "string" || typeof node === "number") return String(node);
+        if (Array.isArray(node)) return node.map(extractTextFromNode).join("");
+        if (React.isValidElement(node) && node.props) {
+            const children = (node.props as any).children;
+            const childText = extractTextFromNode(children);
+            if (typeof node.type === "string" && (node.type === "p" || node.type === "div" || node.type === "br")) {
+                return childText + "\n\n";
+            }
+            return childText;
+        }
+        return "";
+    };
+
     // Helper to get text representation of content for the editor
     const getTextForEditor = () => {
         if (tooltips[id]?.content) return tooltips[id].content;
         if (typeof defaultContent === "string") return defaultContent;
-        // If it's a ReactNode, we can't easily convert to string, so we'll leave it empty unless we convert the source.
-        return "";
+        return extractTextFromNode(defaultContent).trim();
     };
 
     const handleOpenEdit = () => {
@@ -98,7 +111,7 @@ const EditableTooltip: React.FC<EditableTooltipProps> = ({
                     className="sm:max-w-xl max-w-80 sm:!text-base !text-sm z-[99] !p-4 !rounded-xl !bg-[#222] !opacity-100 shadow-2xl border border-gray-100"
                     anchorSelect={`#${id}`}
                     clickable
-                    delayHide={0}
+                    delayHide={200}
                 >
                     <div className="flex flex-col gap-3">
                         {typeof displayContent === "string"
@@ -116,7 +129,6 @@ const EditableTooltip: React.FC<EditableTooltipProps> = ({
                                     className="text-[#448CD2] hover:text-[#3a76b1] text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 bg-blue-50 p-2 rounded-full transition-all"
                                 >
                                     <Icon icon="lucide:pencil" width="14" />
-                                    {/* Edit Tooltip */}
                                 </button>
                             </div>
                         )}
