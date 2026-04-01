@@ -28,7 +28,7 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
           enabled: true,
           valueSuffix: "%",
           headerFormat: "",
-          pointFormat: "<b>{point.y}%</b>",
+          pointFormat: "<b>{point.y:.2f}%</b>",
           style: {
             fontSize: "14px",
           },
@@ -117,7 +117,7 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
                 fontFamily: "Outfit, sans-serif",
               },
               formatter: function (this: any) {
-                return this.y + "%";
+                return this.y.toFixed(2) + "%";
               },
             },
           } as any,
