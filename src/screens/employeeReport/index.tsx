@@ -415,7 +415,11 @@ const EmployeeReport = () => {
       }
     };
 
-    const hasSubdomains = !!(reportData?.scores?.domains?.[selectedDomain]?.subdomains && Object.keys(reportData.scores.domains[selectedDomain].subdomains).length > 0);
+    const hasSubdomains = !!(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
+      Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
+        0
+    );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
     }
@@ -469,22 +473,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -536,8 +540,16 @@ const EmployeeReport = () => {
             </button>
 
             <div className="flex items-center gap-2">
+              {/* Status Badge */}
+              {isReportReleased && reportData && (
+                <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                  <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                  Released Report
+                </span>
+              )}
+
               {/* Edit Feedback Button (SA or Admin viewing someone else) */}
-              {(isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+              {userId && (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(true)}
@@ -564,17 +576,9 @@ const EmployeeReport = () => {
                   {releasing ? "Releasing..." : "Approve & Release"}
                 </button>
               )}
-
-              {/* Status Badge */}
-              {isReportReleased && reportData && (
-                <span className="flex items-center gap-1.5 px-4 py-2 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                  <Icon icon="solar:check-circle-bold-duotone" width="14" />
-                  Released
-                </span>
-              )}
             </div>
 
-            {(isSuperAdmin || isReportReleased) && (
+            {userId && (isSuperAdmin || isReportReleased) && (
               <button
                 type="button"
                 onClick={handleExportPDF}
@@ -654,9 +658,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -999,7 +1003,8 @@ Highlights what is happening, why it matters, and where to focus next to improve
                     <ul className="space-y-3">
                       {(() => {
                         const mText = detailedPods?.insights?.modelDescription;
-                        if (!mText) return ["No specific insights available yet."];
+                        if (!mText)
+                          return ["No specific insights available yet."];
                         const mLines = mText
                           .split(/\r?\n/)
                           .filter((l: string) => l.trim().length > 0);
@@ -1079,8 +1084,8 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       ))}
                       {displayKRs.length === 0 && (
                         <p className="text-sm text-gray-500 italic mt-6 font-medium">
-                          No strategic objectives have been defined for this area
-                          yet.
+                          No strategic objectives have been defined for this
+                          area yet.
                         </p>
                       )}
                     </div>
@@ -1167,9 +1172,10 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                     performance and adoption.
                                   </p>
                                   <p>
-                                    Aligned to key capability areas these tips help
-                                    address friction, build consistency, and sustain
-                                    progress across the organization.
+                                    Aligned to key capability areas these tips
+                                    help address friction, build consistency,
+                                    and sustain progress across the
+                                    organization.
                                   </p>
                                 </>
                               }
@@ -1177,7 +1183,11 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                           </div>
                         </div>
                       </div>
-                      <img src={StreamlinePlump} alt="images" className="w-8 h-8" />
+                      <img
+                        src={StreamlinePlump}
+                        alt="images"
+                        className="w-8 h-8"
+                      />
                     </div>
                     <ul className="space-y-2">
                       {displayCoachingTips.map((tip: string, idx: number) => (
@@ -1212,9 +1222,10 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               id="tbdOffering"
                               defaultContent={
                                 <p>
-                                  Highlights curated programs and resources aligned
-                                  to your results. These offerings are designed to
-                                  address key gaps and strengthen capabilities.
+                                  Highlights curated programs and resources
+                                  aligned to your results. These offerings are
+                                  designed to address key gaps and strengthen
+                                  capabilities.
                                 </p>
                               }
                             />
@@ -1227,18 +1238,20 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       <img src={Healthicons} alt="images" className="w-8 h-8" />
                     </div>
                     <ul className="space-y-2">
-                      {displayRecommendations.map((rec: string, idx: number) => (
-                        <li key={idx} className="flex gap-2 text-left">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 mt-0.5 shrink-0"
-                          />
-                          <span className="text-sm text-[#64748B] font-medium">
-                            {rec}
-                          </span>
-                        </li>
-                      ))}
+                      {displayRecommendations.map(
+                        (rec: string, idx: number) => (
+                          <li key={idx} className="flex gap-2 text-left">
+                            <img
+                              src={IconStar}
+                              alt="icon"
+                              className="w-4 h-4 mt-0.5 shrink-0"
+                            />
+                            <span className="text-sm text-[#64748B] font-medium">
+                              {rec}
+                            </span>
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
                 </div>

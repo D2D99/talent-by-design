@@ -383,7 +383,11 @@ const ManagerReport = () => {
       }
     };
 
-    const hasSubdomains = !!(reportData?.scores?.domains?.[selectedDomain]?.subdomains && Object.keys(reportData.scores.domains[selectedDomain].subdomains).length > 0);
+    const hasSubdomains = !!(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
+      Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
+        0
+    );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
     }
@@ -501,7 +505,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -512,16 +516,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -666,53 +670,45 @@ const ManagerReport = () => {
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
+              {/* Status Badge */}
+              {isReportReleased && reportData && (
+                <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                  <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                  Released Report
+                </span>
+              )}
+              {/* Edit Feedback Button (SA or Admin viewing someone else) */}
+              {userId &&
+                (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-oleft before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                    title="Edit AI Insights, Objectives, and Recommendations"
+                  >
+                    <Icon icon="lucide:pencil" width="16" />
+                  </button>
+                )}
+
               {/* Release Section (Super Admin Only) */}
               {isSuperAdmin && !isReportReleased && reportData && (
                 <button
                   onClick={handleRelease}
                   disabled={releasing}
-                  className="flex items-center gap-2 h-10 px-6 bg-[#448cd2] text-white font-black text-[11px] uppercase rounded-full relative overflow-hidden group transition-all duration-500 hover:shadow-[0_0_20px_rgba(68,140,210,0.6)] hover:scale-105 active:scale-95 disabled:opacity-50"
-                  style={{
-                    boxShadow: "0 0 10px rgba(68, 140, 210, 0.3)",
-                    letterSpacing: "0.5px",
-                  }}
+                  className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                   {releasing ? (
                     <Icon icon="line-md:loading-loop" width="16" />
                   ) : (
-                    <Icon
-                      icon="solar:star-bold-duotone"
-                      width="18"
-                      className="animate-pulse"
-                    />
+                    <Icon icon="solar:star-bold-duotone" width="16" />
                   )}
                   {releasing ? "Releasing..." : "Approve & Release"}
                 </button>
               )}
-
-              {/* Status Badge */}
-              {isReportReleased && reportData && (
-                <span className="flex items-center gap-1.5 px-4 py-2 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                  <Icon icon="solar:check-circle-bold-duotone" width="14" />
-                  Released
-                </span>
-              )}
-
-              {/* Edit Feedback Button (SA or Admin viewing someone else) */}
-              {(isSuperAdmin || (isAdmin && userId !== user?._id)) && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-oleft before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                  title="Edit AI Insights, Objectives, and Recommendations"
-                >
-                  <Icon icon="lucide:pencil" width="16" />
-                </button>
-              )}
             </div>
 
-            {(isSuperAdmin || isReportReleased) && (
+            {userId && (isSuperAdmin || isReportReleased) && (
               <button
                 type="button"
                 onClick={handleExportPDF}
@@ -793,9 +789,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -1067,8 +1063,9 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                               </p>
 
                               <p>
-                                Highlights strengths, gaps, and misalignment—guiding
-                                where to stabilize, optimize, or accelerate efforts.
+                                Highlights strengths, gaps, and
+                                misalignment—guiding where to stabilize,
+                                optimize, or accelerate efforts.
                               </p>
                             </>
                           }
@@ -1185,14 +1182,14 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                               defaultContent={
                                 <>
                                   <p className="mb-2">
-                                    Provides a synthesized interpretation of the data
-                                    within this domain.
+                                    Provides a synthesized interpretation of the
+                                    data within this domain.
                                   </p>
 
                                   <p>
-                                    Highlights what is happening, why it matters, and
-                                    where to focus next to improve performance and
-                                    reduce friction.
+                                    Highlights what is happening, why it
+                                    matters, and where to focus next to improve
+                                    performance and reduce friction.
                                   </p>
                                 </>
                               }
@@ -1207,29 +1204,39 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                         </p>
                       </div>
                       <div>
-                        <img src={Streamline} alt="images" className="w-8 h-8" />
+                        <img
+                          src={Streamline}
+                          alt="images"
+                          className="w-8 h-8"
+                        />
                       </div>
                     </div>
                     <div>
                       <ul className="mt-4 space-y-2">
                         {detailedPods?.insights?.modelDescription ? (
                           (() => {
-                            const mLines = detailedPods.insights.modelDescription
-                              .split(/\r?\n/)
-                              .filter((l: string) => l.trim().length > 0);
+                            const mLines =
+                              detailedPods.insights.modelDescription
+                                .split(/\r?\n/)
+                                .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
                               l.includes("•"),
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) => l.replace(/•/g, "").trim())
-                                .filter((l: string) => l.length > 0)
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
                               (bullet: string, idx: number) => (
-                                <li key={idx} className="feature-list flex gap-2">
+                                <li
+                                  key={idx}
+                                  className="feature-list flex gap-2"
+                                >
                                   <img
                                     src={IconStar}
                                     alt="icon"
@@ -1299,8 +1306,8 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       ))}
                       {displayKRs.length === 0 && (
                         <p className="text-sm text-gray-500 italic mt-6 font-medium">
-                          No strategic objectives have been defined for this area
-                          yet.
+                          No strategic objectives have been defined for this
+                          area yet.
                         </p>
                       )}
                     </div>
@@ -1461,14 +1468,15 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               defaultContent={
                                 <>
                                   <p className="mb-2">
-                                    Provides targeted, actionable guidance to support
-                                    leaders and teams in improving performance and
-                                    adoption.
+                                    Provides targeted, actionable guidance to
+                                    support leaders and teams in improving
+                                    performance and adoption.
                                   </p>
                                   <p>
-                                    Aligned to key capability areas these tips help
-                                    address friction, build consistency, and sustain
-                                    progress across the organization.
+                                    Aligned to key capability areas these tips
+                                    help address friction, build consistency,
+                                    and sustain progress across the
+                                    organization.
                                   </p>
                                 </>
                               }
@@ -1518,9 +1526,10 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               id="tbdOffering"
                               defaultContent={
                                 <p>
-                                  Highlights curated programs and resources aligned to
-                                  your results. These offerings are designed to
-                                  address key gaps and strengthen capabilities.
+                                  Highlights curated programs and resources
+                                  aligned to your results. These offerings are
+                                  designed to address key gaps and strengthen
+                                  capabilities.
                                 </p>
                               }
                             />
@@ -1528,22 +1537,28 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                         </div>
                       </div>
                       <div>
-                        <img src={Healthicons} alt="images" className="w-8 h-8" />
+                        <img
+                          src={Healthicons}
+                          alt="images"
+                          className="w-8 h-8"
+                        />
                       </div>
                     </div>
                     <ul className="mt-4 space-y-2">
-                      {displayRecommendations.map((rec: string, idx: number) => (
-                        <li key={idx} className="feature-list flex gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="mt-1 w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm text-[var(--secondary-color)] font-normal">
-                            {rec}
-                          </span>
-                        </li>
-                      ))}
+                      {displayRecommendations.map(
+                        (rec: string, idx: number) => (
+                          <li key={idx} className="feature-list flex gap-2">
+                            <img
+                              src={IconStar}
+                              alt="icon"
+                              className="mt-1 w-4 h-4 shrink-0"
+                            />
+                            <span className="text-sm text-[var(--secondary-color)] font-normal">
+                              {rec}
+                            </span>
+                          </li>
+                        ),
+                      )}
                     </ul>
                     <div></div>
                   </div>
@@ -1593,7 +1608,6 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                   {/* </div> */}
                 </div>
 
-
                 <div className="transition-all duration-500 overflow-visible">
                   {activeTab === "graph" ? (
                     <>
@@ -1606,7 +1620,9 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                             className="w-5 h-2 rounded-sm inline-block"
                             style={{ background: "rgba(74, 144, 226, 0.7)" }}
                           />
-                          <span className="text-xs text-[#474747]">Manager</span>
+                          <span className="text-xs text-[#474747]">
+                            Manager
+                          </span>
                         </div>
                         {(teamAvgData?.employeeCount > 0 || true) && (
                           <div

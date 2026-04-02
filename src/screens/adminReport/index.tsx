@@ -413,7 +413,11 @@ const AdminReport = () => {
       }
     };
 
-    const hasSubdomains = !!(reportData?.scores?.domains?.[selectedDomain]?.subdomains && Object.keys(reportData.scores.domains[selectedDomain].subdomains).length > 0);
+    const hasSubdomains = !!(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
+      Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
+        0
+    );
 
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -449,7 +453,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -477,16 +481,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -735,53 +739,46 @@ const AdminReport = () => {
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
+              {/* Status Badge */}
+              {isReportReleased && reportData && (
+                <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                  <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                  Released Report
+                </span>
+              )}
+
+              {/* Edit Feedback Button (Super Admin or Admin viewing someone else) */}
+              {userId &&
+                (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                    title="Edit AI Insights, Objectives, and Recommendations"
+                  >
+                    <Icon icon="lucide:pencil" width="16" />
+                  </button>
+                )}
+
               {/* Release Section (Super Admin Only) */}
               {isSuperAdmin && !isReportReleased && reportData && (
                 <button
                   onClick={handleRelease}
                   disabled={releasing}
-                  className="flex items-center gap-2 h-10 px-6 bg-[#448cd2] text-white font-black text-[11px] uppercase rounded-full relative overflow-hidden group transition-all duration-500 hover:shadow-[0_0_20px_rgba(68,140,210,0.6)] hover:scale-105 active:scale-95 disabled:opacity-50"
-                  style={{
-                    boxShadow: "0 0 10px rgba(68, 140, 210, 0.3)",
-                    letterSpacing: "1px",
-                  }}
+                  className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                   {releasing ? (
                     <Icon icon="line-md:loading-loop" width="16" />
                   ) : (
-                    <Icon
-                      icon="solar:rocket-bold-duotone"
-                      width="18"
-                      className="animate-pulse"
-                    />
+                    <Icon icon="solar:star-bold-duotone" width="16" />
                   )}
                   {releasing ? "Releasing..." : "Approve & Release"}
                 </button>
               )}
-
-              {/* Status Badge (Public to Admins/SAs if released) */}
-              {isReportReleased && reportData && (
-                <span className="flex items-center gap-1.5 px-4 py-2 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                  <Icon icon="solar:check-circle-bold-duotone" width="14" />
-                  Released
-                </span>
-              )}
-
-              {/* Edit Feedback Button (Super Admin or Admin viewing someone else) */}
-              {(isSuperAdmin || (isAdmin && userId !== user?._id)) && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                  title="Edit AI Insights, Objectives, and Recommendations"
-                >
-                  <Icon icon="lucide:pencil" width="16" />
-                </button>
-              )}
             </div>
 
-            {(isSuperAdmin || isReportReleased) && (
+            {userId && (isSuperAdmin || isReportReleased) && (
               <button
                 onClick={handleExportPDF}
                 disabled={exportLoading}
@@ -829,9 +826,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -1204,29 +1201,39 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                       </div>
 
                       <div>
-                        <img src={Streamline} alt="images" className="w-8 h-8" />
+                        <img
+                          src={Streamline}
+                          alt="images"
+                          className="w-8 h-8"
+                        />
                       </div>
                     </div>
                     <div>
                       <ul className="mt-4 space-y-2">
                         {detailedPods?.insights?.modelDescription ? (
                           (() => {
-                            const mLines = detailedPods.insights.modelDescription
-                              .split(/\r?\n/)
-                              .filter((l: string) => l.trim().length > 0);
+                            const mLines =
+                              detailedPods.insights.modelDescription
+                                .split(/\r?\n/)
+                                .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
                               l.includes("•"),
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) => l.replace(/•/g, "").trim())
-                                .filter((l: string) => l.length > 0)
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
                               (bullet: string, idx: number) => (
-                                <li key={idx} className="feature-list flex gap-2">
+                                <li
+                                  key={idx}
+                                  className="feature-list flex gap-2"
+                                >
                                   <img
                                     src={IconStar}
                                     alt="icon"
