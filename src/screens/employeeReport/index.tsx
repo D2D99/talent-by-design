@@ -915,29 +915,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                       <Triangle data={triangleData} />
                     </div>
                     <div className="grid grid-cols-1 gap-3 w-full px-4">
-                      {(() => {
-                        const mText = detailedPods?.insights?.modelDescription;
-                        if (!mText)
-                          return [
-                            "Capability",
-                            "Engagement",
-                            "Confidence",
-                            "Resilience",
-                          ];
-                        const mLines = mText
-                          .split(/\r?\n/)
-                          .filter((l: string) => l.trim().length > 0);
-                        const hasBullets = mLines.some((l: string) =>
-                          l.includes("•"),
-                        );
-                        if (hasBullets) {
-                          return mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0);
-                        }
-                        return mLines;
-                      })().map((bullet: string, idx: number) => (
+                      {finalInsights.map((insight: string, idx: number) => (
                         <div key={idx} className="flex items-start gap-2">
                           <img
                             src={IconStar}
@@ -945,7 +923,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                             className="w-4 h-4 shrink-0 mt-0.5"
                           />
                           <span className="text-sm font-medium text-[#64748B] text-left">
-                            {bullet}
+                            {insight}
                           </span>
                         </div>
                       ))}
@@ -1019,7 +997,23 @@ Highlights what is happening, why it matters, and where to focus next to improve
                       <img src={Streamline} alt="images" className="w-8 h-8" />
                     </div>
                     <ul className="space-y-3">
-                      {finalInsights.map((insight: string, idx: number) => (
+                      {(() => {
+                        const mText = detailedPods?.insights?.modelDescription;
+                        if (!mText) return ["No specific insights available yet."];
+                        const mLines = mText
+                          .split(/\r?\n/)
+                          .filter((l: string) => l.trim().length > 0);
+                        const hasBullets = mLines.some((l: string) =>
+                          l.includes("•"),
+                        );
+                        if (hasBullets) {
+                          return mLines
+                            .filter((l: string) => l.includes("•"))
+                            .map((l: string) => l.replace(/•/g, "").trim())
+                            .filter((l: string) => l.length > 0);
+                        }
+                        return mLines;
+                      })().map((bullet: string, idx: number) => (
                         <li key={idx} className="flex gap-2">
                           <img
                             src={IconStar}
@@ -1027,7 +1021,7 @@ Highlights what is happening, why it matters, and where to focus next to improve
                             className="w-4 h-4 mt-0.5 shrink-0"
                           />
                           <span className="text-sm text-[#1A3652] font-medium leading-relaxed">
-                            {insight}
+                            {bullet}
                           </span>
                         </li>
                       ))}

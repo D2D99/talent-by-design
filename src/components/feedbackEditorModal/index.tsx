@@ -239,15 +239,15 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 Pod 360 Model
               </label>
               <textarea
-                value={modelDescription}
+                value={insight}
                 id="pod360-model"
-                onChange={(e) => setModelDescription(e.target.value)}
+                onChange={(e) => setInsight(e.target.value)}
                 onKeyDown={(e) =>
-                  handleKeyDown(e, setModelDescription, modelDescription, true)
+                  handleKeyDown(e, setInsight, insight, true)
                 }
                 rows={3}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)]border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
-                placeholder="Capability, Engagement, Confidence..."
+                placeholder="Enter insights here..."
               />
             </div>
 
@@ -259,13 +259,13 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 Insight for {subdomain || domain}
               </label>
               <textarea
-                value={insight}
-                onChange={(e) => setInsight(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, setInsight, insight, true)}
+                value={modelDescription}
+                onChange={(e) => setModelDescription(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, setModelDescription, modelDescription, true)}
                 rows={4}
                 id="insightDomains"
                 className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
-                placeholder="Enter insights here..."
+                placeholder="Capability, Engagement, Confidence..."
               />
             </div>
 

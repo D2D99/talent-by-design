@@ -1085,80 +1085,18 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                     <Triangle data={triangleData} />
                   </div>
                   <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                    {detailedPods?.insights?.modelDescription ? (
-                      (() => {
-                        const mLines = detailedPods.insights.modelDescription
-                          .split(/\r?\n/)
-                          .filter((l: string) => l.trim().length > 0);
-                        const hasMBullets = mLines.some((l: string) =>
-                          l.includes("•"),
-                        );
-                        const finalMLines = hasMBullets
-                          ? mLines
-                            .filter((l: string) => l.includes("•"))
-                            .map((l: string) => l.replace(/•/g, "").trim())
-                            .filter((l: string) => l.length > 0)
-                          : mLines;
-
-                        return finalMLines.map(
-                          (bullet: string, idx: number) => (
-                            <div key={idx} className="flex items-start gap-2">
-                              <img
-                                src={IconStar}
-                                alt="icon"
-                                className="w-4 h-4 shrink-0 mt-0.5"
-                              />
-                              <span className="text-sm font-medium text-[#64748B] leading-snug">
-                                {bullet}
-                              </span>
-                            </div>
-                          ),
-                        );
-                      })()
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Capability
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Engagement
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Confidence
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={IconStar}
-                            alt="icon"
-                            className="w-4 h-4 shrink-0"
-                          />
-                          <span className="text-sm font-medium text-[#64748B]">
-                            Change resilience
-                          </span>
-                        </div>
-                      </>
-                    )}
+                    {finalInsights.map((insight: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0 mt-0.5"
+                        />
+                        <span className="text-sm font-medium text-[#64748B] leading-snug">
+                          {insight}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="w-full mt-2 pt-4 border-t border-[#F1F5F9] hidden grid-cols-3 gap-2">
@@ -1274,18 +1212,41 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                     </div>
                     <div>
                       <ul className="mt-4 space-y-2">
-                        {finalInsights.map((insight: string, idx: number) => (
-                          <li key={idx} className="feature-list flex gap-2">
-                            <img
-                              src={IconStar}
-                              alt="icon"
-                              className="mt-1 w-4 h-4 shrink-0"
-                            />
-                            <span className="text-sm text-[var(--secondary-color)] font-normal italic">
-                              {insight}
-                            </span>
+                        {detailedPods?.insights?.modelDescription ? (
+                          (() => {
+                            const mLines = detailedPods.insights.modelDescription
+                              .split(/\r?\n/)
+                              .filter((l: string) => l.trim().length > 0);
+                            const hasMBullets = mLines.some((l: string) =>
+                              l.includes("•"),
+                            );
+                            const finalMLines = hasMBullets
+                              ? mLines
+                                .filter((l: string) => l.includes("•"))
+                                .map((l: string) => l.replace(/•/g, "").trim())
+                                .filter((l: string) => l.length > 0)
+                              : mLines;
+
+                            return finalMLines.map(
+                              (bullet: string, idx: number) => (
+                                <li key={idx} className="feature-list flex gap-2">
+                                  <img
+                                    src={IconStar}
+                                    alt="icon"
+                                    className="mt-1 w-4 h-4 shrink-0"
+                                  />
+                                  <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                                    {bullet}
+                                  </span>
+                                </li>
+                              ),
+                            );
+                          })()
+                        ) : (
+                          <li className="text-sm text-[var(--secondary-color)] font-normal italic">
+                            No specific insights available yet.
                           </li>
-                        ))}
+                        )}
                       </ul>
                     </div>
                   </div>
