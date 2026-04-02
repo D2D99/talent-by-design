@@ -1313,7 +1313,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                   </div>
                 </div>
 
-                <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-6">
+                <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-6 hidden">
                   <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                     <div className="flex items-center justify-between ">
                       <div>
@@ -1565,7 +1565,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                     data-twe-ripple-init
                     data-twe-ripple-color="light"
                   >
-                    {selectedRadarDept || "Organization"}
+                    {selectedRadarDept || "Select Org"}
                     <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -1714,7 +1714,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                             data-twe-dropdown-toggle-ref
                             aria-expanded="false"
                           >
-                            {selectedRadarDept || "Organization Wide"}
+                            {selectedRadarDept || "Select Org"}
                             <span className="ms-1 w-2 [&>svg]:h-3 [&>svg]:w-3">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1739,7 +1739,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                                 className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
                                 onClick={() => setSelectedRadarDept("")}
                               >
-                                Organization Wide
+                                Select Org
                               </button>
                             </li>
                             {(depts.length > 0
