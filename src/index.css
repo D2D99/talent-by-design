@@ -448,3 +448,77 @@ a {
     transform: translateX(100%);
   }
 }
+
+/* react-phone-number-input custom styles */
+.phone-input-custom .PhoneInputInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #5d5d5d;
+  padding: 0;
+  width: 100%;
+}
+
+.phone-input-custom .PhoneInputInput::placeholder {
+  color: #9ca3af;
+}
+
+.phone-input-custom .PhoneInputCountry {
+  margin-right: 8px;
+}
+
+.phone-input-custom .PhoneInputCountryIcon {
+  width: 24px;
+  height: 18px;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.phone-input-custom .PhoneInputCountrySelectArrow {
+  margin-left: 4px;
+  opacity: 0.5;
+}
+
+.phone-input-custom .PhoneInputCountrySelect:focus + .PhoneInputCountryIcon + .PhoneInputCountrySelectArrow {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* Phone read-only display mode */
+.phone-input-read-only {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.phone-input-read-only .PhoneInputInput {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  font-size: 1rem !important; /* text-base */
+  font-weight: 400 !important;
+  color: inherit !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.phone-input-read-only .PhoneInputCountrySelectArrow {
+  display: none !important;
+}
+
+.phone-input-read-only .PhoneInputCountry {
+  margin-right: 8px !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.phone-input-read-only .PhoneInputCountryIcon {
+  width: 22px;
+  height: 16px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}

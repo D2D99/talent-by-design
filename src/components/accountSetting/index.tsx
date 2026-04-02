@@ -8,6 +8,8 @@ import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import api from "../../services/axios";
 import { toast } from "react-toastify";
+import { formatPhoneNumberIntl } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 // import { useTheme } from "../../context/useTheme";
 
 const AccountSetting = () => {
@@ -242,7 +244,9 @@ const AccountSetting = () => {
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5">Phone No:</h6>
                   <p className="text-base text-neutral-500">
-                    {profileData?.phoneNumber || "—"}
+                    {profileData?.phoneNumber
+                      ? formatPhoneNumberIntl(profileData.phoneNumber)
+                      : "—"}
                   </p>
                 </div>
 
@@ -258,8 +262,8 @@ const AccountSetting = () => {
                   <p className="text-base text-neutral-500 capitalize">
                     {[
                       profileData?.state,
-                      profileData?.country,
                       profileData?.zipCode,
+                      profileData?.country,
                     ]
                       .filter(Boolean)
                       .join(", ") || "—"}

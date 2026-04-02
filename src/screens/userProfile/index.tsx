@@ -1,10 +1,12 @@
 import { useState, useEffect, type ChangeEvent } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { Icon } from "@iconify/react";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 const UserProfilePic = "/static/img/ic-profile-ph.svg";
 
@@ -34,6 +36,7 @@ const UserProfile = () => {
     handleSubmit,
     reset,
     watch,
+    control,
     formState: { errors },
   } = useForm<ProfileFormData>({
     defaultValues: {
@@ -433,7 +436,16 @@ const UserProfile = () => {
                 id="dob"
                 disabled={!isEditing}
                 className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.dob ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
-                {...register("dob", { required: "Date of birth is required" })}
+                {...register("dob", {
+                  required: "Date of birth is required",
+                  validate: (value) => {
+                    if (!value) return true;
+                    const selected = new Date(value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return selected <= today || "Please enter a valid date of birth";
+                  },
+                })}
               />
               {errors.dob && (
                 <span className="text-red-500 text-xs mt-1 block">
@@ -503,25 +515,28 @@ const UserProfile = () => {
               >
                 Phone Number *
               </label>
-              <input
-                type="text"
-                id="phno"
-                onKeyPress={(e) => {
-                  const allowed = /[0-9+\-()\s]/;
-                  if (!allowed.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                disabled={!isEditing}
-                className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.phoneNumber ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"} disabled:bg-gray-50 disabled:cursor-not-allowed`}
-                placeholder="Enter your phone number"
-                {...register("phoneNumber", {
+              <Controller
+                name="phoneNumber"
+                control={control}
+                rules={{
                   required: "Phone number is required",
-                  pattern: {
-                    value: /^[0-9+\-()\s]+$/,
-                    message: "Invalid format",
+                  validate: (value) => {
+                    if (!value) return true;
+                    return isValidPhoneNumber(value) || "Please enter a valid phone number";
                   },
-                })}
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <PhoneInput
+                    id="phno"
+                    international
+                    defaultCountry="US"
+                    value={value}
+                    onChange={(val) => onChange(val || "")}
+                    disabled={!isEditing}
+                    placeholder="Enter your phone number"
+                    className={`phone-input-custom font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${errors.phoneNumber ? "border-red-500" : "border-[#E8E8E8] focus-within:border-[var(--primary-color)]"} ${!isEditing ? "bg-gray-50 cursor-not-allowed" : ""}`}
+                  />
+                )}
               />
               {errors.phoneNumber && (
                 <span className="text-red-500 text-xs mt-1 block">
