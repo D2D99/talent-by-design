@@ -91,13 +91,14 @@ const EditableTooltip: React.FC<EditableTooltipProps> = ({
   };
 
   const handleClearAll = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to clear all tooltip content? This will make the tooltip show nothing unless you add new content.",
-      )
-    ) {
-      setContent("");
-    }
+    // if (
+    //   window.confirm(
+    //     "Are you sure you want to clear all tooltip content? This will make the tooltip show nothing unless you add new content.",
+    //   )
+    // )
+    // {
+    setContent("");
+    // }
   };
 
   return (
