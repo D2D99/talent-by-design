@@ -131,7 +131,7 @@ const OrganizationDeepDive = () => {
 
     if (loading || intelLoading) return <SpinnerLoader />;
 
-    const { stats, roleBreakdown, activityStream } = intelData || {};
+    const { stats, roleBreakdown } = intelData || {};
 
     const overallScore = reportData?.scores?.overall || 0;
 
@@ -284,7 +284,7 @@ const OrganizationDeepDive = () => {
 
             {/* ── Main Dashboard Content ── */}
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-                <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] p-5 flex flex-col shadow-sm">
+                <div className="xl:col-span-6 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] p-5 flex flex-col shadow-sm">
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(68,140,210,0.1)]">
                         <div>
                             <h3 className="text-sm font-bold">Member Distribution</h3>
@@ -329,9 +329,9 @@ const OrganizationDeepDive = () => {
                     </div>
                 </div>
 
-                <div className="xl:col-span-4 flex flex-col gap-4">
+                <div className="xl:col-span-6 flex flex-col gap-4">
                     <div className="flex-1 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-                        <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-[0.2em] mb-6">Overall Health</h3>
+                        <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-[0.2em] mb-6">Audit Engagement</h3>
                         <div className="relative inline-flex items-center justify-center mb-8">
                             <CircularProgress value={completionRate} pathColor="#448cd2" trailColor="rgba(68, 140, 210, 0.1)" textColor="#1a3652" width={160} />
                         </div>
@@ -348,34 +348,6 @@ const OrganizationDeepDive = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </div>
-
-                <div className="xl:col-span-4 bg-white rounded-[20px] border border-[rgba(68,140,210,0.2)] p-7 flex flex-col shadow-sm relative overflow-hidden group">
-                    <div className="flex items-center justify-between mb-8 relative z-10">
-                        <div>
-                            <h3 className="text-lg font-black text-slate-800 tracking-tight">Stream</h3>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Live Feed</p>
-                        </div>
-                    </div>
-                    <div className="flex-1 space-y-5 overflow-y-auto no-scrollbar max-h-[350px] relative z-10">
-                        {activityStream?.length > 0 ? (
-                            activityStream.map((log: any, i: number) => (
-                                <div key={i} className="flex gap-4 group/item cursor-default">
-                                    <div className="mt-1">
-                                        <div className={`size-5 rounded-full flex shrink-0 items-center justify-center ${log.type === "completion" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}>
-                                            <span className="text-[8px] font-bold text-white uppercase">{log.user?.[0] || "?"}</span>
-                                        </div>
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[12px] font-black text-slate-800 truncate">{log.user}</p>
-                                        <p className="text-[11px] text-slate-500 mt-1 font-medium italic">{log.action}</p>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-xs text-slate-400 italic text-center py-10 opacity-50">Monitoring stream...</p>
-                        )}
                     </div>
                 </div>
             </div>
