@@ -15,7 +15,7 @@ interface AssessmentStartData {
   duration_minutes: number;
 }
 
-type Stakeholder = "employee" | "admin" | "leader" | "manager";
+type Stakeholder = "employee" | "leader" | "manager";
 
 const StartAssessment = () => {
   const navigate = useNavigate();
@@ -43,8 +43,14 @@ const StartAssessment = () => {
       if (accessToken) {
         try {
           const res = await api.get("auth/me");
-          const role = res.data.role?.toLowerCase() as Stakeholder;
-          setStakeholder(role);
+          const role = res.data.role?.toLowerCase();
+
+          if (role === "admin" || role === "superadmin" || role === "super_admin") {
+            navigate("/dashboard", { replace: true });
+            return;
+          }
+
+          setStakeholder(role as Stakeholder);
           if (role === "employee") {
             setIsLoggedInEmployee(true);
           }

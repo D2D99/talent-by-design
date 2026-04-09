@@ -121,8 +121,10 @@ const Login = () => {
 
         // 3. Check assessment status and redirect
         const assessmentStatus = res.data.assessmentStatus;
+        const role = res.data.user?.role?.toLowerCase();
+        const isAdmin = role === "admin" || role === "superadmin" || role === "super_admin";
 
-        if (assessmentStatus === "PENDING" || assessmentStatus === "DUE") {
+        if (!isAdmin && (assessmentStatus === "PENDING" || assessmentStatus === "DUE")) {
           navigate("/start-assessment", { replace: true });
         } else {
           navigate("/dashboard", { replace: true });

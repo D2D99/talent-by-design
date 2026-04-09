@@ -16,6 +16,8 @@ import OrgInvitation from "./components/orgInvitation";
 import OrgUsers from "./components/orgUsers";
 import OrgInvitationDetails from "./components/orgInvitationDetails";
 import OrgAssessmentDetails from "./components/orgAssessmentDetails";
+import OrgDeepDive from "./screens/orgDeepDive";
+import PersonDeepDive from "./screens/personDeepDive";
 import CrudQuestion from "./screens/crudQuestion";
 import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
@@ -85,6 +87,14 @@ function App() {
               <Route
                 path="org-assessments/:orgName"
                 element={<OrgAssessmentDetails />}
+              />
+              <Route
+                path="org-intelligence/:orgName"
+                element={<OrgDeepDive />}
+              />
+              <Route
+                path="person-intelligence"
+                element={<PersonDeepDive />}
               />
               <Route path="users" element={<OrgUsers />} />
               <Route path="notifications" element={<NotificationHistory />} />

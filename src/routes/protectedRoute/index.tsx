@@ -24,8 +24,8 @@ const ProtectedRoute = () => {
       return;
     }
 
-    // SuperAdmin never needs an assessment
-    if (role === "superadmin") {
+    // Admin roles never need an assessment
+    if (role === "admin" || role === "superadmin" || role === "super_admin") {
       setChecking(false);
       return;
     }

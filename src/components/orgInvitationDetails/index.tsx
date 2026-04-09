@@ -161,9 +161,18 @@ const OrgInvitationDetails = () => {
           <Icon icon="material-symbols:arrow-back-rounded" width="16" />
           <span className="uppercase tracking-wider">Back</span>
         </div>
-        <h2 className="md:text-3xl text-2xl font-bold text-gray-800 mb-2">
-          {details?.orgName || "Organization Details"}
-        </h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
+            {details?.orgName || "Organization Details"}
+          </h2>
+          <button
+            onClick={() => navigate(`/dashboard/org-assessments/${encodeURIComponent(details?.orgName || "")}`)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-[var(--primary-color)] font-bold text-sm rounded-lg border border-blue-100 hover:bg-blue-100 transition-all uppercase tracking-wider"
+          >
+            <Icon icon="hugeicons:task-done-02" width="18" />
+            <span>View Assessment Stats</span>
+          </button>
+        </div>
         <p className="text-sm text-gray-500 mb-10">
           Manage invitation status and team members
         </p>

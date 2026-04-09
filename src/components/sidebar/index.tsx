@@ -103,7 +103,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
   const getFirstReportRoute = () => {
     const role = user.role?.toLowerCase();
     if (role === "superadmin" || role === "super_admin" || role === "admin") {
-      return "/dashboard/reports/org-head";
+      return "/dashboard/reports/senior-leader";
     } else if (role === "leader") {
       return "/dashboard/reports/senior-leader";
     } else if (role === "manager") {
@@ -276,14 +276,14 @@ const Sidebar = ({ onClose }: SidebarProps) => {
 
                   return (
                     <>
-                      {isAdminOrSuper && (
+                      {/* {isAdminOrSuper && (
                         <ReportLink
                           to="org-head"
                           label="Org Head / Coach"
                           icon="fluent:organization-20-regular"
                           onClose={onClose}
                         />
-                      )}
+                      )} */}
                       {(isAdminOrSuper || isLeader) && (
                         <ReportLink
                           to="senior-leader"
