@@ -163,7 +163,7 @@ const Home = () => {
         </div>
         <div className="relative z-10 max-w-5xl mx-auto text-center px-4">
           <h4 className="badge">
-           testing TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
+            TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
           </h4>
           <h1 className="heading">
             Clarity for Leaders. Stability for Teams. Readiness for the Future.
@@ -508,20 +508,24 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We Optimize for High Performance
+                    We've added an AI Powered Intelligence Layer to the Platform
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    Transformation is not a one-time event it’s a maturity
-                    journey. Through quarterly reassessment and progress
-                    tracking, we measure movement against your OKRs and ADKAR
-                    adoption stages. Leaders gain clear visibility into what to
-                    accelerate, where to stabilize, and how to sequence
-                    initiatives for maximum impact.
+                    POD Insights™ synthesizes assessment results, OKRs, and
+                    organizational inputs to surface strategic priorities.
+                    Powered by AI, it highlights risk, opportunity, and
+                    sequencing decisions giving leadership teams a clear roadmap
+                    for where to invest energy and resources next and where to
+                    “cool-off” and for how long. Our prompt library is designed
+                    to streamline executive alignment preventing
+                    misinterpretation, reducing conflict, and ensuring focus
+                    remains on an objective, data-informed organizational
+                    snapshot.
                   </p>
                   <p className="text-base font-normal mt-2">
-                    The result: a high-functioning, aligned organization
-                    optimized for sustainable performance and full
-                    transformation potential.
+                    ​ The result from the POD products is not just about
+                    measurement and change execution but adaptive, data-informed
+                    strategy.
                   </p>
                 </div>
 

@@ -202,21 +202,29 @@ const OrgAssessmentDetails = () => {
           <Icon icon="material-symbols:arrow-back-rounded" width="16" />
           <span className="uppercase tracking-wider">Back</span>
         </div>
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
-            {details?.orgName || "Organization Details"}
-          </h2>
+        <div className="flex items-center justify-between  mb-10 gap-5 flex-wrap">
+          <div>
+            <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
+              {details?.orgName || "Organization Details"}
+            </h2>
+            <p className="text-sm text-gray-500">
+              Track assessment completion and participant progress
+            </p>
+          </div>
+
           <button
-            onClick={() => navigate(`/dashboard/org-intelligence/${encodeURIComponent(details?.orgName || "")}`)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#448CD2]/10 text-[var(--primary-color)] font-bold text-sm rounded-lg border border-[#448CD2]/20 hover:bg-[#448CD2]/20 transition-all uppercase tracking-wider shadow-sm"
+            onClick={() =>
+              navigate(
+                `/dashboard/org-intelligence/${encodeURIComponent(details?.orgName || "")}`,
+              )
+            }
+            className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
           >
-            <Icon icon="solar:chart-square-bold-duotone" width="18" className="text-[#448CD2]" />
+            <Icon icon="mynaui:chart-graph-solid" width="16" height="16" />
+
             <span>Organization Health Insights</span>
           </button>
         </div>
-        <p className="text-sm text-gray-500 mb-10">
-          Track assessment completion and participant progress
-        </p>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xxl:grid-cols-5 gap-4 mb-6">
@@ -605,7 +613,9 @@ const OrgAssessmentDetails = () => {
                                 className="fixed inset-0 z-40"
                                 onClick={() => setActiveDropdown(null)}
                               ></div>
-                              <div className={`absolute right-12 ${index >= currentData.length - 2 ? "bottom-0 right-20" : "bottom-0 right-20"} w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5`}>
+                              <div
+                                className={`absolute right-12 ${index >= currentData.length - 2 ? "bottom-0 right-20" : "bottom-0 right-20"} w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5`}
+                              >
                                 <button
                                   onClick={() =>
                                     handleActionClick(member, "Analytics")
