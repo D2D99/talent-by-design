@@ -48,6 +48,7 @@ const ProfileInfo = () => {
   });
 
   const [isDeptLocked, setIsDeptLocked] = useState(false);
+  const [allowedDepartments, setAllowedDepartments] = useState<string[]>([]);
 
   useEffect(() => {
     // Capture verifyToken from URL if it exists
@@ -74,6 +75,10 @@ const ProfileInfo = () => {
 
         if (response.data.role) {
           setValue("role", response.data.role);
+        }
+
+        if (response.data.allowedDepartments) {
+          setAllowedDepartments(response.data.allowedDepartments);
         }
 
         if (response.data.department) {
@@ -295,23 +300,33 @@ const ProfileInfo = () => {
                     })}
                   >
                     <option value="">Select your department</option>
-                    <option value="HR/People & Culture">
-                      HR/People & Culture
-                    </option>
-                    <option value="Finance & Accounting">
-                      Finance & Accounting
-                    </option>
-                    <option value="Operations">Operations</option>
-                    <option value="IT">IT</option>
-                    <option value="Sales and Marketing">
-                      Sales and Marketing
-                    </option>
-                    <option value="Legal, Risk & Compliance">
-                      Legal, Risk & Compliance
-                    </option>
-                    <option value="Admin & Corporate Services">
-                      Admin & Corporate Services
-                    </option>
+                    {allowedDepartments.length > 0 ? (
+                      allowedDepartments.map((dept) => (
+                        <option key={dept} value={dept}>
+                          {dept}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="HR/People & Culture">
+                          HR/People & Culture
+                        </option>
+                        <option value="Finance & Accounting">
+                          Finance & Accounting
+                        </option>
+                        <option value="Operations">Operations</option>
+                        <option value="IT">IT</option>
+                        <option value="Sales and Marketing">
+                          Sales and Marketing
+                        </option>
+                        <option value="Legal, Risk & Compliance">
+                          Legal, Risk & Compliance
+                        </option>
+                        <option value="Admin & Corporate Services">
+                          Admin & Corporate Services
+                        </option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>

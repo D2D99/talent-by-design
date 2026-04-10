@@ -19,6 +19,7 @@ interface Invitation {
   totalUsers?: number;
   role: string;
   status: string;
+  department?: string;
 }
 
 const OrgInvitation = () => {
@@ -39,6 +40,11 @@ const OrgInvitation = () => {
   // New state to track which item is being deleted
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  // --- Department States ---
+  const [orgDepartments, setOrgDepartments] = useState<string[]>([]);
+  const [newDepartment, setNewDepartment] = useState<string>("");
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
 
   const isSuperAdmin = currentUserRole === "superadmin";
 
@@ -107,9 +113,43 @@ const OrgInvitation = () => {
     }
   }, []);
 
+  const fetchDepartments = useCallback(async () => {
+    try {
+      const res = await api.get("organization/departments");
+      setOrgDepartments(res.data.departments || []);
+    } catch (err) {
+      console.error("Failed to fetch departments", err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    if (currentUserRole === "admin") {
+      fetchDepartments();
+    }
+  }, [fetchData, fetchDepartments, currentUserRole]);
+
+  const handleAddDept = async () => {
+    if (!newDepartment.trim()) return;
+    try {
+      await api.post("organization/departments", { department: newDepartment.trim() });
+      setNewDepartment("");
+      fetchDepartments();
+      toast.success("Department added");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to add department");
+    }
+  };
+
+  const handleRemoveDept = async (dept: string) => {
+    try {
+      await api.delete(`organization/departments?department=${encodeURIComponent(dept)}`);
+      fetchDepartments();
+      toast.success("Department removed");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to remove department");
+    }
+  };
 
   const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -129,10 +169,12 @@ const OrgInvitation = () => {
       await api.post("auth/send-invitation", {
         email: email.trim().toLowerCase(),
         role,
+        department: selectedDepartment,
       });
 
       setEmail("");
       setRole("");
+      setSelectedDepartment("");
 
       // Close modal using ref
       if (inviteModalInstance.current) {
@@ -409,15 +451,20 @@ const OrgInvitation = () => {
                       <span className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-0.5">
                         Required Headers
                       </span>
-                      <div className="flex gap-2">
-                        <div className="flex-1 bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
+                      <div className="flex gap-2 flex-wrap">
+                        <div className="flex-1 min-w-[60px] bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
                           <code className="text-[10px] font-mono text-blue-600 font-bold">
                             email
                           </code>
                         </div>
-                        <div className="flex-1 bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
+                        <div className="flex-1 min-w-[60px] bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
                           <code className="text-[10px] font-mono text-blue-600 font-bold">
                             role
+                          </code>
+                        </div>
+                        <div className="flex-1 min-w-[60px] bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
+                          <code className="text-[10px] font-mono text-blue-600 font-bold">
+                            department
                           </code>
                         </div>
                       </div>
@@ -437,13 +484,8 @@ const OrgInvitation = () => {
                               <td className="px-2.5 py-1.5 font-bold text-gray-400">
                                 {isSuperAdmin ? "admin" : "leader"}
                               </td>
-                            </tr>
-                            <tr>
                               <td className="px-2.5 py-1.5">
-                                sarah@company.com
-                              </td>
-                              <td className="px-2.5 py-1.5 font-bold text-gray-400">
-                                {isSuperAdmin ? "admin" : "manager"}
+                                Engineering
                               </td>
                             </tr>
                           </tbody>
@@ -507,7 +549,7 @@ const OrgInvitation = () => {
                           e.stopPropagation();
                           const content = isSuperAdmin
                             ? "email,role\nadmin1@company.com,admin\nadmin2@company.com,admin\nadmin3@company.com,admin"
-                            : "email,role\nleader@company.com,leader\nmanager@company.com,manager\nemployee@company.com,employee";
+                            : "email,role,department\nleader@company.com,leader,Engineering\nmanager@company.com,manager,Sales\nemployee@company.com,employee,Product";
                           const blob = new Blob([content], {
                             type: "text/csv",
                           });
@@ -577,6 +619,59 @@ const OrgInvitation = () => {
                 </span>
               </div>
             </div>
+
+            {/* --- Department Management Section --- */}
+            {currentUserRole === "admin" && (
+              <div className="mb-8 p-6 bg-[#f8fbff] border border-[rgba(68,140,210,0.2)] rounded-2xl shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-[var(--primary-color)] text-white rounded-lg">
+                    <Icon icon="solar:globus-broken" width="20" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-[#1a3652]">Organization Departments</h3>
+                    <p className="text-xs text-gray-500">Define the official departments for your organization.</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                  <input
+                    type="text"
+                    value={newDepartment}
+                    onChange={(e) => setNewDepartment(e.target.value)}
+                    placeholder="Enter new department name (e.g. Engineering)"
+                    className="flex-1 px-4 py-2.5 bg-white border border-[#E8E8E8] rounded-xl outline-none focus:border-[var(--primary-color)] text-sm"
+                  />
+                  <button
+                    onClick={handleAddDept}
+                    className="px-6 py-2.5 bg-[var(--primary-color)] text-white rounded-xl font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Icon icon="material-symbols:add-rounded" width="20" />
+                    Add Department
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {orgDepartments.length > 0 ? (
+                    orgDepartments.map((dept) => (
+                      <div
+                        key={dept}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[rgba(68,140,210,0.2)] rounded-full group hover:border-[var(--primary-color)] transition-all shadow-sm"
+                      >
+                        <span className="text-xs font-semibold text-[#1a3652]">{dept}</span>
+                        <button
+                          onClick={() => handleRemoveDept(dept)}
+                          className="text-gray-300 hover:text-red-500 transition-colors"
+                        >
+                          <Icon icon="material-symbols:close-rounded" width="16" />
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-gray-400 italic py-2">No departments defined yet. Add one above to start enforcing selection.</p>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 my-6">
               <div className="relative flex-1 max-w-md">
@@ -701,6 +796,9 @@ const OrgInvitation = () => {
                     <th className="px-6 py-4 font-semibold">
                       {isSuperAdmin ? "Total Users" : "Role"}
                     </th>
+                    {!isSuperAdmin && (
+                      <th className="px-6 py-4 font-semibold">Department</th>
+                    )}
                     <th className="px-6 py-4 font-semibold">Status</th>
                     <th className="px-6 py-4 font-semibold text-center">
                       Action
@@ -762,6 +860,11 @@ const OrgInvitation = () => {
                               </span>
                             )}
                           </td>
+                          {!isSuperAdmin && (
+                            <td className="px-6 py-4 text-sm text-gray-600">
+                              {item.department || "—"}
+                            </td>
+                          )}
                           <td className="px-6 py-4">
                             {renderStatusBadge(item.status)}
                           </td>
@@ -924,6 +1027,61 @@ const OrgInvitation = () => {
                     </select>
                   </div>
                 </div>
+
+                {/* --- Department Selection --- */}
+                {!isSuperAdmin && (
+                  <div className="sm:mb-4 mb-2">
+                    <label
+                      htmlFor="modalDepartment"
+                      className="font-bold text-[var(--secondary-color)] text-sm"
+                    >
+                      Department
+                    </label>
+                    <div className="relative w-full">
+                      {orgDepartments.length > 0 ? (
+                        <>
+                          <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                            <svg
+                              className="h-4 w-4 text-[#5D5D5D]"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </div>
+                          <select
+                            id="modalDepartment"
+                            value={selectedDepartment}
+                            autoComplete="off"
+                            onChange={(e) => setSelectedDepartment(e.target.value)}
+                            className="font-medium text-sm appearance-none text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                          >
+                            <option value="">Select a department...</option>
+                            {orgDepartments.map((dept) => (
+                              <option key={dept} value={dept}>
+                                {dept}
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      ) : (
+                        <div className="mt-2 text-xs text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200 flex items-start gap-2">
+                          <Icon icon="solar:info-circle-broken" className="mt-0.5 shrink-0" width="16" />
+                          <span>
+                            No departments defined yet. You can still invite users, but they won't have a restricted list to pick from. 
+                            <strong> Define departments first</strong> in the management section below to enforce strict organization structure.
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-3 border-t border-neutral-200 py-4 px-4">
@@ -937,8 +1095,8 @@ const OrgInvitation = () => {
                 <button
                   type="button"
                   onClick={handleSendInvite}
-                  disabled={isLoading}
-                  className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                  disabled={isLoading || (currentUserRole === "admin" && (orgDepartments.length === 0 || !selectedDepartment))}
+                  className={`group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10`}
                 >
                   {isLoading ? "Sending..." : "Send Invite"}
                 </button>

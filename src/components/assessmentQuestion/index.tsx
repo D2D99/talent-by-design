@@ -518,35 +518,41 @@ const AssessmentQuestion = () => {
                           </svg>
                         </div>
 
-                        <select
-                          value={finalForm.department}
-                          onChange={(e) =>
-                            setFinalForm({
-                              ...finalForm,
-                              department: e.target.value,
-                            })
-                          }
-                          className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none capitalize"
-                        >
-                          <option value="">Select your department</option>
-                          <option value="HR/People & Culture">
-                            HR/People & Culture
-                          </option>
-                          <option value="Finance & Accounting">
-                            Finance & Accounting
-                          </option>
-                          <option value="Operations">Operations</option>
-                          <option value="IT">IT</option>
-                          <option value="Sales and Marketing">
-                            Sales and Marketing
-                          </option>
-                          <option value="Legal, Risk & Compliance">
-                            Legal, Risk & Compliance
-                          </option>
-                          <option value="Admin & Corporate Services">
-                            Admin & Corporate Services
-                          </option>
-                        </select>
+                        {(() => {
+                          const isLocked = !!finalForm.department && !!token && !!(jwtDecode(token as string) as any).department;
+                          return (
+                            <select
+                              value={finalForm.department}
+                              disabled={isLocked}
+                              onChange={(e) =>
+                                setFinalForm({
+                                  ...finalForm,
+                                  department: e.target.value,
+                                })
+                              }
+                              className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none capitalize ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                            >
+                              <option value="">Select your department</option>
+                              <option value="HR/People & Culture">
+                                HR/People & Culture
+                              </option>
+                              <option value="Finance & Accounting">
+                                Finance & Accounting
+                              </option>
+                              <option value="Operations">Operations</option>
+                              <option value="IT">IT</option>
+                              <option value="Sales and Marketing">
+                                Sales and Marketing
+                              </option>
+                              <option value="Legal, Risk & Compliance">
+                                Legal, Risk & Compliance
+                              </option>
+                              <option value="Admin & Corporate Services">
+                                Admin & Corporate Services
+                              </option>
+                            </select>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
