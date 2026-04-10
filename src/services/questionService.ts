@@ -2,7 +2,7 @@ import api from "./axios";
 
 export interface Question {
   _id: string;
-  stakeholder: 'leader' | 'manager' | 'employee' | 'admin';
+  stakeholder: 'leader' | 'manager' | 'employee';
   domain: 'People Potential' | 'Operational Steadiness' | 'Digital Fluency';
   subdomain: string;
   questionType: 'Self-Rating' | 'Calibration' | 'Behavioural' | 'Forced-Choice';
