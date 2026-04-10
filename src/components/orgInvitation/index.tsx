@@ -132,7 +132,9 @@ const OrgInvitation = () => {
   const handleAddDept = async () => {
     if (!newDepartment.trim()) return;
     try {
-      await api.post("organization/departments", { department: newDepartment.trim() });
+      await api.post("organization/departments", {
+        department: newDepartment.trim(),
+      });
       setNewDepartment("");
       fetchDepartments();
       toast.success("Department added");
@@ -143,7 +145,9 @@ const OrgInvitation = () => {
 
   const handleRemoveDept = async (dept: string) => {
     try {
-      await api.delete(`organization/departments?department=${encodeURIComponent(dept)}`);
+      await api.delete(
+        `organization/departments?department=${encodeURIComponent(dept)}`,
+      );
       fetchDepartments();
       toast.success("Department removed");
     } catch (err: any) {
@@ -397,6 +401,75 @@ const OrgInvitation = () => {
       <div>
         <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
           <div className="grid items-start">
+            {/* Department Management Section - Only visible to Organization Admins */}
+            {currentUserRole === "admin" && (
+              <div className="bg-blue-500/5 border border-gray-100 rounded-2xl p-6 lg:p-8 mb-8">
+                <div className="flex items-center gap-3 mb-7">
+                  {/* <div className="p-2 bg-[var(--primary-color)] text-white rounded-lg"> */}
+                  <Icon
+                    icon="solar:buildings-2-broken"
+                    width="24"
+                    height="24"
+                  />
+                  {/* </div> */}
+                  <div>
+                    <h3 className="text-base capitalize font-bold text-gray-800">
+                      Organization Departments
+                    </h3>
+                    <p className="text-xs text-gray-500 font-medium">
+                      Define the official departments for your organization.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                  <input
+                    type="text"
+                    value={newDepartment}
+                    onChange={(e) => setNewDepartment(e.target.value)}
+                    placeholder="Enter department name (e.g. Engineering)"
+                    className="font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] bg-white"
+                  />
+                  <button
+                    onClick={handleAddDept}
+                    className="group text-[var(--primary-color)] w-[46px] h-[46px] min-w-[46px] rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                  >
+                    <Icon icon="material-symbols:add-rounded" width="20" />
+                    {/* Add Department */}
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {orgDepartments.length > 0 ? (
+                    orgDepartments.map((dept) => (
+                      <div
+                        key={dept}
+                        className="flex items-center gap-3 ps-3 pe-2 py-1.5 bg-white border hover:bg-blue-100 border-[rgba(68,140,210,0.2)] rounded-full group transition-all shadow-sm"
+                      >
+                        <span className="text-xs font-semibold text-[#1a3652] capitalize">
+                          {dept}
+                        </span>
+                        <button
+                          onClick={() => handleRemoveDept(dept)}
+                          className="text-red-500 transition-colors"
+                        >
+                          <Icon
+                            icon="material-symbols:close-rounded"
+                            width="12"
+                          />
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-gray-400 italic py-2">
+                      No departments defined yet. Add one above to start
+                      enforcing selection.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-between gap-4 flex-wrap mb-8">
               <div>
                 <h2 className="md:text-2xl text-xl font-bold">
@@ -484,9 +557,7 @@ const OrgInvitation = () => {
                               <td className="px-2.5 py-1.5 font-bold text-gray-400">
                                 {isSuperAdmin ? "admin" : "leader"}
                               </td>
-                              <td className="px-2.5 py-1.5">
-                                Engineering
-                              </td>
+                              <td className="px-2.5 py-1.5">Engineering</td>
                             </tr>
                           </tbody>
                         </table>
@@ -619,59 +690,6 @@ const OrgInvitation = () => {
                 </span>
               </div>
             </div>
-
-            {/* --- Department Management Section --- */}
-            {currentUserRole === "admin" && (
-              <div className="mb-8 p-6 bg-[#f8fbff] border border-[rgba(68,140,210,0.2)] rounded-2xl shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-[var(--primary-color)] text-white rounded-lg">
-                    <Icon icon="solar:globus-broken" width="20" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-[#1a3652]">Organization Departments</h3>
-                    <p className="text-xs text-gray-500">Define the official departments for your organization.</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 mb-6">
-                  <input
-                    type="text"
-                    value={newDepartment}
-                    onChange={(e) => setNewDepartment(e.target.value)}
-                    placeholder="Enter new department name (e.g. Engineering)"
-                    className="flex-1 px-4 py-2.5 bg-white border border-[#E8E8E8] rounded-xl outline-none focus:border-[var(--primary-color)] text-sm"
-                  />
-                  <button
-                    onClick={handleAddDept}
-                    className="px-6 py-2.5 bg-[var(--primary-color)] text-white rounded-xl font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Icon icon="material-symbols:add-rounded" width="20" />
-                    Add Department
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {orgDepartments.length > 0 ? (
-                    orgDepartments.map((dept) => (
-                      <div
-                        key={dept}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[rgba(68,140,210,0.2)] rounded-full group hover:border-[var(--primary-color)] transition-all shadow-sm"
-                      >
-                        <span className="text-xs font-semibold text-[#1a3652]">{dept}</span>
-                        <button
-                          onClick={() => handleRemoveDept(dept)}
-                          className="text-gray-300 hover:text-red-500 transition-colors"
-                        >
-                          <Icon icon="material-symbols:close-rounded" width="16" />
-                        </button>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-xs text-gray-400 italic py-2">No departments defined yet. Add one above to start enforcing selection.</p>
-                  )}
-                </div>
-              </div>
-            )}
 
             <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 my-6">
               <div className="relative flex-1 max-w-md">
@@ -1059,7 +1077,9 @@ const OrgInvitation = () => {
                             id="modalDepartment"
                             value={selectedDepartment}
                             autoComplete="off"
-                            onChange={(e) => setSelectedDepartment(e.target.value)}
+                            onChange={(e) =>
+                              setSelectedDepartment(e.target.value)
+                            }
                             className="font-medium text-sm appearance-none text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
                           >
                             <option value="">Select a department...</option>
@@ -1072,10 +1092,18 @@ const OrgInvitation = () => {
                         </>
                       ) : (
                         <div className="mt-2 text-xs text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200 flex items-start gap-2">
-                          <Icon icon="solar:info-circle-broken" className="mt-0.5 shrink-0" width="16" />
+                          <Icon
+                            icon="solar:info-circle-broken"
+                            className="mt-0.5 shrink-0"
+                            width="16"
+                          />
                           <span>
-                            No departments defined yet. You can still invite users, but they won't have a restricted list to pick from. 
-                            <strong> Define departments first</strong> in the management section below to enforce strict organization structure.
+                            No departments defined yet. You can still invite
+                            users, but they won't have a restricted list to pick
+                            from.
+                            <strong> Define departments first</strong> in the
+                            management section below to enforce strict
+                            organization structure.
                           </span>
                         </div>
                       )}
@@ -1095,7 +1123,11 @@ const OrgInvitation = () => {
                 <button
                   type="button"
                   onClick={handleSendInvite}
-                  disabled={isLoading || (currentUserRole === "admin" && (orgDepartments.length === 0 || !selectedDepartment))}
+                  disabled={
+                    isLoading ||
+                    (currentUserRole === "admin" &&
+                      (orgDepartments.length === 0 || !selectedDepartment))
+                  }
                   className={`group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10`}
                 >
                   {isLoading ? "Sending..." : "Send Invite"}
