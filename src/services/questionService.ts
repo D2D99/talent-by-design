@@ -49,6 +49,7 @@ class QuestionService {
     domain?: string;
     subdomain?: string;
     orgName?: string | null;
+    department?: string | null;
   }): Promise<Question[]> {
     const params = new URLSearchParams();
     if (filters?.stakeholder) params.append('stakeholder', filters.stakeholder);
@@ -56,6 +57,9 @@ class QuestionService {
     if (filters?.subdomain) params.append('subdomain', filters.subdomain);
     if (filters?.orgName !== undefined) {
       params.append('orgName', filters.orgName === null ? "" : filters.orgName);
+    }
+    if (filters?.department && filters.department !== 'All') {
+      params.append('department', filters.department);
     }
 
     const response = await api.get(`${this.endpoint}/all`, { params });
@@ -112,17 +116,20 @@ class QuestionService {
     await api.put(`${this.endpoint}/reorder`, payload);
   }
 
-  // Clone master template to organization
-  async cloneTemplate(orgName: string): Promise<{ success: boolean; message: string; count: number }> {
-    const response = await api.post(`${this.endpoint}/clone`, { orgName });
+  // Clone master template to organization (optionally to a specific department)
+  async cloneTemplate(orgName: string, department?: string | null): Promise<{ success: boolean; message: string; count: number }> {
+    const payload: Record<string, unknown> = { orgName };
+    if (department && department !== 'All') payload.department = department;
+    const response = await api.post(`${this.endpoint}/clone`, payload);
     return response.data;
   }
 
   // Upload questions from Excel
-  async uploadQuestions(file: File, orgName?: string | null): Promise<Question[]> {
+  async uploadQuestions(file: File, orgName?: string | null, department?: string | null): Promise<Question[]> {
     const formData = new FormData();
     formData.append("file", file);
     if (orgName) formData.append("orgName", orgName);
+    if (department && department !== 'All') formData.append("department", department);
 
     const response = await api.post(`${this.endpoint}/upload`, formData, {
       headers: {
@@ -132,11 +139,11 @@ class QuestionService {
     return response.data.data;
   }
 
-  // Delete all questions for an organization
-  async deleteOrganizationQuestions(orgName?: string | null): Promise<void> {
-    await api.delete(`${this.endpoint}/organization/all`, {
-      data: { orgName: orgName === null ? "" : orgName }
-    });
+  // Delete all questions for an organization (optionally scoped to a department)
+  async deleteOrganizationQuestions(orgName?: string | null, department?: string | null): Promise<void> {
+    const data: Record<string, string> = { orgName: orgName === null ? "" : (orgName ?? "") };
+    if (department && department !== 'All') data.department = department;
+    await api.delete(`${this.endpoint}/organization/all`, { data });
   }
 
   // Download Excel template
