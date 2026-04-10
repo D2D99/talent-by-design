@@ -38,7 +38,13 @@ const AdminAssessments = () => {
 
   const fetchMembers = async () => {
     try {
-      const res = await api.get("auth/organization-members");
+      const orgName = user?.orgName;
+      if (!orgName) {
+        setMembers([]);
+        setLoading(false);
+        return;
+      }
+      const res = await api.get(`auth/organization/${encodeURIComponent(orgName)}`);
       setMembers(res.data.members || []);
     } catch (err) {
       toast.error("Failed to load team members");
@@ -48,8 +54,12 @@ const AdminAssessments = () => {
   };
 
   useEffect(() => {
-    fetchMembers();
-  }, []);
+    if (user?.orgName) {
+      fetchMembers();
+    } else {
+      setLoading(false);
+    }
+  }, [user?.orgName]);
 
   const handleResetAssessment = async (memberId: string) => {
     setIsProcessing(true);
@@ -258,15 +268,14 @@ const AdminAssessments = () => {
                     <span
                       className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center
-                         ${
-                           status === "Completed"
-                             ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
-                             : status === "In Progress"
-                               ? "bg-blue-100 text-blue-600 border-blue-600"
-                               : status === "Due"
-                                 ? "bg-amber-100 text-amber-600 border-amber-600"
-                                 : "bg-gray-100 text-gray-400 border-gray-400"
-                         }`}
+                         ${status === "Completed"
+                          ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
+                          : status === "In Progress"
+                            ? "bg-blue-100 text-blue-600 border-blue-600"
+                            : status === "Due"
+                              ? "bg-amber-100 text-amber-600 border-amber-600"
+                              : "bg-gray-100 text-gray-400 border-gray-400"
+                        }`}
                     >
                       {status}
                     </span>
@@ -275,24 +284,22 @@ const AdminAssessments = () => {
                     <div className="pt-2">
                       <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-700 ease-out ${
-                            percentage === 100
+                          className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
                               ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
                               : percentage >= 50
                                 ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
                                 : "bg-gradient-to-r from-amber-400 to-amber-500"
-                          }`}
+                            }`}
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
                       <span
-                        className={`text-xs font-semibold w-10 ${
-                          percentage === 100
+                        className={`text-xs font-semibold w-10 ${percentage === 100
                             ? "text-green-600"
                             : percentage >= 50
                               ? "text-[#448CD2]"
                               : "text-neutral-300"
-                        }`}
+                          }`}
                       >
                         {percentage}%
                       </span>

@@ -21,7 +21,10 @@ const OverviewRoute = () => {
     case "leader":
       return <LeaderOverview />;
     case "employee":
-      // Employees don't have a dashboard — send them straight to assessment
+      // Employees go to report if completed, otherwise to assessment
+      if (user?.assessmentStatus === "COMPLETED") {
+        return <Navigate to="/dashboard/reports/employee" replace />;
+      }
       return <Navigate to="/start-assessment" replace />;
     default:
       return <PageNotFound />;

@@ -157,14 +157,10 @@ const OrgAssessmentDetails = () => {
 
   const handleActionClick = (
     member: UserMember,
-    type: "Report" | "Response" | "Analytics",
+    type: "Report" | "Response",
   ) => {
     setActiveDropdown(null);
-    if (type === "Analytics") {
-      navigate(
-        `/dashboard/person-intelligence?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`,
-      );
-    } else if (type === "Report") {
+    if (type === "Report") {
       const roleMapping: Record<string, string> = {
         superAdmin: "org-head",
         superadmin: "org-head",
@@ -211,19 +207,6 @@ const OrgAssessmentDetails = () => {
               Track assessment completion and participant progress
             </p>
           </div>
-
-          <button
-            onClick={() =>
-              navigate(
-                `/dashboard/org-intelligence/${encodeURIComponent(details?.orgName || "")}`,
-              )
-            }
-            className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-          >
-            <Icon icon="mynaui:chart-graph-solid" width="16" height="16" />
-
-            <span>Organization Health Insights</span>
-          </button>
         </div>
 
         {/* Stats Cards */}
@@ -616,20 +599,6 @@ const OrgAssessmentDetails = () => {
                               <div
                                 className={`absolute right-12 ${index >= currentData.length - 2 ? "bottom-0 right-20" : "bottom-0 right-20"} w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5`}
                               >
-                                <button
-                                  onClick={() =>
-                                    handleActionClick(member, "Analytics")
-                                  }
-                                  className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
-                                >
-                                  <Icon
-                                    icon="solar:chart-square-bold-duotone"
-                                    width="14"
-                                    height="14"
-                                    className="text-[#448CD2]"
-                                  />
-                                  <span>Analytics</span>
-                                </button>
                                 <button
                                   onClick={() =>
                                     handleActionClick(member, "Report")

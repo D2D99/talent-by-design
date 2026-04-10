@@ -12,7 +12,7 @@ class OrganizationService {
     // Get departments for an organization
     async getDepartments(orgName?: string | null): Promise<string[]> {
         const params = orgName ? { orgName } : {};
-        const response = await api.get(`/organizations/departments`, { params });
+        const response = await api.get(`/organization/departments`, { params });
         return response.data.departments;
     }
 }

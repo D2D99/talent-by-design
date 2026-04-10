@@ -631,8 +631,11 @@ const CrudQuestion = () => {
         .getAllOrganizations()
         .then(setOrganizations)
         .catch(console.error);
+    } else if (user?.orgName) {
+      // For regular admins, lock the selection to their own org
+      setSelectedOrg(user.orgName);
     }
-  }, [isSuperAdmin]);
+  }, [isSuperAdmin, user?.orgName]);
 
   // Fetch departments when org changes
   useEffect(() => {
@@ -641,7 +644,9 @@ const CrudQuestion = () => {
         .getDepartments(selectedOrg)
         .then((depts) => {
           setDepartments(depts);
-          setSelectedDept('All'); // reset to All when org changes
+          // Only reset to 'All' if the current selectedDept is not in the new depts
+          // OR if we are just switching orgs.
+          setSelectedDept('All');
         })
         .catch(console.error);
     } else {
