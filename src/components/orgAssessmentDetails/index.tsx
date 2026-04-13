@@ -17,6 +17,8 @@ interface UserMember {
   status: string;
   assessmentStatus?: string;
   lastAssessmentId?: string | null;
+  score?: number | null;
+  submittedAt?: string | null;
 }
 
 interface OrgDetails {
@@ -93,10 +95,16 @@ const OrgAssessmentDetails = () => {
   });
 
   const filteredMembers = sortedMembers.filter((m) => {
-    const matchesSearch =
-      `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""} ${m.assessmentStatus || ""}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+    const searchString = [
+      m.firstName,
+      m.lastName,
+      m.email,
+      m.role,
+      m.department,
+      m.assessmentStatus
+    ].filter(Boolean).join(" ").toLowerCase();
+
+    const matchesSearch = searchString.includes(searchTerm.toLowerCase());
     const matchesRole =
       roleFilter.length === 0 || roleFilter.includes(m.role.toLowerCase());
     const matchesAssessment =
@@ -110,14 +118,20 @@ const OrgAssessmentDetails = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = filteredMembers.slice(indexOfFirstItem, indexOfLastItem);
 
-  const renderAssessmentBadge = (status?: string) => {
+  const renderAssessmentBadge = (status?: string, role?: string) => {
+    if (role?.toLowerCase() === "admin") {
+      return (
+        <span className="text-gray-300 font-bold px-2">—</span>
+      );
+    }
+
     const base =
       "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center";
 
     if (status === "Completed") {
       return (
         <span
-          className={`${base} inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center bg-[#EEF7ED] text-[#3F9933] border-[#3F9933]`}
+          className={`${base} bg-[#EEF7ED] text-[#3F9933] border-[#3F9933]`}
         >
           Completed
         </span>
@@ -144,16 +158,20 @@ const OrgAssessmentDetails = () => {
   };
 
   // Calculate stats
-  const totalMembers = members.length;
-  const completedMembers = members.filter(
+  const eligibleMembers = members.filter(m => m.role?.toLowerCase() !== "admin");
+  const totalMembers = members.length; // Include everyone in total count (e.g. 4)
+
+  const completedMembers = eligibleMembers.filter(
     (m) => m.assessmentStatus === "Completed",
   ).length;
-  const inProgressMembers = members.filter(
+  const inProgressMembers = eligibleMembers.filter(
     (m) => m.assessmentStatus === "In Progress",
   ).length;
-  const dueMembers = members.filter((m) => m.assessmentStatus === "Due").length;
+  const dueMembers = eligibleMembers.filter((m) => m.assessmentStatus === "Due").length;
+
+  // %age based ONLY on eligible members (excluding Admins)
   const completionRate =
-    totalMembers > 0 ? Math.round((completedMembers / totalMembers) * 100) : 0;
+    eligibleMembers.length > 0 ? Math.round((completedMembers / eligibleMembers.length) * 100) : 0;
 
   const handleActionClick = (
     member: UserMember,
@@ -207,6 +225,14 @@ const OrgAssessmentDetails = () => {
               Track assessment completion and participant progress
             </p>
           </div>
+
+          <button
+            onClick={() => navigate(`/dashboard/org-intelligence/${routeOrgName}`)}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white rounded-lg hover:shadow-lg transition-all text-sm font-semibold"
+          >
+            <Icon icon="solar:chart-2-bold" width="18" />
+            Organization Health Insights
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -546,10 +572,10 @@ const OrgAssessmentDetails = () => {
                     </td>
                     <td className="px-6 py-4 text-sm font-medium">
                       <span className="font-bold text-gray-800 tracking-tight text-nowrap">
-                        {member.firstName === "-" ? (
-                          <span className="text-gray-300 font-black">—</span>
+                        {(!member.firstName || member.firstName === "-") ? (
+                          member.email
                         ) : (
-                          `${member.firstName} ${member.lastName}`
+                          `${member.firstName} ${member.lastName || ""}`.trim()
                         )}
                       </span>
                     </td>
@@ -557,7 +583,11 @@ const OrgAssessmentDetails = () => {
                       {member.email}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                      {member.department || "—"}
+                      {(!member.department || member.department === "-") ? (
+                        <span className="text-gray-300 font-bold">—</span>
+                      ) : (
+                        member.department
+                      )}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-500">
                       {new Date(member.createdAt).toLocaleDateString()}
@@ -568,10 +598,10 @@ const OrgAssessmentDetails = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      {renderAssessmentBadge(member.assessmentStatus)}
+                      {renderAssessmentBadge(member.assessmentStatus, member.role)}
                     </td>
                     <td className="px-6 py-4 text-center relative">
-                      {member.assessmentStatus === "Completed" ? (
+                      {member.assessmentStatus === "Completed" && member.role?.toLowerCase() !== "admin" ? (
                         <div className="flex justify-center">
                           <button
                             onClick={() =>

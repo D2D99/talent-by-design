@@ -116,20 +116,25 @@ class QuestionService {
     await api.put(`${this.endpoint}/reorder`, payload);
   }
 
-  // Clone master template to organization (optionally to a specific department)
-  async cloneTemplate(orgName: string, department?: string | null): Promise<{ success: boolean; message: string; count: number }> {
+  // Clone master template to organization (optionally to a specific department or all departments)
+  async cloneTemplate(orgName: string, department?: string | null, allDepartments?: boolean): Promise<{ success: boolean; message: string; count: number }> {
     const payload: Record<string, unknown> = { orgName };
-    if (department && department !== 'All') payload.department = department;
+    if (allDepartments) {
+      payload.allDepartments = true;
+    } else if (department && department !== 'All') {
+      payload.department = department;
+    }
     const response = await api.post(`${this.endpoint}/clone`, payload);
     return response.data;
   }
 
   // Upload questions from Excel
-  async uploadQuestions(file: File, orgName?: string | null, department?: string | null): Promise<Question[]> {
+  async uploadQuestions(file: File, orgName?: string | null, department?: string | null, force?: boolean): Promise<Question[]> {
     const formData = new FormData();
     formData.append("file", file);
     if (orgName) formData.append("orgName", orgName);
     if (department && department !== 'All') formData.append("department", department);
+    if (force) formData.append("force", "true");
 
     const response = await api.post(`${this.endpoint}/upload`, formData, {
       headers: {

@@ -264,6 +264,9 @@ const CrudQuestion = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null,
   );
+  const [isCloningAll, setIsCloningAll] = useState(false);
+  const [isOverrideForUpload, setIsOverrideForUpload] = useState(false);
+  const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
   const [openSubdomains, setOpenSubdomains] = useState<string[]>([]);
 
   // -- Filter State --
@@ -538,21 +541,41 @@ const CrudQuestion = () => {
     }
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleUpload = async (e?: React.ChangeEvent<HTMLInputElement>, isForced = false) => {
+    const file = e ? e.target.files?.[0] : pendingUploadFile;
+    if (!file || !selectedOrg) return;
 
     setUploading(true);
     try {
-      await questionService.uploadQuestions(file, selectedOrg, selectedDept === 'All' ? null : selectedDept);
-      toast.success("Questions uploaded successfully!");
+      if (isForced) {
+        // Delete first to ensure clean state if forcing
+        await questionService.deleteOrganizationQuestions(selectedOrg, selectedDept === 'All' ? null : selectedDept);
+      }
+      await questionService.uploadQuestions(file, selectedOrg, selectedDept === 'All' ? null : selectedDept, isForced);
+      toast.success("Questions uploaded successfully");
+      setShowOverrideModal(false);
+      setPendingUploadFile(null);
       fetchQuestions();
-    } catch (err) {
-      toast.error("Failed to upload questions");
-      console.error(err);
+    } catch (err: any) {
+      if (err?.response?.data?.isCollision) {
+        setPendingUploadFile(file);
+        setIsOverrideForUpload(true);
+        setIsCloningAll(selectedDept === 'All');
+        setShowOverrideModal(true);
+      } else {
+        toast.error(err?.response?.data?.message || "Upload failed");
+      }
     } finally {
       setUploading(false);
-      e.target.value = ""; // Reset input
+      if (e?.target) e.target.value = '';
+    }
+  };
+
+  const confirmOverrideAction = () => {
+    if (isOverrideForUpload) {
+      handleUpload(undefined, true);
+    } else {
+      handleCloneWithOverride();
     }
   };
 
@@ -575,38 +598,62 @@ const CrudQuestion = () => {
     }
   };
 
-  // Clone with pre-check: shows override modal if questions already exist
   const handleCloneTemplate = async () => {
     if (!selectedOrg) return;
+    setIsCloningAll(false);
+    setIsOverrideForUpload(false);
     try {
-      const result = await questionService.cloneTemplate(selectedOrg, selectedDept === 'All' ? null : selectedDept);
+      const result = await questionService.cloneTemplate(selectedOrg, selectedDept === 'All' ? null : selectedDept, false);
       toast.success(result.message);
       fetchQuestions();
     } catch (err: any) {
-      const serverMsg: string = err?.response?.data?.message ?? '';
-      if (err?.response?.status === 400 && serverMsg.toLowerCase().includes('already has questions')) {
+      if (err?.response?.data?.isCollision) {
         setShowOverrideModal(true);
       } else {
-        toast.error(serverMsg || 'Failed to clone template');
+        toast.error(err?.response?.data?.message || 'Failed to clone template');
       }
     }
   };
 
-  // Force-clone after user confirms override
+  const handleCloneToAllDepartments = async () => {
+    if (!selectedOrg) return;
+    setIsCloningAll(true);
+    setIsOverrideForUpload(false);
+    try {
+      const result = await questionService.cloneTemplate(selectedOrg, null, true);
+      toast.success(result.message);
+      fetchQuestions();
+    } catch (err: any) {
+      if (err?.response?.data?.isCollision) {
+        setShowOverrideModal(true);
+      } else {
+        toast.error(err?.response?.data?.message || 'Failed to clone template');
+      }
+    }
+  };
+
   const handleCloneWithOverride = async () => {
     if (!selectedOrg) return;
     setShowOverrideModal(false);
     setLoading(true);
     try {
-      // Delete existing then clone
-      await questionService.deleteOrganizationQuestions(selectedOrg, selectedDept === 'All' ? null : selectedDept);
-      const result = await questionService.cloneTemplate(selectedOrg, selectedDept === 'All' ? null : selectedDept);
-      toast.success(`Override complete. ${result.message}`);
+      if (isCloningAll) {
+        // Delete all for org then clone all
+        await questionService.deleteOrganizationQuestions(selectedOrg, 'All');
+        const result = await questionService.cloneTemplate(selectedOrg, null, true);
+        toast.success(`Full override complete. ${result.message}`);
+      } else {
+        const target = selectedDept === 'All' ? null : selectedDept;
+        await questionService.deleteOrganizationQuestions(selectedOrg, target);
+        const result = await questionService.cloneTemplate(selectedOrg, target, false);
+        toast.success(`Override complete. ${result.message}`);
+      }
       fetchQuestions();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to override clone');
     } finally {
       setLoading(false);
+      setIsCloningAll(false);
     }
   };
 
@@ -1302,32 +1349,47 @@ const CrudQuestion = () => {
               <div className="flex-1 flex flex-col justify-center">
                 {!loading && selectedOrg && allQuestions.length === 0 ? (
                   <div className="flex flex-col md:flex-row gap-5">
-                    {/* Clone Card */}
-                    <button
-                      onClick={handleCloneTemplate}
-                      disabled={loading}
-                      className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50 border border-blue-100/60 transition-all duration-300 hover:bg-blue-100 hover:border-blue-200 hover:shadow-md text-left bg-white sm:flex-row flex-col cursor-pointer"
-                    >
-                      <div className="w-11 h-11 rounded-xl bg-[var(--primary-color)] flex items-center justify-center text-white flex-shrink-0 group-hover:scale-105 transition-transform">
-                        <Icon icon="lucide:copy" width="20" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-gray-800 mb-1">
-                          Clone from Master
-                        </h4>
-                        <p className="text-xs text-gray-500 leading-relaxed">
-                          Copy all questions from the master template
-                          {selectedDept && selectedDept !== 'All'
-                            ? <> to <strong>{selectedOrg}</strong> / <strong>{selectedDept}</strong>.</>
-                            : <> to this organization.</>}
-                        </p>
-                      </div>
-                      <Icon
-                        icon="lucide:arrow-right"
-                        width="16"
-                        className="text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all mt-1 flex-shrink-0 sm:block hidden"
-                      />
-                    </button>
+                    <div className="flex flex-col gap-3 flex-1">
+                      {selectedDept === 'All' ? (
+                        /* Unified Organizational Clone */
+                        <button
+                          onClick={handleCloneToAllDepartments}
+                          disabled={loading}
+                          className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50 border border-blue-100/60 transition-all duration-300 hover:bg-blue-100 hover:border-blue-200 hover:shadow-md text-left bg-white sm:flex-row flex-col cursor-pointer"
+                        >
+                          <div className="w-11 h-11 rounded-xl bg-[var(--primary-color)] flex items-center justify-center text-white flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <Icon icon="lucide:copy-plus" width="20" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-bold text-gray-800 mb-1">
+                              Clone to Everyone
+                            </h4>
+                            <p className="text-xs text-gray-500 leading-relaxed">
+                              Copy master template to <strong>all departments</strong> and global pool in {selectedOrg}.
+                            </p>
+                          </div>
+                        </button>
+                      ) : (
+                        /* Targeted Department Clone */
+                        <button
+                          onClick={handleCloneTemplate}
+                          disabled={loading}
+                          className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50 border border-blue-100/60 transition-all duration-300 hover:bg-blue-100 hover:border-blue-200 hover:shadow-md text-left bg-white sm:flex-row flex-col cursor-pointer"
+                        >
+                          <div className="w-11 h-11 rounded-xl bg-[var(--primary-color)] flex items-center justify-center text-white flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <Icon icon="lucide:copy" width="20" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-bold text-gray-800 mb-1">
+                              Clone to {selectedDept}
+                            </h4>
+                            <p className="text-xs text-gray-500 leading-relaxed">
+                              Copy master questions specifically for the <strong>{selectedDept}</strong> department of {selectedOrg}.
+                            </p>
+                          </div>
+                        </button>
+                      )}
+                    </div>
 
                     {/* Upload Card */}
                     <label className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-neutral-50 border border-gray-100 transition-all duration-300 hover:bg-white hover:border-gray-200 sm:flex-row flex-col hover:shadow-md cursor-pointer">
@@ -1346,18 +1408,11 @@ const CrudQuestion = () => {
                           <h4 className="text-sm font-bold text-gray-800">
                             Upload Excel
                           </h4>
-                          {/* <a
-                            href="https://res.cloudinary.com/dfpkn8g8h/raw/upload/v1773636647/Question_Upload_Template_zmqwjp.xlsx"
-                            className="text-xs text-blue-500 https://res.cloudinary.com/dfpkn8g8h/raw/upload/v1773636647/Question_Upload_Template_zmqwjp.xlsxtransition-colors underline capitalize"
-                          >
-                            Download template
-                          </a> */}
                           <a
                             href="https://res.cloudinary.com/dfpkn8g8h/raw/upload/v1773636647/Question_Upload_Template_zmqwjp.xlsx"
-                            // onClick={handleDownloadTemplate}a
-                            className="text-xs text-blue-500 hover:text-blue-700 font-medium transition-colors underline capitalize"
+                            className="text-[10px] text-blue-500 hover:text-blue-700 font-medium transition-colors underline"
                           >
-                            Get template
+                            Get Template
                           </a>
                         </div>
                         <p className="text-xs text-gray-500 leading-relaxed">
@@ -1675,10 +1730,10 @@ const CrudQuestion = () => {
             </DragDropContext>
           ) : null}
         </div>
-      </div>
+      </div >
 
       {/* --- MODALS (Add/Edit/Delete) --- */}
-      <CrudModals
+      < CrudModals
         // ADD FORM PROPS
         addForms={addForms}
         updateAddForm={updateAddForm}
@@ -1702,10 +1757,11 @@ const CrudQuestion = () => {
         showOverrideModal={showOverrideModal}
         setShowOverrideModal={setShowOverrideModal}
         handleCloneWithOverride={handleCloneWithOverride}
+        confirmOverrideAction={confirmOverrideAction}
+        isCloningAll={isCloningAll}
         selectedOrg={selectedOrg}
         selectedDept={selectedDept}
       />
-
     </div>
   );
 };
@@ -1734,6 +1790,8 @@ interface CrudModalsProps {
   showOverrideModal: boolean;
   setShowOverrideModal: (show: boolean) => void;
   handleCloneWithOverride: () => Promise<void>;
+  confirmOverrideAction: () => void;
+  isCloningAll: boolean;
   selectedOrg: string | null;
   selectedDept: string;
 }
@@ -1758,7 +1816,9 @@ const CrudModals = (props: CrudModalsProps) => {
     confirmDeleteAll,
     showOverrideModal,
     setShowOverrideModal,
-    handleCloneWithOverride,
+    // handleCloneWithOverride,
+    confirmOverrideAction,
+    isCloningAll,
     selectedOrg,
     selectedDept,
   } = props;
@@ -2319,9 +2379,10 @@ const CrudModals = (props: CrudModalsProps) => {
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Are you sure?</h3>
               <p className="text-sm text-gray-500 mb-8 leading-relaxed">
-                There is pre-copied data for <strong>{selectedOrg}</strong>
-                {selectedDept !== 'All' ? <> / <strong>{selectedDept}</strong></> : ""}.
-                Continuing will override the existing questions.
+                Existing data was detected for <strong>{selectedOrg}</strong>
+                {isCloningAll ? " across various departments" : (selectedDept !== 'All' ? <> / <strong>{selectedDept}</strong></> : " in the org-wide pool")}.
+                <br />
+                Continuing will <strong>override</strong> all current questions in this scope.
               </p>
               <div className="flex gap-3">
                 <button
@@ -2331,7 +2392,7 @@ const CrudModals = (props: CrudModalsProps) => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleCloneWithOverride}
+                  onClick={confirmOverrideAction}
                   className="flex-1 px-5 py-2.5 rounded-full bg-blue-600 text-white font-bold uppercase text-xs hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
                 >
                   Continue / Ok
