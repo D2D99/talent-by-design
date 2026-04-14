@@ -7,6 +7,7 @@ import SpinnerLoader from "../../components/spinnerLoader";
 interface OrgStats {
   orgName: string;
   users: number;
+  assessableUsers?: number;
   completed: number;
 }
 
@@ -32,9 +33,10 @@ const SuperAdminStats = () => {
 
   const totalOrgs = stats.length;
   const totalUsers = stats.reduce((acc, curr) => acc + curr.users, 0);
+  const totalAssessableUsers = stats.reduce((acc, curr) => acc + (curr.assessableUsers || curr.users), 0);
   const totalCompleted = stats.reduce((acc, curr) => acc + curr.completed, 0);
   const overallProgress =
-    totalUsers > 0 ? Math.round((totalCompleted / totalUsers) * 100) : 0;
+    totalAssessableUsers > 0 ? Math.round((totalCompleted / totalAssessableUsers) * 100) : 0;
 
   const filteredStats = stats.filter((org) =>
     org.orgName.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -124,9 +126,10 @@ const SuperAdminStats = () => {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredStats.map((org, idx) => {
+                const assessableCount = org.assessableUsers || org.users;
                 const percentage =
-                  org.users > 0
-                    ? Math.round((org.completed / org.users) * 100)
+                  assessableCount > 0
+                    ? Math.round((org.completed / assessableCount) * 100)
                     : 0;
                 return (
                   <tr
@@ -189,24 +192,22 @@ const SuperAdminStats = () => {
                       <div className="pt-2">
                         <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all duration-700 ease-out ${
-                              percentage === 100
-                                ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
-                                : percentage >= 50
-                                  ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
-                                  : "bg-gradient-to-r from-amber-400 to-amber-500"
-                            }`}
+                            className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
+                              ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
+                              : percentage >= 50
+                                ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
+                                : "bg-gradient-to-r from-amber-400 to-amber-500"
+                              }`}
                             style={{ width: `${percentage}%` }}
                           ></div>
                         </div>
                         <span
-                          className={`text-xs font-semibold w-10 ${
-                            percentage === 100
-                              ? "text-green-600"
-                              : percentage >= 50
-                                ? "text-[#448CD2]"
-                                : "text-neutral-300"
-                          }`}
+                          className={`text-xs font-semibold w-10 ${percentage === 100
+                            ? "text-green-600"
+                            : percentage >= 50
+                              ? "text-[#448CD2]"
+                              : "text-neutral-300"
+                            }`}
                         >
                           {percentage}%
                         </span>
