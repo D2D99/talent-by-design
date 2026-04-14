@@ -101,8 +101,11 @@ const OrgAssessmentDetails = () => {
       m.email,
       m.role,
       m.department,
-      m.assessmentStatus
-    ].filter(Boolean).join(" ").toLowerCase();
+      m.assessmentStatus,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
     const matchesSearch = searchString.includes(searchTerm.toLowerCase());
     const matchesRole =
@@ -120,9 +123,7 @@ const OrgAssessmentDetails = () => {
 
   const renderAssessmentBadge = (status?: string, role?: string) => {
     if (role?.toLowerCase() === "admin") {
-      return (
-        <span className="text-gray-300 font-bold px-2">—</span>
-      );
+      return <span className="text-gray-300 font-bold px-2">—</span>;
     }
 
     const base =
@@ -158,7 +159,9 @@ const OrgAssessmentDetails = () => {
   };
 
   // Calculate stats
-  const eligibleMembers = members.filter(m => m.role?.toLowerCase() !== "admin");
+  const eligibleMembers = members.filter(
+    (m) => m.role?.toLowerCase() !== "admin",
+  );
   const totalMembers = members.length; // Include everyone in total count (e.g. 4)
 
   const completedMembers = eligibleMembers.filter(
@@ -167,11 +170,15 @@ const OrgAssessmentDetails = () => {
   const inProgressMembers = eligibleMembers.filter(
     (m) => m.assessmentStatus === "In Progress",
   ).length;
-  const dueMembers = eligibleMembers.filter((m) => m.assessmentStatus === "Due").length;
+  const dueMembers = eligibleMembers.filter(
+    (m) => m.assessmentStatus === "Due",
+  ).length;
 
   // %age based ONLY on eligible members (excluding Admins)
   const completionRate =
-    eligibleMembers.length > 0 ? Math.round((completedMembers / eligibleMembers.length) * 100) : 0;
+    eligibleMembers.length > 0
+      ? Math.round((completedMembers / eligibleMembers.length) * 100)
+      : 0;
 
   const handleActionClick = (
     member: UserMember,
@@ -219,7 +226,7 @@ const OrgAssessmentDetails = () => {
         <div className="flex items-center justify-between  mb-10 gap-5 flex-wrap">
           <div>
             <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
-              {details?.orgName || "Organization Details"}
+              {details?.orgName || routeOrgName || "Organization Details"}
             </h2>
             <p className="text-sm text-gray-500">
               Track assessment completion and participant progress
@@ -227,8 +234,10 @@ const OrgAssessmentDetails = () => {
           </div>
 
           <button
-            onClick={() => navigate(`/dashboard/org-intelligence/${routeOrgName}`)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white rounded-lg hover:shadow-lg transition-all text-sm font-semibold"
+            onClick={() =>
+              navigate(`/dashboard/org-intelligence/${routeOrgName}`)
+            }
+            className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
           >
             <Icon icon="solar:chart-2-bold" width="18" />
             Organization Health Insights
@@ -264,9 +273,7 @@ const OrgAssessmentDetails = () => {
                 <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
                   Completed
                 </p>
-                <p className="text-2xl font-bold text-green-600 mt-1">
-                  {completedMembers}
-                </p>
+                <p className="text-2xl font-bold text-green-600 mt-1"></p>
               </div>
               <div className="p-3 bg-green-200/50 rounded-lg">
                 <Icon
@@ -572,18 +579,16 @@ const OrgAssessmentDetails = () => {
                     </td>
                     <td className="px-6 py-4 text-sm font-medium">
                       <span className="font-bold text-gray-800 tracking-tight text-nowrap">
-                        {(!member.firstName || member.firstName === "-") ? (
-                          member.email
-                        ) : (
-                          `${member.firstName} ${member.lastName || ""}`.trim()
-                        )}
+                        {!member.firstName || member.firstName === "-"
+                          ? member.email
+                          : `${member.firstName} ${member.lastName || ""}`.trim()}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-500">
                       {member.email}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                      {(!member.department || member.department === "-") ? (
+                      {!member.department || member.department === "-" ? (
                         <span className="text-gray-300 font-bold">—</span>
                       ) : (
                         member.department
@@ -598,10 +603,14 @@ const OrgAssessmentDetails = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      {renderAssessmentBadge(member.assessmentStatus, member.role)}
+                      {renderAssessmentBadge(
+                        member.assessmentStatus,
+                        member.role,
+                      )}
                     </td>
                     <td className="px-6 py-4 text-center relative">
-                      {member.assessmentStatus === "Completed" && member.role?.toLowerCase() !== "admin" ? (
+                      {member.assessmentStatus === "Completed" &&
+                      member.role?.toLowerCase() !== "admin" ? (
                         <div className="flex justify-center">
                           <button
                             onClick={() =>

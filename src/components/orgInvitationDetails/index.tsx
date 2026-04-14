@@ -151,7 +151,7 @@ const OrgInvitationDetails = () => {
   ).length;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
       {/* Header Section */}
       <div className="mb-8 bg-white relative overflow-hidden">
         <div
@@ -163,15 +163,15 @@ const OrgInvitationDetails = () => {
         </div>
         <div className="flex items-center justify-between mb-2">
           <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
-            {details?.orgName || "Organization Details"}
+            {details?.orgName || routeOrgName || "Organization Details"}
           </h2>
-          <button
-            onClick={() => navigate(`/dashboard/org-assessments/${encodeURIComponent(details?.orgName || "")}`)}
+          {/* <button
+            onClick={() => navigate(`/dashboard/org-assessments/${encodeURIComponent(details?.orgName || routeOrgName || "")}`)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-[var(--primary-color)] font-bold text-sm rounded-lg border border-blue-100 hover:bg-blue-100 transition-all uppercase tracking-wider"
           >
             <Icon icon="hugeicons:task-done-02" width="18" />
             <span>View Assessment Stats</span>
-          </button>
+          </button> */}
         </div>
         <p className="text-sm text-gray-500 mb-10">
           Manage invitation status and team members
@@ -407,134 +407,136 @@ const OrgInvitationDetails = () => {
       )} */}
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-100">
-        <table className="w-full whitespace-nowrap border-collapse">
-          <thead>
-            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
-              <th className="px-6 py-4 font-semibold">#</th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("firstName")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Name</span>
-                  <div className="flex flex-col opacity-75 cursor-pointer size-5">
-                    <Icon
-                      icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "firstName" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                    <Icon
-                      icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "firstName" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                  </div>
-                </div>
-              </th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("email")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Email</span>
-                  <div className="flex flex-col opacity-75 size-5">
-                    <Icon
-                      icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "email" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                    <Icon
-                      icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "email" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                  </div>
-                </div>
-              </th>
-              <th className="px-6 py-4 font-semibold">Department</th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("createdAt")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Created Date</span>
-                  <div className="flex flex-col opacity-75 size-5">
-                    <Icon
-                      icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "createdAt" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                    <Icon
-                      icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "createdAt" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                  </div>
-                </div>
-              </th>
-              <th
-                className="px-6 py-4 font-semibold"
-                onClick={() => handleSort("role")}
-              >
-                <div className="flex items-center justify-between">
-                  <span>Role</span>
-                  <div className="flex flex-col opacity-75 size-5">
-                    <Icon
-                      icon="mdi:chevron-up"
-                      className={`-mb-1.5 ${sortConfig?.key === "role" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                    <Icon
-                      icon="mdi:chevron-down"
-                      className={`${sortConfig?.key === "role" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
-                    />
-                  </div>
-                </div>
-              </th>
-              <th className="px-6 py-4 font-semibold">Invitation Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.length > 0 ? (
-              currentData.map((member, index) => (
-                <tr
-                  key={member._id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+      <div className="grid">
+        <div className="overflow-x-auto rounded-xl border border-gray-100">
+          <table className="w-full whitespace-nowrap border-collapse">
+            <thead>
+              <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
+                <th className="px-6 py-4 font-semibold">#</th>
+                <th
+                  className="px-6 py-4 font-semibold"
+                  onClick={() => handleSort("firstName")}
                 >
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                    {indexOfFirstItem + index + 1}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium">
-                    <span className="font-bold text-gray-800 tracking-tight text-nowrap">
-                      {member.firstName === "-" ? (
-                        <span className="text-gray-300 font-black">—</span>
-                      ) : (
-                        `${member.firstName} ${member.lastName}`
-                      )}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {member.email}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {member.department || "—"}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-500">
-                    {new Date(member.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="uppercase text-xs font-bold">
-                      {member.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {renderStatusBadge(member.status)}
+                  <div className="flex items-center justify-between">
+                    <span>Name</span>
+                    <div className="flex flex-col opacity-75 cursor-pointer size-5">
+                      <Icon
+                        icon="mdi:chevron-up"
+                        className={`-mb-1.5 ${sortConfig?.key === "firstName" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                      <Icon
+                        icon="mdi:chevron-down"
+                        className={`${sortConfig?.key === "firstName" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                    </div>
+                  </div>
+                </th>
+                <th
+                  className="px-6 py-4 font-semibold"
+                  onClick={() => handleSort("email")}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Email</span>
+                    <div className="flex flex-col opacity-75 size-5">
+                      <Icon
+                        icon="mdi:chevron-up"
+                        className={`-mb-1.5 ${sortConfig?.key === "email" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                      <Icon
+                        icon="mdi:chevron-down"
+                        className={`${sortConfig?.key === "email" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                    </div>
+                  </div>
+                </th>
+                <th className="px-6 py-4 font-semibold">Department</th>
+                <th
+                  className="px-6 py-4 font-semibold"
+                  onClick={() => handleSort("createdAt")}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Created Date</span>
+                    <div className="flex flex-col opacity-75 size-5">
+                      <Icon
+                        icon="mdi:chevron-up"
+                        className={`-mb-1.5 ${sortConfig?.key === "createdAt" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                      <Icon
+                        icon="mdi:chevron-down"
+                        className={`${sortConfig?.key === "createdAt" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                    </div>
+                  </div>
+                </th>
+                <th
+                  className="px-6 py-4 font-semibold"
+                  onClick={() => handleSort("role")}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Role</span>
+                    <div className="flex flex-col opacity-75 size-5">
+                      <Icon
+                        icon="mdi:chevron-up"
+                        className={`-mb-1.5 ${sortConfig?.key === "role" && sortConfig?.direction === "asc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                      <Icon
+                        icon="mdi:chevron-down"
+                        className={`${sortConfig?.key === "role" && sortConfig?.direction === "desc" ? "text-blue-600 opacity-100" : ""}`}
+                      />
+                    </div>
+                  </div>
+                </th>
+                <th className="px-6 py-4 font-semibold">Invitation Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.length > 0 ? (
+                currentData.map((member, index) => (
+                  <tr
+                    key={member._id}
+                    className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                      {indexOfFirstItem + index + 1}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium">
+                      <span className="font-bold text-gray-800 tracking-tight text-nowrap">
+                        {member.firstName === "-" ? (
+                          <span className="text-gray-300 font-black">—</span>
+                        ) : (
+                          `${member.firstName} ${member.lastName}`
+                        )}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {member.email}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {member.department || "—"}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      {new Date(member.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="uppercase text-xs font-bold">
+                        {member.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {renderStatusBadge(member.status)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-20 text-center text-gray-400">
+                    {isLoading ? "Loading members..." : "No members found."}
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="py-20 text-center text-gray-400">
-                  {isLoading ? "Loading members..." : "No members found."}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Pagination

@@ -44,7 +44,9 @@ const AdminAssessments = () => {
         setLoading(false);
         return;
       }
-      const res = await api.get(`auth/organization/${encodeURIComponent(orgName)}`);
+      const res = await api.get(
+        `auth/organization/${encodeURIComponent(orgName)}`,
+      );
       setMembers(res.data.members || []);
     } catch (err) {
       toast.error("Failed to load team members");
@@ -90,6 +92,8 @@ const AdminAssessments = () => {
 
   // Filter Logic
   const filteredMembers = members.filter((m) => {
+    if (m.role?.toLowerCase() === "admin") return false;
+
     const matchesSearch =
       `${m.firstName} ${m.lastName} ${m.email} ${m.department || ""}`
         .toLowerCase()
@@ -108,7 +112,7 @@ const AdminAssessments = () => {
   if (loading) return <SpinnerLoader />;
 
   return (
-    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] grid items-start">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
@@ -125,7 +129,9 @@ const AdminAssessments = () => {
         {[
           {
             label: "Total Team",
-            value: members.length,
+            value:
+              members.length -
+              members.filter((m) => m.role?.toLowerCase() === "admin").length,
             icon: "solar:users-group-two-rounded-broken",
             color: "#448CD2",
             bg: "bg-blue-50/50",
@@ -150,7 +156,8 @@ const AdminAssessments = () => {
             label: "Not Started",
             value: members.filter(
               (m) =>
-                !m.assessmentStatus || m.assessmentStatus === "Not Started",
+                m.role?.toLowerCase() !== "admin" &&
+                (!m.assessmentStatus || m.assessmentStatus === "Not Started"),
             ).length,
             icon: "hugeicons:time-04",
             color: "#F59E0B",
@@ -201,180 +208,192 @@ const AdminAssessments = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-100">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
-              <th className="px-6 py-4 font-semibold">#</th>
-              <th className="px-6 py-4 font-semibold">Name</th>
-              <th className="px-6 py-4 font-semibold">Email</th>
-              <th className="px-6 py-4 font-semibold">Role</th>
-              <th className="px-6 py-4 font-semibold text-nowrap">
-                Assessment Status
-              </th>
-              <th className="px-6 py-4 font-semibold">Progress</th>
-              <th className="px-6 py-4 font-semibold text-nowrap text-start">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {currentData.map((member, idx) => {
-              const status = member.assessmentStatus || "Not Started";
-              const percentage =
-                status === "Completed"
-                  ? 100
-                  : status === "In Progress"
-                    ? 50
-                    : status === "Due"
-                      ? 25
-                      : 0;
+      <div className="grid">
+        <div className="overflow-x-auto rounded-xl border border-gray-100">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b-2 border-gray-100 bg-gray-50/50 text-left">
+                <th className="px-6 py-4 font-semibold">#</th>
+                <th className="px-6 py-4 font-semibold">Name</th>
+                <th className="px-6 py-4 font-semibold">Email</th>
+                <th className="px-6 py-4 font-semibold">Department</th>
+                <th className="px-6 py-4 font-semibold">Role</th>
+                <th className="px-6 py-4 font-semibold text-nowrap">
+                  Assessment Status
+                </th>
+                <th className="px-6 py-4 font-semibold">Progress</th>
+                <th className="px-6 py-4 font-semibold text-nowrap text-start">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {currentData.map((member, idx) => {
+                const status = member.assessmentStatus || "Not Started";
+                const percentage =
+                  status === "Completed"
+                    ? 100
+                    : status === "In Progress"
+                      ? 50
+                      : status === "Due"
+                        ? 25
+                        : 0;
 
-              // Hide reset button for admins (own role) and for the logged-in admin themselves
-              const isAdminRole = member.role?.toLowerCase() === "admin";
-              const isSelf =
-                adminId && member._id?.toString() === adminId?.toString();
-              const canReset =
-                !isAdminRole &&
-                !isSelf &&
-                (status === "Completed" || status === "In Progress");
+                // Hide reset button for the logged-in admin themselves
+                const isSelf =
+                  adminId && member._id?.toString() === adminId?.toString();
+                const canReset =
+                  !isSelf &&
+                  (status === "Completed" || status === "In Progress");
 
-              return (
-                <tr
-                  key={member._id}
-                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
-                >
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                    {indexOfFirstItem + idx + 1}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-nowrap">
-                    <div className="font-bold">
-                      {member.firstName === "-" ? (
-                        <span className="text-gray-300">—</span>
-                      ) : (
-                        `${member.firstName} ${member.lastName}`
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {member.email}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="uppercase text-xs font-bold ">
-                      {member.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`
+                return (
+                  <tr
+                    key={member._id}
+                    className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                          {indexOfFirstItem + idx + 1}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-nowrap">
+                          <div className="font-bold">
+                            {member.firstName === "-" ? (
+                              <span className="text-gray-300">—</span>
+                            ) : (
+                              `${member.firstName} ${member.lastName}`
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {member.email}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {member.department}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="uppercase text-xs font-bold ">
+                            {member.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center
-                         ${status === "Completed"
-                          ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
-                          : status === "In Progress"
-                            ? "bg-blue-100 text-blue-600 border-blue-600"
-                            : status === "Due"
-                              ? "bg-amber-100 text-amber-600 border-amber-600"
-                              : "bg-gray-100 text-gray-400 border-gray-400"
-                        }`}
-                    >
-                      {status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="pt-2">
-                      <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
-                              ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
-                              : percentage >= 50
-                                ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
-                                : "bg-gradient-to-r from-amber-400 to-amber-500"
-                            }`}
-                          style={{ width: `${percentage}%` }}
-                        ></div>
-                      </div>
-                      <span
-                        className={`text-xs font-semibold w-10 ${percentage === 100
-                            ? "text-green-600"
-                            : percentage >= 50
-                              ? "text-[#448CD2]"
-                              : "text-neutral-300"
-                          }`}
-                      >
-                        {percentage}%
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-start gap-2">
-                      {status === "Completed" && (
-                        <>
-                          <button
-                            onClick={() => {
-                              const roleMapping: Record<string, string> = {
-                                superadmin: "org-head",
-                                super_admin: "org-head",
-                                admin: "org-head",
-                                "senior-leader": "senior-leader",
-                                leader: "senior-leader",
-                                manager: "manager",
-                                employee: "employee",
-                              };
-                              const reportType =
-                                roleMapping[member.role?.toLowerCase() || ""] ||
-                                "employee";
-                              navigate(
-                                `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`,
-                              );
-                            }}
-                            id="viewReport"
-                            className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-[var(--primary-color)]  hover:bg-blue-100 transition-all"
+                         ${
+                           status === "Completed"
+                             ? "bg-[#EEF7ED] text-[#3F9933] border-[#3F9933] "
+                             : status === "In Progress"
+                               ? "bg-blue-100 text-blue-600 border-blue-600"
+                               : status === "Due"
+                                 ? "bg-amber-100 text-amber-600 border-amber-600"
+                                 : "bg-gray-100 text-gray-400 border-gray-400"
+                         }`}
                           >
-                            <Icon icon="solar:eye-linear" width="16" />
-                          </button>
-                          <Tooltip anchorSelect="#viewReport">
-                            View Report
-                          </Tooltip>
-                        </>
-                      )}
-                      {canReset ? (
-                        <>
-                          <button
-                            id="resetReport"
-                            onClick={() => openResetModal(member._id)}
-                            className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-red-500  hover:bg-red-100 transition-all"
-                          >
-                            <Icon icon="solar:restart-linear" width="16" />
-                            {/* Reset */}
-                          </button>
-                          <Tooltip anchorSelect="#resetReport">
-                            Reset Assessment
-                          </Tooltip>
-                        </>
-                      ) : !(status === "Completed") ? (
-                        <span className="text-gray-300 text-xs">—</span>
-                      ) : null}
+                            {status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="pt-2">
+                            <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-700 ease-out ${
+                                  percentage === 100
+                                    ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
+                                    : percentage >= 50
+                                      ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
+                                      : "bg-gradient-to-r from-amber-400 to-amber-500"
+                                }`}
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                            <span
+                              className={`text-xs font-semibold w-10 ${
+                                percentage === 100
+                                  ? "text-green-600"
+                                  : percentage >= 50
+                                    ? "text-[#448CD2]"
+                                    : "text-neutral-300"
+                              }`}
+                            >
+                              {percentage}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-start gap-2">
+                            {status === "Completed" && (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    const roleMapping: Record<string, string> =
+                                      {
+                                        superadmin: "org-head",
+                                        super_admin: "org-head",
+                                        admin: "org-head",
+                                        "senior-leader": "senior-leader",
+                                        leader: "senior-leader",
+                                        manager: "manager",
+                                        employee: "employee",
+                                      };
+                                    const reportType =
+                                      roleMapping[
+                                        member.role?.toLowerCase() || ""
+                                      ] || "employee";
+                                    navigate(
+                                      `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`,
+                                    );
+                                  }}
+                                  id="viewReport"
+                                  className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-[var(--primary-color)]  hover:bg-blue-100 transition-all"
+                                >
+                                  <Icon icon="solar:eye-linear" width="16" />
+                                </button>
+                                <Tooltip anchorSelect="#viewReport">
+                                  View Report
+                                </Tooltip>
+                              </>
+                            )}
+                            {canReset ? (
+                              <>
+                                <button
+                                  id="resetReport"
+                                  onClick={() => openResetModal(member._id)}
+                                  className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-red-500  hover:bg-red-100 transition-all"
+                                >
+                                  <Icon
+                                    icon="solar:restart-linear"
+                                    width="16"
+                                  />
+                                  {/* Reset */}
+                                </button>
+                                <Tooltip anchorSelect="#resetReport">
+                                  Reset Assessment
+                                </Tooltip>
+                              </>
+                            ) : !(status === "Completed") ? (
+                              <span className="text-gray-300 text-xs">—</span>
+                            ) : null}
+                          </div>
+                        </td>
+                  </tr>
+                );
+              })}
+              {filteredMembers.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center py-12">
+                    <div className="flex flex-col items-center justify-center text-gray-400">
+                      <Icon
+                        icon="solar:file-remove-linear"
+                        width="40"
+                        className="mb-2 opacity-50"
+                      />
+                      <p>No team members found matching "{searchTerm}"</p>
                     </div>
                   </td>
                 </tr>
-              );
-            })}
-            {filteredMembers.length === 0 && (
-              <tr>
-                <td colSpan={7} className="text-center py-12">
-                  <div className="flex flex-col items-center justify-center text-gray-400">
-                    <Icon
-                      icon="solar:file-remove-linear"
-                      width="40"
-                      className="mb-2 opacity-50"
-                    />
-                    <p>No team members found matching "{searchTerm}"</p>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Pagination

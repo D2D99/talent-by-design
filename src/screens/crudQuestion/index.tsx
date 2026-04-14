@@ -230,14 +230,16 @@ const FilterSection = ({
         </span>
         <Icon
           icon="iconoir:nav-arrow-down"
-          className={`transition-transform duration-500 ${isOpen ? "rotate-180" : ""
-            }`}
+          className={`transition-transform duration-500 ${
+            isOpen ? "rotate-180" : ""
+          }`}
           width="16"
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-500 ${isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
-          }`}
+        className={`overflow-hidden transition-all duration-500 ${
+          isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
+        }`}
       >
         {children}
       </div>
@@ -254,12 +256,10 @@ const CrudQuestion = () => {
   const [allQuestions, setAllQuestions] = useState<Question[]>([]); // Store all fetched questions
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [organizations, setOrganizations] = useState<string[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null); // null means Master Template
   const [departments, setDepartments] = useState<string[]>([]);
-  const [selectedDept, setSelectedDept] = useState<string>('All'); // 'All' means no department filter
-  const [showOverrideModal, setShowOverrideModal] = useState(false); // for clone-override confirmation
+  const [selectedDept, setSelectedDept] = useState<string>("All"); // 'All' means no department filter
 
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null,
@@ -531,7 +531,7 @@ const CrudQuestion = () => {
     try {
       const data = await questionService.getAllQuestions({
         orgName: selectedOrg,
-        department: selectedDept === 'All' ? null : selectedDept,
+        department: selectedDept === "All" ? null : selectedDept,
       });
       setAllQuestions(data);
     } catch (err) {
@@ -541,7 +541,10 @@ const CrudQuestion = () => {
     }
   };
 
-  const handleUpload = async (e?: React.ChangeEvent<HTMLInputElement>, isForced = false) => {
+  const handleUpload = async (
+    e?: React.ChangeEvent<HTMLInputElement>,
+    isForced = false,
+  ) => {
     const file = e ? e.target.files?.[0] : pendingUploadFile;
     if (!file || !selectedOrg) return;
 
@@ -549,29 +552,44 @@ const CrudQuestion = () => {
     try {
       if (isForced) {
         // Delete first to ensure clean state if forcing
-        await questionService.deleteOrganizationQuestions(selectedOrg, selectedDept === 'All' ? null : selectedDept);
+        await questionService.deleteOrganizationQuestions(
+          selectedOrg,
+          selectedDept === "All" ? null : selectedDept,
+        );
       }
-      await questionService.uploadQuestions(file, selectedOrg, selectedDept === 'All' ? null : selectedDept, isForced);
+      await questionService.uploadQuestions(
+        file,
+        selectedOrg,
+        selectedDept === "All" ? null : selectedDept,
+        isForced,
+      );
       toast.success("Questions uploaded successfully");
-      setShowOverrideModal(false);
+      Modal.getInstance(
+        document.getElementById("overrideModal") as HTMLElement,
+      )?.hide();
       setPendingUploadFile(null);
       fetchQuestions();
     } catch (err: any) {
       if (err?.response?.data?.isCollision) {
         setPendingUploadFile(file);
         setIsOverrideForUpload(true);
-        setIsCloningAll(selectedDept === 'All');
-        setShowOverrideModal(true);
+        setIsCloningAll(selectedDept === "All");
+        Modal.getOrCreateInstance(
+          document.getElementById("overrideModal") as HTMLElement,
+        ).show();
       } else {
         toast.error(err?.response?.data?.message || "Upload failed");
       }
     } finally {
       setUploading(false);
-      if (e?.target) e.target.value = '';
+      if (e?.target) e.target.value = "";
     }
   };
 
   const confirmOverrideAction = () => {
+    Modal.getInstance(
+      document.getElementById("overrideModal") as HTMLElement,
+    )?.hide();
     if (isOverrideForUpload) {
       handleUpload(undefined, true);
     } else {
@@ -580,14 +598,23 @@ const CrudQuestion = () => {
   };
 
   const handleDeleteAll = () => {
-    setShowDeleteAllModal(true);
+    const modal = Modal.getOrCreateInstance(
+      document.getElementById("deleteAllModal") as HTMLElement,
+    );
+    modal.show();
   };
 
   const confirmDeleteAll = async () => {
-    setShowDeleteAllModal(false);
+    const modal = Modal.getInstance(
+      document.getElementById("deleteAllModal") as HTMLElement,
+    );
+    modal?.hide();
     setLoading(true);
     try {
-      await questionService.deleteOrganizationQuestions(selectedOrg, selectedDept === 'All' ? null : selectedDept);
+      await questionService.deleteOrganizationQuestions(
+        selectedOrg,
+        selectedDept === "All" ? null : selectedDept,
+      );
       toast.success("All questions deleted successfully!");
       fetchQuestions();
     } catch (err) {
@@ -603,14 +630,20 @@ const CrudQuestion = () => {
     setIsCloningAll(false);
     setIsOverrideForUpload(false);
     try {
-      const result = await questionService.cloneTemplate(selectedOrg, selectedDept === 'All' ? null : selectedDept, false);
+      const result = await questionService.cloneTemplate(
+        selectedOrg,
+        selectedDept === "All" ? null : selectedDept,
+        false,
+      );
       toast.success(result.message);
       fetchQuestions();
     } catch (err: any) {
       if (err?.response?.data?.isCollision) {
-        setShowOverrideModal(true);
+        Modal.getOrCreateInstance(
+          document.getElementById("overrideModal") as HTMLElement,
+        ).show();
       } else {
-        toast.error(err?.response?.data?.message || 'Failed to clone template');
+        toast.error(err?.response?.data?.message || "Failed to clone template");
       }
     }
   };
@@ -620,37 +653,53 @@ const CrudQuestion = () => {
     setIsCloningAll(true);
     setIsOverrideForUpload(false);
     try {
-      const result = await questionService.cloneTemplate(selectedOrg, null, true);
+      const result = await questionService.cloneTemplate(
+        selectedOrg,
+        null,
+        true,
+      );
       toast.success(result.message);
       fetchQuestions();
     } catch (err: any) {
       if (err?.response?.data?.isCollision) {
-        setShowOverrideModal(true);
+        Modal.getOrCreateInstance(
+          document.getElementById("overrideModal") as HTMLElement,
+        ).show();
       } else {
-        toast.error(err?.response?.data?.message || 'Failed to clone template');
+        toast.error(err?.response?.data?.message || "Failed to clone template");
       }
     }
   };
 
   const handleCloneWithOverride = async () => {
     if (!selectedOrg) return;
-    setShowOverrideModal(false);
+    Modal.getInstance(
+      document.getElementById("overrideModal") as HTMLElement,
+    )?.hide();
     setLoading(true);
     try {
       if (isCloningAll) {
         // Delete all for org then clone all
-        await questionService.deleteOrganizationQuestions(selectedOrg, 'All');
-        const result = await questionService.cloneTemplate(selectedOrg, null, true);
+        await questionService.deleteOrganizationQuestions(selectedOrg, "All");
+        const result = await questionService.cloneTemplate(
+          selectedOrg,
+          null,
+          true,
+        );
         toast.success(`Full override complete. ${result.message}`);
       } else {
-        const target = selectedDept === 'All' ? null : selectedDept;
+        const target = selectedDept === "All" ? null : selectedDept;
         await questionService.deleteOrganizationQuestions(selectedOrg, target);
-        const result = await questionService.cloneTemplate(selectedOrg, target, false);
+        const result = await questionService.cloneTemplate(
+          selectedOrg,
+          target,
+          false,
+        );
         toast.success(`Override complete. ${result.message}`);
       }
       fetchQuestions();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to override clone');
+      toast.error(err?.response?.data?.message || "Failed to override clone");
     } finally {
       setLoading(false);
       setIsCloningAll(false);
@@ -693,12 +742,12 @@ const CrudQuestion = () => {
           setDepartments(depts);
           // Only reset to 'All' if the current selectedDept is not in the new depts
           // OR if we are just switching orgs.
-          setSelectedDept('All');
+          setSelectedDept("All");
         })
         .catch(console.error);
     } else {
       setDepartments([]);
-      setSelectedDept('All');
+      setSelectedDept("All");
     }
   }, [selectedOrg]);
 
@@ -919,16 +968,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                optionA: {
-                  label: form.optionALabel,
-                  insightPrompt: form.optionAPrompt,
-                },
-                optionB: {
-                  label: form.optionBLabel,
-                  insightPrompt: form.optionBPrompt,
-                },
-                higherValueOption: form.higherValueOption as "A" | "B",
-              }
+                  optionA: {
+                    label: form.optionALabel,
+                    insightPrompt: form.optionAPrompt,
+                  },
+                  optionB: {
+                    label: form.optionBLabel,
+                    insightPrompt: form.optionBPrompt,
+                  },
+                  higherValueOption: form.higherValueOption as "A" | "B",
+                }
               : undefined,
         };
       });
@@ -969,16 +1018,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-              optionA: {
-                label: editFormData.optionALabel,
-                insightPrompt: editFormData.optionAPrompt,
-              },
-              optionB: {
-                label: editFormData.optionBLabel,
-                insightPrompt: editFormData.optionBPrompt,
-              },
-              higherValueOption: editFormData.higherValueOption as "A" | "B",
-            }
+                optionA: {
+                  label: editFormData.optionALabel,
+                  insightPrompt: editFormData.optionAPrompt,
+                },
+                optionB: {
+                  label: editFormData.optionBLabel,
+                  insightPrompt: editFormData.optionBPrompt,
+                },
+                higherValueOption: editFormData.higherValueOption as "A" | "B",
+              }
             : undefined,
       });
       await fetchQuestions();
@@ -1023,7 +1072,6 @@ const CrudQuestion = () => {
       setLoading(false);
     }
   };
-
 
   const handleOnDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
@@ -1293,8 +1341,18 @@ const CrudQuestion = () => {
                 {isSuperAdmin && (
                   <div className="relative w-full">
                     <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
-                      <svg className="h-4 w-4 text-[#5D5D5D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      <svg
+                        className="h-4 w-4 text-[#5D5D5D]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </div>
                     <select
@@ -1315,24 +1373,44 @@ const CrudQuestion = () => {
                 {/* Department Dropdown (Everyone if Org selected) */}
                 {selectedOrg && (
                   <div className="relative w-full">
-                    <div className="flex items-center gap-1.5 mb-1 px-1">
+                    {/* <div className="flex items-center gap-1.5 mb-1 px-1">
                       <Icon icon="solar:folder-2-broken" width="14" className="text-gray-400" />
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Department</span>
-                    </div>
+                    </div> */}
+
+                    <label
+                      htmlFor="deptSelect"
+                      className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
+                    >
+                      Department
+                    </label>
                     <div className="relative w-full">
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <svg className="h-4 w-4 text-[#5D5D5D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        <svg
+                          className="h-4 w-4 text-[#5D5D5D]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </div>
                       <select
                         value={selectedDept}
                         onChange={(e) => setSelectedDept(e.target.value)}
-                        className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] bg-white shadow-sm"
+                        className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-1 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] bg-white"
+                        id="deptSelect"
                       >
                         <option value="All">All Departments</option>
                         {departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
+                          <option key={dept} value={dept}>
+                            {dept}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -1350,7 +1428,7 @@ const CrudQuestion = () => {
                 {!loading && selectedOrg && allQuestions.length === 0 ? (
                   <div className="flex flex-col md:flex-row gap-5">
                     <div className="flex flex-col gap-3 flex-1">
-                      {selectedDept === 'All' ? (
+                      {selectedDept === "All" ? (
                         /* Unified Organizational Clone */
                         <button
                           onClick={handleCloneToAllDepartments}
@@ -1358,14 +1436,18 @@ const CrudQuestion = () => {
                           className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50 border border-blue-100/60 transition-all duration-300 hover:bg-blue-100 hover:border-blue-200 hover:shadow-md text-left bg-white sm:flex-row flex-col cursor-pointer"
                         >
                           <div className="w-11 h-11 rounded-xl bg-[var(--primary-color)] flex items-center justify-center text-white flex-shrink-0 group-hover:scale-105 transition-transform">
-                            <Icon icon="lucide:copy-plus" width="20" />
+                            {/* <Icon icon="lucide:copy-plus" width="20" /> */}
+
+                            <Icon icon="prime:clone" width="24" height="24" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h4 className="text-sm font-bold text-gray-800 mb-1">
                               Clone to Everyone
                             </h4>
                             <p className="text-xs text-gray-500 leading-relaxed">
-                              Copy master template to <strong>all departments</strong> and global pool in {selectedOrg}.
+                              Copy master template to{" "}
+                              <strong>all departments</strong> and global pool
+                              in {selectedOrg}.
                             </p>
                           </div>
                         </button>
@@ -1377,14 +1459,17 @@ const CrudQuestion = () => {
                           className="group flex-1 flex items-start gap-4 p-6 rounded-2xl bg-blue-50/50 border border-blue-100/60 transition-all duration-300 hover:bg-blue-100 hover:border-blue-200 hover:shadow-md text-left bg-white sm:flex-row flex-col cursor-pointer"
                         >
                           <div className="w-11 h-11 rounded-xl bg-[var(--primary-color)] flex items-center justify-center text-white flex-shrink-0 group-hover:scale-105 transition-transform">
-                            <Icon icon="lucide:copy" width="20" />
+                            {/* <Icon icon="lucide:copy" width="20" /> */}
+                            <Icon icon="prime:clone" width="24" height="24" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h4 className="text-sm font-bold text-gray-800 mb-1">
                               Clone to {selectedDept}
                             </h4>
                             <p className="text-xs text-gray-500 leading-relaxed">
-                              Copy master questions specifically for the <strong>{selectedDept}</strong> department of {selectedOrg}.
+                              Copy master questions specifically for the{" "}
+                              <strong>{selectedDept}</strong> department of{" "}
+                              {selectedOrg}.
                             </p>
                           </div>
                         </button>
@@ -1498,10 +1583,11 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain
                     }}
                     className={`px-6 py-2.5 text-sm uppercase rounded-full transition-all whitespace-nowrap
-                            ${filterDomains.includes(domain)
-                        ? "bg-white text-gray-900 shadow-sm font-semibold"
-                        : "text-neutral-500 font-semibold"
-                      }`}
+                            ${
+                              filterDomains.includes(domain)
+                                ? "bg-white text-gray-900 shadow-sm font-semibold"
+                                : "text-neutral-500 font-semibold"
+                            }`}
                   >
                     {domain}
                   </button>
@@ -1515,10 +1601,11 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${showFilters
-                ? "bg-[var(--primary-color)] text-white"
-                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
-              }`}
+                    ${
+                      showFilters
+                        ? "bg-[var(--primary-color)] text-white"
+                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+                    }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -1622,10 +1709,11 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
-                              ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
-                              : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                              }`}
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
+                              openSubdomains.includes(subdomainTitle)
+                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
+                            }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -1633,10 +1721,11 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${openSubdomains.includes(subdomainTitle)
-                          ? ""
-                          : "hidden"
-                          }`}
+                        className={`!visible ${
+                          openSubdomains.includes(subdomainTitle)
+                            ? ""
+                            : "hidden"
+                        }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
                         <Droppable
@@ -1730,10 +1819,10 @@ const CrudQuestion = () => {
             </DragDropContext>
           ) : null}
         </div>
-      </div >
+      </div>
 
       {/* --- MODALS (Add/Edit/Delete) --- */}
-      < CrudModals
+      <CrudModals
         // ADD FORM PROPS
         addForms={addForms}
         updateAddForm={updateAddForm}
@@ -1751,11 +1840,7 @@ const CrudQuestion = () => {
         isAddBatchValid={isAddBatchValid}
         isEditValid={isEditValid}
         // DELETE ALL & OVERRIDE PROPS
-        showDeleteAllModal={showDeleteAllModal}
-        setShowDeleteAllModal={setShowDeleteAllModal}
         confirmDeleteAll={confirmDeleteAll}
-        showOverrideModal={showOverrideModal}
-        setShowOverrideModal={setShowOverrideModal}
         handleCloneWithOverride={handleCloneWithOverride}
         confirmOverrideAction={confirmOverrideAction}
         isCloningAll={isCloningAll}
@@ -1784,11 +1869,7 @@ interface CrudModalsProps {
   subdomainsGetter: (role: string, domain: string) => string[];
   isAddBatchValid: boolean;
   isEditValid: boolean;
-  showDeleteAllModal: boolean;
-  setShowDeleteAllModal: (show: boolean) => void;
   confirmDeleteAll: () => Promise<void>;
-  showOverrideModal: boolean;
-  setShowOverrideModal: (show: boolean) => void;
   handleCloneWithOverride: () => Promise<void>;
   confirmOverrideAction: () => void;
   isCloningAll: boolean;
@@ -1811,11 +1892,7 @@ const CrudModals = (props: CrudModalsProps) => {
     subdomainsGetter,
     isAddBatchValid,
     isEditValid,
-    showDeleteAllModal,
-    setShowDeleteAllModal,
     confirmDeleteAll,
-    showOverrideModal,
-    setShowOverrideModal,
     // handleCloneWithOverride,
     confirmOverrideAction,
     isCloningAll,
@@ -2338,70 +2415,157 @@ const CrudModals = (props: CrudModalsProps) => {
       </div>
 
       {/* Delete All Confirmation Modal */}
-      {
-        showDeleteAllModal && (
-          <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center animate-in fade-in zoom-in duration-300">
-              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icon icon="lucide:alert-triangle" className="text-red-500" width="32" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Delete all questions?</h3>
-              <p className="text-sm text-gray-500 mb-8">
-                This will permanently remove all questions for <strong>{selectedOrg}</strong>
-                {selectedDept !== 'All' ? <> in <strong>{selectedDept}</strong></> : ""} . This action cannot be undone.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowDeleteAllModal(false)}
-                  className="flex-1 px-5 py-2.5 rounded-full border border-gray-200 text-gray-600 font-bold uppercase text-xs hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmDeleteAll}
-                  className="flex-1 px-5 py-2.5 rounded-full bg-red-500 text-white font-bold uppercase text-xs hover:bg-red-600 shadow-lg shadow-red-200 transition-all"
-                >
-                  Delete All
-                </button>
+      <div
+        data-twe-modal-init
+        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="deleteAllModal"
+        tabIndex={-1}
+        aria-hidden="true"
+        data-twe-backdrop="static"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto px-4"
+        >
+          <div className="pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
+              <h5
+                className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold"
+                id="deleteAllModalTitle"
+              >
+                Delete All
+              </h5>
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="text-neutral-500 hover:text-neutral-800"
+              >
+                <Icon icon="material-symbols:close" width="24" />
+              </button>
+            </div>
+
+            <div className="relative sm:py-8 py-4 px-4 grid place-items-center gap-4">
+              <img src={ProgressIcon} alt="Progress Icon" width={80} />
+              <div className="text-center">
+                <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
+                  Delete all questions?
+                </h5>
+                <p className="text-sm text-neutral-600">
+                  This will permanently remove all questions for{" "}
+                  <strong>{selectedOrg}</strong>
+                  {selectedDept !== "All" ? (
+                    <>
+                      {" "}
+                      in <strong>{selectedDept}</strong>
+                    </>
+                  ) : (
+                    ""
+                  )}{" "}
+                  dept . This action cannot be undone.
+                </p>
               </div>
             </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-neutral-200 py-4 px-4">
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteAll}
+                className="group relative overflow-hidden z-0 bg-red-500 px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase text-white duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                {loading ? "Deleting..." : "Delete All"}
+              </button>
+            </div>
           </div>
-        )
-      }
+        </div>
+      </div>
 
       {/* Clone Override Conflict Modal */}
-      {
-        showOverrideModal && (
-          <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center animate-in fade-in zoom-in duration-300">
-              <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icon icon="lucide:alert-circle" className="text-orange-500" width="32" />
+      <div
+        data-twe-modal-init
+        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="overrideModal"
+        tabIndex={-1}
+        aria-hidden="true"
+        data-twe-backdrop="static"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-xl mx-auto px-4"
+        >
+          <div className="pointer-events-auto relative flex max-w-xl w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
+            <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 sm:pb-0 pb-2">
+              <h5
+                className="sm:text-xl text-lg text-[var(--secondary-color)] invisible font-bold"
+                id="overrideModalTitle"
+              >
+                Override Data
+              </h5>
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="text-neutral-500 hover:text-neutral-800"
+              >
+                <Icon icon="material-symbols:close" width="24" />
+              </button>
+            </div>
+
+            <div className="relative sm:py-8 py-4 px-4 grid place-items-center gap-4">
+              <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto">
+                <Icon
+                  icon="lucide:alert-circle"
+                  className="text-orange-500"
+                  width="32"
+                />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Are you sure?</h3>
-              <p className="text-sm text-gray-500 mb-8 leading-relaxed">
-                Existing data was detected for <strong>{selectedOrg}</strong>
-                {isCloningAll ? " across various departments" : (selectedDept !== 'All' ? <> / <strong>{selectedDept}</strong></> : " in the org-wide pool")}.
-                <br />
-                Continuing will <strong>override</strong> all current questions in this scope.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowOverrideModal(false)}
-                  className="flex-1 px-5 py-2.5 rounded-full border border-gray-200 text-gray-600 font-bold uppercase text-xs hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmOverrideAction}
-                  className="flex-1 px-5 py-2.5 rounded-full bg-blue-600 text-white font-bold uppercase text-xs hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
-                >
-                  Continue / Ok
-                </button>
+              <div className="text-center">
+                <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold mb-2">
+                  Are you sure?
+                </h5>
+                <p className="text-sm text-neutral-600 leading-relaxed">
+                  Existing data was detected for <strong>{selectedOrg}</strong>
+                  {isCloningAll ? (
+                    " across various departments"
+                  ) : selectedDept !== "All" ? (
+                    <>
+                      {" "}
+                      / <strong>{selectedDept}</strong>
+                    </>
+                  ) : (
+                    " in the org-wide pool"
+                  )}
+                  .<br />
+                  Continuing will <strong>override</strong> all current
+                  questions in this scope.
+                </p>
               </div>
             </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-neutral-200 py-4 px-4">
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="group text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmOverrideAction}
+                className="group relative overflow-hidden z-0 bg-blue-600 px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase text-white duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 hover:shadow-lg hover:shadow-blue-200"
+              >
+                Continue
+              </button>
+            </div>
           </div>
-        )
-      }
+        </div>
+      </div>
     </>
   );
 };
