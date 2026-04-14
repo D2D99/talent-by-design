@@ -539,11 +539,13 @@ const OrgInvitation = () => {
                             role
                           </code>
                         </div>
-                        <div className="flex-1 min-w-[60px] bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
-                          <code className="text-[10px] font-mono text-blue-600 font-bold">
-                            department
-                          </code>
-                        </div>
+                        {!isSuperAdmin && (
+                          <div className="flex-1 min-w-[60px] bg-blue-50/30 border border-blue-100/50 rounded-lg py-1.5 text-center">
+                            <code className="text-[10px] font-mono text-blue-600 font-bold">
+                              department
+                            </code>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -561,7 +563,9 @@ const OrgInvitation = () => {
                               <td className="px-2.5 py-1.5 font-bold text-gray-400">
                                 {isSuperAdmin ? "admin" : "leader"}
                               </td>
-                              <td className="px-2.5 py-1.5">Engineering</td>
+                              {!isSuperAdmin && (
+                                <td className="px-2.5 py-1.5">Engineering</td>
+                              )}
                             </tr>
                           </tbody>
                         </table>

@@ -22,6 +22,7 @@ export interface Question {
     higherValueOption: 'A' | 'B';
   };
   subdomainWeight: number;
+  order?: number;
   isDeleted: boolean;
   orgName?: string | null;
   createdAt: string;

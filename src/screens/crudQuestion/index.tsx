@@ -8,6 +8,7 @@ import { questionService } from "../../services/questionService";
 import { organizationService } from "../../services/organizationService";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 
 const ProgressIcon = "/static/img/home/progress-icon.png";
 
@@ -706,15 +707,93 @@ const CrudQuestion = () => {
     }
   };
 
-  // const handleDownloadTemplate = async () => {
-  //   try {
-  //     await questionService.downloadTemplate();
-  //     toast.success("Template downloaded!");
-  //   } catch (err) {
-  //     toast.error("Failed to download template");
-  //     console.error(err);
-  //   }
-  // };
+  const handleDownloadExcel = () => {
+    try {
+      const getRowData = (q: Question, i: number) => {
+        const row: any = {
+          "#": i + 1,
+          stakeholder: q.stakeholder || "",
+          domain: q.domain || "",
+          subdomain: q.subdomain || "",
+          questionCode: q.questionCode || "",
+          questionType: q.questionType || "",
+          scale: q.scale || "",
+          questionStem: q.questionStem || "",
+          insightPrompt: q.insightPrompt || "",
+          subdomainWeight: q.subdomainWeight ?? "",
+          order: q.order ?? "",
+        };
+
+        if (q.forcedChoice) {
+          row["fc_optionA_label"] = q.forcedChoice.optionA?.label || "";
+          row["fc_optionA_insightPrompt"] =
+            q.forcedChoice.optionA?.insightPrompt || "";
+          row["fc_optionB_label"] = q.forcedChoice.optionB?.label || "";
+          row["fc_optionB_insightPrompt"] =
+            q.forcedChoice.optionB?.insightPrompt || "";
+          row["fc_higherValueOption"] = q.forcedChoice.higherValueOption || "";
+        } else {
+          row["fc_optionA_label"] = "";
+          row["fc_optionA_insightPrompt"] = "";
+          row["fc_optionB_label"] = "";
+          row["fc_optionB_insightPrompt"] = "";
+          row["fc_higherValueOption"] = "";
+        }
+        return row;
+      };
+
+      const wb = XLSX.utils.book_new();
+
+      // Helper to style sheet
+      const styleSheet = (ws: XLSX.WorkSheet) => {
+        ws["!cols"] = [
+          { wch: 4 }, // #
+          { wch: 11 }, // stakeholder
+          { wch: 22 }, // domain
+          { wch: 35 }, // subdomain
+          { wch: 16 }, // questionCode
+          { wch: 14 }, // questionType
+          { wch: 14 }, // scale
+          { wch: 80 }, // questionStem
+          { wch: 80 }, // insightPrompt
+          { wch: 16 }, // subdomainWeight
+          { wch: 6 }, // order
+          { wch: 50 }, // fc_optionA_label
+          { wch: 60 }, // fc_optionA_insightPrompt
+          { wch: 50 }, // fc_optionB_label
+          { wch: 60 }, // fc_optionB_insightPrompt
+          { wch: 20 }, // fc_higherValueOption
+        ];
+      };
+
+      // 1. All Questions Sheet
+      const allRows = allQuestions.map((q, i) => getRowData(q, i));
+      const wsAll = XLSX.utils.json_to_sheet(allRows);
+      styleSheet(wsAll);
+      XLSX.utils.book_append_sheet(wb, wsAll, "All Questions");
+
+      // 2. Per-Stakeholder Sheets
+      const stakeholders = ["employee", "manager", "leader"];
+      stakeholders.forEach((role) => {
+        const filtered = allQuestions.filter(
+          (q) => q.stakeholder?.toLowerCase() === role,
+        );
+        if (filtered.length > 0) {
+          const roleRows = filtered.map((q, i) => getRowData(q, i));
+          const ws = XLSX.utils.json_to_sheet(roleRows);
+          styleSheet(ws);
+          const sheetName = role.charAt(0).toUpperCase() + role.slice(1);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        }
+      });
+
+      XLSX.writeFile(wb, "Master_Template_Questions.xlsx");
+      toast.success("Excel file with multiple tabs generated!");
+    } catch (err) {
+      console.error("Failed to generate Excel:", err);
+      toast.error("Failed to generate Excel file.");
+    }
+  };
 
   useEffect(() => {
     fetchQuestions();
@@ -1532,16 +1611,28 @@ const CrudQuestion = () => {
                       </div>
                     </div>
 
-                    {selectedOrg && allQuestions.length > 0 && (
-                      <button
-                        onClick={handleDeleteAll}
-                        disabled={loading}
-                        className="group relative overflow-hidden z-0 border-red-500 border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-red-500 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
-                      >
-                        <Icon icon="lucide:trash-2" width="14" />
-                        Delete all
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {!selectedOrg && (
+                        <button
+                          onClick={handleDownloadExcel}
+                          className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
+                        >
+                          <Icon icon="lucide:download" width="14" />
+                          Download Excel
+                        </button>
+                      )}
+
+                      {selectedOrg && allQuestions.length > 0 && (
+                        <button
+                          onClick={handleDeleteAll}
+                          disabled={loading}
+                          className="group relative overflow-hidden z-0 border-red-500 border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-red-500 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/15 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
+                        >
+                          <Icon icon="lucide:trash-2" width="14" />
+                          Delete all
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
