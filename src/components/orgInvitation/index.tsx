@@ -101,9 +101,7 @@ const OrgInvitation = () => {
     setIsLoading(true);
     try {
       // Adjusted to use the 'api' instance consistent with other components
-      const url = name
-        ? `auth/invitations?orgName=${encodeURIComponent(name)}`
-        : "auth/invitations";
+      const url = name ? `auth/invitations?orgName=${encodeURIComponent(name)}` : "auth/invitations";
       const res = await api.get<Invitation[]>(url);
       setDataList(res.data);
     } catch (err: unknown) {
@@ -592,23 +590,23 @@ const OrgInvitation = () => {
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
                       className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
-                          ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
-                          : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
+                        ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
+                        : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
                         }`}
                     >
                       <div className="relative mb-3 flex flex-col items-center pointer-events-none">
                         <div
                           className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${isDragging
-                              ? "opacity-100"
-                              : "opacity-0 group-hover/upload:opacity-100"
+                            ? "opacity-100"
+                            : "opacity-0 group-hover/upload:opacity-100"
                             }`}
                         ></div>
                         <Icon
                           icon="logos:csv"
                           width="36"
                           className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${isDragging
-                              ? "scale-110"
-                              : "group-hover/upload:scale-110"
+                            ? "scale-110"
+                            : "group-hover/upload:scale-110"
                             }`}
                         />
                       </div>
@@ -830,96 +828,86 @@ const OrgInvitation = () => {
                 </thead>
                 <tbody>
                   {currentData.length > 0 ? (
-                    currentData
-                      .filter(
-                        (item) =>
-                          isSuperAdmin || item.role?.toLowerCase() !== "admin",
-                      )
-                      .map((item, index) => {
-                        const canDelete = item.status === "Expire";
-                        return (
-                          <tr
-                            key={item._id}
-                            className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
-                          >
-                            <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                              {indexOfFirstItem + index + 1}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-[var(--app-text-color)] font-bold">
-                              {isSuperAdmin ? (
-                                <Link
-                                  to={`/dashboard/organization/${item.orgName}`}
-                                  className="text-[#448CD2] hover:underline font-bold"
-                                >
-                                  {item.orgName || "Unnamed Org"}
-                                </Link>
-                              ) : (
-                                item.name || "—"
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-600">
-                              {item.email}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-500">
-                              {new Date(item.createdAt).toLocaleDateString(
-                                "en-GB",
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-xs">
-                              {isSuperAdmin ? (
-                                <div className="flex items-center gap-1 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100">
-                                  {/* <Icon
+                    currentData.map((item, index) => {
+                      const canDelete = item.status === "Expire";
+                      return (
+                        <tr
+                          key={item._id}
+                          className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                        >
+                          <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                            {indexOfFirstItem + index + 1}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[var(--app-text-color)] font-bold">
+                            {isSuperAdmin ? (
+                              <Link
+                                to={`/dashboard/organization/${item.orgName}`}
+                                className="text-[#448CD2] hover:underline font-bold"
+                              >
+                                {item.orgName || "Unnamed Org"}
+                              </Link>
+                            ) : (
+                              item.name || "—"
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-600">
+                            {item.email}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            {new Date(item.createdAt).toLocaleDateString(
+                              "en-GB",
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-xs">
+                            {isSuperAdmin ? (
+                              <div className="flex items-center gap-1 bg-blue-50 text-[#448CD2] px-2 py-1 rounded-lg w-fit border border-blue-100">
+                                {/* <Icon
                                   icon="solar:users-group-rounded-bold"
                                   width="12"
                                 /> */}
-                                  <Icon
-                                    icon="solar:users-group-two-rounded-line-duotone"
-                                    width="14"
-                                    height="14"
-                                  />
-
-                                  <span className="font-bold">
-                                    {item.totalUsers || 0}
-                                  </span>
-
-                                </div>
-                              ) : (
-                                <span className="uppercase text-xs font-bold">
-                                  {item.role}
-                                </span>
-                              )}
-                            </td>
-                            {!isSuperAdmin && (
-                              <td className="px-6 py-4 text-sm text-gray-600">
-                                {item.department || "—"}
-                              </td>
-                            )}
-                            <td className="px-6 py-4">
-                              {renderStatusBadge(item.status)}
-                            </td>
-                            <td className="px-6 py-4 text-center">
-                              <button
-                                data-twe-toggle="modal"
-                                data-twe-target="#deleteModal"
-                                onClick={() =>
-                                  openDeleteModal(item._id, item.status)
-                                }
-                                disabled={!canDelete}
-                                className={`p-2 rounded-full transition-all ${canDelete
-                                    ? "text-red-600 hover:bg-red-50"
-                                    : "text-gray-300 cursor-not-allowed opacity-50"
-                                  }`}
-                              >
                                 <Icon
-                                  icon="si:bin-line"
-                                  width="16"
-                                  height="16"
+                                  icon="solar:users-group-two-rounded-line-duotone"
+                                  width="14"
+                                  height="14"
                                 />
-                              </button>
+
+                                <span className="font-bold">
+                                  {item.totalUsers ?? 0}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="uppercase text-xs font-bold">
+                                {item.role}
+                              </span>
+                            )}
+                          </td>
+                          {!isSuperAdmin && (
+                            <td className="px-6 py-4 text-sm text-gray-600">
+                              {item.department || "—"}
                             </td>
-                          </tr>
-                        );
-                      })
+                          )}
+                          <td className="px-6 py-4">
+                            {renderStatusBadge(item.status)}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <button
+                              data-twe-toggle="modal"
+                              data-twe-target="#deleteModal"
+                              onClick={() =>
+                                openDeleteModal(item._id, item.status)
+                              }
+                              disabled={!canDelete}
+                              className={`p-2 rounded-full transition-all ${canDelete
+                                ? "text-red-600 hover:bg-red-50"
+                                : "text-gray-300 cursor-not-allowed opacity-50"
+                                }`}
+                            >
+                              <Icon icon="si:bin-line" width="16" height="16" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
                       <td
