@@ -256,7 +256,7 @@ const ProfileInfo = () => {
                   type="text"
                   id="role"
                   readOnly
-                  className="font-medium text-sm text-[#5D5D5D] outline-0 w-full p-3 mt-2 border rounded-lg bg-gray-100 cursor-not-allowed border-[#E8E8E8] outline-none"
+                  className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed read-only:bg-gray-50"
                   {...register("role", { required: "Role is required" })}
                 />
               </div>
@@ -272,7 +272,7 @@ const ProfileInfo = () => {
                   Department
                 </label>
                 <div className="relative w-full">
-                  <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                  <div className="absolute inset-y-0 right-0 top-2  items-center pr-3 pointer-events-none hidden">
                     <svg
                       className="h-4 w-4 text-[#5D5D5D]"
                       fill="none"
@@ -290,7 +290,7 @@ const ProfileInfo = () => {
                   <select
                     id="department"
                     disabled={isDeptLocked}
-                    className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] capitalize w-full p-3 mt-2 border rounded-lg transition-all ${isDeptLocked ? "bg-gray-100 cursor-not-allowed" : ""} ${
+                    className={`font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] capitalize w-full p-3 mt-2 border rounded-lg transition-all ${isDeptLocked ? "border-[#E8E8E8] cursor-not-allowed bg-gray-50" : ""} ${
                       errors.department
                         ? "border-red-500"
                         : "border-[#E8E8E8] focus:border-[var(--primary-color)]"

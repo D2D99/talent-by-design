@@ -225,7 +225,7 @@ const OrgAssessmentDetails = () => {
         </div>
         <div className="flex items-center justify-between  mb-10 gap-5 flex-wrap">
           <div>
-            <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
+            <h2 className="md:text-3xl text-2xl mb-1 font-bold text-gray-800">
               {details?.orgName || routeOrgName || "Organization Details"}
             </h2>
             <p className="text-sm text-gray-500">
@@ -273,7 +273,9 @@ const OrgAssessmentDetails = () => {
                 <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
                   Completed
                 </p>
-                <p className="text-2xl font-bold text-green-600 mt-1"></p>
+                <p className="text-2xl font-bold text-green-600 mt-1">
+                  {completedMembers}
+                </p>
               </div>
               <div className="p-3 bg-green-200/50 rounded-lg">
                 <Icon
