@@ -246,7 +246,7 @@ const OrgUsers = ({
               </h2>
               <p className="text-sm text-gray-500 mt-1 mb-6">
                 {currentUser?.role === "leader" ||
-                currentUser?.role === "manager"
+                  currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -264,60 +264,63 @@ const OrgUsers = ({
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-0">
-            {[
-              {
-                label: "Total Active",
-                value: acceptedUsers,
-                icon: "solar:bill-list-broken",
-                color: "#448CD2",
-              },
-              {
-                label: "Team Leaders",
-                value: roleStats.leaders,
-                icon: "solar:user-broken",
-                color: "#6366F1",
-              },
-              {
-                label: "Managers",
-                value: roleStats.managers,
-                icon: "solar:users-group-rounded-broken",
-                color: "#F59E0B",
-              },
-              {
-                label: "Employees",
-                value: roleStats.employees,
-                icon: "solar:users-group-two-rounded-broken",
-                color: "#10B981",
-              },
-            ].map((stat, i) => (
-              <div
-                key={i}
-                className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5 transition-all"
-              >
+          {(isAdmin || isSuperAdmin) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-0">
+              {[
+                {
+                  label: "Total Active",
+                  value: acceptedUsers,
+                  icon: "solar:bill-list-broken",
+                  color: "#448CD2",
+                },
+                {
+                  label: "Team Leaders",
+                  value: roleStats.leaders,
+                  icon: "solar:user-broken",
+                  color: "#6366F1",
+                },
+                {
+                  label: "Managers",
+                  value: roleStats.managers,
+                  icon: "solar:users-group-rounded-broken",
+                  color: "#F59E0B",
+                },
+                {
+                  label: "Employees",
+                  value: roleStats.employees,
+                  icon: "solar:users-group-two-rounded-broken",
+                  color: "#10B981",
+                },
+              ].map((stat, i) => (
                 <div
-                  className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
-                  style={{
-                    backgroundColor: `${stat.color}15`,
-                    color: stat.color,
-                  }}
+                  key={i}
+                  className="bg-white border border-neutral-100 rounded-xl p-4 flex items-center gap-5 transition-all"
                 >
-                  <Icon icon={stat.icon} width="24" height="24" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider truncate">
-                    {stat.label}
-                  </p>
-                  <p
-                    className="text-2xl font-bold leading-tight mt-0.5"
-                    style={{ color: stat.color }}
+                  <div
+                    className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
+                    style={{
+                      backgroundColor: `${stat.color}15`,
+                      color: stat.color,
+                    }}
                   >
-                    {stat.value}
-                  </p>
+                    <Icon icon={stat.icon} width="24" height="24" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider truncate">
+                      {stat.label}
+                    </p>
+                    <p
+                      className="text-2xl font-bold leading-tight mt-0.5"
+                      style={{ color: stat.color }}
+                    >
+                      {stat.value}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
         </div>
       )}
 
