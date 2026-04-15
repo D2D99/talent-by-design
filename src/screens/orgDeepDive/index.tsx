@@ -333,7 +333,7 @@ const OrganizationDeepDive = () => {
                 <span>Back to Organizations</span>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="md:text-3xl text-2xl font-bold text-gray-800">
+                <h1 className="md:text-3xl text-2xl font-bold text-gray-800 mb-1">
                   {orgName} <span className="text-[#448CD2]">Insights</span>
                 </h1>
               </div>

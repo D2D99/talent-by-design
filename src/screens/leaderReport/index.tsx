@@ -828,8 +828,6 @@ const LeaderReport = () => {
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
 
-          {isAdmin && <div className="xl:block hidden"></div>}
-
           {isLeader && <div className="xl:block hidden"></div>}
 
           {isLeader && <div className="xl:block hidden"></div>}
@@ -945,8 +943,8 @@ const LeaderReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+            <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                     Score by domain
@@ -1032,11 +1030,11 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                     </div>
                   </div>
                 </div>
-                <div className="p-10">
+                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
                   <SpeedMeter value={domainScore} />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] w-full ">
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                     Score by sub-domain
@@ -1125,12 +1123,12 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                     </div>
                   </div>
                 </div>
-                <div className="p-10">
+                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
 
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
                 <div className="grid justify-start w-full mb-2">
                   <div className="flex gap-2">
                     <div>
@@ -1173,7 +1171,7 @@ Highlights strengths, gaps, and misalignment—guiding where to stabilize, optim
                 </div>
               </div>
 
-              <div className="border-[1px] border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4  rounded-[12px] w-full hidden ">
+              <div className="border border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4 rounded-[12px] w-full hidden ">
                 <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
                   Performance Analysis
                 </h2>
@@ -1215,8 +1213,8 @@ Highlights strengths, gaps, and misalignment—guiding where to stabilize, optim
               </div>
             ) : (
               <>
-                <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                <div className="grid lg:grid-cols-2 grid-cols-1 xl:gap-x-6 gap-x-5 gap-y-8 mt-8">
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                     <div className="flex items-center justify-between ">
                       <div>
                         <div className="flex gap-2 items-start">
@@ -1295,7 +1293,7 @@ Highlights what is happening, why it matters, and where to focus next to improve
                       </ul>
                     </div>
                   </div>
-                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                     <div className="flex items-center justify-between ">
                       <div>
                         <div className="flex gap-2">
@@ -1352,7 +1350,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                     </div>
                   </div>
 
-                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 pb-11 rounded-[12px] ">
                     <div className="flex items-center justify-between ">
                       <div>
                         <div className="flex gap-2">
@@ -1399,7 +1397,7 @@ Aligned to key capability areas these tips help address friction, build consiste
                     <div></div>
                   </div>
 
-                  <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
                     <div className="flex items-center justify-between ">
                       <div>
                         <div className="flex gap-2">
@@ -1460,7 +1458,7 @@ Provides clear direction on where to stabilize, optimize, or accelerate efforts.
               </>
             )}
 
-            <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+            <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">
                 {(() => {
                   const getMetricColor = (score: number) => {
@@ -1516,7 +1514,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                           </div>
                         </div>
                         {/* Legend Pill */}
-                        <div className="flex justify-center items-center gap-4 px-4 mt-4 py-2">
+                        <div className="flex justify-center items-center gap-4 px-4 mt-4 py-2 flex-wrap">
                           <div className="flex items-center justify-center gap-2">
                             <span className="h-2 w-6 bg-[#30AD43]" />
                             <span className="text-xs font-semibold text-[#64748B]">
@@ -1710,7 +1708,7 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
             </div>
 
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 mt-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4  rounded-[12px] ">
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
                 <div>
                   <div className="flex items-center justify-between mb-4 ">
                     <div>

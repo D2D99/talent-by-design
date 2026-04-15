@@ -35,7 +35,7 @@ import AdminAssessments from "./screens/adminAssessments";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EmployeeReport from "./screens/employeeReport";
-import AdminReport from "./screens/adminReport";
+// import AdminReport from "./screens/adminReport";
 import UserResponseView from "./screens/userResponseView";
 import { TooltipProvider } from "./context/TooltipContext";
 import ManagerReport from "./screens/managerReport";
@@ -57,7 +57,7 @@ function App() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-        // theme={theme}
+          // theme={theme}
         />
         <SessionPopup />
 
@@ -92,13 +92,13 @@ function App() {
                 path="org-intelligence/:orgName"
                 element={<OrgDeepDive />}
               />
-              <Route
-                path="person-intelligence"
-                element={<PersonDeepDive />}
-              />
+              <Route path="person-intelligence" element={<PersonDeepDive />} />
               <Route path="users" element={<OrgUsers />} />
               <Route path="notifications" element={<NotificationHistory />} />
-              <Route path="assessment-history" element={<AssessmentHistory />} />
+              <Route
+                path="assessment-history"
+                element={<AssessmentHistory />}
+              />
               <Route path="team-assessments" element={<AdminAssessments />} />
               <Route path="org-assessments" element={<SuperAdminStats />} />
               <Route
@@ -110,7 +110,7 @@ function App() {
               <Route path="settings" element={<AccountSetting />} />
 
               {/* Reports */}
-              <Route path="reports/org-head" element={<AdminReport />} />
+              {/* <Route path="reports/org-head" element={<AdminReport />} /> */}
               <Route path="reports/senior-leader" element={<LeaderReport />} />
               <Route path="reports/manager" element={<ManagerReport />} />
               <Route path="reports/employee" element={<EmployeeReport />} />

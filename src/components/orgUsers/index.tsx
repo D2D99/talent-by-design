@@ -238,15 +238,15 @@ const OrgUsers = ({
       className={`${isEmbedded ? "" : "bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]"}`}
     >
       {!isEmbedded && (
-        <div className="mb-14 bg-white relative overflow-hidden">
-          <div className="flex items-center justify-between md:mb-6 flex-wrap gap-4">
+        <div className="bg-white relative overflow-hidden">
+          <div className="mb-10 flex items-center justify-between flex-wrap gap-4">
             <div>
               <h2 className="md:text-3xl text-2xl font-bold text-gray-800">
                 {details?.orgName || "Organization Users"}
               </h2>
-              <p className="text-sm text-gray-500 mt-1 mb-6">
+              <p className="text-sm text-gray-500 mt-1">
                 {currentUser?.role === "leader" ||
-                  currentUser?.role === "manager"
+                currentUser?.role === "manager"
                   ? `Department: ${currentUser?.department || "N/A"}`
                   : "Manage and monitor all users in your organization"}
               </p>
@@ -320,7 +320,6 @@ const OrgUsers = ({
               ))}
             </div>
           )}
-
         </div>
       )}
 

@@ -418,7 +418,7 @@ const EmployeeReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-      0
+        0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -473,22 +473,22 @@ const EmployeeReport = () => {
   const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
   const subdomainScore =
     reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-    selectedSubdomain
+      selectedSubdomain
     ] || 0;
 
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -549,16 +549,17 @@ const EmployeeReport = () => {
               )}
 
               {/* Edit Feedback Button (SA or Admin viewing someone else) */}
-              {userId && (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                  title="Edit AI Insights, Objectives, and Recommendations"
-                >
-                  <Icon icon="lucide:pencil" width="16" />
-                </button>
-              )}
+              {userId &&
+                (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                    title="Edit AI Insights, Objectives, and Recommendations"
+                  >
+                    <Icon icon="lucide:pencil" width="16" />
+                  </button>
+                )}
 
               {/* Release Section (Super Admin Only) */}
               {isSuperAdmin && !isReportReleased && reportData && (
@@ -599,7 +600,6 @@ const EmployeeReport = () => {
         {/* Filters Section */}
         <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
           <div className="xl:block hidden"></div>
-          {isAdmin && <div className="xl:block hidden"></div>}
 
           {isLeader && <div className="xl:block hidden"></div>}
 
@@ -658,9 +658,9 @@ const EmployeeReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -716,9 +716,9 @@ const EmployeeReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+            <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
               {/* Domain Score Section */}
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold capitalize">
                     Score by domain
@@ -789,13 +789,13 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                     <p className="text-sm font-normal text-[#474747]">High</p>
                   </div>
                 </div>
-                <div className="p-10 flex justify-center">
+                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5 flex justify-center">
                   <SpeedMeter value={domainScore} />
                 </div>
               </div>
 
               {/* Subdomain Score Section */}
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold capitalize">
                     Score by sub-domain
@@ -880,7 +880,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                     <p className="text-sm font-normal text-[#474747]">High</p>
                   </div>
                 </div>
-                <div className="p-10 flex justify-center">
+                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5 flex justify-center">
                   <SpeedMeter value={subdomainScore} />
                 </div>
               </div>
