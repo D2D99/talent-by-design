@@ -113,7 +113,25 @@ const AssessmentQuestion = () => {
 
   useEffect(() => {
     if (assessmentIdFromUrl) setAssessmentId(assessmentIdFromUrl);
-  }, [assessmentIdFromUrl]);
+
+    // 🧹 Reset Detection: If the assessmentId from URL is different from what we stored locally for this token, 
+    // it means the assessment was reset by an admin. We must clear the local cache.
+    if (assessmentIdFromUrl && token) {
+      const lastId = localStorage.getItem(`cur_aid_${token}`);
+      if (lastId && lastId !== assessmentIdFromUrl) {
+        console.warn(">>> [Assessment Reset Detected] Clearing local storage...");
+        localStorage.removeItem(`ans_${token}`);
+        localStorage.removeItem(`idx_${token}`);
+        setAnswers({});
+        setCurrentIndex(0);
+        setSelectedValue(null);
+        setComment("");
+      }
+      localStorage.setItem(`cur_aid_${token}`, assessmentIdFromUrl);
+    }
+  }, [assessmentIdFromUrl, token]);
+
+  const [allowedDepartments, setAllowedDepartments] = useState<string[]>([]);
 
   useEffect(() => {
     initTWE({ Modal, Ripple });
@@ -121,26 +139,45 @@ const AssessmentQuestion = () => {
       setPageLoading(false);
       return;
     }
-    try {
-      const decoded: DecodedToken = jwtDecode(token);
-      let role = decoded.role?.toLowerCase() || "employee";
-      if (role === "superadmin") role = "admin"; // Mapping superAdmin to admin questions
-      setUserRole(role);
 
-      setFinalForm((prev) => ({
-        ...prev,
-        firstName: decoded.firstName || decoded.name?.split(" ")[0] || "",
-        lastName: decoded.lastName || decoded.name?.split(" ")[1] || "",
-        email: decoded.email || "",
-        department: decoded.department || "",
-        orgName: (decoded as any).orgName || "",
-      }));
+    const fetchDetails = async () => {
+      try {
+        // 1. Decode basic info from token
+        const decoded: DecodedToken = jwtDecode(token);
+        let role = decoded.role?.toLowerCase() || "employee";
+        if (role === "superadmin") role = "admin";
+        setUserRole(role);
 
-      loadQuestions(role);
-    } catch (err) {
-      console.error("Error decoding token:", err);
-      loadQuestions("employee");
-    }
+        // 2. Fetch full invitation details (includes allowedDepartments from Organization)
+        // This makes the department pre-filling and the dropdown dynamic
+        const res = await api.get(`auth/invitation-details/${token}`);
+        const details = res.data;
+
+        setFinalForm((prev) => ({
+          ...prev,
+          firstName: details.firstName || decoded.firstName || decoded.name?.split(" ")[0] || "",
+          lastName: details.lastName || decoded.lastName || decoded.name?.split(" ")[1] || "",
+          email: details.email || decoded.email || "",
+          department: details.department || decoded.department || "",
+          orgName: details.orgName || (decoded as any).orgName || "",
+        }));
+
+        setAllowedDepartments(details.allowedDepartments || []);
+        loadQuestions(role);
+      } catch (err) {
+        console.error("Error fetching invitation details:", err);
+        // Fallback to basic token decoding if API fails
+        try {
+          const decoded: DecodedToken = jwtDecode(token);
+          loadQuestions(decoded.role?.toLowerCase() || "employee");
+        } catch (e) {
+          loadQuestions("employee");
+        }
+      } finally {
+      }
+    };
+
+    fetchDetails();
   }, [token, loadQuestions]);
 
   useEffect(() => {
@@ -367,8 +404,8 @@ const AssessmentQuestion = () => {
                           <div key={num} className="flex flex-col items-center">
                             <label
                               className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
-                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
+                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                                : "text-[var(--secondary-color)] hover:bg-blue-50"
                                 }`}
                             >
                               {num}
@@ -409,8 +446,8 @@ const AssessmentQuestion = () => {
                           <label
                             key={opt}
                             className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${selectedValue === opt
-                                ? "border-[var(--primary-color)] bg-blue-50"
-                                : ""
+                              ? "border-[var(--primary-color)] bg-blue-50"
+                              : ""
                               }`}
                           >
                             <input
@@ -431,11 +468,11 @@ const AssessmentQuestion = () => {
 
                     <div
                       className={`transition-all duration-300 ${(!isForcedChoice &&
-                          typeof selectedValue === "number" &&
-                          selectedValue <= 2) ||
-                          (isForcedChoice && selectedValue !== null)
-                          ? "opacity-100 h-auto"
-                          : "opacity-0 h-0 overflow-hidden"
+                        typeof selectedValue === "number" &&
+                        selectedValue <= 2) ||
+                        (isForcedChoice && selectedValue !== null)
+                        ? "opacity-100 h-auto"
+                        : "opacity-0 h-0 overflow-hidden"
                         }`}
                     >
                       <label className="text-sm font-bold block mb-2">
@@ -530,6 +567,20 @@ const AssessmentQuestion = () => {
                             !!finalForm.department &&
                             !!token &&
                             !!(jwtDecode(token as string) as any).department;
+
+                          // Use organization's defined departments if available, else fallback to defaults
+                          const options = allowedDepartments.length > 0
+                            ? allowedDepartments
+                            : [
+                              "HR/People & Culture",
+                              "Finance & Accounting",
+                              "Operations",
+                              "IT",
+                              "Sales and Marketing",
+                              "Legal, Risk & Compliance",
+                              "Admin & Corporate Services"
+                            ];
+
                           return (
                             <select
                               value={finalForm.department}
@@ -543,23 +594,11 @@ const AssessmentQuestion = () => {
                               className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none capitalize ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
                             >
                               <option value="">Select your department</option>
-                              <option value="HR/People & Culture">
-                                HR/People & Culture
-                              </option>
-                              <option value="Finance & Accounting">
-                                Finance & Accounting
-                              </option>
-                              <option value="Operations">Operations</option>
-                              <option value="IT">IT</option>
-                              <option value="Sales and Marketing">
-                                Sales and Marketing
-                              </option>
-                              <option value="Legal, Risk & Compliance">
-                                Legal, Risk & Compliance
-                              </option>
-                              <option value="Admin & Corporate Services">
-                                Admin & Corporate Services
-                              </option>
+                              {options.map((dept) => (
+                                <option key={dept} value={dept}>
+                                  {dept}
+                                </option>
+                              ))}
                             </select>
                           );
                         })()}
