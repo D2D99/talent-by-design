@@ -93,7 +93,7 @@ const AssessmentQuestion = () => {
 
   const currentQuestion = questions[currentIndex];
   const isForcedChoice = currentQuestion?.questionType === "Forced-Choice";
-  const higherValueOption = currentQuestion?.forcedChoice?.higherValueOption;
+  // const higherValueOption = currentQuestion?.forcedChoice?.higherValueOption;
 
   const loadQuestions = useCallback(
     async (role: string) => {
