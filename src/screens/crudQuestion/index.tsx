@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 
 const ProgressIcon = "/static/img/home/progress-icon.png";
-// const Logo = "/static/img/logo.png";
+// import Logo from "../../../public/static/img/POD-logo.svg";
 
 import type {
   Question,
@@ -2829,12 +2829,9 @@ const CrudModals = (props: CrudModalsProps) => {
               {/* STAGE 1: Role Select Screen */}
               {previewStage === "role-select" ? (
                 <div className="w-full max-w-md mx-auto py-8">
-                  <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[var(--primary-color)]">
-                      <Icon icon="solar:users-group-two-rounded-bold-duotone" width="32" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-1">Select a Role to Preview</h3>
-                    <p className="text-sm text-gray-500">Choose which stakeholder assessment you want to walk through.</p>
+                  <div className="text-center mb-10">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Select a Role to Preview</h3>
+                    <p className="text-sm text-gray-500 font-medium">Choose a stakeholder role to begin the assessment walk-through.</p>
                   </div>
                   <div className="space-y-3">
                     {["employee", "manager", "leader"].map((r) => {
@@ -2846,18 +2843,20 @@ const CrudModals = (props: CrudModalsProps) => {
                             setPreviewSelectedRole(r);
                             setPreviewStage("questions");
                           }}
-                          className="w-full flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white hover:border-[var(--primary-color)] hover:bg-blue-50/50 transition-all group cursor-pointer shadow-sm hover:shadow-md"
+                          className="w-full flex items-center justify-between p-5 rounded-2xl border border-gray-100 bg-white hover:border-[var(--primary-color)] hover:shadow-lg transition-all group cursor-pointer"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1a3652] to-[#448bd2] flex items-center justify-center text-white font-bold text-sm">
-                              {r[0].toUpperCase()}
+                          <div className="flex items-center gap-5">
+                            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-[var(--primary-color)] font-bold text-lg border border-blue-100 uppercase">
+                              {r[0]}
                             </div>
                             <div className="text-left">
-                              <p className="font-bold text-gray-800 capitalize">{r}</p>
-                              <p className="text-xs text-gray-400">{count} question{count !== 1 ? "s" : ""}</p>
+                              <p className="font-bold text-gray-800 capitalize text-lg leading-tight">{r}</p>
+                              <p className="text-xs text-gray-400 font-medium">{count} assessment questions</p>
                             </div>
                           </div>
-                          <Icon icon="solar:alt-arrow-right-linear" width="20" className="text-gray-300 group-hover:text-[var(--primary-color)] transition-colors" />
+                          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                            <Icon icon="solar:alt-arrow-right-linear" width="18" className="text-gray-300 group-hover:text-[var(--primary-color)]" />
+                          </div>
                         </button>
                       );
                     })}
@@ -2881,48 +2880,58 @@ const CrudModals = (props: CrudModalsProps) => {
                   </button>
                 </div>
               ) : (
-                <div className="w-full mx-auto max-w-3xl rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide">
-                      Question {previewIdx + 1} of {previewQuestions.length}
-                    </h2>
-                  </div>
+                <div className="w-full mx-auto px-1 py-4">
+                  {/* Matching AssessmentQuestion Styling without Logo as requested */}
+                  <div className="w-full mx-auto max-w-3xl rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide">
+                        Question {previewIdx + 1} of {previewQuestions.length}
+                      </h2>
+                    </div>
 
-                  <div className="w-full bg-[var(--light-primary-color)] rounded-full h-2 mt-3 mb-6">
-                    <div
-                      className="bg-[var(--dark-primary-color)] h-2 rounded-full transition-all duration-500"
-                      style={{
-                        width: `${((previewIdx + 1) / previewQuestions.length) * 100}%`,
-                      }}
-                    />
-                  </div>
+                    <div className="w-full bg-[var(--light-primary-color)] rounded-full h-2 mt-3 mb-6">
+                      <div
+                        className="bg-[var(--dark-primary-color)] h-2 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${((previewIdx + 1) / previewQuestions.length) * 100}%`,
+                        }}
+                      />
+                    </div>
 
-                  <div className="sm:my-6 my-4">
-                    <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
-                      {currentQ?.questionStem} <span className="text-black">*</span>
-                    </h2>
-                  </div>
+                    <div className="sm:my-6 my-4">
+                      <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
+                        {currentQ?.questionStem}{" "}
+                        <span className="text-black">*</span>
+                      </h2>
+                    </div>
 
-                  {/* Options */}
-                  <div className="my-8">
+                    {/* Options - Matching AssessmentQuestion styling */}
                     {!isForcedChoice ? (
-                      <div className="grid grid-cols-5 max-w-96 mx-auto">
+                      <div className="grid grid-cols-5 max-w-96 mx-auto my-8">
                         {[1, 2, 3, 4, 5].map((num) => (
                           <div key={num} className="flex flex-col items-center">
-                            <div
-                              onClick={() => setPreviewValue(num)}
-                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center transition-all cursor-pointer ${previewValue === num
-                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0 shadow-lg shadow-blue-200"
+                            <label
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${previewValue === num
+                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
                                 : "text-[var(--secondary-color)] hover:bg-blue-50"
                                 }`}
+                              onClick={() => setPreviewValue(num)}
                             >
                               {num}
-                            </div>
+                            </label>
                             <span className="text-[10px] sm:text-nowrap mt-2 text-center leading-tight max-w-[60px]">
                               {currentQ?.scale === "NEVER_ALWAYS"
-                                ? ["Never", "Rarely", "Sometimes", "Often", "Always"][
-                                num - 1
-                                ]
+                                ? num === 1
+                                  ? "Never"
+                                  : num === 2
+                                    ? "Rarely"
+                                    : num === 3
+                                      ? "Sometimes"
+                                      : num === 4
+                                        ? "Often"
+                                        : num === 5
+                                          ? "Always"
+                                          : ""
                                 : num === 1
                                   ? "Strongly Disagree"
                                   : num === 3
@@ -2935,115 +2944,104 @@ const CrudModals = (props: CrudModalsProps) => {
                         ))}
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-4">
-                        {["A", "B"].map((opt) => (
-                          <div
+                      <div className="flex flex-col gap-4 mb-8">
+                        {(["A", "B"] as const).map((opt) => (
+                          <label
                             key={opt}
-                            onClick={() => setPreviewValue(opt)}
-                            className={`flex items-center justify-between border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse gap-5 cursor-pointer transition-all ${previewValue === opt
-                              ? "border-[var(--primary-color)] bg-blue-50 shadow-sm"
-                              : "hover:bg-blue-50/50"
+                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${previewValue === opt
+                              ? "border-[var(--primary-color)] bg-blue-50"
+                              : ""
                               }`}
+                            onClick={() => setPreviewValue(opt)}
                           >
                             <div
                               className={`w-4 h-4 rounded-full border-2 ${previewValue === opt
-                                ? "border-[var(--primary-color)] bg-[var(--primary-color)] ring-2 ring-blue-100"
+                                ? "border-blue-500 bg-blue-500"
                                 : "border-gray-300"
                                 }`}
                             />
-                            <h3
-                              className={`text-sm font-medium ${previewValue === opt
-                                ? "text-[var(--primary-color)]"
-                                : "text-[#5D5D5D]"
-                                }`}
-                            >
+                            <h3 className="text-sm font-medium text-[#5D5D5D]">
                               {opt === "A"
-                                ? currentQ.forcedChoice?.optionA?.label
-                                : currentQ.forcedChoice?.optionB?.label}
+                                ? currentQ?.forcedChoice?.optionA?.label
+                                : currentQ?.forcedChoice?.optionB?.label}
                             </h3>
-                          </div>
+                          </label>
                         ))}
                       </div>
                     )}
-                  </div>
 
-                  {/* Insight Prompt Simulation */}
-                  <div
-                    className={`mt-8 transition-all duration-500 overflow-hidden ${shouldShowPrompt
-                      ? "opacity-100 max-h-96"
-                      : "opacity-0 max-h-0"
-                      }`}
-                  >
-                    <label className="text-sm font-bold block mb-2">
-                      {isForcedChoice
-                        ? previewValue === "A"
-                          ? currentQ?.forcedChoice?.optionA?.insightPrompt
-                          : currentQ?.forcedChoice?.optionB?.insightPrompt
-                        : currentQ?.insightPrompt ||
-                        "Why did you choose this score?"}
-                      <span className="text-black"> *</span>
-                    </label>
-                    <textarea
-                      placeholder="Type your insight here..."
-                      className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg focus:border-[var(--primary-color)] focus:outline-none bg-white transition-all shadow-inner"
-                      rows={4}
-                    ></textarea>
+                    {/* Insight Prompt - Matching AssessmentQuestion styling */}
+                    <div
+                      className={`transition-all duration-300 ${shouldShowPrompt ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"
+                        }`}
+                    >
+                      <label className="text-sm font-bold block mb-2">
+                        {isForcedChoice
+                          ? previewValue === "A"
+                            ? currentQ?.forcedChoice?.optionA?.insightPrompt
+                            : currentQ?.forcedChoice?.optionB?.insightPrompt
+                          : currentQ?.insightPrompt || "Why did you choose this score?"}
+                        <span className="text-black"> *</span>
+                      </label>
+                      <textarea
+                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                        rows={4}
+                        placeholder="Simulated insight text..."
+                        readOnly
+                      ></textarea>
+                    </div>
+
+                    {/* Footer Buttons - Inside the card for better alignment */}
+                    <div className="sm:mt-12 mt-8 flex flex-wrap gap-5 sm:justify-between sm:items-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (previewIdx === 0) {
+                            setPreviewStage("role-select");
+                            setPreviewSelectedRole("");
+                          } else {
+                            setPreviewIdx((p) => Math.max(0, p - 1));
+                          }
+                        }}
+                        className={`group text-[var(--primary-color)] rounded-full ps-2.5 pe-3.5 h-10 flex items-center gap-1.5 font-semibold text-base uppercase 
+                        bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] sm:w-fit w-full sm:justify-start justify-center border`}
+                      >
+                        <Icon icon="mynaui:arrow-left-circle-solid" width="22" />
+                        {previewIdx === 0 ? "Roles" : "Previous"}
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={previewIdx === previewQuestions.length - 1}
+                        onClick={() =>
+                          setPreviewIdx((p) => Math.min(previewQuestions.length - 1, p + 1))
+                        }
+                        className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white pe-2.5 ps-3.5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40 sm:w-fit w-full sm:justify-start justify-center"
+                      >
+                        {previewIdx === previewQuestions.length - 1
+                          ? "Finish Prep"
+                          : "Continue"}
+                        <Icon icon="mynaui:arrow-right-circle-solid" width="22" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Footer Buttons */}
-            {previewStage === "role-select" ? (
+            {/* Footer Close - External to the simulated card, hidden in question stage if desired, but kept for UX safety */}
+            {previewStage === "role-select" && (
               <div className="p-6 bg-white border-t border-gray-100 flex items-center justify-end">
                 <button
                   data-twe-modal-dismiss
-                  onClick={() => { setPreviewStage("role-select"); setPreviewSelectedRole(""); }}
+                  onClick={() => {
+                    setPreviewStage("role-select");
+                    setPreviewSelectedRole("");
+                  }}
                   className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider"
                 >
                   Close
                 </button>
-              </div>
-            ) : (
-              <div className="p-6 bg-white border-t border-gray-100 flex items-center justify-between">
-                <button
-                  onClick={() => {
-                    if (previewIdx === 0) {
-                      setPreviewStage("role-select");
-                      setPreviewSelectedRole("");
-                    } else {
-                      setPreviewIdx((p) => Math.max(0, p - 1));
-                    }
-                  }}
-                  className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors px-4 py-2"
-                >
-                  <Icon icon="solar:alt-arrow-left-linear" width="20" />
-                  {previewIdx === 0 ? "Back to Roles" : "Previous"}
-                </button>
-
-                <div className="flex items-center gap-4">
-                  <button
-                    data-twe-modal-dismiss
-                    onClick={() => { setPreviewIdx(0); setPreviewStage("role-select"); setPreviewSelectedRole(""); }}
-                    className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider"
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={() =>
-                      setPreviewIdx((p) =>
-                        Math.min(previewQuestions.length - 1, p + 1),
-                      )
-                    }
-                    disabled={
-                      previewIdx === previewQuestions.length - 1 || previewQuestions.length === 0
-                    }
-                    className="flex items-center gap-2 bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white px-8 py-2.5 rounded-full font-bold text-sm uppercase tracking-wider shadow-lg shadow-blue-100 disabled:opacity-50 transition-all"
-                  >
-                    Next
-                    <Icon icon="solar:alt-arrow-right-linear" width="20" />
-                  </button>
-                </div>
               </div>
             )}
           </div>
