@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 
 const ProgressIcon = "/static/img/home/progress-icon.png";
+// const Logo = "/static/img/logo.png";
 
 import type {
   Question,
@@ -231,16 +232,14 @@ const FilterSection = ({
         </span>
         <Icon
           icon="iconoir:nav-arrow-down"
-          className={`transition-transform duration-500 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`transition-transform duration-500 ${isOpen ? "rotate-180" : ""
+            }`}
           width="16"
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-500 ${
-          isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-500 ${isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
+          }`}
       >
         {children}
       </div>
@@ -355,8 +354,7 @@ const CrudQuestion = () => {
         !!form.optionALabel &&
         !!form.optionAPrompt &&
         !!form.optionBLabel &&
-        !!form.optionBPrompt &&
-        !!form.higherValueOption
+        !!form.optionBPrompt
       );
     } else {
       return !!form.prompt;
@@ -906,6 +904,17 @@ const CrudQuestion = () => {
     modal.show();
   };
 
+  const openPreviewModal = () => {
+    if (filteredQuestions.length === 0) {
+      toast.info("Please select a role to preview the assessment.");
+      return;
+    }
+    const modalElement = document.getElementById("previewModal");
+    if (modalElement) {
+      Modal.getOrCreateInstance(modalElement).show();
+    }
+  };
+
   // Handler for ADD Modal Inputs (Array)
 
   const updateAddForm = (
@@ -1047,16 +1056,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                  optionA: {
-                    label: form.optionALabel,
-                    insightPrompt: form.optionAPrompt,
-                  },
-                  optionB: {
-                    label: form.optionBLabel,
-                    insightPrompt: form.optionBPrompt,
-                  },
-                  higherValueOption: form.higherValueOption as "A" | "B",
-                }
+                optionA: {
+                  label: form.optionALabel,
+                  insightPrompt: form.optionAPrompt,
+                },
+                optionB: {
+                  label: form.optionBLabel,
+                  insightPrompt: form.optionBPrompt,
+                },
+                higherValueOption: form.higherValueOption as "A" | "B",
+              }
               : undefined,
         };
       });
@@ -1097,16 +1106,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-                optionA: {
-                  label: editFormData.optionALabel,
-                  insightPrompt: editFormData.optionAPrompt,
-                },
-                optionB: {
-                  label: editFormData.optionBLabel,
-                  insightPrompt: editFormData.optionBPrompt,
-                },
-                higherValueOption: editFormData.higherValueOption as "A" | "B",
-              }
+              optionA: {
+                label: editFormData.optionALabel,
+                insightPrompt: editFormData.optionAPrompt,
+              },
+              optionB: {
+                label: editFormData.optionBLabel,
+                insightPrompt: editFormData.optionBPrompt,
+              },
+              higherValueOption: editFormData.higherValueOption as "A" | "B",
+            }
             : undefined,
       });
       await fetchQuestions();
@@ -1613,13 +1622,23 @@ const CrudQuestion = () => {
 
                     <div className="flex items-center gap-2">
                       {!selectedOrg && (
-                        <button
-                          onClick={handleDownloadExcel}
-                          className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
-                        >
-                          <Icon icon="lucide:download" width="14" />
-                          Download Excel
-                        </button>
+                        <>
+                          <button
+                            onClick={handleDownloadExcel}
+                            className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
+                          >
+                            <Icon icon="lucide:download" width="14" />
+                            Download Excel
+                          </button>
+
+                          <button
+                            onClick={openPreviewModal}
+                            className="group relative overflow-hidden z-0 bg-[var(--primary-color)] px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-white duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs shadow-sm hover:shadow-md"
+                          >
+                            <Icon icon="solar:eye-linear" width="14" />
+                            Preview
+                          </button>
+                        </>
                       )}
 
                       {selectedOrg && allQuestions.length > 0 && (
@@ -1674,11 +1693,10 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain
                     }}
                     className={`px-6 py-2.5 text-sm uppercase rounded-full transition-all whitespace-nowrap
-                            ${
-                              filterDomains.includes(domain)
-                                ? "bg-white text-gray-900 shadow-sm font-semibold"
-                                : "text-neutral-500 font-semibold"
-                            }`}
+                            ${filterDomains.includes(domain)
+                        ? "bg-white text-gray-900 shadow-sm font-semibold"
+                        : "text-neutral-500 font-semibold"
+                      }`}
                   >
                     {domain}
                   </button>
@@ -1692,11 +1710,10 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${
-                      showFilters
-                        ? "bg-[var(--primary-color)] text-white"
-                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
-                    }`}
+                    ${showFilters
+                ? "bg-[var(--primary-color)] text-white"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+              }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -1800,11 +1817,10 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
-                              openSubdomains.includes(subdomainTitle)
-                                ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
-                                : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                            }`}
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
+                              ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
+                              : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
+                              }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -1812,11 +1828,10 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${
-                          openSubdomains.includes(subdomainTitle)
-                            ? ""
-                            : "hidden"
-                        }`}
+                        className={`!visible ${openSubdomains.includes(subdomainTitle)
+                          ? ""
+                          : "hidden"
+                          }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
                         <Droppable
@@ -1937,6 +1952,8 @@ const CrudQuestion = () => {
         isCloningAll={isCloningAll}
         selectedOrg={selectedOrg}
         selectedDept={selectedDept}
+        previewQuestions={filteredQuestions}
+        previewRole={filterRole}
       />
     </div>
   );
@@ -1966,6 +1983,8 @@ interface CrudModalsProps {
   isCloningAll: boolean;
   selectedOrg: string | null;
   selectedDept: string;
+  previewQuestions: Question[];
+  previewRole: string;
 }
 
 const CrudModals = (props: CrudModalsProps) => {
@@ -1989,7 +2008,36 @@ const CrudModals = (props: CrudModalsProps) => {
     isCloningAll,
     selectedOrg,
     selectedDept,
+    previewQuestions,
+    previewRole,
   } = props;
+
+  const [previewIdx, setPreviewIdx] = useState(0);
+  const [previewValue, setPreviewValue] = useState<number | string | null>(
+    null,
+  );
+
+  // Reset state when modal is shown or questions change
+  useEffect(() => {
+    setPreviewIdx(0);
+    setPreviewValue(null);
+  }, [previewQuestions]);
+
+  // Reset selection when moving between questions
+  useEffect(() => {
+    setPreviewValue(null);
+  }, [previewIdx]);
+
+  const questions = previewQuestions || [];
+  const currentQ = questions[previewIdx];
+  const isForcedChoice = currentQ?.scale === "FORCED_CHOICE";
+
+  // Show insight prompt logic
+  const shouldShowPrompt =
+    (isForcedChoice && previewValue !== null) ||
+    (!isForcedChoice &&
+      typeof previewValue === "number" &&
+      previewValue <= 2);
 
   // Helper to render a SINGLE form (reusable for Add list)
   const renderFormFields = (
@@ -2290,20 +2338,6 @@ const CrudModals = (props: CrudModalsProps) => {
                   className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-2 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                 />
               </div>
-            </div>
-            {/* Higher Value */}
-            <div>
-              <label className="text-xs font-bold">Higher Value Option</label>
-              <select
-                value={data.higherValueOption}
-                onChange={(e) =>
-                  onFieldChange("higherValueOption", e.target.value)
-                }
-                className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-1.5 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
-              >
-                <option value="A">Option A</option>
-                <option value="B">Option B</option>
-              </select>
             </div>
           </div>
         )}
@@ -2653,6 +2687,214 @@ const CrudModals = (props: CrudModalsProps) => {
               >
                 Continue
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- PREVIEW MODAL --- */}
+      <div
+        data-twe-modal-init
+        className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
+        id="previewModal"
+        tabIndex={-1}
+        aria-modal="true"
+        role="dialog"
+      >
+        <div
+          data-twe-modal-dialog-ref
+          className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto items-center max-w-4xl mx-auto px-4"
+        >
+          <div className="pointer-events-auto relative flex w-full flex-col rounded-3xl border-none bg-[var(--light-primary-color)] shadow-2xl outline-none overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 bg-white border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-blue-50 rounded-xl text-[var(--primary-color)]">
+                  <Icon icon="solar:eye-bold" width="24" />
+                </div>
+                <div>
+                  <h5 className="text-xl font-bold text-gray-800">
+                    Assessment Preview
+                  </h5>
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                    Role: {previewRole || "Unknown"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                data-twe-modal-dismiss
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                onClick={() => setPreviewIdx(0)}
+              >
+                <Icon
+                  icon="material-symbols:close"
+                  width="24"
+                  className="text-gray-400"
+                />
+              </button>
+            </div>
+
+            {/* Content Area styled like live assessment */}
+            <div className="p-4 sm:p-12 overflow-y-auto max-h-[80vh]">
+              {questions.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+                  <Icon
+                    icon="solar:ghost-line-duotone"
+                    width="64"
+                    className="mx-auto text-gray-200 mb-4"
+                  />
+                  <p className="text-gray-500 font-medium">
+                    No questions available to preview.
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full mx-auto max-w-3xl rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide">
+                      Question {previewIdx + 1} of {questions.length}
+                    </h2>
+                  </div>
+
+                  <div className="w-full bg-[var(--light-primary-color)] rounded-full h-2 mt-3 mb-6">
+                    <div
+                      className="bg-[var(--dark-primary-color)] h-2 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${((previewIdx + 1) / questions.length) * 100}%`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="sm:my-6 my-4">
+                    <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
+                      {currentQ?.questionStem} <span className="text-black">*</span>
+                    </h2>
+                  </div>
+
+                  {/* Options */}
+                  <div className="my-8">
+                    {!isForcedChoice ? (
+                      <div className="grid grid-cols-5 max-w-96 mx-auto">
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <div key={num} className="flex flex-col items-center">
+                            <div
+                              onClick={() => setPreviewValue(num)}
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center transition-all cursor-pointer ${previewValue === num
+                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0 shadow-lg shadow-blue-200"
+                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
+                                }`}
+                            >
+                              {num}
+                            </div>
+                            <span className="text-[10px] sm:text-nowrap mt-2 text-center leading-tight max-w-[60px]">
+                              {currentQ?.scale === "NEVER_ALWAYS"
+                                ? ["Never", "Rarely", "Sometimes", "Often", "Always"][
+                                num - 1
+                                ]
+                                : num === 1
+                                  ? "Strongly Disagree"
+                                  : num === 3
+                                    ? "Neutral"
+                                    : num === 5
+                                      ? "Strongly Agree"
+                                      : ""}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-4">
+                        {["A", "B"].map((opt) => (
+                          <div
+                            key={opt}
+                            onClick={() => setPreviewValue(opt)}
+                            className={`flex items-center justify-between border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse gap-5 cursor-pointer transition-all ${previewValue === opt
+                                ? "border-[var(--primary-color)] bg-blue-50 shadow-sm"
+                                : "hover:bg-blue-50/50"
+                              }`}
+                          >
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 ${previewValue === opt
+                                  ? "border-[var(--primary-color)] bg-[var(--primary-color)] ring-2 ring-blue-100"
+                                  : "border-gray-300"
+                                }`}
+                            />
+                            <h3
+                              className={`text-sm font-medium ${previewValue === opt
+                                  ? "text-[var(--primary-color)]"
+                                  : "text-[#5D5D5D]"
+                                }`}
+                            >
+                              {opt === "A"
+                                ? currentQ.forcedChoice?.optionA?.label
+                                : currentQ.forcedChoice?.optionB?.label}
+                            </h3>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Insight Prompt Simulation */}
+                  <div
+                    className={`mt-8 transition-all duration-500 overflow-hidden ${shouldShowPrompt
+                        ? "opacity-100 max-h-96"
+                        : "opacity-0 max-h-0"
+                      }`}
+                  >
+                    <label className="text-sm font-bold block mb-2">
+                      {isForcedChoice
+                        ? previewValue === "A"
+                          ? currentQ?.forcedChoice?.optionA?.insightPrompt
+                          : currentQ?.forcedChoice?.optionB?.insightPrompt
+                        : currentQ?.insightPrompt ||
+                        "Why did you choose this score?"}
+                      <span className="text-black"> *</span>
+                    </label>
+                    <textarea
+                      placeholder="Type your insight here..."
+                      className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg focus:border-[var(--primary-color)] focus:outline-none bg-white transition-all shadow-inner"
+                      rows={4}
+                    ></textarea>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="p-6 bg-white border-t border-gray-100 flex items-center justify-between">
+              <button
+                onClick={() => setPreviewIdx((p) => Math.max(0, p - 1))}
+                disabled={previewIdx === 0}
+                className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 disabled:opacity-30 transition-colors px-4 py-2"
+              >
+                <Icon icon="solar:alt-arrow-left-linear" width="20" />
+                Previous
+              </button>
+
+              <div className="flex items-center gap-4">
+                <button
+                  data-twe-modal-dismiss
+                  onClick={() => setPreviewIdx(0)}
+                  className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() =>
+                    setPreviewIdx((p) =>
+                      Math.min(questions.length - 1, p + 1),
+                    )
+                  }
+                  disabled={
+                    previewIdx === questions.length - 1 || questions.length === 0
+                  }
+                  className="flex items-center gap-2 bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white px-8 py-2.5 rounded-full font-bold text-sm uppercase tracking-wider shadow-lg shadow-blue-100 disabled:opacity-50 transition-all hover:scale-102 active:scale-98"
+                >
+                  Next
+                  <Icon icon="solar:alt-arrow-right-linear" width="20" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

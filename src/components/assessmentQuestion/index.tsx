@@ -145,7 +145,7 @@ const AssessmentQuestion = () => {
         // 1. Decode basic info from token
         const decoded: DecodedToken = jwtDecode(token);
         let role = decoded.role?.toLowerCase() || "employee";
-        if (role === "superadmin") role = "admin";
+        if (role === "superadmin") role = "admin";      
         setUserRole(role);
 
         // 2. Fetch full invitation details (includes allowedDepartments from Organization)
