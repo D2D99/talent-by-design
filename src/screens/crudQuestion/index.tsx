@@ -1618,21 +1618,25 @@ const CrudQuestion = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={handleDownloadExcel}
-                        className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
-                      >
-                        <Icon icon="lucide:download" width="14" />
-                        Download Excel
-                      </button>
+                      {!selectedOrg && (
+                        <>
+                          <button
+                            onClick={handleDownloadExcel}
+                            className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
+                          >
+                            <Icon icon="lucide:download" width="14" />
+                            Download Excel
+                          </button>
 
-                      <button
-                        onClick={openPreviewModal}
-                        className="group relative overflow-hidden z-0 bg-[var(--primary-color)] px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-white duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs shadow-sm hover:shadow-md"
-                      >
-                        <Icon icon="solar:eye-linear" width="14" />
-                        Preview
-                      </button>
+                          <button
+                            onClick={openPreviewModal}
+                            className="group relative overflow-hidden z-0 bg-[var(--primary-color)] px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-white duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs shadow-sm hover:shadow-md"
+                          >
+                            <Icon icon="solar:eye-linear" width="14" />
+                            Preview
+                          </button>
+                        </>
+                      )}
 
                       {selectedOrg && allQuestions.length > 0 && (
                         <button
