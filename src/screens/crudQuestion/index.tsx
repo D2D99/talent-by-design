@@ -232,16 +232,14 @@ const FilterSection = ({
         </span>
         <Icon
           icon="iconoir:nav-arrow-down"
-          className={`transition-transform duration-500 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`transition-transform duration-500 ${isOpen ? "rotate-180" : ""
+            }`}
           width="16"
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-500 ${
-          isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-500 ${isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
+          }`}
       >
         {children}
       </div>
@@ -707,8 +705,7 @@ const CrudQuestion = () => {
     }
   };
 
-  const handleDownloadExcel = (roleOverride?: string) => {
-    const role = roleOverride ?? downloadRole;
+  const handleDownloadExcel = () => {
     try {
       const getRowData = (q: Question, i: number) => {
         const row: any = {
@@ -767,47 +764,29 @@ const CrudQuestion = () => {
         ];
       };
 
-      if (role) {
-        // Download for a specific role only
-        const filtered = allQuestions.filter(
-          (q) => q.stakeholder?.toLowerCase() === role.toLowerCase(),
-        );
-        if (filtered.length === 0) {
-          toast.info(`No questions found for role: ${role}`);
-          return;
-        }
-        const roleRows = filtered.map((q, i) => getRowData(q, i));
-        const ws = XLSX.utils.json_to_sheet(roleRows);
-        styleSheet(ws);
-        const sheetName = role.charAt(0).toUpperCase() + role.slice(1);
-        XLSX.utils.book_append_sheet(wb, ws, sheetName);
-        XLSX.writeFile(wb, `Master_Template_Questions_${sheetName}.xlsx`);
-        toast.success(`Excel file for ${sheetName} generated!`);
-      } else {
-        // All questions in separate sheets
-        const allRows = allQuestions.map((q, i) => getRowData(q, i));
-        const wsAll = XLSX.utils.json_to_sheet(allRows);
-        styleSheet(wsAll);
-        XLSX.utils.book_append_sheet(wb, wsAll, "All Questions");
+      // 1. All Questions Sheet
+      const allRows = allQuestions.map((q, i) => getRowData(q, i));
+      const wsAll = XLSX.utils.json_to_sheet(allRows);
+      styleSheet(wsAll);
+      XLSX.utils.book_append_sheet(wb, wsAll, "All Questions");
 
-        const stakeholders = ["employee", "manager", "leader"];
-        stakeholders.forEach((r) => {
-          const filtered = allQuestions.filter(
-            (q) => q.stakeholder?.toLowerCase() === r,
-          );
-          if (filtered.length > 0) {
-            const roleRows = filtered.map((q, i) => getRowData(q, i));
-            const ws = XLSX.utils.json_to_sheet(roleRows);
-            styleSheet(ws);
-            const sheetName = r.charAt(0).toUpperCase() + r.slice(1);
-            XLSX.utils.book_append_sheet(wb, ws, sheetName);
-          }
-        });
-        XLSX.writeFile(wb, "Master_Template_Questions.xlsx");
-        toast.success("Excel file with multiple tabs generated!");
-      }
-      setDownloadRoleModal(false);
-      setDownloadRole("");
+      // 2. Per-Stakeholder Sheets
+      const stakeholders = ["employee", "manager", "leader"];
+      stakeholders.forEach((role) => {
+        const filtered = allQuestions.filter(
+          (q) => q.stakeholder?.toLowerCase() === role,
+        );
+        if (filtered.length > 0) {
+          const roleRows = filtered.map((q, i) => getRowData(q, i));
+          const ws = XLSX.utils.json_to_sheet(roleRows);
+          styleSheet(ws);
+          const sheetName = role.charAt(0).toUpperCase() + role.slice(1);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        }
+      });
+
+      XLSX.writeFile(wb, "Master_Template_Questions.xlsx");
+      toast.success("Excel file with multiple tabs generated!");
     } catch (err) {
       console.error("Failed to generate Excel:", err);
       toast.error("Failed to generate Excel file.");
@@ -932,9 +911,6 @@ const CrudQuestion = () => {
       Modal.getOrCreateInstance(modalElement).show();
     }
   };
-
-  const [downloadRoleModal, setDownloadRoleModal] = useState(false);
-  const [downloadRole, setDownloadRole] = useState<string>("");
 
   // Handler for ADD Modal Inputs (Array)
 
@@ -1077,16 +1053,16 @@ const CrudQuestion = () => {
           forcedChoice:
             form.scale === "FORCED_CHOICE"
               ? {
-                  optionA: {
-                    label: form.optionALabel,
-                    insightPrompt: form.optionAPrompt,
-                  },
-                  optionB: {
-                    label: form.optionBLabel,
-                    insightPrompt: form.optionBPrompt,
-                  },
-                  higherValueOption: form.higherValueOption as "A" | "B",
-                }
+                optionA: {
+                  label: form.optionALabel,
+                  insightPrompt: form.optionAPrompt,
+                },
+                optionB: {
+                  label: form.optionBLabel,
+                  insightPrompt: form.optionBPrompt,
+                },
+                higherValueOption: form.higherValueOption as "A" | "B",
+              }
               : undefined,
         };
       });
@@ -1127,16 +1103,16 @@ const CrudQuestion = () => {
         forcedChoice:
           editFormData.scale === "FORCED_CHOICE"
             ? {
-                optionA: {
-                  label: editFormData.optionALabel,
-                  insightPrompt: editFormData.optionAPrompt,
-                },
-                optionB: {
-                  label: editFormData.optionBLabel,
-                  insightPrompt: editFormData.optionBPrompt,
-                },
-                higherValueOption: editFormData.higherValueOption as "A" | "B",
-              }
+              optionA: {
+                label: editFormData.optionALabel,
+                insightPrompt: editFormData.optionAPrompt,
+              },
+              optionB: {
+                label: editFormData.optionBLabel,
+                insightPrompt: editFormData.optionBPrompt,
+              },
+              higherValueOption: editFormData.higherValueOption as "A" | "B",
+            }
             : undefined,
       });
       await fetchQuestions();
@@ -1642,92 +1618,21 @@ const CrudQuestion = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {!selectedOrg && (
-                        <>
-                          <button
-                            onClick={openPreviewModal}
-                            className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-white duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#fff]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-[var(--primary-color)]"
-                          >
-                            <Icon icon="gg:eye" width="14" height="14" />
-                            Preview
-                          </button>
+                      <button
+                        onClick={handleDownloadExcel}
+                        className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
+                      >
+                        <Icon icon="lucide:download" width="14" />
+                        Download Excel
+                      </button>
 
-                          <button
-                            onClick={() => setDownloadRoleModal(true)}
-                            className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
-                          >
-                            <Icon icon="lucide:download" width="14" />
-                            Download Excel
-                          </button>
-                        </>
-                      )}
-
-                      {/* Download Role Picker Modal (inline, not twe) */}
-                      {downloadRoleModal && (
-                        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-                          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 relative">
-                            <button
-                              onClick={() => {
-                                setDownloadRoleModal(false);
-                                setDownloadRole("");
-                              }}
-                              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
-                            >
-                              <Icon icon="material-symbols:close" width="22" />
-                            </button>
-                            <div className="flex items-center gap-3 mb-6">
-                              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-[var(--primary-color)]">
-                                <Icon icon="lucide:download" width="20" />
-                              </div>
-                              <div>
-                                <h4 className="font-bold text-gray-800 text-lg">
-                                  Download Excel
-                                </h4>
-                                <p className="text-xs text-gray-400">
-                                  Select a role to export
-                                </p>
-                              </div>
-                            </div>
-                            <div className="space-y-3 mb-6">
-                              {["", "employee", "manager", "leader"].map(
-                                (r) => (
-                                  <label
-                                    key={r || "all"}
-                                    className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                                      downloadRole === r
-                                        ? "border-[var(--primary-color)] bg-blue-50"
-                                        : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
-                                    }`}
-                                  >
-                                    <input
-                                      type="radio"
-                                      name="downloadRole"
-                                      value={r}
-                                      checked={downloadRole === r}
-                                      onChange={() => setDownloadRole(r)}
-                                      className="accent-blue-500"
-                                    />
-                                    <span className="font-semibold text-sm text-gray-700 capitalize">
-                                      {r === "" ? "All Roles (Multi-Tab)" : r}
-                                    </span>
-                                  </label>
-                                ),
-                              )}
-                            </div>
-                            <button
-                              onClick={() => handleDownloadExcel(downloadRole)}
-                              className="w-full bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white py-2.5 rounded-full font-bold text-sm uppercase tracking-wide shadow hover:shadow-md transition-all"
-                            >
-                              <Icon
-                                icon="lucide:download"
-                                width="16"
-                                className="inline mr-2"
-                              />
-                              Download
-                            </button>
-                          </div>
-                        </div>
-                      )}
+                      <button
+                        onClick={openPreviewModal}
+                        className="group relative overflow-hidden z-0 bg-[var(--primary-color)] px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-white duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-white/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs shadow-sm hover:shadow-md"
+                      >
+                        <Icon icon="solar:eye-linear" width="14" />
+                        Preview
+                      </button>
 
                       {selectedOrg && allQuestions.length > 0 && (
                         <button
@@ -1781,11 +1686,10 @@ const CrudQuestion = () => {
                       setFilterSubdomains([]); // Reset subdomains when changing domain
                     }}
                     className={`px-6 py-2.5 text-sm uppercase rounded-full transition-all whitespace-nowrap
-                            ${
-                              filterDomains.includes(domain)
-                                ? "bg-white text-gray-900 shadow-sm font-semibold"
-                                : "text-neutral-500 font-semibold"
-                            }`}
+                            ${filterDomains.includes(domain)
+                        ? "bg-white text-gray-900 shadow-sm font-semibold"
+                        : "text-neutral-500 font-semibold"
+                      }`}
                   >
                     {domain}
                   </button>
@@ -1799,11 +1703,10 @@ const CrudQuestion = () => {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md font-medium text-sm uppercase tracking-wider border transition-all w-auto
-                    ${
-                      showFilters
-                        ? "bg-[var(--primary-color)] text-white"
-                        : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
-                    }`}
+                    ${showFilters
+                ? "bg-[var(--primary-color)] text-white"
+                : "bg-white text-blue-400 border-blue-200 hover:border-blue-300"
+              }`}
           >
             <div className="flex items-center gap-2">
               <Icon icon="hugeicons:filter" width="16" height="16" />
@@ -1907,11 +1810,10 @@ const CrudQuestion = () => {
                         >
                           <span className="pr-4">{subdomainTitle}</span>
                           <span
-                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${
-                              openSubdomains.includes(subdomainTitle)
+                            className={`ms-auto h-6 w-6 shrink-0 transition-transform duration-200 ease-in-out flex items-center justify-center rounded-full  bg-gradient-to-t  ${openSubdomains.includes(subdomainTitle)
                                 ? "rotate-[-180deg] from-[#1a3652] to-[#448bd2] text-white"
                                 : "rotate-0 !text-[var(--primary-color)] from-[var(--light-primary-color)] to-[var(--light-primary-color)]"
-                            }`}
+                              }`}
                           >
                             <Icon icon="mdi:chevron-up" width="18" />
                           </span>
@@ -1919,11 +1821,10 @@ const CrudQuestion = () => {
                       </h2>
                       <div
                         id={`collapse-${safeId}`}
-                        className={`!visible ${
-                          openSubdomains.includes(subdomainTitle)
+                        className={`!visible ${openSubdomains.includes(subdomainTitle)
                             ? ""
                             : "hidden"
-                        }`}
+                          }`}
                         aria-labelledby={`heading-${safeId}`}
                       >
                         <Droppable
@@ -2110,9 +2011,9 @@ const CrudModals = (props: CrudModalsProps) => {
   // Compute preview questions from chosen role
   const previewQuestions = previewSelectedRole
     ? allQuestions.filter(
-        (q) =>
-          q.stakeholder?.toLowerCase() === previewSelectedRole.toLowerCase(),
-      )
+      (q) =>
+        q.stakeholder?.toLowerCase() === previewSelectedRole.toLowerCase(),
+    )
     : [];
   const previewRole = previewSelectedRole;
 
@@ -2953,7 +2854,7 @@ const CrudModals = (props: CrudModalsProps) => {
                   </button>
                 </div>
               ) : (
-               <div className="w-full mx-auto">
+                <div className="w-full mx-auto">
                   <div
                     className="flex items-center gap-1.5 text-xs font-bold mb-5 cursor-pointer text-[#448CD2] transition-colors w-fit"
                     onClick={() => {
@@ -3008,11 +2909,10 @@ const CrudModals = (props: CrudModalsProps) => {
                         {[1, 2, 3, 4, 5].map((num) => (
                           <div key={num} className="flex flex-col items-center">
                             <label
-                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
-                                previewValue === num
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${previewValue === num
                                   ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
                                   : "text-[var(--secondary-color)] hover:bg-blue-50"
-                              }`}
+                                }`}
                               onClick={() => setPreviewValue(num)}
                             >
                               {num}
@@ -3046,19 +2946,17 @@ const CrudModals = (props: CrudModalsProps) => {
                         {(["A", "B"] as const).map((opt) => (
                           <label
                             key={opt}
-                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${
-                              previewValue === opt
+                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${previewValue === opt
                                 ? "border-[var(--primary-color)] bg-blue-50"
                                 : ""
-                            }`}
+                              }`}
                             onClick={() => setPreviewValue(opt)}
                           >
                             <div
-                              className={`!min-w-4 !min-h-4 rounded-full border-2 ${
-                                previewValue === opt
+                              className={`!min-w-4 !min-h-4 rounded-full border-2 ${previewValue === opt
                                   ? "border-blue-500 bg-[var(--primary-color)]"
                                   : "border-gray-300"
-                              }`}
+                                }`}
                             />
                             <h3 className="text-sm font-medium text-[#5D5D5D]">
                               {opt === "A"
@@ -3072,11 +2970,10 @@ const CrudModals = (props: CrudModalsProps) => {
 
                     {/* Insight Prompt - Matching AssessmentQuestion styling */}
                     <div
-                      className={`transition-all duration-300 ${
-                        shouldShowPrompt
+                      className={`transition-all duration-300 ${shouldShowPrompt
                           ? "opacity-100 h-auto"
                           : "opacity-0 h-0 overflow-hidden"
-                      }`}
+                        }`}
                     >
                       <label className="text-sm font-bold block mb-2">
                         {isForcedChoice
@@ -3084,7 +2981,7 @@ const CrudModals = (props: CrudModalsProps) => {
                             ? currentQ?.forcedChoice?.optionA?.insightPrompt
                             : currentQ?.forcedChoice?.optionB?.insightPrompt
                           : currentQ?.insightPrompt ||
-                            "Why did you choose this score?"}
+                          "Why did you choose this score?"}
                         <span className="text-black"> *</span>
                       </label>
                       <textarea
