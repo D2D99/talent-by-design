@@ -705,7 +705,8 @@ const CrudQuestion = () => {
     }
   };
 
-  const handleDownloadExcel = () => {
+  const handleDownloadExcel = (roleOverride?: string) => {
+    const role = roleOverride ?? downloadRole;
     try {
       const getRowData = (q: Question, i: number) => {
         const row: any = {
@@ -764,29 +765,47 @@ const CrudQuestion = () => {
         ];
       };
 
-      // 1. All Questions Sheet
-      const allRows = allQuestions.map((q, i) => getRowData(q, i));
-      const wsAll = XLSX.utils.json_to_sheet(allRows);
-      styleSheet(wsAll);
-      XLSX.utils.book_append_sheet(wb, wsAll, "All Questions");
-
-      // 2. Per-Stakeholder Sheets
-      const stakeholders = ["employee", "manager", "leader"];
-      stakeholders.forEach((role) => {
+      if (role) {
+        // Download for a specific role only
         const filtered = allQuestions.filter(
-          (q) => q.stakeholder?.toLowerCase() === role,
+          (q) => q.stakeholder?.toLowerCase() === role.toLowerCase(),
         );
-        if (filtered.length > 0) {
-          const roleRows = filtered.map((q, i) => getRowData(q, i));
-          const ws = XLSX.utils.json_to_sheet(roleRows);
-          styleSheet(ws);
-          const sheetName = role.charAt(0).toUpperCase() + role.slice(1);
-          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        if (filtered.length === 0) {
+          toast.info(`No questions found for role: ${role}`);
+          return;
         }
-      });
+        const roleRows = filtered.map((q, i) => getRowData(q, i));
+        const ws = XLSX.utils.json_to_sheet(roleRows);
+        styleSheet(ws);
+        const sheetName = role.charAt(0).toUpperCase() + role.slice(1);
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        XLSX.writeFile(wb, `Master_Template_Questions_${sheetName}.xlsx`);
+        toast.success(`Excel file for ${sheetName} generated!`);
+      } else {
+        // All questions in separate sheets
+        const allRows = allQuestions.map((q, i) => getRowData(q, i));
+        const wsAll = XLSX.utils.json_to_sheet(allRows);
+        styleSheet(wsAll);
+        XLSX.utils.book_append_sheet(wb, wsAll, "All Questions");
 
-      XLSX.writeFile(wb, "Master_Template_Questions.xlsx");
-      toast.success("Excel file with multiple tabs generated!");
+        const stakeholders = ["employee", "manager", "leader"];
+        stakeholders.forEach((r) => {
+          const filtered = allQuestions.filter(
+            (q) => q.stakeholder?.toLowerCase() === r,
+          );
+          if (filtered.length > 0) {
+            const roleRows = filtered.map((q, i) => getRowData(q, i));
+            const ws = XLSX.utils.json_to_sheet(roleRows);
+            styleSheet(ws);
+            const sheetName = r.charAt(0).toUpperCase() + r.slice(1);
+            XLSX.utils.book_append_sheet(wb, ws, sheetName);
+          }
+        });
+        XLSX.writeFile(wb, "Master_Template_Questions.xlsx");
+        toast.success("Excel file with multiple tabs generated!");
+      }
+      setDownloadRoleModal(false);
+      setDownloadRole("");
     } catch (err) {
       console.error("Failed to generate Excel:", err);
       toast.error("Failed to generate Excel file.");
@@ -905,15 +924,15 @@ const CrudQuestion = () => {
   };
 
   const openPreviewModal = () => {
-    if (filteredQuestions.length === 0) {
-      toast.info("Please select a role to preview the assessment.");
-      return;
-    }
+    // Always open the modal — it will show role picker first
     const modalElement = document.getElementById("previewModal");
     if (modalElement) {
       Modal.getOrCreateInstance(modalElement).show();
     }
   };
+
+  const [downloadRoleModal, setDownloadRoleModal] = useState(false);
+  const [downloadRole, setDownloadRole] = useState<string>("");
 
   // Handler for ADD Modal Inputs (Array)
 
@@ -1624,7 +1643,7 @@ const CrudQuestion = () => {
                       {!selectedOrg && (
                         <>
                           <button
-                            onClick={handleDownloadExcel}
+                            onClick={() => setDownloadRoleModal(true)}
                             className="group relative overflow-hidden z-0 border-[var(--primary-color)] border px-2.5 py-2 rounded-full flex justify-center items-center gap-1.5 font-semibold uppercase text-[var(--primary-color)] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 text-xs bg-white"
                           >
                             <Icon icon="lucide:download" width="14" />
@@ -1639,6 +1658,59 @@ const CrudQuestion = () => {
                             Preview
                           </button>
                         </>
+                      )}
+
+                      {/* Download Role Picker Modal (inline, not twe) */}
+                      {downloadRoleModal && (
+                        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 relative">
+                            <button
+                              onClick={() => { setDownloadRoleModal(false); setDownloadRole(""); }}
+                              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+                            >
+                              <Icon icon="material-symbols:close" width="22" />
+                            </button>
+                            <div className="flex items-center gap-3 mb-6">
+                              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-[var(--primary-color)]">
+                                <Icon icon="lucide:download" width="20" />
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-gray-800 text-lg">Download Excel</h4>
+                                <p className="text-xs text-gray-400">Select a role to export</p>
+                              </div>
+                            </div>
+                            <div className="space-y-3 mb-6">
+                              {["", "employee", "manager", "leader"].map((r) => (
+                                <label
+                                  key={r || "all"}
+                                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${downloadRole === r
+                                    ? "border-[var(--primary-color)] bg-blue-50"
+                                    : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
+                                    }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="downloadRole"
+                                    value={r}
+                                    checked={downloadRole === r}
+                                    onChange={() => setDownloadRole(r)}
+                                    className="accent-blue-500"
+                                  />
+                                  <span className="font-semibold text-sm text-gray-700 capitalize">
+                                    {r === "" ? "All Roles (Multi-Tab)" : r}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                            <button
+                              onClick={() => handleDownloadExcel(downloadRole)}
+                              className="w-full bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white py-2.5 rounded-full font-bold text-sm uppercase tracking-wide shadow hover:shadow-md transition-all"
+                            >
+                              <Icon icon="lucide:download" width="16" className="inline mr-2" />
+                              Download
+                            </button>
+                          </div>
+                        </div>
                       )}
 
                       {selectedOrg && allQuestions.length > 0 && (
@@ -1952,8 +2024,7 @@ const CrudQuestion = () => {
         isCloningAll={isCloningAll}
         selectedOrg={selectedOrg}
         selectedDept={selectedDept}
-        previewQuestions={filteredQuestions}
-        previewRole={filterRole}
+        allQuestions={allQuestions}
       />
     </div>
   );
@@ -1983,8 +2054,7 @@ interface CrudModalsProps {
   isCloningAll: boolean;
   selectedOrg: string | null;
   selectedDept: string;
-  previewQuestions: Question[];
-  previewRole: string;
+  allQuestions: Question[];
 }
 
 const CrudModals = (props: CrudModalsProps) => {
@@ -2008,20 +2078,37 @@ const CrudModals = (props: CrudModalsProps) => {
     isCloningAll,
     selectedOrg,
     selectedDept,
-    previewQuestions,
-    previewRole,
+    allQuestions,
   } = props;
+
+  // Independent role selector for preview
+  const [previewSelectedRole, setPreviewSelectedRole] = useState<string>("");
+  const [previewStage, setPreviewStage] = useState<"role-select" | "questions">("role-select");
+
+  // Compute preview questions from chosen role
+  const previewQuestions = previewSelectedRole
+    ? allQuestions.filter((q) => q.stakeholder?.toLowerCase() === previewSelectedRole.toLowerCase())
+    : [];
+  const previewRole = previewSelectedRole;
 
   const [previewIdx, setPreviewIdx] = useState(0);
   const [previewValue, setPreviewValue] = useState<number | string | null>(
     null,
   );
 
-  // Reset state when modal is shown or questions change
+  // Reset everything when going back to role-select stage
+  useEffect(() => {
+    if (previewStage === "role-select") {
+      setPreviewIdx(0);
+      setPreviewValue(null);
+    }
+  }, [previewStage]);
+
+  // Reset state when questions change
   useEffect(() => {
     setPreviewIdx(0);
     setPreviewValue(null);
-  }, [previewQuestions]);
+  }, [previewSelectedRole]);
 
   // Reset selection when moving between questions
   useEffect(() => {
@@ -2716,16 +2803,18 @@ const CrudModals = (props: CrudModalsProps) => {
                   <h5 className="text-xl font-bold text-gray-800">
                     Assessment Preview
                   </h5>
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                    Role: {previewRole || "Unknown"}
-                  </p>
+                  {previewStage === "questions" && previewRole && (
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                      Role: {previewRole} &bull; {previewQuestions.length} questions
+                    </p>
+                  )}
                 </div>
               </div>
               <button
                 type="button"
                 data-twe-modal-dismiss
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                onClick={() => setPreviewIdx(0)}
+                onClick={() => { setPreviewIdx(0); setPreviewStage("role-select"); setPreviewSelectedRole(""); }}
               >
                 <Icon
                   icon="material-symbols:close"
@@ -2736,8 +2825,45 @@ const CrudModals = (props: CrudModalsProps) => {
             </div>
 
             {/* Content Area styled like live assessment */}
-            <div className="p-4 sm:p-12 overflow-y-auto max-h-[80vh]">
-              {questions.length === 0 ? (
+            <div className="p-4 sm:p-8 overflow-y-auto max-h-[80vh]">
+              {/* STAGE 1: Role Select Screen */}
+              {previewStage === "role-select" ? (
+                <div className="w-full max-w-md mx-auto py-8">
+                  <div className="text-center mb-8">
+                    <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[var(--primary-color)]">
+                      <Icon icon="solar:users-group-two-rounded-bold-duotone" width="32" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-1">Select a Role to Preview</h3>
+                    <p className="text-sm text-gray-500">Choose which stakeholder assessment you want to walk through.</p>
+                  </div>
+                  <div className="space-y-3">
+                    {["employee", "manager", "leader"].map((r) => {
+                      const count = allQuestions.filter((q) => q.stakeholder?.toLowerCase() === r).length;
+                      return (
+                        <button
+                          key={r}
+                          onClick={() => {
+                            setPreviewSelectedRole(r);
+                            setPreviewStage("questions");
+                          }}
+                          className="w-full flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white hover:border-[var(--primary-color)] hover:bg-blue-50/50 transition-all group cursor-pointer shadow-sm hover:shadow-md"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1a3652] to-[#448bd2] flex items-center justify-center text-white font-bold text-sm">
+                              {r[0].toUpperCase()}
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-gray-800 capitalize">{r}</p>
+                              <p className="text-xs text-gray-400">{count} question{count !== 1 ? "s" : ""}</p>
+                            </div>
+                          </div>
+                          <Icon icon="solar:alt-arrow-right-linear" width="20" className="text-gray-300 group-hover:text-[var(--primary-color)] transition-colors" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : previewQuestions.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
                   <Icon
                     icon="solar:ghost-line-duotone"
@@ -2745,14 +2871,20 @@ const CrudModals = (props: CrudModalsProps) => {
                     className="mx-auto text-gray-200 mb-4"
                   />
                   <p className="text-gray-500 font-medium">
-                    No questions available to preview.
+                    No questions available for role: <strong className="capitalize">{previewRole}</strong>
                   </p>
+                  <button
+                    onClick={() => setPreviewStage("role-select")}
+                    className="mt-4 text-sm text-blue-500 hover:text-blue-700 font-medium"
+                  >
+                    ← Choose a different role
+                  </button>
                 </div>
               ) : (
                 <div className="w-full mx-auto max-w-3xl rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
                   <div className="flex justify-between items-center">
                     <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize tracking-wide">
-                      Question {previewIdx + 1} of {questions.length}
+                      Question {previewIdx + 1} of {previewQuestions.length}
                     </h2>
                   </div>
 
@@ -2760,7 +2892,7 @@ const CrudModals = (props: CrudModalsProps) => {
                     <div
                       className="bg-[var(--dark-primary-color)] h-2 rounded-full transition-all duration-500"
                       style={{
-                        width: `${((previewIdx + 1) / questions.length) * 100}%`,
+                        width: `${((previewIdx + 1) / previewQuestions.length) * 100}%`,
                       }}
                     />
                   </div>
@@ -2780,8 +2912,8 @@ const CrudModals = (props: CrudModalsProps) => {
                             <div
                               onClick={() => setPreviewValue(num)}
                               className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center transition-all cursor-pointer ${previewValue === num
-                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0 shadow-lg shadow-blue-200"
-                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
+                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0 shadow-lg shadow-blue-200"
+                                : "text-[var(--secondary-color)] hover:bg-blue-50"
                                 }`}
                             >
                               {num}
@@ -2809,20 +2941,20 @@ const CrudModals = (props: CrudModalsProps) => {
                             key={opt}
                             onClick={() => setPreviewValue(opt)}
                             className={`flex items-center justify-between border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse gap-5 cursor-pointer transition-all ${previewValue === opt
-                                ? "border-[var(--primary-color)] bg-blue-50 shadow-sm"
-                                : "hover:bg-blue-50/50"
+                              ? "border-[var(--primary-color)] bg-blue-50 shadow-sm"
+                              : "hover:bg-blue-50/50"
                               }`}
                           >
                             <div
                               className={`w-4 h-4 rounded-full border-2 ${previewValue === opt
-                                  ? "border-[var(--primary-color)] bg-[var(--primary-color)] ring-2 ring-blue-100"
-                                  : "border-gray-300"
+                                ? "border-[var(--primary-color)] bg-[var(--primary-color)] ring-2 ring-blue-100"
+                                : "border-gray-300"
                                 }`}
                             />
                             <h3
                               className={`text-sm font-medium ${previewValue === opt
-                                  ? "text-[var(--primary-color)]"
-                                  : "text-[#5D5D5D]"
+                                ? "text-[var(--primary-color)]"
+                                : "text-[#5D5D5D]"
                                 }`}
                             >
                               {opt === "A"
@@ -2838,8 +2970,8 @@ const CrudModals = (props: CrudModalsProps) => {
                   {/* Insight Prompt Simulation */}
                   <div
                     className={`mt-8 transition-all duration-500 overflow-hidden ${shouldShowPrompt
-                        ? "opacity-100 max-h-96"
-                        : "opacity-0 max-h-0"
+                      ? "opacity-100 max-h-96"
+                      : "opacity-0 max-h-0"
                       }`}
                   >
                     <label className="text-sm font-bold block mb-2">
@@ -2862,40 +2994,58 @@ const CrudModals = (props: CrudModalsProps) => {
             </div>
 
             {/* Footer Buttons */}
-            <div className="p-6 bg-white border-t border-gray-100 flex items-center justify-between">
-              <button
-                onClick={() => setPreviewIdx((p) => Math.max(0, p - 1))}
-                disabled={previewIdx === 0}
-                className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 disabled:opacity-30 transition-colors px-4 py-2"
-              >
-                <Icon icon="solar:alt-arrow-left-linear" width="20" />
-                Previous
-              </button>
-
-              <div className="flex items-center gap-4">
+            {previewStage === "role-select" ? (
+              <div className="p-6 bg-white border-t border-gray-100 flex items-center justify-end">
                 <button
                   data-twe-modal-dismiss
-                  onClick={() => setPreviewIdx(0)}
+                  onClick={() => { setPreviewStage("role-select"); setPreviewSelectedRole(""); }}
                   className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider"
                 >
                   Close
                 </button>
-                <button
-                  onClick={() =>
-                    setPreviewIdx((p) =>
-                      Math.min(questions.length - 1, p + 1),
-                    )
-                  }
-                  disabled={
-                    previewIdx === questions.length - 1 || questions.length === 0
-                  }
-                  className="flex items-center gap-2 bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white px-8 py-2.5 rounded-full font-bold text-sm uppercase tracking-wider shadow-lg shadow-blue-100 disabled:opacity-50 transition-all hover:scale-102 active:scale-98"
-                >
-                  Next
-                  <Icon icon="solar:alt-arrow-right-linear" width="20" />
-                </button>
               </div>
-            </div>
+            ) : (
+              <div className="p-6 bg-white border-t border-gray-100 flex items-center justify-between">
+                <button
+                  onClick={() => {
+                    if (previewIdx === 0) {
+                      setPreviewStage("role-select");
+                      setPreviewSelectedRole("");
+                    } else {
+                      setPreviewIdx((p) => Math.max(0, p - 1));
+                    }
+                  }}
+                  className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors px-4 py-2"
+                >
+                  <Icon icon="solar:alt-arrow-left-linear" width="20" />
+                  {previewIdx === 0 ? "Back to Roles" : "Previous"}
+                </button>
+
+                <div className="flex items-center gap-4">
+                  <button
+                    data-twe-modal-dismiss
+                    onClick={() => { setPreviewIdx(0); setPreviewStage("role-select"); setPreviewSelectedRole(""); }}
+                    className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() =>
+                      setPreviewIdx((p) =>
+                        Math.min(previewQuestions.length - 1, p + 1),
+                      )
+                    }
+                    disabled={
+                      previewIdx === previewQuestions.length - 1 || previewQuestions.length === 0
+                    }
+                    className="flex items-center gap-2 bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white px-8 py-2.5 rounded-full font-bold text-sm uppercase tracking-wider shadow-lg shadow-blue-100 disabled:opacity-50 transition-all"
+                  >
+                    Next
+                    <Icon icon="solar:alt-arrow-right-linear" width="20" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
