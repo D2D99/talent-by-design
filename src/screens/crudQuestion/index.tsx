@@ -2794,7 +2794,7 @@ const CrudModals = (props: CrudModalsProps) => {
                       walk-through.
                     </p>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-3 mb-10">
                     {["employee", "manager", "leader"].map((r) => {
                       const count = allQuestions.filter(
                         (q) => q.stakeholder?.toLowerCase() === r,
