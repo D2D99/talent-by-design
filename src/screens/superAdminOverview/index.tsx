@@ -483,8 +483,8 @@ const SuperAdminOverview = () => {
           {/* Community Health */}
           <div className="xl:col-span-4 flex flex-col gap-4">
             <div className="flex-1 bg-[var(--app-surface)] rounded-xl border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-              <h3 className="text-[11px] font-black text-[var(--app-heading-color)] uppercase tracking-[0.2em] mb-6">
-                Overall Health
+              <h3 className="text-sm font-black mb-6">
+                POD-360™ Assessment Status
               </h3>
 
               <div className="relative inline-flex items-center justify-center mb-8">
