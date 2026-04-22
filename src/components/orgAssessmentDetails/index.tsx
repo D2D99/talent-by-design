@@ -198,7 +198,7 @@ const OrgAssessmentDetails = () => {
       };
       const reportType = roleMapping[member.role.toLowerCase()] || "employee";
       navigate(
-        `/dashboard/reports/${reportType}?userId=${member._id}&orgName=${encodeURIComponent(details?.orgName || "")}`,
+        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`,
       );
     } else {
       if (member.lastAssessmentId) {
