@@ -64,7 +64,7 @@ const ProfileInfo = () => {
     const fetchAssignedRole = async () => {
       try {
         const verifyTokenFromUrl = new URLSearchParams(
-          window.location.search
+          window.location.search,
         ).get("verifyToken");
 
         const response = await api.get("auth/current-user-session", {
@@ -114,7 +114,7 @@ const ProfileInfo = () => {
       clearErrors("root");
 
       const verifyTokenFromUrl = new URLSearchParams(
-        window.location.search
+        window.location.search,
       ).get("verifyToken");
 
       await api.post("auth/complete-profile", data, {

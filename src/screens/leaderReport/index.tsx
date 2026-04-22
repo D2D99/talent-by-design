@@ -135,7 +135,7 @@ const LeaderReport = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -149,10 +149,10 @@ const LeaderReport = () => {
   const [members, setMembers] = useState<any[]>([]);
 
   const [selectedOrg, setSelectedOrg] = useState<string>(
-    searchParams.get("orgName") || user?.orgName || ""
+    searchParams.get("orgName") || user?.orgName || "",
   );
   const [selectedDept, setSelectedDept] = useState<string>(
-    searchParams.get("department") || ""
+    searchParams.get("department") || "",
   );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
@@ -182,7 +182,7 @@ const LeaderReport = () => {
           const member = fetchedMembers.find(
             (m: any) =>
               (userId && m._id === userId) ||
-              (userEmail && m.email === userEmail)
+              (userEmail && m.email === userEmail),
           );
           if (member) {
             setSelectedMember(member);
@@ -277,7 +277,7 @@ const LeaderReport = () => {
       setUserData(res.data.user);
       setAiInsight(res.data.aiInsight);
       setIsReportReleased(
-        res.data.isReleased || res.data.report?.isReleased || false
+        res.data.isReleased || res.data.report?.isReleased || false,
       );
       setHasNoReport(false);
     } catch (error: any) {
@@ -301,7 +301,7 @@ const LeaderReport = () => {
         `/dashboard/preview-pdf-report?${qParams.toString()}`,
         {
           responseType: "blob",
-        }
+        },
       );
       const url = URL.createObjectURL(response.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -392,7 +392,7 @@ const LeaderReport = () => {
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[selectedDomain].subdomains
+        reportData.scores.domains[selectedDomain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     }
@@ -440,7 +440,7 @@ const LeaderReport = () => {
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
-      k.toLowerCase().includes(pattern.toLowerCase())
+      k.toLowerCase().includes(pattern.toLowerCase()),
     );
     return key ? reportData.scores.domains[key].score : 0;
   };
@@ -468,7 +468,7 @@ const LeaderReport = () => {
     setSelectedDomain(domain);
     if (reportData?.scores?.domains?.[domain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[domain].subdomains
+        reportData.scores.domains[domain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     } else {
@@ -525,7 +525,7 @@ const LeaderReport = () => {
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains;
     const mScores: number[] = [];
@@ -546,7 +546,9 @@ const LeaderReport = () => {
       const managerSubScore =
         teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
       tScores.push(
-        managerSubScore !== null ? Number((managerSubScore / 10).toFixed(1)) : 0
+        managerSubScore !== null
+          ? Number((managerSubScore / 10).toFixed(1))
+          : 0,
       );
 
       // Employee avg (employees under the leader)
@@ -555,7 +557,7 @@ const LeaderReport = () => {
       pScores.push(
         employeeSubScore !== null
           ? Number((employeeSubScore / 10).toFixed(1))
-          : 0
+          : 0,
       );
     });
 
@@ -569,7 +571,7 @@ const LeaderReport = () => {
 
     // Manager total POD avg across all domains from department data
     const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const managerAvgScore =
       mScores.length > 0
@@ -578,7 +580,7 @@ const LeaderReport = () => {
 
     // Employee total POD avg across all domains from department data
     const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const employeeAvgScore =
       eScores.length > 0
@@ -693,13 +695,13 @@ const LeaderReport = () => {
       const qCurrent =
         reportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       const qFirst =
         firstReportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
@@ -716,7 +718,7 @@ const LeaderReport = () => {
 
     // Default: subdomain averages
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
     const descriptions = subdomains.map((sub) => sub);
@@ -910,7 +912,7 @@ const LeaderReport = () => {
                     : "";
 
                   navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
+                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
                   );
                 }
               }}
@@ -1096,7 +1098,7 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                     {reportData?.scores?.domains?.[selectedDomain]
                       ?.subdomains &&
                       Object.keys(
-                        reportData.scores.domains[selectedDomain].subdomains
+                        reportData.scores.domains[selectedDomain].subdomains,
                       ).map((sub) => (
                         <li key={sub}>
                           <button
@@ -1270,13 +1272,13 @@ Highlights what is happening, why it matters, and where to focus next to improve
                                 .split(/\r?\n/)
                                 .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
-                              l.includes("•")
+                              l.includes("•"),
                             );
                             const finalMLines = hasMBullets
                               ? mLines
                                   .filter((l: string) => l.includes("•"))
                                   .map((l: string) =>
-                                    l.replace(/•/g, "").trim()
+                                    l.replace(/•/g, "").trim(),
                                   )
                                   .filter((l: string) => l.length > 0)
                               : mLines;
@@ -1296,7 +1298,7 @@ Highlights what is happening, why it matters, and where to focus next to improve
                                     {bullet}
                                   </span>
                                 </li>
-                              )
+                              ),
                             );
                           })()
                         ) : (

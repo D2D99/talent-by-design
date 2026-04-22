@@ -45,7 +45,7 @@ const AdminAssessments = () => {
         return;
       }
       const res = await api.get(
-        `auth/organization/${encodeURIComponent(orgName)}`
+        `auth/organization/${encodeURIComponent(orgName)}`,
       );
       setMembers(res.data.members || []);
     } catch (err) {
@@ -157,7 +157,7 @@ const AdminAssessments = () => {
             value: members.filter(
               (m) =>
                 m.role?.toLowerCase() !== "admin" &&
-                (!m.assessmentStatus || m.assessmentStatus === "Not Started")
+                (!m.assessmentStatus || m.assessmentStatus === "Not Started"),
             ).length,
             icon: "hugeicons:time-04",
             color: "#F59E0B",
@@ -252,31 +252,31 @@ const AdminAssessments = () => {
                     className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-                      {indexOfFirstItem + idx + 1}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-nowrap">
-                      <div className="font-bold">
-                        {member.firstName === "-" ? (
-                          <span className="text-gray-300">—</span>
-                        ) : (
-                          `${member.firstName} ${member.lastName}`
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {member.email}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {member.department}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="uppercase text-xs font-bold ">
-                        {member.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`
+                          {indexOfFirstItem + idx + 1}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-nowrap">
+                          <div className="font-bold">
+                            {member.firstName === "-" ? (
+                              <span className="text-gray-300">—</span>
+                            ) : (
+                              `${member.firstName} ${member.lastName}`
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {member.email}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {member.department}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="uppercase text-xs font-bold ">
+                            {member.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border justify-center
                          ${
                            status === "Completed"
@@ -287,89 +287,93 @@ const AdminAssessments = () => {
                                  ? "bg-amber-100 text-amber-600 border-amber-600"
                                  : "bg-gray-100 text-gray-400 border-gray-400"
                          }`}
-                      >
-                        {status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="pt-2">
-                        <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-700 ease-out ${
-                              percentage === 100
-                                ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
-                                : percentage >= 50
-                                  ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
-                                  : "bg-gradient-to-r from-amber-400 to-amber-500"
-                            }`}
-                            style={{ width: `${percentage}%` }}
-                          ></div>
-                        </div>
-                        <span
-                          className={`text-xs font-semibold w-10 ${
-                            percentage === 100
-                              ? "text-green-600"
-                              : percentage >= 50
-                                ? "text-[#448CD2]"
-                                : "text-neutral-300"
-                          }`}
-                        >
-                          {percentage}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-start gap-2">
-                        {status === "Completed" && (
-                          <>
-                            <button
-                              onClick={() => {
-                                const roleMapping: Record<string, string> = {
-                                  superadmin: "org-head",
-                                  super_admin: "org-head",
-                                  admin: "org-head",
-                                  "senior-leader": "senior-leader",
-                                  leader: "senior-leader",
-                                  manager: "manager",
-                                  employee: "employee",
-                                };
-                                const reportType =
-                                  roleMapping[
-                                    member.role?.toLowerCase() || ""
-                                  ] || "employee";
-                                navigate(
-                                  `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`
-                                );
-                              }}
-                              id="viewReport"
-                              className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-[var(--primary-color)]  hover:bg-blue-100 transition-all"
+                          >
+                            {status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="pt-2">
+                            <div className="flex-1 bg-gray-100 rounded-full h-1 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-700 ease-out ${
+                                  percentage === 100
+                                    ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
+                                    : percentage >= 50
+                                      ? "bg-gradient-to-r from-[#448CD2] to-[#5BA3E0]"
+                                      : "bg-gradient-to-r from-amber-400 to-amber-500"
+                                }`}
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                            <span
+                              className={`text-xs font-semibold w-10 ${
+                                percentage === 100
+                                  ? "text-green-600"
+                                  : percentage >= 50
+                                    ? "text-[#448CD2]"
+                                    : "text-neutral-300"
+                              }`}
                             >
-                              <Icon icon="solar:eye-linear" width="16" />
-                            </button>
-                            <Tooltip anchorSelect="#viewReport">
-                              View Report
-                            </Tooltip>
-                          </>
-                        )}
-                        {canReset ? (
-                          <>
-                            <button
-                              id="resetReport"
-                              onClick={() => openResetModal(member._id)}
-                              className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-red-500  hover:bg-red-100 transition-all"
-                            >
-                              <Icon icon="solar:restart-linear" width="16" />
-                              {/* Reset */}
-                            </button>
-                            <Tooltip anchorSelect="#resetReport">
-                              Reset Assessment
-                            </Tooltip>
-                          </>
-                        ) : !(status === "Completed") ? (
-                          <span className="text-gray-300 text-xs">—</span>
-                        ) : null}
-                      </div>
-                    </td>
+                              {percentage}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-start gap-2">
+                            {status === "Completed" && (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    const roleMapping: Record<string, string> =
+                                      {
+                                        superadmin: "org-head",
+                                        super_admin: "org-head",
+                                        admin: "org-head",
+                                        "senior-leader": "senior-leader",
+                                        leader: "senior-leader",
+                                        manager: "manager",
+                                        employee: "employee",
+                                      };
+                                    const reportType =
+                                      roleMapping[
+                                        member.role?.toLowerCase() || ""
+                                      ] || "employee";
+                                    navigate(
+                                      `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`,
+                                    );
+                                  }}
+                                  id="viewReport"
+                                  className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-[var(--primary-color)]  hover:bg-blue-100 transition-all"
+                                >
+                                  <Icon icon="solar:eye-linear" width="16" />
+                                </button>
+                                <Tooltip anchorSelect="#viewReport">
+                                  View Report
+                                </Tooltip>
+                              </>
+                            )}
+                            {canReset ? (
+                              <>
+                                <button
+                                  id="resetReport"
+                                  onClick={() => openResetModal(member._id)}
+                                  className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-red-500  hover:bg-red-100 transition-all"
+                                >
+                                  <Icon
+                                    icon="solar:restart-linear"
+                                    width="16"
+                                  />
+                                  {/* Reset */}
+                                </button>
+                                <Tooltip anchorSelect="#resetReport">
+                                  Reset Assessment
+                                </Tooltip>
+                              </>
+                            ) : !(status === "Completed") ? (
+                              <span className="text-gray-300 text-xs">—</span>
+                            ) : null}
+                          </div>
+                        </td>
                   </tr>
                 );
               })}

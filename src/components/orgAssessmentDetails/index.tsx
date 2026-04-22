@@ -57,7 +57,7 @@ const OrgAssessmentDetails = () => {
       }
 
       const res = await api.get<{ details: OrgDetails; members: UserMember[] }>(
-        `auth/organization/${routeOrgName}`
+        `auth/organization/${routeOrgName}`,
       );
       setMembers(res.data.members);
       setDetails(res.data.details);
@@ -160,18 +160,18 @@ const OrgAssessmentDetails = () => {
 
   // Calculate stats
   const eligibleMembers = members.filter(
-    (m) => m.role?.toLowerCase() !== "admin"
+    (m) => m.role?.toLowerCase() !== "admin",
   );
   const totalMembers = members.length; // Include everyone in total count (e.g. 4)
 
   const completedMembers = eligibleMembers.filter(
-    (m) => m.assessmentStatus === "Completed"
+    (m) => m.assessmentStatus === "Completed",
   ).length;
   const inProgressMembers = eligibleMembers.filter(
-    (m) => m.assessmentStatus === "In Progress"
+    (m) => m.assessmentStatus === "In Progress",
   ).length;
   const dueMembers = eligibleMembers.filter(
-    (m) => m.assessmentStatus === "Due"
+    (m) => m.assessmentStatus === "Due",
   ).length;
 
   // %age based ONLY on eligible members (excluding Admins)
@@ -182,7 +182,7 @@ const OrgAssessmentDetails = () => {
 
   const handleActionClick = (
     member: UserMember,
-    type: "Report" | "Response"
+    type: "Report" | "Response",
   ) => {
     setActiveDropdown(null);
     if (type === "Report") {
@@ -198,13 +198,13 @@ const OrgAssessmentDetails = () => {
       };
       const reportType = roleMapping[member.role.toLowerCase()] || "employee";
       navigate(
-        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`
+        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`,
       );
     } else {
       if (member.lastAssessmentId) {
         const userName = `${member.firstName} ${member.lastName}`;
         navigate(
-          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`
+          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`,
         );
       } else {
         toast.info("No completed assessment found for this member.");
@@ -607,7 +607,7 @@ const OrgAssessmentDetails = () => {
                     <td className="px-6 py-4">
                       {renderAssessmentBadge(
                         member.assessmentStatus,
-                        member.role
+                        member.role,
                       )}
                     </td>
                     <td className="px-6 py-4 text-center relative">
@@ -619,7 +619,7 @@ const OrgAssessmentDetails = () => {
                               setActiveDropdown(
                                 activeDropdown === member._id
                                   ? null
-                                  : member._id
+                                  : member._id,
                               )
                             }
                             className={`p-1.5 rounded-full transition-all ${activeDropdown === member._id ? "bg-[#448CD2] text-white shadow-md" : "text-neutral-800 hover:bg-slate-100"}`}

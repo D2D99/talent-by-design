@@ -1,5 +1,5 @@
-const fs = require("fs");
-let code = fs.readFileSync("index.temp.tsx", "utf-8");
+const fs = require('fs');
+let code = fs.readFileSync('index.temp.tsx', 'utf-8');
 
 code = code.replace(
   'import { useState, useEffect, type ChangeEvent } from "react";\r\nimport api from "../../services/axios";',
@@ -54,7 +54,7 @@ code = code.replace(
         orgName: data.orgName || "",
         orgLogo: data.orgLogo || "",
         department: data.department || "",
-      });`.replace(/\n/g, "\r\n"),
+      });`.replace(/\n/g, '\r\n'),
   `      reset({
         firstName: data.firstName || "",
         middleInitial: data.middleInitial || "",
@@ -71,7 +71,7 @@ code = code.replace(
         orgName: data.orgName || "",
         orgLogo: data.orgLogo || "",
         department: data.department || "",
-      });`.replace(/\n/g, "\r\n")
+      });`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -106,7 +106,7 @@ code = code.replace(
   }
 
     setFormData((prev) => ({ ...prev, [fieldName]: value }));
-  };`.replace(/\n/g, "\r\n"),
+  };`.replace(/\n/g, '\r\n'),
   ``
 );
 
@@ -118,9 +118,9 @@ code = code.replace(
     toast.error("Invalid phone number format");
     setSaving(false);
     return;
-  }`.replace(/\n/g, "\r\n"),
+  }`.replace(/\n/g, '\r\n'),
   `  const onSubmit: SubmitHandler<ProfileFormData> = async (dataForm) => {
-    setSaving(true);`.replace(/\n/g, "\r\n")
+    setSaving(true);`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -133,7 +133,7 @@ code = code.replace(
       data.append("country", formData.country);
       data.append("state", formData.state);
       data.append("zipCode", formData.zipCode);
-      data.append("department", formData.department);`.replace(/\n/g, "\r\n"),
+      data.append("department", formData.department);`.replace(/\n/g, '\r\n'),
   `      data.append("firstName", dataForm.firstName);
       data.append("middleInitial", dataForm.middleInitial);
       data.append("lastName", dataForm.lastName);
@@ -143,7 +143,7 @@ code = code.replace(
       data.append("country", dataForm.country);
       data.append("state", dataForm.state);
       data.append("zipCode", dataForm.zipCode);
-      data.append("department", dataForm.department);`.replace(/\n/g, "\r\n")
+      data.append("department", dataForm.department);`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -158,16 +158,10 @@ code = code.replace(
 
   return (
     <>
-      <div className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">`.replace(
-    /\n/g,
-    "\r\n"
-  ),
+      <div className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">`.replace(/\n/g, '\r\n'),
   `  return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">`.replace(
-    /\n/g,
-    "\r\n"
-  )
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="user-profile-screen bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)]">`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -180,10 +174,7 @@ code = code.replace(
                 setIsEditing(true);
               }
             }}
-            disabled={saving || (isEditing && !isFormValid)}`.replace(
-    /\n/g,
-    "\r\n"
-  ),
+            disabled={saving || (isEditing && !isFormValid)}`.replace(/\n/g, '\r\n'),
   `          <button
             type={isEditing ? "submit" : "button"}
             onClick={(e) => {
@@ -192,7 +183,7 @@ code = code.replace(
                 setIsEditing(true);
               }
             }}
-            disabled={saving}`.replace(/\n/g, "\r\n")
+            disabled={saving}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -205,7 +196,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your first name"
                 required
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="fname"
@@ -214,10 +205,7 @@ code = code.replace(
                 placeholder="Enter your first name"
                 {...register("firstName", { required: "First name is required" })}
               />
-              {errors.firstName && (<span className="text-red-500 text-xs mt-1 block">{errors.firstName.message}</span>)}`.replace(
-    /\n/g,
-    "\r\n"
-  )
+              {errors.firstName && (<span className="text-red-500 text-xs mt-1 block">{errors.firstName.message}</span>)}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -229,7 +217,7 @@ code = code.replace(
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your middle initial"
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="mname"
@@ -237,7 +225,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your middle initial"
                 {...register("middleInitial")}
-              />`.replace(/\n/g, "\r\n")
+              />`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -250,7 +238,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your last name"
                 required
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="lname"
@@ -259,10 +247,7 @@ code = code.replace(
                 placeholder="Enter your last name"
                 {...register("lastName", { required: "Last name is required" })}
               />
-              {errors.lastName && (<span className="text-red-500 text-xs mt-1 block">{errors.lastName.message}</span>)}`.replace(
-    /\n/g,
-    "\r\n"
-  )
+              {errors.lastName && (<span className="text-red-500 text-xs mt-1 block">{errors.lastName.message}</span>)}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -274,7 +259,7 @@ code = code.replace(
                 disabled={!isEditing}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 required
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="date"
                 id="dob"
@@ -282,10 +267,7 @@ code = code.replace(
                 className={\`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] \${errors.dob ? 'border-red-500' : 'border-[#E8E8E8] focus:border-[var(--primary-color)]'} disabled:bg-gray-50 disabled:cursor-not-allowed\`}
                 {...register("dob", { required: "Date of birth is required" })}
               />
-              {errors.dob && (<span className="text-red-500 text-xs mt-1 block">{errors.dob.message}</span>)}`.replace(
-    /\n/g,
-    "\r\n"
-  )
+              {errors.dob && (<span className="text-red-500 text-xs mt-1 block">{errors.dob.message}</span>)}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -295,13 +277,13 @@ code = code.replace(
                   onChange={handleChange}
                   disabled={!isEditing}
                   className="font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
-                >`.replace(/\n/g, "\r\n"),
+                >`.replace(/\n/g, '\r\n'),
   `                <select
                   id="gender"
                   disabled={!isEditing}
                   className="font-medium text-sm text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg appearance-none transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                   {...register("gender")}
-                >`.replace(/\n/g, "\r\n")
+                >`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -312,7 +294,7 @@ code = code.replace(
                 readOnly
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed read-only:bg-gray-50"
                 placeholder="Enter your email"
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="email"
                 id="email"
@@ -320,7 +302,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed read-only:bg-gray-50"
                 placeholder="Enter your email"
                 {...register("email")}
-              />`.replace(/\n/g, "\r\n")
+              />`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -339,7 +321,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your phone number"
                 required
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="phno"
@@ -354,10 +336,7 @@ code = code.replace(
                 placeholder="Enter your phone number"
                 {...register("phoneNumber", { required: "Phone number is required", pattern: { value: /^[0-9+\\-()\\s]+$/, message: "Invalid format" } })}
               />
-              {errors.phoneNumber && (<span className="text-red-500 text-xs mt-1 block">{errors.phoneNumber.message}</span>)}`.replace(
-    /\n/g,
-    "\r\n"
-  )
+              {errors.phoneNumber && (<span className="text-red-500 text-xs mt-1 block">{errors.phoneNumber.message}</span>)}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -368,7 +347,7 @@ code = code.replace(
                 readOnly
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed capitalize read-only:bg-gray-50"
                 placeholder="User role"
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="userRole"
@@ -376,7 +355,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed capitalize read-only:bg-gray-50"
                 placeholder="User role"
                 {...register("role")}
-              />`.replace(/\n/g, "\r\n")
+              />`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -387,7 +366,7 @@ code = code.replace(
                   readOnly
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
                   placeholder="Organization name"
-                />`.replace(/\n/g, "\r\n"),
+                />`.replace(/\n/g, '\r\n'),
   `                <input
                   type="text"
                   id="orgName"
@@ -395,7 +374,7 @@ code = code.replace(
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] bg-neutral-100 cursor-not-allowed"
                   placeholder="Organization name"
                   {...register("orgName")}
-                />`.replace(/\n/g, "\r\n")
+                />`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -405,13 +384,13 @@ code = code.replace(
                   value={formData.department}
                   onChange={handleChange}
                   disabled={
-                    !isEditing ||`.replace(/\n/g, "\r\n"),
+                    !isEditing ||`.replace(/\n/g, '\r\n'),
   `                <input
                   type="text"
                   id="department"
                   {...register("department")}
                   disabled={
-                    !isEditing ||`.replace(/\n/g, "\r\n")
+                    !isEditing ||`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -424,7 +403,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your country"
                 required
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="country"
@@ -433,10 +412,7 @@ code = code.replace(
                 placeholder="Enter your country"
                 {...register("country", { required: "Country is required" })}
               />
-              {errors.country && (<span className="text-red-500 text-xs mt-1 block">{errors.country.message}</span>)}`.replace(
-    /\n/g,
-    "\r\n"
-  )
+              {errors.country && (<span className="text-red-500 text-xs mt-1 block">{errors.country.message}</span>)}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -449,7 +425,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your state"
                 required
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="city"
@@ -458,10 +434,7 @@ code = code.replace(
                 placeholder="Enter your state"
                 {...register("state", { required: "State is required" })}
               />
-              {errors.state && (<span className="text-red-500 text-xs mt-1 block">{errors.state.message}</span>)}`.replace(
-    /\n/g,
-    "\r\n"
-  )
+              {errors.state && (<span className="text-red-500 text-xs mt-1 block">{errors.state.message}</span>)}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
@@ -474,7 +447,7 @@ code = code.replace(
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Enter your zip code"
                 required
-              />`.replace(/\n/g, "\r\n"),
+              />`.replace(/\n/g, '\r\n'),
   `              <input
                 type="text"
                 id="zipCode"
@@ -483,22 +456,19 @@ code = code.replace(
                 placeholder="Enter your zip code"
                 {...register("zipCode", { required: "Zip code is required" })}
               />
-              {errors.zipCode && (<span className="text-red-500 text-xs mt-1 block">{errors.zipCode.message}</span>)}`.replace(
-    /\n/g,
-    "\r\n"
-  )
+              {errors.zipCode && (<span className="text-red-500 text-xs mt-1 block">{errors.zipCode.message}</span>)}`.replace(/\n/g, '\r\n')
 );
 
 code = code.replace(
   `        </div>
       </div>
 
-      {showLogoModal && (`.replace(/\n/g, "\r\n"),
+      {showLogoModal && (`.replace(/\n/g, '\r\n'),
   `        </div>
       </form>
 
-      {showLogoModal && (`.replace(/\n/g, "\r\n")
+      {showLogoModal && (`.replace(/\n/g, '\r\n')
 );
 
-fs.writeFileSync("index.tsx", code);
-console.log("Done refactoring");
+fs.writeFileSync('index.tsx', code);
+console.log('Done refactoring');

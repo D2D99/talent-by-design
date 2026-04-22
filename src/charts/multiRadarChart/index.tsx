@@ -140,7 +140,9 @@ const MultiRadarChart = ({
                 callback: (label: string) => {
                   if (!label) return "";
                   const words = label.split(/[\s&/_-]+/);
-                  return words.map((w) => w.charAt(0).toUpperCase()).join("");
+                  return words
+                    .map((w) => w.charAt(0).toUpperCase())
+                    .join("");
                 },
               },
               grid: {

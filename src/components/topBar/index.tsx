@@ -30,7 +30,7 @@ const TopBar = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"All" | "Invites" | "Activity">(
-    "All"
+    "All",
   );
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +88,7 @@ const TopBar = () => {
     try {
       await api.patch(`/auth/notifications/${id}/read`);
       setNotifications((prev) =>
-        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
       );
     } catch (error) {
       console.error(error);
@@ -206,7 +206,7 @@ const TopBar = () => {
                     const last = index === filteredArray.length - 1;
                     const decodedValue = decodeURIComponent(value).replace(
                       /-/g,
-                      " "
+                      " ",
                     );
 
                     // Logic to handle special route mapping for breadcrumbs
@@ -424,7 +424,7 @@ const TopBar = () => {
                               try {
                                 return formatDistanceToNow(
                                   new Date(notif.createdAt),
-                                  { addSuffix: true }
+                                  { addSuffix: true },
                                 );
                               } catch (e) {
                                 return "Just now";

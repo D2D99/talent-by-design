@@ -99,7 +99,7 @@ XLSX.utils.book_append_sheet(wb, wsAll, "All Questions");
 function styleSheet(ws, rowCount) {
   // Set column widths
   ws["!cols"] = [
-    { wch: 4 }, // #
+    { wch: 4 },  // #
     { wch: 11 }, // stakeholder
     { wch: 22 }, // domain
     { wch: 35 }, // subdomain
@@ -109,7 +109,7 @@ function styleSheet(ws, rowCount) {
     { wch: 80 }, // questionStem
     { wch: 80 }, // insightPrompt
     { wch: 16 }, // subdomainWeight
-    { wch: 6 }, // order
+    { wch: 6 },  // order
     { wch: 50 }, // fc_optionA_label
     { wch: 60 }, // fc_optionA_insightPrompt
     { wch: 50 }, // fc_optionB_label

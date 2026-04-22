@@ -11,7 +11,12 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "types": ["node", "react"],
-    "typeRoots": ["node_modul"]
+    "types": [
+      "node",
+      "react"
+    ],
+    "typeRoots": [
+      "node_modul"
+    ]
   }
 }

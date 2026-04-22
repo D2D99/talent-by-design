@@ -1,6 +1,6 @@
-import { Bar } from "react-chartjs-2";
-import "./chartSetup";
-import type { ChartOptions, ScriptableContext } from "chart.js";
+import { Bar } from 'react-chartjs-2';
+import './chartSetup';
+import type { ChartOptions, ScriptableContext } from 'chart.js';
 
 type RoleData = {
   label: string;
@@ -14,7 +14,7 @@ type Props = {
 
 const RoleProgressChart = ({ data }: Props) => {
   // Helper function to create gradient
-  const getGradient = (context: ScriptableContext<"bar">) => {
+  const getGradient = (context: ScriptableContext<'bar'>) => {
     const { ctx, chartArea } = context.chart;
     if (!chartArea) return; // Wait until chart is initialized
 
@@ -22,12 +22,7 @@ const RoleProgressChart = ({ data }: Props) => {
     const baseColor = data[dataIndex].color;
 
     // Create a gradient from left (0) to right (chart width)
-    const gradient = ctx.createLinearGradient(
-      chartArea.left,
-      0,
-      chartArea.right,
-      0
-    );
+    const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 
     // Add color stops: Dark (Base Color) to Light (Base Color with transparency or lighter tint)
     gradient.addColorStop(0, baseColor); // Darker/Solid start
@@ -36,13 +31,13 @@ const RoleProgressChart = ({ data }: Props) => {
     return gradient;
   };
 
-  const options: ChartOptions<"bar"> = {
-    indexAxis: "y",
+  const options: ChartOptions<'bar'> = {
+    indexAxis: 'y',
     responsive: true,
     layout: {
       padding: {
-        right: 50,
-      },
+        right: 50, 
+      }
     },
     plugins: {
       legend: { display: false },
@@ -81,31 +76,31 @@ const RoleProgressChart = ({ data }: Props) => {
             datalabels: {
               labels: {
                 role: {
-                  anchor: "start",
-                  align: "right",
+                  anchor: 'start',
+                  align: 'right',
                   formatter: (_, ctx) => ctx.chart.data.labels?.[ctx.dataIndex],
-                  color: "#000",
+                  color: '#000',
                   padding: { left: 2 },
-                  font: { size: 13, weight: "bold" },
+                  font: { size: 13, weight: 'bold' },
                 },
                 value: {
-                  anchor: "end",
-                  align: "right",
+                  anchor: 'end',
+                  align: 'right',
                   formatter: (value) => {
                     // Only display percentage if it's greater than 0
-                    return value > 0 ? `${value}%` : "";
+                    return value > 0 ? `${value}%` : ''; 
                   },
-                  color: "#000",
+                  color: '#000',
                   // Shift the percentage to the right
                   offset: (ctx) => {
                     const value = ctx.dataset.data[ctx.dataIndex];
-                    if (typeof value === "number") {
+                    if (typeof value === 'number') {
                       // Increase the right shift for higher values
                       return value <= 20 ? 15 : 10; // Increase to move the percentage further right
-                    }
+                  }
                     return 4; // Default offset for invalid values
                   },
-                  font: { size: 14, weight: "bold" },
+                  font: { size: 14, weight: 'bold' },
                 },
               },
             },

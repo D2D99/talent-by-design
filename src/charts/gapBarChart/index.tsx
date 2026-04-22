@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Chart } from "chart.js"; // Ensure Chart is imported properly
-// import { radarLabels, deltaScores } from "../data";
+// import { radarLabels, deltaScores } from "../data"; 
 // import type { ChartOptions } from "chart.js";
 
 import {
@@ -12,7 +12,13 @@ import {
 } from "chart.js";
 
 // Register necessary components for Chart.js
-Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
+Chart.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip
+);
 
 interface GapBarChartProps {
   labels: string[];
@@ -22,13 +28,7 @@ interface GapBarChartProps {
   employeeScores?: number[];
 }
 
-const GapBarChart: React.FC<GapBarChartProps> = ({
-  labels,
-  deltaScores,
-  selectedLabel,
-  managerScores = [],
-  employeeScores = [],
-}) => {
+const GapBarChart: React.FC<GapBarChartProps> = ({ labels, deltaScores, selectedLabel, managerScores = [], employeeScores = [] }) => {
   const chartRef = useRef<Chart | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -47,14 +47,8 @@ const GapBarChart: React.FC<GapBarChartProps> = ({
         meta.data.forEach((element, index) => {
           const bar = element as any;
           const delta = dataset.data[index] as number;
-          const mVal =
-            managerScores[index] !== undefined
-              ? (managerScores[index] * 10).toFixed(0)
-              : "N/A";
-          const eVal =
-            employeeScores[index] !== undefined
-              ? (employeeScores[index] * 10).toFixed(0)
-              : "N/A";
+          const mVal = managerScores[index] !== undefined ? (managerScores[index] * 10).toFixed(0) : "N/A";
+          const eVal = employeeScores[index] !== undefined ? (employeeScores[index] * 10).toFixed(0) : "N/A";
 
           // Label: "+2 pts ↑ (Manager: 70 | Employee: 90)"
           const label = `${delta > 0 ? "+" : ""}${delta} pts ${delta > 0 ? "↑" : "↓"} [M:${mVal} | E:${eVal}]`;
@@ -65,7 +59,7 @@ const GapBarChart: React.FC<GapBarChartProps> = ({
           const xOffset = delta > 0 ? -6 : 6;
           ctx.textAlign = delta > 0 ? "right" : "left";
 
-          ctx.fillText(label, bar.x + xOffset, bar.y - 18);
+          ctx.fillText(label, bar.x + xOffset, bar.y -18);
         });
       });
 
@@ -107,7 +101,9 @@ const GapBarChart: React.FC<GapBarChartProps> = ({
                   if (!label) return "";
                   // Get acronym for multiple words
                   const words = (label as string).split(/[\s&/_-]+/);
-                  return words.map((w) => w.charAt(0).toUpperCase()).join("");
+                  return words
+                    .map((w) => w.charAt(0).toUpperCase())
+                    .join("");
                 },
                 font: {
                   size: 14,

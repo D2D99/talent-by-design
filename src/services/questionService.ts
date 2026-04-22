@@ -2,13 +2,13 @@ import api from "./axios";
 
 export interface Question {
   _id: string;
-  stakeholder: "leader" | "manager" | "employee";
-  domain: "People Potential" | "Operational Steadiness" | "Digital Fluency";
+  stakeholder: 'leader' | 'manager' | 'employee';
+  domain: 'People Potential' | 'Operational Steadiness' | 'Digital Fluency';
   subdomain: string;
-  questionType: "Self-Rating" | "Calibration" | "Behavioural" | "Forced-Choice";
+  questionType: 'Self-Rating' | 'Calibration' | 'Behavioural' | 'Forced-Choice';
   questionCode: string;
   questionStem: string;
-  scale: "SCALE_1_5" | "NEVER_ALWAYS" | "FORCED_CHOICE";
+  scale: 'SCALE_1_5' | 'NEVER_ALWAYS' | 'FORCED_CHOICE';
   insightPrompt?: string;
   forcedChoice?: {
     optionA: {
@@ -19,7 +19,7 @@ export interface Question {
       label: string;
       insightPrompt: string;
     };
-    higherValueOption: "A" | "B";
+    higherValueOption: 'A' | 'B';
   };
   subdomainWeight: number;
   order?: number;
@@ -53,14 +53,14 @@ class QuestionService {
     department?: string | null;
   }): Promise<Question[]> {
     const params = new URLSearchParams();
-    if (filters?.stakeholder) params.append("stakeholder", filters.stakeholder);
-    if (filters?.domain) params.append("domain", filters.domain);
-    if (filters?.subdomain) params.append("subdomain", filters.subdomain);
+    if (filters?.stakeholder) params.append('stakeholder', filters.stakeholder);
+    if (filters?.domain) params.append('domain', filters.domain);
+    if (filters?.subdomain) params.append('subdomain', filters.subdomain);
     if (filters?.orgName !== undefined) {
-      params.append("orgName", filters.orgName === null ? "" : filters.orgName);
+      params.append('orgName', filters.orgName === null ? "" : filters.orgName);
     }
-    if (filters?.department && filters.department !== "All") {
-      params.append("department", filters.department);
+    if (filters?.department && filters.department !== 'All') {
+      params.append('department', filters.department);
     }
 
     const response = await api.get(`${this.endpoint}/all`, { params });
@@ -68,44 +68,35 @@ class QuestionService {
   }
 
   // Get single question by ID
-  async getQuestionById(
-    id: string,
-    orgName?: string | null
-  ): Promise<Question> {
+  async getQuestionById(id: string, orgName?: string | null): Promise<Question> {
     const params = new URLSearchParams();
     if (orgName !== undefined) {
-      params.append("orgName", orgName === null ? "" : orgName);
+      params.append('orgName', orgName === null ? "" : orgName);
     }
     const response = await api.get(`${this.endpoint}/${id}`, { params });
     return response.data.data;
   }
 
   // Create multiple questions
-  async createQuestions(
-    questions: Record<string, CreateQuestionData>,
-    orgName?: string | null
-  ): Promise<Question[]> {
+  async createQuestions(questions: Record<string, CreateQuestionData>, orgName?: string | null): Promise<Question[]> {
     const payload = orgName !== undefined ? { orgName, questions } : questions;
     const response = await api.post(`${this.endpoint}/multiple`, payload);
     return response.data.data;
   }
 
   // Update question
-  async updateQuestion(
-    id: string,
-    updateData: {
-      questionType: string;
-      questionStem: string;
-      scale: string;
-      insightPrompt?: string;
-      forcedChoice?: any;
-      orgName?: string | null;
-    }
-  ): Promise<Question> {
+  async updateQuestion(id: string, updateData: {
+    questionType: string;
+    questionStem: string;
+    scale: string;
+    insightPrompt?: string;
+    forcedChoice?: any;
+    orgName?: string | null;
+  }): Promise<Question> {
     const { orgName, ...rest } = updateData;
     const params = new URLSearchParams();
     if (orgName !== undefined) {
-      params.append("orgName", orgName === null ? "" : orgName);
+      params.append('orgName', orgName === null ? "" : orgName);
     }
     const response = await api.put(`${this.endpoint}/${id}`, rest, { params });
     return response.data.data;
@@ -115,30 +106,23 @@ class QuestionService {
   async deleteQuestion(id: string, orgName?: string | null): Promise<void> {
     const params = new URLSearchParams();
     if (orgName !== undefined) {
-      params.append("orgName", orgName === null ? "" : orgName);
+      params.append('orgName', orgName === null ? "" : orgName);
     }
     await api.delete(`${this.endpoint}/${id}`, { params });
   }
 
   // Batch reorder questions after drag and drop
-  async reorderQuestions(
-    updates: { id: string; order: number; subdomain?: string }[],
-    orgName?: string | null
-  ): Promise<void> {
+  async reorderQuestions(updates: { id: string; order: number; subdomain?: string }[], orgName?: string | null): Promise<void> {
     const payload = orgName !== undefined ? { orgName, updates } : updates;
     await api.put(`${this.endpoint}/reorder`, payload);
   }
 
   // Clone master template to organization (optionally to a specific department or all departments)
-  async cloneTemplate(
-    orgName: string,
-    department?: string | null,
-    allDepartments?: boolean
-  ): Promise<{ success: boolean; message: string; count: number }> {
+  async cloneTemplate(orgName: string, department?: string | null, allDepartments?: boolean): Promise<{ success: boolean; message: string; count: number }> {
     const payload: Record<string, unknown> = { orgName };
     if (allDepartments) {
       payload.allDepartments = true;
-    } else if (department && department !== "All") {
+    } else if (department && department !== 'All') {
       payload.department = department;
     }
     const response = await api.post(`${this.endpoint}/clone`, payload);
@@ -146,17 +130,11 @@ class QuestionService {
   }
 
   // Upload questions from Excel
-  async uploadQuestions(
-    file: File,
-    orgName?: string | null,
-    department?: string | null,
-    force?: boolean
-  ): Promise<Question[]> {
+  async uploadQuestions(file: File, orgName?: string | null, department?: string | null, force?: boolean): Promise<Question[]> {
     const formData = new FormData();
     formData.append("file", file);
     if (orgName) formData.append("orgName", orgName);
-    if (department && department !== "All")
-      formData.append("department", department);
+    if (department && department !== 'All') formData.append("department", department);
     if (force) formData.append("force", "true");
 
     const response = await api.post(`${this.endpoint}/upload`, formData, {
@@ -168,26 +146,21 @@ class QuestionService {
   }
 
   // Delete all questions for an organization (optionally scoped to a department)
-  async deleteOrganizationQuestions(
-    orgName?: string | null,
-    department?: string | null
-  ): Promise<void> {
-    const data: Record<string, string> = {
-      orgName: orgName === null ? "" : (orgName ?? ""),
-    };
-    if (department && department !== "All") data.department = department;
+  async deleteOrganizationQuestions(orgName?: string | null, department?: string | null): Promise<void> {
+    const data: Record<string, string> = { orgName: orgName === null ? "" : (orgName ?? "") };
+    if (department && department !== 'All') data.department = department;
     await api.delete(`${this.endpoint}/organization/all`, { data });
   }
 
   // Download Excel template
   async downloadTemplate(): Promise<void> {
     const response = await api.get(`${this.endpoint}/template/download`, {
-      responseType: "blob",
+      responseType: 'blob'
     });
     const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.setAttribute("download", "Question_Upload_Template.xlsx");
+    link.setAttribute('download', 'Question_Upload_Template.xlsx');
     document.body.appendChild(link);
     link.click();
     link.remove();

@@ -11,7 +11,7 @@ import CircularProgress from "../../components/percentageCircle";
 const SuperAdminOverview = () => {
   const navigate = useNavigate();
   const [selectedQuarter, setSelectedQuarter] = useState(
-    Math.floor(new Date().getMonth() / 3) + 1
+    Math.floor(new Date().getMonth() / 3) + 1,
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("list");
@@ -34,7 +34,7 @@ const SuperAdminOverview = () => {
         `/dashboard/preview-pdf-report?isMaster=${isMaster}`,
         {
           responseType: "blob",
-        }
+        },
       );
       const url = URL.createObjectURL(respReal.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -43,7 +43,7 @@ const SuperAdminOverview = () => {
     } catch (error) {
       console.error("Failed to generate preview:", error);
       alert(
-        "Error generating preview. Ensure at least one assessment exists in the system."
+        "Error generating preview. Ensure at least one assessment exists in the system.",
       );
     } finally {
       setLoadingPreview(false);
@@ -54,7 +54,7 @@ const SuperAdminOverview = () => {
     const fetchIntel = async () => {
       try {
         const response = await api.get(
-          `/assessment/super-admin/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`
+          `/assessment/super-admin/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`,
         );
         setIntelData(response.data);
       } catch (error) {
@@ -284,7 +284,7 @@ const SuperAdminOverview = () => {
               label: "Most active group",
               value:
                 Object.entries(intelData?.completionByRole || {}).sort(
-                  ([, a], [, b]) => (b as number) - (a as number)
+                  ([, a], [, b]) => (b as number) - (a as number),
                 )[0]?.[0] || "N/A",
               badge: "Top segment",
               icon: "streamline-flex:star-badge",

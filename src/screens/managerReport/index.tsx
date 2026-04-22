@@ -99,7 +99,7 @@ const ManagerReport = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -119,10 +119,10 @@ const ManagerReport = () => {
   const [members, setMembers] = useState<any[]>([]);
 
   const [selectedOrg, setSelectedOrg] = useState<string>(
-    searchParams.get("orgName") || user?.orgName || ""
+    searchParams.get("orgName") || user?.orgName || "",
   );
   const [selectedDept, setSelectedDept] = useState<string>(
-    searchParams.get("department") || ""
+    searchParams.get("department") || "",
   );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
@@ -152,7 +152,7 @@ const ManagerReport = () => {
           const member = fetchedMembers.find(
             (m: any) =>
               (userId && m._id === userId) ||
-              (userEmail && m.email === userEmail)
+              (userEmail && m.email === userEmail),
           );
           if (member) {
             setSelectedMember(member);
@@ -250,7 +250,7 @@ const ManagerReport = () => {
         setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
         setIsReportReleased(
-          res.data.isReleased || res.data.report?.isReleased || false
+          res.data.isReleased || res.data.report?.isReleased || false,
         );
         setHasNoReport(false);
       } catch (error: any) {
@@ -310,13 +310,13 @@ const ManagerReport = () => {
       const qCurrent =
         reportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       const qFirst =
         firstReportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       // Sort questions to ensure consistent order
@@ -334,7 +334,7 @@ const ManagerReport = () => {
 
     // Default: subdomain averages
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
     const descriptions = subdomains.map((sub) => sub);
@@ -359,7 +359,7 @@ const ManagerReport = () => {
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[selectedDomain].subdomains
+        reportData.scores.domains[selectedDomain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     }
@@ -411,7 +411,7 @@ const ManagerReport = () => {
         `/dashboard/preview-pdf-report?${qParams.toString()}`,
         {
           responseType: "blob",
-        }
+        },
       );
       const url = URL.createObjectURL(response.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -477,7 +477,7 @@ const ManagerReport = () => {
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
-      k.toLowerCase().includes(pattern.toLowerCase())
+      k.toLowerCase().includes(pattern.toLowerCase()),
     );
     return key ? reportData.scores.domains[key].score : 0;
   };
@@ -493,7 +493,7 @@ const ManagerReport = () => {
     // 🆕 Auto-select first subdomain when domain changes to ensure SpeedMeter updates
     if (reportData?.scores?.domains?.[domain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[domain].subdomains
+        reportData.scores.domains[domain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     } else {
@@ -552,7 +552,7 @@ const ManagerReport = () => {
   // Peer series    = Org-wide benchmark avg (other departments)
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains;
     const mScores: number[] = [];
@@ -574,7 +574,7 @@ const ManagerReport = () => {
       tScores.push(
         employeeSubScore !== null
           ? Number((employeeSubScore / 10).toFixed(1))
-          : 0
+          : 0,
       );
     });
 
@@ -582,7 +582,7 @@ const ManagerReport = () => {
   })();
 
   const deltaScores = radarData.team.map((t, i) =>
-    Number((t - radarData.manager[i]).toFixed(1))
+    Number((t - radarData.manager[i]).toFixed(1)),
   );
 
   // 🆕 Perception Gap Highlights
@@ -819,7 +819,7 @@ const ManagerReport = () => {
                     : "";
 
                   navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
+                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
                   );
                 }
               }}
@@ -828,7 +828,7 @@ const ManagerReport = () => {
         </div>
 
         {hasNoReport ? (
-          <div className="grid place-items-center text-center pt-20">
+ <div className="grid place-items-center text-center pt-20">
             <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1014,7 +1014,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                   >
                     {Object.keys(
                       reportData?.scores?.domains?.[selectedDomain]
-                        ?.subdomains || {}
+                        ?.subdomains || {},
                     ).map((s) => (
                       <li key={s}>
                         <button
@@ -1236,13 +1236,13 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                                 .split(/\r?\n/)
                                 .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
-                              l.includes("•")
+                              l.includes("•"),
                             );
                             const finalMLines = hasMBullets
                               ? mLines
                                   .filter((l: string) => l.includes("•"))
                                   .map((l: string) =>
-                                    l.replace(/•/g, "").trim()
+                                    l.replace(/•/g, "").trim(),
                                   )
                                   .filter((l: string) => l.length > 0)
                               : mLines;
@@ -1262,7 +1262,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                                     {bullet}
                                   </span>
                                 </li>
-                              )
+                              ),
                             );
                           })()
                         ) : (
@@ -1573,7 +1573,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               {rec}
                             </span>
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                     <div></div>
@@ -1750,7 +1750,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 </div>
                               </div>
                             </div>
-                          )
+                          ),
                         )}
 
                         {otherGaps.length > 0 && !showAllGaps && (

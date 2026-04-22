@@ -97,7 +97,7 @@ const OrgUsers = ({
       }
 
       const res = await api.get<{ details: OrgDetails; members: UserMember[] }>(
-        `auth/organization/${targetOrg}`
+        `auth/organization/${targetOrg}`,
       );
       setMembers(res.data.members);
       setDetails(res.data.details);
@@ -215,21 +215,21 @@ const OrgUsers = ({
 
   // Calculate stats (excluding admins)wdxwdxWEC
   const nonAdminMembers = members.filter((m) =>
-    hideAdmin ? m.role.toLowerCase() !== "admin" : true
+    hideAdmin ? m.role.toLowerCase() !== "admin" : true,
   );
   const acceptedUsers = nonAdminMembers.filter(
-    (m) => m.status === "Accept"
+    (m) => m.status === "Accept",
   ).length;
 
   const roleStats = {
     leaders: nonAdminMembers.filter(
-      (m) => m.status === "Accept" && m.role.toLowerCase().includes("leader")
+      (m) => m.status === "Accept" && m.role.toLowerCase().includes("leader"),
     ).length,
     managers: nonAdminMembers.filter(
-      (m) => m.status === "Accept" && m.role.toLowerCase() === "manager"
+      (m) => m.status === "Accept" && m.role.toLowerCase() === "manager",
     ).length,
     employees: nonAdminMembers.filter(
-      (m) => m.status === "Accept" && m.role.toLowerCase() === "employee"
+      (m) => m.status === "Accept" && m.role.toLowerCase() === "employee",
     ).length,
   };
 
@@ -532,10 +532,10 @@ const OrgUsers = ({
                     <option value="leader">Team Leader</option>
                   )}
                   {["admin", "leader"].includes(
-                    currentUser?.role?.toLowerCase() || ""
+                    currentUser?.role?.toLowerCase() || "",
                   ) && <option value="manager">Department Manager</option>}
                   {["admin", "leader", "manager"].includes(
-                    currentUser?.role?.toLowerCase() || ""
+                    currentUser?.role?.toLowerCase() || "",
                   ) && <option value="employee">Team Associate</option>}
                 </select>
               </div>
