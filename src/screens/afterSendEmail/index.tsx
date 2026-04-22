@@ -50,7 +50,7 @@ const AfterSendEmail = () => {
       const lastAttempt = localStorage.getItem("lastResendTimestamp");
       const currentCount = parseInt(
         localStorage.getItem("resendAttempts") || "0",
-        10,
+        10
       );
 
       if (currentCount >= 2 && lastAttempt) {

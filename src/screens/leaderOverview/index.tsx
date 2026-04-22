@@ -10,7 +10,7 @@ import CircularProgress from "../../components/percentageCircle";
 const LeaderOverview = () => {
   const navigate = useNavigate();
   const [selectedQuarter, setSelectedQuarter] = useState(
-    Math.floor(new Date().getMonth() / 3) + 1,
+    Math.floor(new Date().getMonth() / 3) + 1
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("list");
@@ -22,7 +22,7 @@ const LeaderOverview = () => {
     const fetchIntelligence = async () => {
       try {
         const res = await api.get(
-          `assessment/leader/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`,
+          `assessment/leader/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`
         );
         setIntelData(res.data);
       } catch (error) {

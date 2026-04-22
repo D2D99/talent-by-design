@@ -45,7 +45,11 @@ const StartAssessment = () => {
           const res = await api.get("auth/me");
           const role = res.data.role?.toLowerCase();
 
-          if (role === "admin" || role === "superadmin" || role === "super_admin") {
+          if (
+            role === "admin" ||
+            role === "superadmin" ||
+            role === "super_admin"
+          ) {
             navigate("/dashboard", { replace: true });
             return;
           }
@@ -59,7 +63,7 @@ const StartAssessment = () => {
         } catch (error) {
           console.error(
             "Failed to fetch /me, falling back to invite token",
-            error,
+            error
           );
         }
       }
@@ -117,11 +121,11 @@ const StartAssessment = () => {
           {},
           {
             headers: { "x-invite-token": inviteToken },
-          },
+          }
         );
 
         navigate(
-          `/assessment-question?assessmentId=${res.data.assessmentId}&token=${inviteToken}`,
+          `/assessment-question?assessmentId=${res.data.assessmentId}&token=${inviteToken}`
         );
         return;
       }

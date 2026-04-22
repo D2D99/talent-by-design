@@ -84,7 +84,7 @@ const NewPassword = () => {
 
       await api.post("auth/reset-password", { password: data.password });
       toast.success(
-        "Password reset successful! Please login with your new password.",
+        "Password reset successful! Please login with your new password."
       );
       navigate("/login");
     } catch (error: unknown) {

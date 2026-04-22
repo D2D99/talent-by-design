@@ -23,6 +23,7 @@
     "jwt-decode": "^4.0.0",
     "lottie-react": "^2.4.1",
     "lottie-web": "^5.13.0",
+    "prettier": "^3.8.3",
     "react": "^19.2.3",
     "react-chartjs-2": "^5.3.1",
     "react-circular-progressbar": "^2.2.0",

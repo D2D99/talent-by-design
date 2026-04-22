@@ -3,9 +3,9 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
-  Tooltip
-} from "chart.js"
-import annotationPlugin from "chartjs-plugin-annotation"
+  Tooltip,
+} from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
 
 ChartJS.register(
   BarElement,
@@ -13,4 +13,4 @@ ChartJS.register(
   LinearScale,
   Tooltip,
   annotationPlugin
-)
+);

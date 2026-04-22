@@ -140,9 +140,7 @@ const MultiRadarChart = ({
                 callback: (label: string) => {
                   if (!label) return "";
                   const words = label.split(/[\s&/_-]+/);
-                  return words
-                    .map((w) => w.charAt(0).toUpperCase())
-                    .join("");
+                  return words.map((w) => w.charAt(0).toUpperCase()).join("");
                 },
               },
               grid: {
@@ -163,9 +161,17 @@ const MultiRadarChart = ({
               enabled: true,
               mode: "nearest",
               intersect: false,
+              backgroundColor: "#2E3B4E",
+              titleColor: "#ffffff",
+              bodyColor: "#ffffff",
+              padding: 10,
+              cornerRadius: 8,
               callbacks: {
                 title: (tooltipItems) => {
                   return tooltipItems[0].label; // Full label from data.labels
+                },
+                label: (tooltipItem: any) => {
+                  return `${tooltipItem.dataset.label}: ${tooltipItem.raw}/10`;
                 },
               },
             },

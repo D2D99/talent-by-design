@@ -27,7 +27,7 @@ Chart.register(
 export interface TrendData {
   labels: string[];
   manager: number[]; // Previous Test
-  team: number[];    // Current Test
+  team: number[]; // Current Test
   descriptions?: string[];
 }
 
@@ -118,11 +118,9 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data }) => {
               display: false,
             },
             tooltip: {
-              backgroundColor: "rgba(255, 255, 255, 0.95)",
-              titleColor: "#1A3652",
-              bodyColor: "#474747",
-              borderColor: "#E8E8E8",
-              borderWidth: 1,
+              backgroundColor: "#2E3B4E",
+              titleColor: "#ffffff",
+              bodyColor: "#ffffff",
               padding: 12,
               displayColors: true,
               cornerRadius: 8,

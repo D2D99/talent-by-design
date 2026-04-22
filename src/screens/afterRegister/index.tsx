@@ -6,7 +6,6 @@ import { AxiosError } from "axios";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 
-
 const AfterRegister = () => {
   const [email, setEmail] = useState<string | null>(null);
   // ✅ PAGE LOADER (ADDED)
@@ -27,7 +26,6 @@ const AfterRegister = () => {
     setEmail(savedEmail);
   }, []);
 
-
   const handleResend = async () => {
     if (!email || loading) return;
 
@@ -42,10 +40,10 @@ const AfterRegister = () => {
       const axiosError = error as AxiosError<{ message: string }>;
       if (axiosError.response?.status === 401) return;
 
-      const errorMsg = axiosError.response?.data?.message || "Failed to resend email";
+      const errorMsg =
+        axiosError.response?.data?.message || "Failed to resend email";
       toast.error(errorMsg);
     } finally {
-
       setLoading(false);
     }
   };
@@ -58,7 +56,6 @@ const AfterRegister = () => {
   return (
     <>
       <div className="flex min-h-screen bg-[var(--light-primary-color)] relative">
-
         <div
           className="lg:block hidden w-1/2 !bg-cover !bg-top !bg-no-repeat"
           id="login-bg"
@@ -91,10 +88,11 @@ const AfterRegister = () => {
               <button
                 disabled={loading}
                 onClick={handleResend}
-                className={`text-sm font-bold transition-all ${loading
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-[#448bd2] hover:underline cursor-pointer"
-                  }`}
+                className={`text-sm font-bold transition-all ${
+                  loading
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-[#448bd2] hover:underline cursor-pointer"
+                }`}
               >
                 {loading ? "Resending..." : "Resend Email"}
               </button>

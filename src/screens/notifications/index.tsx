@@ -37,7 +37,7 @@ const NotificationHistory = () => {
     try {
       await api.patch(`/auth/notifications/${id}/read`);
       setNotifications((prev) =>
-        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
       );
     } catch (error) {
       console.error(error);

@@ -79,7 +79,9 @@ const UserResponseView = () => {
       const respRes = await api.get<any>(`responses/${assessmentId}`);
       const questionsRes = await api.get<any>(`questions/all`);
 
-      const qData = Array.isArray(questionsRes.data) ? questionsRes.data : questionsRes.data?.data || [];
+      const qData = Array.isArray(questionsRes.data)
+        ? questionsRes.data
+        : questionsRes.data?.data || [];
       setQuestions(qData);
 
       const data = respRes.data;
@@ -108,11 +110,11 @@ const UserResponseView = () => {
   ];
   const allSubdomains = useMemo(
     () => Array.from(new Set(responses.map((r) => r.subdomain))),
-    [responses],
+    [responses]
   );
   const allTypes = useMemo(
     () => Array.from(new Set(responses.map((r) => r.questionType))),
-    [responses],
+    [responses]
   );
 
   const filteredResponses = useMemo(() => {
@@ -142,10 +144,10 @@ const UserResponseView = () => {
 
   const toggleFilter = (
     setter: React.Dispatch<React.SetStateAction<string[]>>,
-    val: string,
+    val: string
   ) => {
     setter((prev) =>
-      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val],
+      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
     );
   };
 
@@ -206,9 +208,8 @@ const UserResponseView = () => {
               {allSubdomains
                 .filter((s) =>
                   responses.find(
-                    (r) =>
-                      r.subdomain === s && filterDomains.includes(r.domain),
-                  ),
+                    (r) => r.subdomain === s && filterDomains.includes(r.domain)
+                  )
                 )
                 .map((s) => (
                   <label
@@ -323,7 +324,7 @@ const UserResponseView = () => {
             <div className="space-y-4">
               {displayGroups.map((subdomainTitle) => {
                 const questionsInGroup = filteredResponses.filter(
-                  (r) => r.subdomain === subdomainTitle,
+                  (r) => r.subdomain === subdomainTitle
                 );
                 const isOpen = openSubdomains.includes(subdomainTitle);
                 const safeId = subdomainTitle
@@ -343,7 +344,7 @@ const UserResponseView = () => {
                           setOpenSubdomains((prev) =>
                             prev.includes(subdomainTitle)
                               ? prev.filter((s) => s !== subdomainTitle)
-                              : [...prev, subdomainTitle],
+                              : [...prev, subdomainTitle]
                           )
                         }
                       >
@@ -391,48 +392,72 @@ const UserResponseView = () => {
                                       </span>
                                     </div>
 
-                                    {resp.comment && (() => {
-                                      const relatedQuestion = questions.find(q => q.questionStem === resp.questionStem);
-                                      let actualPrompt = resp.insightPrompt || relatedQuestion?.insightPrompt || "Why did you choose this score?";
+                                    {resp.comment &&
+                                      (() => {
+                                        const relatedQuestion = questions.find(
+                                          (q) =>
+                                            q.questionStem === resp.questionStem
+                                        );
+                                        let actualPrompt =
+                                          resp.insightPrompt ||
+                                          relatedQuestion?.insightPrompt ||
+                                          "Why did you choose this score?";
 
-                                      if (relatedQuestion?.questionType === "Forced-Choice") {
-                                        if (resp.selectedOption === relatedQuestion?.forcedChoice?.optionA?.label || resp.selectedOption === "A") {
-                                          actualPrompt = relatedQuestion.forcedChoice.optionA.insightPrompt;
-                                        } else if (resp.selectedOption === relatedQuestion?.forcedChoice?.optionB?.label || resp.selectedOption === "B") {
-                                          actualPrompt = relatedQuestion.forcedChoice.optionB.insightPrompt;
+                                        if (
+                                          relatedQuestion?.questionType ===
+                                          "Forced-Choice"
+                                        ) {
+                                          if (
+                                            resp.selectedOption ===
+                                              relatedQuestion?.forcedChoice
+                                                ?.optionA?.label ||
+                                            resp.selectedOption === "A"
+                                          ) {
+                                            actualPrompt =
+                                              relatedQuestion.forcedChoice
+                                                .optionA.insightPrompt;
+                                          } else if (
+                                            resp.selectedOption ===
+                                              relatedQuestion?.forcedChoice
+                                                ?.optionB?.label ||
+                                            resp.selectedOption === "B"
+                                          ) {
+                                            actualPrompt =
+                                              relatedQuestion.forcedChoice
+                                                .optionB.insightPrompt;
+                                          }
                                         }
-                                      }
 
-                                      return (
-                                        <>
-                                          <div className="flex items-start gap-2">
-                                            <Icon
-                                              icon="fluent-mdl2:insights"
-                                              width="14"
-                                              height="14"
-                                              className="text-blue-300 mt-0.5 shrink-0"
-                                            />
-                                            <div className="flex flex-col">
-                                              <span className="text-[10px] font-bold capitalize text-blue-400 tracking-wide">
-                                                Strategic Insight
+                                        return (
+                                          <>
+                                            <div className="flex items-start gap-2">
+                                              <Icon
+                                                icon="fluent-mdl2:insights"
+                                                width="14"
+                                                height="14"
+                                                className="text-blue-300 mt-0.5 shrink-0"
+                                              />
+                                              <div className="flex flex-col">
+                                                <span className="text-[10px] font-bold capitalize text-blue-400 tracking-wide">
+                                                  Strategic Insight
+                                                </span>
+                                                <p className="text-xs font-semibold text-gray-700 leading-relaxed uppercase">
+                                                  {actualPrompt}
+                                                </p>
+                                              </div>
+                                            </div>
+
+                                            <div className="flex items-start gap-2">
+                                              <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider mt-0.5">
+                                                Comment:
                                               </span>
-                                              <p className="text-xs font-semibold text-gray-700 leading-relaxed uppercase">
-                                                {actualPrompt}
+                                              <p className="text-xs text-gray-600 italic font-medium leading-relaxed">
+                                                "{resp.comment}"
                                               </p>
                                             </div>
-                                          </div>
-
-                                          <div className="flex items-start gap-2">
-                                            <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider mt-0.5">
-                                              Comment:
-                                            </span>
-                                            <p className="text-xs text-gray-600 italic font-medium leading-relaxed">
-                                              "{resp.comment}"
-                                            </p>
-                                          </div>
-                                        </>
-                                      );
-                                    })()}
+                                          </>
+                                        );
+                                      })()}
                                   </div>
                                 </div>
                               </div>

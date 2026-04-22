@@ -94,7 +94,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     e: React.KeyboardEvent<HTMLTextAreaElement>,
     setter: React.Dispatch<React.SetStateAction<string>>,
     value: string,
-    addBulletedNewline: boolean,
+    addBulletedNewline: boolean
   ) => {
     if (!addBulletedNewline) return;
 
@@ -178,10 +178,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     } catch (error: any) {
       console.error(
         "[FeedbackEditor] Error updating feedback:",
-        error.response?.data || error.message,
+        error.response?.data || error.message
       );
       toast.error(
-        error.response?.data?.message || "Failed to update feedback.",
+        error.response?.data?.message || "Failed to update feedback."
       );
     } finally {
       setLoading(false);
@@ -242,9 +242,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 value={insight}
                 id="pod360-model"
                 onChange={(e) => setInsight(e.target.value)}
-                onKeyDown={(e) =>
-                  handleKeyDown(e, setInsight, insight, true)
-                }
+                onKeyDown={(e) => handleKeyDown(e, setInsight, insight, true)}
                 rows={3}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)]border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
                 placeholder="Enter insights here..."
@@ -261,7 +259,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               <textarea
                 value={modelDescription}
                 onChange={(e) => setModelDescription(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, setModelDescription, modelDescription, true)}
+                onKeyDown={(e) =>
+                  handleKeyDown(e, setModelDescription, modelDescription, true)
+                }
                 rows={4}
                 id="insightDomains"
                 className="font-medium text-sm appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)] scroll-thin"
@@ -368,7 +368,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                       e,
                       setRecommendedPrograms,
                       recommendedPrograms,
-                      true,
+                      true
                     )
                   }
                   rows={4}
