@@ -694,27 +694,41 @@ const EmployeeReport = () => {
         </div>
 
         {hasNoReport ? (
-          <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-xl sm:p-20 p-10 rounded-[24px] mt-4 text-center flex flex-col items-center gap-6">
-            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
-              <Icon
-                icon="solar:clipboard-list-broken-bold-duotone"
-                width="48"
-                className="text-[#448CD2]"
-              />
+          <div className="grid place-items-center text-center pt-20">
+            <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                aria-hidden="true"
+                role="img"
+                className="iconify iconify--hugeicons text-[var(--primary-color)] w-10 h-10"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                >
+                  <path
+                    stroke-linejoin="round"
+                    d="M19 11v-1c0-3.771 0-5.657-1.172-6.828S14.771 2 11 2S5.343 2 4.172 3.172S3 6.229 3 10v4c0 3.771 0 5.657 1.172 6.828S7.229 22 11 22"
+                  ></path>
+                  <path d="m21 22l-1.714-1.714m.571-2.857a3.429 3.429 0 1 1-6.857 0a3.429 3.429 0 0 1 6.857 0Z"></path>
+                  <path stroke-linejoin="round" d="M7 7h8m-8 4h4"></path>
+                </g>
+              </svg>
             </div>
-            <h2 className="text-3xl font-black text-[#1A3652]">
+            <h2 className="text-xl font-bold text-gray-800">
               No Assessment Results Yet
             </h2>
-            <p className="text-neutral-500 max-w-md text-lg">
+            <p className="text-gray-500 max-w-sm mb-6 text-sm leading-relaxed">
               This person has been invited to take the assessment, but they
               haven't completed it yet. Once they finish, you'll see their full
               performance report here.
             </p>
-            <div className="flex gap-4 mt-4">
-              <div className="px-6 py-3 bg-blue-50 rounded-xl text-blue-600 font-bold text-sm">
-                Status: Pending Completion
-              </div>
-            </div>
           </div>
         ) : reportData ? (
           <>
