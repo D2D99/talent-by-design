@@ -101,7 +101,9 @@ const OrgInvitation = () => {
     setIsLoading(true);
     try {
       // Adjusted to use the 'api' instance consistent with other components
-      const url = name ? `auth/invitations?orgName=${encodeURIComponent(name)}` : "auth/invitations";
+      const url = name
+        ? `auth/invitations?orgName=${encodeURIComponent(name)}`
+        : "auth/invitations";
       const res = await api.get<Invitation[]>(url);
       setDataList(res.data);
     } catch (err: unknown) {
@@ -148,7 +150,7 @@ const OrgInvitation = () => {
   const handleRemoveDept = async (dept: string) => {
     try {
       await api.delete(
-        `organization/departments?department=${encodeURIComponent(dept)}`,
+        `organization/departments?department=${encodeURIComponent(dept)}`
       );
       fetchDepartments();
       toast.success("Department removed");
@@ -194,7 +196,7 @@ const OrgInvitation = () => {
       toast.success(
         isSuperAdmin
           ? "Organization added successfully!"
-          : "Invitation sent successfully!",
+          : "Invitation sent successfully!"
       );
       fetchData();
     } catch (err: unknown) {
@@ -222,7 +224,7 @@ const OrgInvitation = () => {
     setCsvFile(null);
     // Reset the file input
     const fileInput = document.getElementById(
-      "bulkCsvInput",
+      "bulkCsvInput"
     ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
@@ -273,7 +275,7 @@ const OrgInvitation = () => {
 
       if (success > 0) {
         toast.success(
-          `✅ Successfully invited ${success} user${success > 1 ? "s" : ""}!${failedCount > 0 ? ` (${failedCount} failed)` : ""}`,
+          `✅ Successfully invited ${success} user${success > 1 ? "s" : ""}!${failedCount > 0 ? ` (${failedCount} failed)` : ""}`
         );
       }
 
@@ -286,7 +288,7 @@ const OrgInvitation = () => {
 
         if (failed.length > 3) {
           toast.info(
-            `...and ${failed.length - 3} more failures. Check console for details.`,
+            `...and ${failed.length - 3} more failures. Check console for details.`
           );
           console.log("All failed invitations:", failed);
         }
@@ -311,7 +313,7 @@ const OrgInvitation = () => {
       } else if (err.request) {
         // Request made but no response
         toast.error(
-          "❌ No response from server. Please check your connection.",
+          "❌ No response from server. Please check your connection."
         );
       } else {
         // Something else happened
@@ -589,25 +591,28 @@ const OrgInvitation = () => {
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
-                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${isDragging
-                        ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
-                        : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
-                        }`}
+                      className={`h-full min-h-[160px] border border-dashed rounded-[20px] flex flex-col items-center justify-center p-4 text-center transition-all duration-300 cursor-pointer group/upload ${
+                        isDragging
+                          ? "border-blue-500 bg-blue-50/20 scale-[1.02]"
+                          : "border-gray-100 hover:border-blue-400 hover:bg-blue-50/10"
+                      }`}
                     >
                       <div className="relative mb-3 flex flex-col items-center pointer-events-none">
                         <div
-                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${isDragging
-                            ? "opacity-100"
-                            : "opacity-0 group-hover/upload:opacity-100"
-                            }`}
+                          className={`absolute inset-0 bg-blue-100/30 rounded-full blur-xl scale-125 transition-opacity ${
+                            isDragging
+                              ? "opacity-100"
+                              : "opacity-0 group-hover/upload:opacity-100"
+                          }`}
                         ></div>
                         <Icon
                           icon="logos:csv"
                           width="36"
-                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${isDragging
-                            ? "scale-110"
-                            : "group-hover/upload:scale-110"
-                            }`}
+                          className={`relative z-10 drop-shadow-sm transition-transform duration-300 ${
+                            isDragging
+                              ? "scale-110"
+                              : "group-hover/upload:scale-110"
+                          }`}
                         />
                       </div>
 
@@ -855,7 +860,7 @@ const OrgInvitation = () => {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {new Date(item.createdAt).toLocaleDateString(
-                              "en-GB",
+                              "en-GB"
                             )}
                           </td>
                           <td className="px-6 py-4 text-xs">
@@ -897,10 +902,11 @@ const OrgInvitation = () => {
                                 openDeleteModal(item._id, item.status)
                               }
                               disabled={!canDelete}
-                              className={`p-2 rounded-full transition-all ${canDelete
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              className={`p-2 rounded-full transition-all ${
+                                canDelete
+                                  ? "text-red-600 hover:bg-red-50"
+                                  : "text-gray-300 cursor-not-allowed opacity-50"
+                              }`}
                             >
                               <Icon icon="si:bin-line" width="16" height="16" />
                             </button>
@@ -1035,13 +1041,13 @@ const OrgInvitation = () => {
                           )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader") && (
-                              <option value="manager">Manager</option>
-                            )}
+                            <option value="manager">Manager</option>
+                          )}
                           {(currentUserRole === "admin" ||
                             currentUserRole === "leader" ||
                             currentUserRole === "manager") && (
-                              <option value="employee">Employee</option>
-                            )}
+                            <option value="employee">Employee</option>
+                          )}
                         </>
                       )}
                     </select>

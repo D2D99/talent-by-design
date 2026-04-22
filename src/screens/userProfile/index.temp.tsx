@@ -52,7 +52,7 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [selectedOrgLogoFile, setSelectedOrgLogoFile] = useState<File | null>(
-    null,
+    null
   );
   const [orgLogoPreviewUrl, setOrgLogoPreviewUrl] = useState<string>("");
   const [showLogoModal, setShowLogoModal] = useState(false);
@@ -103,7 +103,7 @@ const UserProfile = () => {
   }, []);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { id, value } = e.target;
     // Map IDs to state keys
@@ -124,13 +124,15 @@ const UserProfile = () => {
     const fieldName = fieldMapping[id] || id;
 
     if (fieldName === "phoneNumber") {
-    const phoneRegex = /^[0-9+\-()\s]*$/;
+      const phoneRegex = /^[0-9+\-()\s]*$/;
 
-    if (!phoneRegex.test(value)) {
-      toast.error("Phone number can only contain numbers and special characters (+ - ( ) )");
-      return;
+      if (!phoneRegex.test(value)) {
+        toast.error(
+          "Phone number can only contain numbers and special characters (+ - ( ) )"
+        );
+        return;
+      }
     }
-  }
 
     setFormData((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -155,10 +157,10 @@ const UserProfile = () => {
     setSaving(true);
 
     if (!/^[0-9+\-()\s]+$/.test(formData.phoneNumber)) {
-    toast.error("Invalid phone number format");
-    setSaving(false);
-    return;
-  }
+      toast.error("Invalid phone number format");
+      setSaving(false);
+      return;
+    }
 
     try {
       const data = new FormData();
@@ -191,7 +193,7 @@ const UserProfile = () => {
         const userObj = JSON.parse(savedUser);
         localStorage.setItem(
           "user",
-          JSON.stringify({ ...userObj, ...response.data.user }),
+          JSON.stringify({ ...userObj, ...response.data.user })
         );
       }
 

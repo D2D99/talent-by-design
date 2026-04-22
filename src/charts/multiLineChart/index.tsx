@@ -27,7 +27,7 @@ Chart.register(
 export interface TrendData {
   labels: string[];
   manager: number[]; // Previous Test
-  team: number[];    // Current Test
+  team: number[]; // Current Test
   descriptions?: string[];
 }
 

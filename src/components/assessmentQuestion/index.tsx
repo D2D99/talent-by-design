@@ -74,7 +74,7 @@ const AssessmentQuestion = () => {
   });
 
   const [selectedValue, setSelectedValue] = useState<number | "A" | "B" | null>(
-    null,
+    null
   );
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,18 +108,20 @@ const AssessmentQuestion = () => {
         setPageLoading(false);
       }
     },
-    [API_URL, token],
+    [API_URL, token]
   );
 
   useEffect(() => {
     if (assessmentIdFromUrl) setAssessmentId(assessmentIdFromUrl);
 
-    // 🧹 Reset Detection: If the assessmentId from URL is different from what we stored locally for this token, 
+    // 🧹 Reset Detection: If the assessmentId from URL is different from what we stored locally for this token,
     // it means the assessment was reset by an admin. We must clear the local cache.
     if (assessmentIdFromUrl && token) {
       const lastId = localStorage.getItem(`cur_aid_${token}`);
       if (lastId && lastId !== assessmentIdFromUrl) {
-        console.warn(">>> [Assessment Reset Detected] Clearing local storage...");
+        console.warn(
+          ">>> [Assessment Reset Detected] Clearing local storage..."
+        );
         localStorage.removeItem(`ans_${token}`);
         localStorage.removeItem(`idx_${token}`);
         setAnswers({});
@@ -145,7 +147,7 @@ const AssessmentQuestion = () => {
         // 1. Decode basic info from token
         const decoded: DecodedToken = jwtDecode(token);
         let role = decoded.role?.toLowerCase() || "employee";
-        if (role === "superadmin") role = "admin";      
+        if (role === "superadmin") role = "admin";
         setUserRole(role);
 
         // 2. Fetch full invitation details (includes allowedDepartments from Organization)
@@ -155,8 +157,16 @@ const AssessmentQuestion = () => {
 
         setFinalForm((prev) => ({
           ...prev,
-          firstName: details.firstName || decoded.firstName || decoded.name?.split(" ")[0] || "",
-          lastName: details.lastName || decoded.lastName || decoded.name?.split(" ")[1] || "",
+          firstName:
+            details.firstName ||
+            decoded.firstName ||
+            decoded.name?.split(" ")[0] ||
+            "",
+          lastName:
+            details.lastName ||
+            decoded.lastName ||
+            decoded.name?.split(" ")[1] ||
+            "",
           email: details.email || decoded.email || "",
           department: details.department || decoded.department || "",
           orgName: details.orgName || (decoded as any).orgName || "",
@@ -185,7 +195,7 @@ const AssessmentQuestion = () => {
       const currentQId = questions[currentIndex]?._id;
       const existing = answers[currentQId];
       setSelectedValue(
-        existing ? (existing.answer as number | "A" | "B") : null,
+        existing ? (existing.answer as number | "A" | "B") : null
       );
       setComment(existing ? existing.comment : "");
       localStorage.setItem(`idx_${token}`, currentIndex.toString());
@@ -218,7 +228,7 @@ const AssessmentQuestion = () => {
         await api.post(
           "responses",
           { responses: Object.values(updatedAnswers) },
-          { headers: { "x-invite-token": token } },
+          { headers: { "x-invite-token": token } }
         );
         if (userRole === "employee") {
           setShowFinalForm(true);
@@ -287,8 +297,8 @@ const AssessmentQuestion = () => {
   const progressPercentage =
     questions.length > 0
       ? ((currentIndex + (showFinalForm || userRole !== "employee" ? 1 : 0)) /
-        questions.length) *
-      100
+          questions.length) *
+        100
       : 0;
 
   const isContinueDisabled =
@@ -298,9 +308,7 @@ const AssessmentQuestion = () => {
         typeof selectedValue === "number" &&
         selectedValue <= 2 &&
         !comment.trim()) ||
-      (isForcedChoice &&
-        selectedValue !== null &&
-        !comment.trim()));
+      (isForcedChoice && selectedValue !== null && !comment.trim()));
 
   return (
     <div className="min-h-screen bg-[var(--light-primary-color)]">
@@ -403,10 +411,11 @@ const AssessmentQuestion = () => {
                         {[1, 2, 3, 4, 5].map((num) => (
                           <div key={num} className="flex flex-col items-center">
                             <label
-                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${selectedValue === num
-                                ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                                : "text-[var(--secondary-color)] hover:bg-blue-50"
-                                }`}
+                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
+                                selectedValue === num
+                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
+                              }`}
                             >
                               {num}
                               <input
@@ -445,10 +454,11 @@ const AssessmentQuestion = () => {
                         {(["A", "B"] as const).map((opt) => (
                           <label
                             key={opt}
-                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${selectedValue === opt
-                              ? "border-[var(--primary-color)] bg-blue-50"
-                              : ""
-                              }`}
+                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${
+                              selectedValue === opt
+                                ? "border-[var(--primary-color)] bg-blue-50"
+                                : ""
+                            }`}
                           >
                             <input
                               className="w-4 h-4 accent-blue-500"
@@ -467,23 +477,24 @@ const AssessmentQuestion = () => {
                     )}
 
                     <div
-                      className={`transition-all duration-300 ${(!isForcedChoice &&
-                        typeof selectedValue === "number" &&
-                        selectedValue <= 2) ||
+                      className={`transition-all duration-300 ${
+                        (!isForcedChoice &&
+                          typeof selectedValue === "number" &&
+                          selectedValue <= 2) ||
                         (isForcedChoice && selectedValue !== null)
-                        ? "opacity-100 h-auto"
-                        : "opacity-0 h-0 overflow-hidden"
-                        }`}
+                          ? "opacity-100 h-auto"
+                          : "opacity-0 h-0 overflow-hidden"
+                      }`}
                     >
                       <label className="text-sm font-bold block mb-2">
                         {isForcedChoice
                           ? selectedValue === "A"
                             ? currentQuestion?.forcedChoice?.optionA
-                              .insightPrompt
+                                .insightPrompt
                             : currentQuestion?.forcedChoice?.optionB
-                              .insightPrompt
+                                .insightPrompt
                           : currentQuestion?.insightPrompt ||
-                          "Why did you choose this score?"}
+                            "Why did you choose this score?"}
                         <span className="text-black"> *</span>
                       </label>
                       <textarea
@@ -569,17 +580,18 @@ const AssessmentQuestion = () => {
                             !!(jwtDecode(token as string) as any).department;
 
                           // Use organization's defined departments if available, else fallback to defaults
-                          const options = allowedDepartments.length > 0
-                            ? allowedDepartments
-                            : [
-                              "HR/People & Culture",
-                              "Finance & Accounting",
-                              "Operations",
-                              "IT",
-                              "Sales and Marketing",
-                              "Legal, Risk & Compliance",
-                              "Admin & Corporate Services"
-                            ];
+                          const options =
+                            allowedDepartments.length > 0
+                              ? allowedDepartments
+                              : [
+                                  "HR/People & Culture",
+                                  "Finance & Accounting",
+                                  "Operations",
+                                  "IT",
+                                  "Sales and Marketing",
+                                  "Legal, Risk & Compliance",
+                                  "Admin & Corporate Services",
+                                ];
 
                           return (
                             <select
@@ -640,7 +652,7 @@ const AssessmentQuestion = () => {
                       : showFinalForm
                         ? "Finish Assessment"
                         : currentIndex === questions.length - 1 &&
-                          userRole !== "employee"
+                            userRole !== "employee"
                           ? "Finish Assessment"
                           : "Continue"}
                     {!isSubmitting && (

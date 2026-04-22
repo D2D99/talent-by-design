@@ -146,10 +146,10 @@ const EmployeeReport = () => {
   const [members, setMembers] = useState<any[]>([]);
 
   const [selectedOrg, setSelectedOrg] = useState<string>(
-    searchParams.get("orgName") || user?.orgName || "",
+    searchParams.get("orgName") || user?.orgName || ""
   );
   const [selectedDept, setSelectedDept] = useState<string>(
-    searchParams.get("department") || "",
+    searchParams.get("department") || ""
   );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
@@ -179,7 +179,7 @@ const EmployeeReport = () => {
   const [selectedDomain, setSelectedDomain] =
     useState<string>("People Potential");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>(
-    "Mindset & Adaptability",
+    "Mindset & Adaptability"
   );
 
   useEffect(() => {
@@ -202,7 +202,7 @@ const EmployeeReport = () => {
           const member = fetchedMembers.find(
             (m: any) =>
               (userId && m._id === userId) ||
-              (userEmail && m.email === userEmail),
+              (userEmail && m.email === userEmail)
           );
           if (member) {
             setSelectedMember(member);
@@ -300,7 +300,7 @@ const EmployeeReport = () => {
         setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
         setIsReportReleased(
-          res.data.isReleased || res.data.report?.isReleased || false,
+          res.data.isReleased || res.data.report?.isReleased || false
         );
         setHasNoReport(false);
 
@@ -337,7 +337,7 @@ const EmployeeReport = () => {
         `/dashboard/preview-pdf-report?${qParams.toString()}`,
         {
           responseType: "blob",
-        },
+        }
       );
       const url = URL.createObjectURL(response.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -459,7 +459,7 @@ const EmployeeReport = () => {
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
-      k.toLowerCase().includes(pattern.toLowerCase()),
+      k.toLowerCase().includes(pattern.toLowerCase())
     );
     return key ? reportData.scores.domains[key].score : 0;
   };
@@ -685,7 +685,7 @@ const EmployeeReport = () => {
                     ? `&orgName=${encodeURIComponent(currentOrg)}`
                     : "";
                   navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
+                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
                   );
                 }
               }}
@@ -1025,7 +1025,7 @@ Highlights what is happening, why it matters, and where to focus next to improve
                           .split(/\r?\n/)
                           .filter((l: string) => l.trim().length > 0);
                         const hasBullets = mLines.some((l: string) =>
-                          l.includes("•"),
+                          l.includes("•")
                         );
                         if (hasBullets) {
                           return mLines
@@ -1266,7 +1266,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               {rec}
                             </span>
                           </li>
-                        ),
+                        )
                       )}
                     </ul>
                   </div>

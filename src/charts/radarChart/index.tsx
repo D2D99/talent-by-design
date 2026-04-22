@@ -39,9 +39,14 @@ interface RadarChartProps {
   hiddenIndices?: number[];
 }
 
-//selectedLabel,    can use this below if needed 
+//selectedLabel,    can use this below if needed
 
-const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLabels, hiddenIndices = [] }) => {
+const RadarChart: React.FC<RadarChartProps> = ({
+  data,
+  onLabelSelect,
+  datasetLabels,
+  hiddenIndices = [],
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart<"radar", number[], string> | null>(null);
 
@@ -69,32 +74,40 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
               borderDash: [5, 5],
               hidden: hiddenIndices.includes(0),
             },
-            ...(data.team && data.team.length > 0 ? [{
-              label: datasetLabels?.[1] || "Team",
-              data: data.team,
-              backgroundColor: "transparent",
-              borderColor: "#2ECC71",
-              pointBackgroundColor: "#2ECC71",
-              borderWidth: 2,
-              pointRadius: 3,
-              pointHoverRadius: 5,
-              fill: "origin",
-              borderDash: [5, 5],
-              hidden: hiddenIndices.includes(1),
-            }] : []),
-            ...(data.peer && data.peer.length > 0 ? [{
-              label: datasetLabels?.[2] || "Peer",
-              data: data.peer,
-              backgroundColor: "transparent",
-              borderColor: "#E74C3C",
-              pointBackgroundColor: "#E74C3C",
-              borderWidth: 2,
-              pointRadius: 3,
-              pointHoverRadius: 5,
-              fill: "origin",
-              borderDash: [5, 5],
-              hidden: hiddenIndices.includes(2),
-            }] : []),
+            ...(data.team && data.team.length > 0
+              ? [
+                  {
+                    label: datasetLabels?.[1] || "Team",
+                    data: data.team,
+                    backgroundColor: "transparent",
+                    borderColor: "#2ECC71",
+                    pointBackgroundColor: "#2ECC71",
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    fill: "origin",
+                    borderDash: [5, 5],
+                    hidden: hiddenIndices.includes(1),
+                  },
+                ]
+              : []),
+            ...(data.peer && data.peer.length > 0
+              ? [
+                  {
+                    label: datasetLabels?.[2] || "Peer",
+                    data: data.peer,
+                    backgroundColor: "transparent",
+                    borderColor: "#E74C3C",
+                    pointBackgroundColor: "#E74C3C",
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    fill: "origin",
+                    borderDash: [5, 5],
+                    hidden: hiddenIndices.includes(2),
+                  },
+                ]
+              : []),
           ],
         },
         options: {
@@ -106,7 +119,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
               right: 60,
               top: 40,
               bottom: 40,
-            }
+            },
           },
           scales: {
             r: {
@@ -126,9 +139,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
                   if (!label) return "";
                   // Get first letter of each word (completed sentence)
                   const words = label.split(/[\s&/_-]+/);
-                  return words
-                    .map((w) => w.charAt(0).toUpperCase())
-                    .join("");
+                  return words.map((w) => w.charAt(0).toUpperCase()).join("");
                 },
               },
               grid: {
@@ -149,7 +160,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, onLabelSelect, datasetLab
             tooltip: {
               enabled: true,
               mode: "nearest", // Changed from index to nearest for better precision
-              intersect: false, 
+              intersect: false,
               callbacks: {
                 title: (tooltipItems) => {
                   return tooltipItems[0].label; // Full label from data.labels

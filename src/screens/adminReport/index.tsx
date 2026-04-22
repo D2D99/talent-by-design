@@ -136,7 +136,7 @@ const AdminReport = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
   };
 
@@ -146,7 +146,7 @@ const AdminReport = () => {
   const isAdmin = userRole === "admin";
   const [orgs, setOrgs] = useState<string[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string>(
-    searchParams.get("orgName") || user?.orgName || "",
+    searchParams.get("orgName") || user?.orgName || ""
   );
   const [depts, setDepts] = useState<string[]>([]);
 
@@ -173,7 +173,7 @@ const AdminReport = () => {
           const member = fetchedMembers.find(
             (m: any) =>
               (userId && m._id === userId) ||
-              (userEmail && m.email === userEmail),
+              (userEmail && m.email === userEmail)
           );
           if (member) {
             setSelectedMember(member);
@@ -271,7 +271,7 @@ const AdminReport = () => {
         setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
         setIsReportReleased(
-          res.data.isReleased || res.data.report?.isReleased || false,
+          res.data.isReleased || res.data.report?.isReleased || false
         );
         setHasNoReport(false);
       } catch (error: any) {
@@ -322,7 +322,7 @@ const AdminReport = () => {
         `/dashboard/preview-pdf-report?${qParams.toString()}`,
         {
           responseType: "blob",
-        },
+        }
       );
       const url = URL.createObjectURL(response.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -389,7 +389,7 @@ const AdminReport = () => {
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[selectedDomain].subdomains,
+        reportData.scores.domains[selectedDomain].subdomains
       )[0];
       setSelectedSubdomain(firstSub);
     }
@@ -438,7 +438,7 @@ const AdminReport = () => {
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
-      k.toLowerCase().includes(pattern.toLowerCase()),
+      k.toLowerCase().includes(pattern.toLowerCase())
     );
     return key ? reportData.scores.domains[key].score : 0;
   };
@@ -466,7 +466,7 @@ const AdminReport = () => {
     setSelectedDomain(domain);
     if (reportData?.scores?.domains?.[domain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[domain].subdomains,
+        reportData.scores.domains[domain].subdomains
       )[0];
       setSelectedSubdomain(firstSub);
     } else {
@@ -546,7 +546,7 @@ const AdminReport = () => {
   const roleAverages = (() => {
     // Aggregated averages across ALL domains
     const lScores = Object.values(teamAvgData?.leaderAvg || {}).map(
-      (d: any) => d.avgScore || 0,
+      (d: any) => d.avgScore || 0
     );
     const leaderScore =
       lScores.length > 0
@@ -554,7 +554,7 @@ const AdminReport = () => {
         : 0;
 
     const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
-      (d: any) => d.avgScore || 0,
+      (d: any) => d.avgScore || 0
     );
     const managerScore =
       mScores.length > 0
@@ -562,7 +562,7 @@ const AdminReport = () => {
         : 0;
 
     const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
-      (d: any) => d.avgScore || 0,
+      (d: any) => d.avgScore || 0
     );
     const employeeScore =
       eScores.length > 0
@@ -677,13 +677,13 @@ const AdminReport = () => {
       const qCurrent =
         reportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain
         ) || [];
 
       const qFirst =
         firstReportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain
         ) || [];
 
       const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
@@ -700,7 +700,7 @@ const AdminReport = () => {
 
     // Default: subdomain averages
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
     );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
     const descriptions = subdomains.map((sub) => sub);
@@ -854,7 +854,7 @@ const AdminReport = () => {
                   : "";
 
                 navigate(
-                  `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
+                  `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
                 );
               }
             }}
@@ -1025,7 +1025,7 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                     {reportData?.scores?.domains?.[selectedDomain]
                       ?.subdomains &&
                       Object.keys(
-                        reportData.scores.domains[selectedDomain].subdomains,
+                        reportData.scores.domains[selectedDomain].subdomains
                       ).map((sub) => (
                         <li key={sub}>
                           <button
@@ -1217,13 +1217,13 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                                 .split(/\r?\n/)
                                 .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
-                              l.includes("•"),
+                              l.includes("•")
                             );
                             const finalMLines = hasMBullets
                               ? mLines
                                   .filter((l: string) => l.includes("•"))
                                   .map((l: string) =>
-                                    l.replace(/•/g, "").trim(),
+                                    l.replace(/•/g, "").trim()
                                   )
                                   .filter((l: string) => l.length > 0)
                               : mLines;
@@ -1243,7 +1243,7 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                                     {bullet}
                                   </span>
                                 </li>
-                              ),
+                              )
                             );
                           })()
                         ) : (
@@ -1908,4 +1908,3 @@ Provides clear direction on where to stabilize, optimize, or accelerate efforts.
 };
 
 export default AdminReport;
-

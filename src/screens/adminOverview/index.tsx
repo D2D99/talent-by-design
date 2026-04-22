@@ -10,7 +10,7 @@ import CircularProgress from "../../components/percentageCircle";
 const AdminOverview = () => {
   const navigate = useNavigate();
   const [selectedQuarter, setSelectedQuarter] = useState(
-    Math.floor(new Date().getMonth() / 3) + 1,
+    Math.floor(new Date().getMonth() / 3) + 1
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("list");
@@ -22,7 +22,7 @@ const AdminOverview = () => {
     const fetchIntelligence = async () => {
       try {
         const res = await api.get(
-          `assessment/admin/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`,
+          `assessment/admin/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`
         );
         setIntelData(res.data);
       } catch (error) {
@@ -381,7 +381,7 @@ const AdminOverview = () => {
           {/* Overall Health (Circular Progress Bar) */}
           <div className="xl:col-span-4 flex flex-col gap-4">
             <div className="flex-1 bg-[var(--app-surface)] rounded-xl border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-             <h3 className="text-sm font-black mb-6">
+              <h3 className="text-sm font-black mb-6">
                 POD-360™ Assessment Status
               </h3>
 

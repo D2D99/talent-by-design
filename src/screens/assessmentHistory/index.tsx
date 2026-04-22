@@ -124,7 +124,7 @@ const AssessmentHistory = () => {
                         />
                         {assessment.submittedAt || assessment.createdAt ? (
                           new Date(
-                            assessment.submittedAt || assessment.createdAt,
+                            assessment.submittedAt || assessment.createdAt
                           ).toLocaleDateString(undefined, {
                             year: "numeric",
                             month: "short",
@@ -137,7 +137,7 @@ const AssessmentHistory = () => {
                       <div className="text-xs text-gray-400 mt-1 pl-6">
                         {assessment.submittedAt || assessment.createdAt
                           ? new Date(
-                              assessment.submittedAt || assessment.createdAt,
+                              assessment.submittedAt || assessment.createdAt
                             ).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type TriangleData from "./types";
 
 type Props = {
@@ -36,7 +37,26 @@ function roundedTrianglePath(
   `;
 }
 
+/** Centroid of a triangle given 3 points */
+function centroid(
+  a: { x: number; y: number },
+  b: { x: number; y: number },
+  c: { x: number; y: number }
+) {
+  return { x: (a.x + b.x + c.x) / 3, y: (a.y + b.y + c.y) / 3 };
+}
+
+type TooltipInfo = {
+  x: number;
+  y: number;
+  label: string;
+  pct: number;
+  color: string;
+} | null;
+
 export default function Triangle({ data }: Props) {
+  const [tooltip, setTooltip] = useState<TooltipInfo>(null);
+
   // ===== GEOMETRY CONFIG =====
   const center = { x: 150, y: 153 };
   const radius = 120;
@@ -58,55 +78,147 @@ export default function Triangle({ data }: Props) {
   const dS = data.digitalFluency || 0;
 
   // BARYCENTRIC NORMALIZATION
-  // We divide the triangle into 3 parts based on the relative "share" of the scores
-  const scoreTotal = pS + oS + dS || 1; // Avoid divide by zero
-  const wp = pS / scoreTotal;
-  const wo = oS / scoreTotal;
-  const wd = dS / scoreTotal;
+  // We want the area of each sector to be proportional to its score.
+  // In a triangle POD with C = wP*P + wO*O + wD*D:
+  // Area(COD) = wP * TotalArea  (Bottom Sector)
+  // Area(CPD) = wO * TotalArea  (Right Sector)
+  // Area(CPO) = wD * TotalArea  (Left Sector)
+  const scoreTotal = pS + oS + dS || 1;
+  const wP = oS / scoreTotal; // Area of Bottom (Operational)
+  const wO = dS / scoreTotal; // Area of Right (Digital)
+  const wD = pS / scoreTotal; // Area of Left (People)
 
   // Meeting point (C) based on weights
-  // Note: Area(O-D-C) is proportional to wp
   const C = {
-    x: wp * P.x + wo * O.x + wd * D.x,
-    y: wp * P.y + wo * O.y + wd * D.y,
+    x: wP * P.x + wO * O.x + wD * D.x,
+    y: wP * P.y + wO * O.y + wD * D.y,
   };
 
   const colors = {
-    people: "#E6F0FA",      // Top vertex context -> opposite sector
-    operational: "#BFE0F6", // Bottom-left vertex context -> opposite sector
-    digital: "#357ABD"      // Bottom-right vertex context -> opposite sector
+    people: "#EDF5FD", // Lightest — bottom (Operational Steadiness)
+    operational: "#C7E0F8", // Medium — right (Digital Fluency)
+    digital: "#3C7CBA", // Dark    — left (People Potential)
+  };
+
+  const hoverColors = {
+    people: "#DAEDFF",
+    operational: "#AAD6FF",
+    digital: "#2D5D8C",
   };
 
   const roundedPath = roundedTrianglePath(P, O, D, 0.1);
 
+  // Sector centroids — used to position tooltip anchor
+  const bottomSectorCentroid = centroid(C, O, D);
+  const rightSectorCentroid = centroid(C, P, D);
+  const leftSectorCentroid = centroid(C, P, O);
+
+  // Tooltip box dimensions
+  const TW = 120;
+  const TH = 48;
+  const CARET = 6; // caret height
+  const PADDING = 6;
+
+  function clampX(x: number) {
+    return Math.min(Math.max(x - TW / 2, PADDING), 300 - TW - PADDING);
+  }
+  function clampY(y: number) {
+    const above = y - TH - CARET - 8;
+    return above < PADDING ? y + CARET + 8 : above;
+  }
+
+  const showTooltip = (
+    cx: number,
+    cy: number,
+    label: string,
+    pct: number,
+    color: string
+  ) => setTooltip({ x: cx, y: cy, label, pct, color });
+
+  const hideTooltip = () => setTooltip(null);
+
+  // Percentage values (raw scores are already 0–100)
+  const peoplePct = Math.round(pS);
+  const operationalPct = Math.round(oS);
+  const digitalPct = Math.round(dS);
+
   return (
-    <svg viewBox="0 0 300 300" width="100%">
+    <svg viewBox="0 0 300 300" width="100%" style={{ overflow: "visible" }}>
       <defs>
         <clipPath id="triangleClip">
           <path d={roundedPath} />
         </clipPath>
+        {/* Drop shadow filter for tooltip */}
+        <filter id="tooltipShadow" x="-10%" y="-10%" width="120%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#00000033" />
+        </filter>
       </defs>
 
       <g clipPath="url(#triangleClip)">
-        {/* SECTOR 1: PEOPLE (Opposite to P vertex) */}
+        {/* SECTOR 1: bottom face (C-O-D) → Operational Steadiness */}
         <polygon
           points={`${C.x},${C.y} ${O.x},${O.y} ${D.x},${D.y}`}
-          fill={colors.people}
-          className="transition-all duration-700 ease-in-out"
+          fill={
+            tooltip?.label === "Operational Steadiness"
+              ? hoverColors.people
+              : colors.people
+          }
+          className="transition-all duration-300 ease-in-out"
+          style={{ cursor: "pointer" }}
+          onMouseEnter={() =>
+            showTooltip(
+              bottomSectorCentroid.x,
+              bottomSectorCentroid.y,
+              "Operational Steadiness",
+              operationalPct,
+              "#3C7CBA"
+            )
+          }
+          onMouseLeave={hideTooltip}
         />
 
-        {/* SECTOR 2: OPERATIONAL (Opposite to O vertex) */}
+        {/* SECTOR 2: right face (C-P-D) → Digital Fluency */}
         <polygon
           points={`${C.x},${C.y} ${P.x},${P.y} ${D.x},${D.y}`}
-          fill={colors.operational}
-          className="transition-all duration-700 ease-in-out"
+          fill={
+            tooltip?.label === "Digital Fluency"
+              ? hoverColors.operational
+              : colors.operational
+          }
+          className="transition-all duration-300 ease-in-out"
+          style={{ cursor: "pointer" }}
+          onMouseEnter={() =>
+            showTooltip(
+              rightSectorCentroid.x,
+              rightSectorCentroid.y,
+              "Digital Fluency",
+              digitalPct,
+              "#3C7CBA"
+            )
+          }
+          onMouseLeave={hideTooltip}
         />
 
-        {/* SECTOR 3: DIGITAL (Opposite to D vertex) */}
+        {/* SECTOR 3: left face (C-P-O) → People Potential (dark) */}
         <polygon
           points={`${C.x},${C.y} ${P.x},${P.y} ${O.x},${O.y}`}
-          fill={colors.digital}
-          className="transition-all duration-700 ease-in-out"
+          fill={
+            tooltip?.label === "People Potential"
+              ? hoverColors.digital
+              : colors.digital
+          }
+          className="transition-all duration-300 ease-in-out"
+          style={{ cursor: "pointer" }}
+          onMouseEnter={() =>
+            showTooltip(
+              leftSectorCentroid.x,
+              leftSectorCentroid.y,
+              "People Potential",
+              peoplePct,
+              "#3C7CBA"
+            )
+          }
+          onMouseLeave={hideTooltip}
         />
       </g>
 
@@ -129,8 +241,12 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={P.x} dy="0">People</tspan>
-        <tspan x={P.x} dy="1.1em">Potential</tspan>
+        <tspan x={P.x} dy="0">
+          People
+        </tspan>
+        <tspan x={P.x} dy="1.1em">
+          Potential
+        </tspan>
       </text>
 
       <text
@@ -142,8 +258,12 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={O.x - 10} dy="0">Operational</tspan>
-        <tspan x={O.x - 10} dy="1.1em">Steadiness</tspan>
+        <tspan x={O.x - 10} dy="0">
+          Operational
+        </tspan>
+        <tspan x={O.x - 10} dy="1.1em">
+          Steadiness
+        </tspan>
       </text>
 
       <text
@@ -155,9 +275,76 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={D.x + 10} dy="0">Digital</tspan>
-        <tspan x={D.x + 10} dy="1.1em">Fluency</tspan>
+        <tspan x={D.x + 10} dy="0">
+          Digital
+        </tspan>
+        <tspan x={D.x + 10} dy="1.1em">
+          Fluency
+        </tspan>
       </text>
+
+      {/* TOOLTIP */}
+      {tooltip &&
+        (() => {
+          const tx = clampX(tooltip.x);
+          const ty = clampY(tooltip.y);
+          // Show caret below or above box depending on which side has space
+          const isAbove = tooltip.y - TH - CARET - 8 >= PADDING;
+          const caretX = Math.min(Math.max(tooltip.x, tx + 10), tx + TW - 10);
+          return (
+            <g style={{ pointerEvents: "none" }}>
+              {/* Dark card */}
+              <rect
+                x={tx}
+                y={ty}
+                width={TW}
+                height={TH}
+                rx={7}
+                ry={7}
+                fill="#2E3B4E"
+                filter="url(#tooltipShadow)"
+              />
+              {/* Caret arrow */}
+              {isAbove ? (
+                // Caret pointing DOWN (tooltip is above the cursor)
+                <polygon
+                  points={`${caretX - 6},${ty + TH} ${caretX + 6},${ty + TH} ${caretX},${ty + TH + CARET}`}
+                  fill="#2E3B4E"
+                />
+              ) : (
+                // Caret pointing UP (tooltip is below the cursor)
+                <polygon
+                  points={`${caretX - 6},${ty} ${caretX + 6},${ty} ${caretX},${ty - CARET}`}
+                  fill="#2E3B4E"
+                />
+              )}
+              {/* Domain label */}
+              <text
+                x={tx + TW / 2}
+                y={ty + 19}
+                textAnchor="middle"
+                fontSize={8.5}
+                fontWeight="600"
+                fill="#ffffff"
+                fontFamily="inherit"
+              >
+                {tooltip.label}
+              </text>
+              {/* Percentage */}
+              <text
+                x={tx + TW / 2}
+                y={ty + 36}
+                textAnchor="middle"
+                fontSize={12}
+                fontWeight="800"
+                fill="#ffffff"
+                fontFamily="inherit"
+              >
+                {tooltip.pct}%
+              </text>
+            </g>
+          );
+        })()}
     </svg>
   );
 }
