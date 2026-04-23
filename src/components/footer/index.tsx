@@ -7,10 +7,12 @@ const CallIcon = "/static/img/icons/phone-icon.svg";
 const GmailIcon = "/static/img/icons/gmail-icon.svg";
 const LocationIcon = "/static/img/icons/location-icon.svg";
 const HomeIcon = "/static/img/icons/home-icon.svg";
+const LogoIcon = "/static/img/footer-logo.svg";
+
 import { Icon } from "@iconify/react";
 const Footer = () => {
   return (
-    <div className="bg-[var(--black-color)] pt-16 pb-6 rounded-tl-[40px] rounded-tr-[40px] rounded-bl-none rounded-br-none">
+    <div className="bg-[var(--black-color)] pt-16 rounded-tl-[40px] rounded-tr-[40px] rounded-bl-none rounded-br-none">
       <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
         <div className="flex lg:flex-nowrap flex-wrap gap-10 justify-between">
           <div className="">
@@ -230,6 +232,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      <img src={LogoIcon} alt="Logo" className="w-full opacity-25 md:mt-10 mt-5" />
     </div>
   );
 };
