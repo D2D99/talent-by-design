@@ -275,7 +275,7 @@ const Home = () => {
 
             {/* Main Dashboard Frame with Central Intelligence Core */}
             <div className="relative z-10 rounded-xl bg-white md:p-10 p-4 shadow-[0_50px_100px_-20px_rgba(68,140,210,0.2)] border border-gray-100 transition-all duration-1000 ease-out group-hover:shadow-[0_80px_150px_-30px_rgba(68,140,210,0.3)] group-hover:-translate-y-2">
-              <div className="relative rounded-[2rem] overflow-hidden">
+              <div className="relative overflow-hidden">
                 <img
                   src={HeroImg}
                   alt="Hero Img"
