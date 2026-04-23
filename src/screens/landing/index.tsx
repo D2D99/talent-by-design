@@ -20,6 +20,8 @@ const Access3 = "/static/img/icons/access3.svg";
 const Access4 = "/static/img/icons/access4.svg";
 const PodLogo = "/static/img/POD-logo.svg";
 const PodInsightLogo = "/static/img/POD-insight.svg";
+const HeroImg = "/static/img/hero-img.png";
+const Test = "/static/img/test.png";
 
 const CapabilityPerformance = "/static/img/home/capability-performance.png";
 const POD360 = "/static/img/home/pod-360.svg";
@@ -105,7 +107,7 @@ const Home = () => {
       <Header />
 
       {/* Hero Section Start */}
-      <div className="relative isolate pt-10 overflow-x-hidden " id="hero-bg">
+      <div className="relative isolate pt-10 overflow-hidden " id="hero-bg">
         <div className="bg-svg !w-full absolute left-1/2 -translate-x-1/2 -z-10 pt-4">
           <svg
             width="2025"
@@ -209,7 +211,117 @@ const Home = () => {
             </button>
           </div>
 
-          <div className="flex justify-center items-center sm:mt-16 mt-10 mb-1">
+          <div className="lg:mt-32 sm:mt-20 mt-10 lg:mb-40 mb-20 relative max-w-5xl mx-auto px-4 group">
+            
+            {/* The Integrated Analysis Mesh - 4 Inward Streams */}
+            <div className="absolute inset-0 z-20 pointer-events-none hidden lg:block">
+              
+              {/* 1. Real-time Readiness (Top Left) */}
+              <div className="absolute -top-24 -left-20 flex flex-col items-center animate-[fadeSlideDown_1s_ease-out_forwards]">
+                <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Real-time Readiness</span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">92% READINESS SCORE</span>
+                </div>
+                <svg width="120" height="120" viewBox="0 0 120 120" className="mt-2">
+                  <path d="M60 0 Q 60 60 120 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                  <circle r="2.5" fill="var(--primary-color)">
+                    <animateMotion dur="3s" repeatCount="indefinite" path="M60 0 Q 60 60 120 120" />
+                  </circle>
+                </svg>
+              </div>
+
+              {/* 2. Operational Steadiness (Top Right) */}
+              <div className="absolute -top-24 -right-20 flex flex-col items-center animate-[fadeSlideDown_1.2s_ease-out_forwards]">
+                <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Operational Steadiness</span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">STABLE FLOW ACTIVE</span>
+                </div>
+                <svg width="120" height="120" viewBox="0 0 120 120" className="mt-2">
+                  <path d="M60 0 Q 60 60 0 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                  <circle r="2.5" fill="var(--primary-color)">
+                    <animateMotion dur="3.8s" repeatCount="indefinite" path="M60 0 Q 60 60 0 120" />
+                  </circle>
+                </svg>
+              </div>
+
+              {/* 3. Digital Fluency (Bottom Left) */}
+              <div className="absolute -bottom-24 -left-20 flex flex-col items-center animate-[fadeSlideUp_1.4s_ease-out_forwards]">
+                <svg width="120" height="120" viewBox="0 0 120 120" className="mb-2">
+                  <path d="M120 0 Q 60 60 60 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                  <circle r="2.5" fill="var(--primary-color)">
+                    <animateMotion dur="3.4s" repeatCount="indefinite" path="M120 0 Q 60 60 60 120" />
+                  </circle>
+                </svg>
+                <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Digital Fluency</span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">SYSTEM INTEGRITY VERIFIED</span>
+                </div>
+              </div>
+
+              {/* 4. Leadership Intelligence (Bottom Right) */}
+              <div className="absolute -bottom-24 -right-20 flex flex-col items-center animate-[fadeSlideUp_1.6s_ease-out_forwards]">
+                <svg width="120" height="120" viewBox="0 0 120 120" className="mb-2">
+                  <path d="M0 0 Q 60 60 60 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                  <circle r="2.5" fill="var(--primary-color)">
+                    <animateMotion dur="4.2s" repeatCount="indefinite" path="M0 0 Q 60 60 60 120" />
+                  </circle>
+                </svg>
+                <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Leadership Intelligence</span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">ACTIONABLE INSIGHTS GENERATED</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Dashboard Frame with Central Intelligence Core */}
+            <div className="relative z-10 rounded-xl bg-white md:p-10 p-4 shadow-[0_50px_100px_-20px_rgba(68,140,210,0.2)] border border-gray-100 transition-all duration-1000 ease-out group-hover:shadow-[0_80px_150px_-30px_rgba(68,140,210,0.3)] group-hover:-translate-y-2">
+              <div className="relative rounded-[2rem] overflow-hidden">
+                <img
+                  src={HeroImg}
+                  alt="Hero Img"
+                  className="w-full h-auto transition-transform duration-1000 group-hover:scale-[1.01]"
+                />
+                
+                {/* Central Intelligence Core */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
+                  <div className="w-12 h-12 bg-[var(--primary-color)]/20 rounded-full blur-xl animate-pulse"></div>
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-[var(--primary-color)] rounded-full shadow-[0_0_20px_var(--primary-color)] animate-pulse"></div>
+                  {/* Subtle radiating rings */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 border border-[var(--primary-color)]/30 rounded-full animate-[ping_3s_linear_infinite]"></div>
+                </div>
+
+                {/* Hotspot Markers on Image */}
+                <div className="absolute inset-0 z-20 pointer-events-none">
+                  <div className="absolute top-[20%] left-[15%] w-2 h-2 bg-[var(--primary-color)] rounded-full animate-pulse shadow-[0_0_10px_var(--primary-color)]"></div>
+                  <div className="absolute top-[20%] right-[15%] w-2 h-2 bg-[var(--primary-color)] rounded-full animate-pulse shadow-[0_0_10px_var(--primary-color)] [animation-delay:0.5s]"></div>
+                  <div className="absolute bottom-[20%] left-[15%] w-2 h-2 bg-[var(--primary-color)] rounded-full animate-pulse shadow-[0_0_10px_var(--primary-color)] [animation-delay:1s]"></div>
+                  <div className="absolute bottom-[20%] right-[15%] w-2 h-2 bg-[var(--primary-color)] rounded-full animate-pulse shadow-[0_0_10px_var(--primary-color)] [animation-delay:1.5s]"></div>
+                </div>
+
+                {/* Subtle Light Reflection Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              </div>
+            </div>
+
+            {/* Background Halo Effects */}
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-[var(--primary-color)]/5 rounded-full blur-[140px] -z-10 animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[var(--dark-primary-color)]/5 rounded-full blur-[140px] -z-10"></div>
+
+            {/* Custom Keyframe Animations */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @keyframes fadeSlideDown {
+                from { opacity: 0; transform: translateY(-40px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @keyframes fadeSlideUp {
+                from { opacity: 0; transform: translateY(40px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+            `}} />
+          </div>
+        </div>
+
+          {/* <div className="flex justify-center items-center sm:mt-16 mt-10 mb-1">
             <div className="flex justify-center items-center outline outline-1 p-3.5 outline-[#448cd24a] rounded-md w-full max-w-3xl">
               <div className="w-full aspect-video">
                 <iframe
@@ -222,8 +334,7 @@ const Home = () => {
                 />
               </div>
             </div>
-          </div>
-        </div>
+          </div> */}
       </div>
       {/* Hero Section End */}
 
