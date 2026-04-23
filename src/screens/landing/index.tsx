@@ -21,7 +21,7 @@ const Access4 = "/static/img/icons/access4.svg";
 const PodLogo = "/static/img/POD-logo.svg";
 const PodInsightLogo = "/static/img/POD-insight.svg";
 const HeroImg = "/static/img/hero-img.png";
-const Test = "/static/img/test.png";
+// const Test = "/static/img/test.png";
 
 const CapabilityPerformance = "/static/img/home/capability-performance.png";
 const POD360 = "/static/img/home/pod-360.svg";
