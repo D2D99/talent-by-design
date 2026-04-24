@@ -212,20 +212,38 @@ const Home = () => {
           </div>
 
           <div className="lg:mt-32 sm:mt-20 mt-10 lg:mb-40 mb-20 relative max-w-5xl mx-auto px-4 group">
-            
             {/* The Integrated Analysis Mesh - 4 Inward Streams */}
             <div className="absolute inset-0 z-20 pointer-events-none hidden lg:block">
-              
               {/* 1. Real-time Readiness (Top Left) */}
               <div className="absolute -top-24 -left-20 flex flex-col items-center animate-[fadeSlideDown_1s_ease-out_forwards]">
                 <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
-                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Real-time Readiness</span>
-                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">92% READINESS SCORE</span>
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">
+                    Real-time Readiness
+                  </span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">
+                    92% READINESS SCORE
+                  </span>
                 </div>
-                <svg width="120" height="120" viewBox="0 0 120 120" className="mt-2">
-                  <path d="M60 0 Q 60 60 120 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                <svg
+                  width="120"
+                  height="120"
+                  viewBox="0 0 120 120"
+                  className="mt-2"
+                >
+                  <path
+                    d="M60 0 Q 60 60 120 120"
+                    fill="none"
+                    stroke="var(--primary-color)"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    className="opacity-20"
+                  />
                   <circle r="2.5" fill="var(--primary-color)">
-                    <animateMotion dur="3s" repeatCount="indefinite" path="M60 0 Q 60 60 120 120" />
+                    <animateMotion
+                      dur="3s"
+                      repeatCount="indefinite"
+                      path="M60 0 Q 60 60 120 120"
+                    />
                   </circle>
                 </svg>
               </div>
@@ -233,42 +251,102 @@ const Home = () => {
               {/* 2. Operational Steadiness (Top Right) */}
               <div className="absolute -top-24 -right-20 flex flex-col items-center animate-[fadeSlideDown_1.2s_ease-out_forwards]">
                 <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
-                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Operational Steadiness</span>
-                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">STABLE FLOW ACTIVE</span>
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">
+                    Operational Steadiness
+                  </span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">
+                    STABLE FLOW ACTIVE
+                  </span>
                 </div>
-                <svg width="120" height="120" viewBox="0 0 120 120" className="mt-2">
-                  <path d="M60 0 Q 60 60 0 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                <svg
+                  width="120"
+                  height="120"
+                  viewBox="0 0 120 120"
+                  className="mt-2"
+                >
+                  <path
+                    d="M60 0 Q 60 60 0 120"
+                    fill="none"
+                    stroke="var(--primary-color)"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    className="opacity-20"
+                  />
                   <circle r="2.5" fill="var(--primary-color)">
-                    <animateMotion dur="3.8s" repeatCount="indefinite" path="M60 0 Q 60 60 0 120" />
+                    <animateMotion
+                      dur="3.8s"
+                      repeatCount="indefinite"
+                      path="M60 0 Q 60 60 0 120"
+                    />
                   </circle>
                 </svg>
               </div>
 
               {/* 3. Digital Fluency (Bottom Left) */}
               <div className="absolute -bottom-24 -left-20 flex flex-col items-center animate-[fadeSlideUp_1.4s_ease-out_forwards]">
-                <svg width="120" height="120" viewBox="0 0 120 120" className="mb-2">
-                  <path d="M120 0 Q 60 60 60 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                <svg
+                  width="120"
+                  height="120"
+                  viewBox="0 0 120 120"
+                  className="mb-2"
+                >
+                  <path
+                    d="M120 0 Q 60 60 60 120"
+                    fill="none"
+                    stroke="var(--primary-color)"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    className="opacity-20"
+                  />
                   <circle r="2.5" fill="var(--primary-color)">
-                    <animateMotion dur="3.4s" repeatCount="indefinite" path="M120 0 Q 60 60 60 120" />
+                    <animateMotion
+                      dur="3.4s"
+                      repeatCount="indefinite"
+                      path="M120 0 Q 60 60 60 120"
+                    />
                   </circle>
                 </svg>
                 <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
-                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Digital Fluency</span>
-                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">SYSTEM INTEGRITY VERIFIED</span>
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">
+                    Digital Fluency
+                  </span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">
+                    SYSTEM INTEGRITY VERIFIED
+                  </span>
                 </div>
               </div>
 
               {/* 4. Leadership Intelligence (Bottom Right) */}
               <div className="absolute -bottom-24 -right-20 flex flex-col items-center animate-[fadeSlideUp_1.6s_ease-out_forwards]">
-                <svg width="120" height="120" viewBox="0 0 120 120" className="mb-2">
-                  <path d="M0 0 Q 60 60 60 120" fill="none" stroke="var(--primary-color)" strokeWidth="1" strokeDasharray="4 4" className="opacity-20" />
+                <svg
+                  width="120"
+                  height="120"
+                  viewBox="0 0 120 120"
+                  className="mb-2"
+                >
+                  <path
+                    d="M0 0 Q 60 60 60 120"
+                    fill="none"
+                    stroke="var(--primary-color)"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    className="opacity-20"
+                  />
                   <circle r="2.5" fill="var(--primary-color)">
-                    <animateMotion dur="4.2s" repeatCount="indefinite" path="M0 0 Q 60 60 60 120" />
+                    <animateMotion
+                      dur="4.2s"
+                      repeatCount="indefinite"
+                      path="M0 0 Q 60 60 60 120"
+                    />
                   </circle>
                 </svg>
                 <div className="bg-white/95 backdrop-blur-2xl px-5 py-3 rounded-2xl shadow-2xl border border-[var(--primary-color)]/20 flex flex-col items-center">
-                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">Leadership Intelligence</span>
-                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">ACTIONABLE INSIGHTS GENERATED</span>
+                  <span className="text-[10px] font-black text-[var(--dark-primary-color)] uppercase tracking-[0.2em]">
+                    Leadership Intelligence
+                  </span>
+                  <span className="text-[9px] font-bold text-[var(--primary-color)] mt-1 opacity-70">
+                    ACTIONABLE INSIGHTS GENERATED
+                  </span>
                 </div>
               </div>
             </div>
@@ -281,7 +359,7 @@ const Home = () => {
                   alt="Hero Img"
                   className="w-full h-auto transition-transform duration-1000 group-hover:scale-[1.01]"
                 />
-                
+
                 {/* Central Intelligence Core */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
                   <div className="w-12 h-12 bg-[var(--primary-color)]/20 rounded-full blur-xl animate-pulse"></div>
@@ -308,7 +386,9 @@ const Home = () => {
             <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[var(--dark-primary-color)]/5 rounded-full blur-[140px] -z-10"></div>
 
             {/* Custom Keyframe Animations */}
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
               @keyframes fadeSlideDown {
                 from { opacity: 0; transform: translateY(-40px); }
                 to { opacity: 1; transform: translateY(0); }
@@ -317,11 +397,13 @@ const Home = () => {
                 from { opacity: 0; transform: translateY(40px); }
                 to { opacity: 1; transform: translateY(0); }
               }
-            `}} />
+            `,
+              }}
+            />
           </div>
         </div>
 
-          {/* <div className="flex justify-center items-center sm:mt-16 mt-10 mb-1">
+        {/* <div className="flex justify-center items-center sm:mt-16 mt-10 mb-1">
             <div className="flex justify-center items-center outline outline-1 p-3.5 outline-[#448cd24a] rounded-md w-full max-w-3xl">
               <div className="w-full aspect-video">
                 <iframe
@@ -360,17 +442,8 @@ const Home = () => {
                 <strong className="font-semibold">
                   Only 32% of employees are engaged,
                 </strong>{" "}
-                signaling widespread disengagement across organizations.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                <strong className="font-semibold">
-                  Low engagement points directly to leadership and culture gaps,
-                </strong>{" "}
-                including misalignment, poor communication, and insufficient
-                support.
+                signaling leadership and culture gaps, including misalignment,
+                poor communication, and insufficient support.
               </span>
             </li>
             <li className="feature-list">
@@ -405,10 +478,10 @@ const Home = () => {
           <h5 className="md:text-lg leading-5 text-[var(--secondary-color)] sm:mt-10 mt-5 font-semibold">
             Before your next planning cycle, and prior to any major digital
             roll-out, it’s critical to understand your organization’s actual
-            readiness and the hidden barriers that could derail progress. We
-            identify these strain points and design leadership, coaching, and
-            learning programs that align people and technology enabling teams to
-            operate with efficiency and confidence.
+            readiness and the current hidden barriers that could derail
+            progress. We identify these strain points and design leadership,
+            coaching, and learning programs that align people and technology
+            enabling teams to operate with efficiency and confidence.
           </h5>
         </div>
       </div>
@@ -485,16 +558,15 @@ const Home = () => {
                   </span>{" "}
                 </h2>
                 <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]  ">
-                  The landscape has changed dramatically over the past seven
-                  years. Hybrid and remote working, new digital tools,
-                  redesigned processes and systems, and shifting employee
-                  expectations mean that traditional approaches to leadership
-                  development, coaching, and learning no longer work.
-                  Organizations need solutions that are data-informed,
+                  The landscape has changed dramatically. Hybrid and remote
+                  working, new digital tools, redesigned processes and systems,
+                  and shifting employee expectations mean that traditional
+                  approaches to development, coaching, and learning no longer
+                  work. Organizations need solutions that are data-informed,
                   people-centered, and built for modern complexity.
                 </p>
                 <p className="sm:mt-6 mt-4 text-base font-normal max-w-xl text-[var(--secondary-color)] ">
-                  Our approach can be summarized in four simple steps:
+                  Our approach can be summarized in a few simple steps:
                 </p>
                 <img
                   src={CapabilityPerformance}
@@ -513,20 +585,19 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium pe-3">
-                    We Align on What Matters Most
+                    We align on what matters most
                   </h3>
                   <p className="text-base font-normal mt-1">
                     Every engagement begins with a strategic kick-off session.
                   </p>
                   <p className="text-base font-normal mt-2">
                     Together, we clarify your most important organizational
-                    priorities and establish inspirational yet measurable OKRs.
-                    We refine the POD-360™ assessment to reflect your unique
-                    context, ensuring the right questions are asked before
-                    measurement begins.
+                    priorities. We refine the POD-360™ assessment to reflect
+                    your unique context ensuring the right questions are asked
+                    before measurement begins.
                   </p>
                   <p className="text-base font-normal mt-2">
-                    This ensures the diagnostic is not generic it is
+                    This ensures the diagnostic is not generic; it is
                     purpose-built around what matters most to your organization
                     right now and into the future.
                   </p>
@@ -539,14 +610,14 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We Diagnose with Precision
+                    We diagnose with precision
                   </h3>
                   <p className="text-base font-normal mt-1">
                     We deploy the customized POD-360™ assessment to capture
                     insights across People, Operations, and Digital performance.
                     The data reveals friction points, capability gaps, and
                     systemic patterns that impact execution. Results are
-                    structured into sub-domain and domain scores, providing
+                    structured into domain and sub-domain scores, providing
                     clarity at both a detailed and strategic level.
                   </p>
                   <p className="text-base font-normal mt-2">
@@ -566,18 +637,18 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We integrate proven model - Prosci’s ADKAR framework
+                    We integrate proven model - Prosci’s ADKAR® framework
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    Insights alone don’t drive transformation structured change
+                    Insights alone don’t drive transformation; structured change
                     does.
                   </p>
                   <p className="text-base font-normal mt-2">
-                    All recommendations and coaching points are mapped to
-                    Prosci’s ADKAR® model (Awareness, Desire, Knowledge,
-                    Ability, Reinforcement) to ensure initiatives support your
+                    Recommendations and coaching points are mapped to Prosci’s
+                    ADKAR® model (Awareness, Desire, Knowledge, Ability,
+                    Reinforcement) to ensure initiatives support your
                     organization through each stage of change adoption.
-                    Standarded language and Change Leadership training will
+                    Standardized language and Change Leadership development will
                     support your Community of Practice.
                   </p>
                 </div>
@@ -592,15 +663,16 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We Optimize for High Performance
+                    We optimize for high performance
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    Transformation is not a one-time event it’s a maturity
-                    journey. Through quarterly reassessment and progress
-                    tracking, we measure movement against your OKRs and ADKAR
-                    adoption stages. Leaders gain clear visibility into what to
-                    accelerate, where to stabilize, and how to sequence
-                    initiatives for maximum impact.
+                    Transformation is not a one-time event, it's a maturity
+                    journey. Through ongoing reassessment and progress tracking,
+                    we measure movement against your strategic goals, Objectives
+                    and Key Results (OKRs) and ADKAR adoption stages. Leaders
+                    gain clear visibility into what to accelerate, where to
+                    stabilize, and how to sequence initiatives for maximum
+                    impact.
                   </p>
                   <p className="text-base font-normal mt-2">
                     The result: a high-functioning, aligned organization
@@ -619,24 +691,22 @@ const Home = () => {
                     alt="Number"
                   />
                   <h3 className="home-step-title sm:text-2xl text-xl font-medium">
-                    We've added an AI Powered Intelligence Layer to the Platform
+                    COMING SOON! We're working on an AI Powered Intelligence
+                    layer for the platform
                   </h3>
                   <p className="text-base font-normal mt-1">
-                    POD Insights™ synthesizes assessment results, OKRs, and
+                    POD Insights™ will synthesize assessment results, OKRs, and
                     organizational inputs to surface strategic priorities.
                     Powered by AI, it highlights risk, opportunity, and
                     sequencing decisions giving leadership teams a clear roadmap
                     for where to invest energy and resources next and where to
-                    “cool-off” and for how long. Our prompt library is designed
-                    to streamline executive alignment preventing
-                    misinterpretation, reducing conflict, and ensuring focus
-                    remains on an objective, data-informed organizational
-                    snapshot.
+                    “cool-off” and for how long.
                   </p>
                   <p className="text-base font-normal mt-2">
-                    ​ The result from the POD products is not just about
-                    measurement and change execution but adaptive, data-informed
-                    strategy.
+                    Our prompt library is designed to streamline executive
+                    alignment, preventing misinterpretation, reducing conflict,
+                    and ensuring focus remains on an objective, data-informed
+                    organizational snapshot.
                   </p>
                 </div>
 
@@ -661,7 +731,8 @@ const Home = () => {
                   A modern, integrated system that equips leaders and teams to
                   adapt faster, work better, and accelerate organizational
                   progress with measurable improvements in performance,
-                  alignment, and capability.
+                  alignment, and capability. It's not just about measurement and
+                  change execution but adaptive, data-informed strategy.
                 </p>
               </div>
             </div>
@@ -676,14 +747,14 @@ const Home = () => {
           <div className="flex sm:items-center gap-x-10 gap-y-5 justify-between sm:flex-row flex-col-reverse">
             <div>
               <h4 className="badge">OUR PROPRIETARY ASSESSMENT</h4>
-              <h2 className="sub-heading">
+              <h2 className="sub-heading !max-w-xl">
                 Behavioural
                 <span className="sub-heading-highlight">
                   {" "}
                   Science{" "}
                 </span> and{" "}
                 <span className="sub-heading-highlight"> Smart </span>
-                Questioning That Cuts Straight to{" "}
+                Questioning Design That Cuts Straight to{" "}
                 <span className="sub-heading-highlight"> The Truth </span>
               </h2>
             </div>
@@ -705,11 +776,9 @@ const Home = () => {
               inflated, under-reported, or “gamed,” POD-360™ uses multi-role
               triangulation (Employee, Manager, Leader) to reveal blind spots
               and blockers. It replaces subjective questions with behavioural
-              and scenario-based items that ask what actually happened in the
-              last 30 days, reducing guesswork and social desirability bias.
-              Calibration items detect inflated or defensive responses, while
-              insight prompts generate qualitative explanations that help
-              validate patterns and uncover root causes.
+              and scenario-based items that ask what is actually happening,
+              reducing guesswork and social desirability bias. Calibration items
+              detect inflated or defensive responses.
             </p>
             <p className="mt-4 text-base font-normal text-[var(--secondary-color)] ">
               Layered on top are domain weighting, risk flags, and variance
@@ -718,9 +787,9 @@ const Home = () => {
               the way of achieving intended outcomes, objectives and key
               results.
             </p>
-            <p className="text-base font-normal text-[var(--secondary-color)] ">
+            <p className="text-base font-normal text-[var(--secondary-color)] mt-4">
               The result is a high-validity, low-bias assessment that provides
-              actionable insights across 3 domains and 12 subdomains.
+              actionable insights across 3 domains and 10 subdomains.
             </p>
           </div>
 
@@ -929,7 +998,7 @@ const Home = () => {
             </span>{" "}
           </h2>
           <p className="text-base font-normal mt-2 lg:max-w-3xl text-[var(--secondary-color)] ">
-            Most organizations don’t fail because they set the wrong goals they
+            Most organizations don’t fail because they set the wrong goals, they
             fail because people, processes/operations, and digital tools aren’t
             working together to execute them. The POD-360™ Assessment reveals
             the friction patterns that slow teams down. OKRs will provide the
@@ -949,16 +1018,16 @@ const Home = () => {
               <ul className="sm:mt-7 mt-4 space-y-1">
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Unclear roles</span>
+                  <span>Unclear roles and overload teams</span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>Inconsistent processes</span>
                 </li>
-                <li className="feature-list">
+                {/* <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>Overloaded teams</span>
-                </li>
+                </li> */}
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>Digital under-adoption</span>
@@ -993,7 +1062,7 @@ const Home = () => {
               <ul className="sm:mt-7 mt-4 space-y-1">
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Clear direction</span>
+                  <span>Clear direction and momentum</span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
@@ -1006,10 +1075,6 @@ const Home = () => {
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>Accountable owners</span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Quarterly momentum</span>
                 </li>
               </ul>
               <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
@@ -1030,19 +1095,19 @@ const Home = () => {
               <ul className="sm:mt-7 mt-4 space-y-1">
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>No more vague goals or misaligned priorities.</span>
+                  <span>No more vague goals or misaligned priorities</span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Each OKR is grounded in real data not guesses.</span>
+                  <span>Each OKR is grounded in real data not guesses</span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>POD-360™ tells you where to focus.</span>
+                  <span>POD-360™ tells you where to focus</span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>OKRs define how to move forward.</span>
+                  <span>OKRs define how to move forward</span>
                 </li>
               </ul>
             </div>
@@ -1061,37 +1126,22 @@ const Home = () => {
               <ul className="sm:mt-7 mt-4 space-y-1">
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>OKRs are easier to define</span>
+                  <span>
+                    Run a mini POD-360™ pulse and key performance areas
+                  </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Progress is easier to measure</span>
+                  <span>Refresh OKRs based on friction levels</span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Improvements are easier to sustain</span>
+                  <span>
+                    Track impact of programs and coaching in flow and
+                    performance
+                  </span>
                 </li>
               </ul>
-
-              <div>
-                <p className="text-base font-normal my-4 max-w-xl text-[var(--secondary-color)] ">
-                  Every quarter teams can:
-                </p>
-                <ul>
-                  <li className="feature-list">
-                    <img src={IconStar} alt="icon" className="mt-1" />
-                    <span>Run a mini POD-360™ pulse</span>
-                  </li>
-                  <li className="feature-list">
-                    <img src={IconStar} alt="icon" className="mt-1" />
-                    <span>Refresh OKRs based on friction levels</span>
-                  </li>
-                  <li className="feature-list">
-                    <img src={IconStar} alt="icon" className="mt-1" />
-                    <span>Track improvements in flow and performance</span>
-                  </li>
-                </ul>
-              </div>
 
               <p className="text-base font-normal mt-3 max-w-xl text-[var(--secondary-color)] ">
                 This creates a <strong>continuous improvement system.</strong>
@@ -1151,6 +1201,8 @@ const Home = () => {
                   POD Insights™ AI-Powered Organizational Intelligence
                 </h4>
                 <h2 className="sub-heading !max-w-xl">
+                  <span className="sub-heading-highlight">COMING SOON!</span>{" "}
+                  <br />
                   The Secure
                   <span className="sub-heading-highlight">
                     {" "}
@@ -1202,10 +1254,7 @@ const Home = () => {
                     className="h-20 w-20 object-contain mb-3"
                   />
                   <p>
-                    Upload your content and enter prompt. Bring in strategic
-                    plans, transformation documents, operating models, reports,
-                    and key organizational artifacts. Access quality prompts
-                    from our vast library.
+                  Upload your content such as strategic plans, transformation documents, operating models, reports, and key organizational artifacts. Access quality prompts from our vast library.
                   </p>
                 </div>
 
@@ -1391,11 +1440,7 @@ const Home = () => {
                   </div>
                   <p className="mt-5">
                     <strong>
-                      In every engagement, we establish clear OKRs and use the
-                      POD-360™ Assessment to measure progress and demonstrate
-                      ROI. Before concluding our work together, we help
-                      establish a Community of Practice to ensure long-term
-                      capability, sustainability, and continued success.
+                  We use the POD-360™ Assessment to measure progress and demonstrate clear ROI on your key investments including your engagement with us. Before concluding our work together, we also help establish a Community of Practice to ensure long-term capability, sustainability, and continued success.
                     </strong>
                   </p>
                 </div>

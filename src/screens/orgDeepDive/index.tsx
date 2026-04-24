@@ -147,7 +147,7 @@ const OrganizationDeepDive = () => {
 
   const displayStats = [
     {
-      label: "Total Team Members",
+      label: "Total Members",
       value: total.toString(),
       icon: "solar:users-group-two-rounded-broken",
       color: "#448CD2",
@@ -159,16 +159,22 @@ const OrganizationDeepDive = () => {
       color: "#F59E0B",
     },
     {
-      label: "Completed Cycles",
-      value: completed.toString(),
-      icon: "solar:checklist-minimalistic-broken",
-      color: "#10B981",
+      label: "Not Started",
+      value: pending.toString(),
+      icon: "material-symbols:not-started-outline",
+      color: "#8892B0",
     },
     {
       label: "In Progress",
       value: inProgress.toString(),
       icon: "solar:clock-circle-broken",
       color: "#8E54E9",
+    },
+    {
+      label: "Completed Cycles",
+      value: completed.toString(),
+      icon: "solar:checklist-minimalistic-broken",
+      color: "#10B981",
     },
   ];
 
@@ -389,7 +395,7 @@ const OrganizationDeepDive = () => {
       </div>
 
       {/* ── Stats Grid ── */}
-      <div className="grid grid-cols-2 pt-5 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 pt-5 xl:grid-cols-5 gap-3">
         {displayStats.map((stat, idx) => (
           <div
             key={idx}
@@ -527,8 +533,8 @@ const OrganizationDeepDive = () => {
               {[
                 { label: "Completed", value: completed, color: "#10B981" },
                 { label: "In Progress", value: inProgress, color: "#6366F1" },
-                { label: "Pending", value: pending, color: "#F59E0B" },
-                { label: "Total Members", value: total, color: "#448CD2" },
+                { label: "Pending Member", value: pending, color: "#F59E0B" },
+                { label: "Total Members Joined", value: total, color: "#448CD2" },
               ].map((item, i) => (
                 <div
                   key={i}

@@ -173,6 +173,9 @@ const OrgAssessmentDetails = () => {
   const dueMembers = eligibleMembers.filter(
     (m) => m.assessmentStatus === "Due"
   ).length;
+  const notStartedMembers = eligibleMembers.filter(
+    (m) => !m.assessmentStatus || m.assessmentStatus === "Not Started"
+  ).length;
 
   // %age based ONLY on eligible members (excluding Admins)
   const completionRate =
@@ -245,7 +248,7 @@ const OrgAssessmentDetails = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xxl:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-6 gap-4 mb-6">
           <div className="bg-blue-200/25 border border-blue-200 rounded-xl p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -321,6 +324,26 @@ const OrgAssessmentDetails = () => {
                 <Icon
                   icon="wordpress:pending"
                   className="text-red-600"
+                  width="24"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Not Started
+                </p>
+                <p className="text-2xl font-bold text-gray-500 mt-1">
+                  {notStartedMembers}
+                </p>
+              </div>
+              <div className="p-3 bg-gray-200/50 rounded-lg">
+                <Icon
+                  icon="material-symbols:not-started-outline"
+                  className="text-gray-500"
                   width="24"
                 />
               </div>
