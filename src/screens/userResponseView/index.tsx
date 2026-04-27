@@ -30,7 +30,7 @@ const FilterSection = ({
     <div className="border-b border-gray-100 last:border-0 pb-6">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full uppercase text-xs font-bold text-gray-400 group pt-2 focus:outline-none"
+        className="flex items-center justify-between w-full group pt-2 focus:outline-none text-xs font-black uppercase"
       >
         <span>{title}</span>
         <Icon
@@ -179,8 +179,8 @@ const UserResponseView = () => {
             </button>
           </div>
 
-          <div className="md:max-h-[500px] max-h-[calc(100vh-80px)] overflow-y-auto px-5 space-y-6">
-            <FilterSection title="Domain Focus" open>
+          <div className="md:max-h-[500px] max-h-[calc(100vh-80px)] overflow-y-auto px-5 space-y-6 scroll-thin">
+            <FilterSection title="Domain" open>
               {DOMAINS.map((d) => (
                 <label
                   key={d}
@@ -193,7 +193,7 @@ const UserResponseView = () => {
                       setFilterDomains([d]);
                       setFilterSubdomains([]);
                     }}
-                    className="w-4 h-4 rounded-full border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    className="accent-blue-500 text-blue-600 focus:ring-blue-500 rounded-full cursor-pointer"
                   />
                   <span
                     className={`text-sm font-medium ${filterDomains.includes(d) ? "text-gray-900" : "text-gray-600"}`}
@@ -204,7 +204,7 @@ const UserResponseView = () => {
               ))}
             </FilterSection>
 
-            <FilterSection title="Sub-domains" open>
+            <FilterSection title="Sub-domain" open>
               {allSubdomains
                 .filter((s) =>
                   responses.find(
@@ -220,7 +220,7 @@ const UserResponseView = () => {
                       type="checkbox"
                       checked={filterSubdomains.includes(s)}
                       onChange={() => toggleFilter(setFilterSubdomains, s)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      className="accent-blue-500 text-blue-600 focus:ring-blue-500 rounded-full cursor-pointer"
                     />
                     <span className="text-sm font-medium text-gray-700 truncate">
                       {s}
@@ -229,7 +229,7 @@ const UserResponseView = () => {
                 ))}
             </FilterSection>
 
-            <FilterSection title="Question Logic">
+            <FilterSection title="Question type">
               {allTypes.map((t) => (
                 <label
                   key={t}
@@ -239,7 +239,7 @@ const UserResponseView = () => {
                     type="checkbox"
                     checked={filterTypes.includes(t)}
                     onChange={() => toggleFilter(setFilterTypes, t)}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    className="accent-blue-500 text-blue-600 focus:ring-blue-500 rounded-full cursor-pointer"
                   />
                   <span className="text-sm font-medium text-gray-700">
                     {t.replace("-", " ")}

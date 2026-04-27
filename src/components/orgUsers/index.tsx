@@ -323,7 +323,7 @@ const OrgUsers = ({
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-6 mt-10">
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"

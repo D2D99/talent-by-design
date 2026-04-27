@@ -227,7 +227,7 @@ const FilterSection = ({
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full group/head pt-2 focus:outline-none"
       >
-        <span className="text-xs font-black text-[#1A3652] uppercase tracking-[0.2em]">
+        <span className="text-xs font-black uppercase">
           {title}
         </span>
         <Icon
