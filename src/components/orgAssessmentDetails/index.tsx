@@ -612,7 +612,7 @@ const OrgAssessmentDetails = () => {
                     <td className="px-6 py-4 text-sm font-medium text-gray-500">
                       {member.email}
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-500 capitalize">
                       {!member.department || member.department === "-" ? (
                         <span className="text-gray-300 font-bold">—</span>
                       ) : (

@@ -266,7 +266,7 @@ const AdminAssessments = () => {
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {member.email}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-600 capitalize">
                       {member.department}
                     </td>
                     <td className="px-6 py-4">

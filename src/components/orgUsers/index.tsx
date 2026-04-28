@@ -265,7 +265,7 @@ const OrgUsers = ({
 
           {/* Stats Cards */}
           {(isAdmin || isSuperAdmin) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
               {[
                 {
                   label: "Total Active",
@@ -323,7 +323,7 @@ const OrgUsers = ({
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-6 mt-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
           <Icon
             icon="tabler:search"
@@ -401,7 +401,7 @@ const OrgUsers = ({
                       {indexOfFirstItem + index + 1}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium">
-                      <span className="font-bold text-gray-800 tracking-tight text-nowrap">
+                      <span className="font-bold text-gray-800 tracking-tight text-nowrap capitalize">
                         {member.firstName === "-" ? (
                           <span className="text-gray-300 font-black">—</span>
                         ) : (
@@ -416,7 +416,7 @@ const OrgUsers = ({
                       {new Date(member.createdAt).toLocaleDateString()}
                     </td>
                     {(isSuperAdmin || isAdmin) && (
-                      <td className="px-6 py-4 text-sm font-medium text-gray-500">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-500 capitalize">
                         {member.department || "—"}
                       </td>
                     )}

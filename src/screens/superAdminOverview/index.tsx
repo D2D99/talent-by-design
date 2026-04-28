@@ -90,10 +90,8 @@ const SuperAdminOverview = () => {
       color: "#2d5d8c",
     },
     {
-      label: "Client Success Rate",
-      // detail: "Active participation score",
-      longDesc:
-        "Percentage of clients with active quarterly assessment cycles.",
+      label: "Active This Quarter",
+      longDesc: "Percentage of organizations with at least one completed assessment this quarter.",
       value: intelData?.stats?.[3]?.value || "0%",
       icon: "solar:ticker-star-linear",
       color: "#10b981",

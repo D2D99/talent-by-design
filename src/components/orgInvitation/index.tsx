@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 // Make sure this path is correct based on your project structure
 import ProgressIcon from "../../../public/static/img/home/progress-icon.png";
 import { Link, useParams } from "react-router-dom";
+import * as XLSX from "xlsx";
 
 // Defined Interface
 interface Invitation {
@@ -212,8 +213,13 @@ const OrgInvitation = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.name.endsWith(".csv")) {
-      toast.error("Please upload a CSV file");
+    const allowedExtensions = [".csv", ".xlsx", ".xls"];
+    const isAllowed = allowedExtensions.some((ext) =>
+      file.name.toLowerCase().endsWith(ext)
+    );
+
+    if (!isAllowed) {
+      toast.error("Please upload a CSV or Excel file");
       return;
     }
 
@@ -247,8 +253,13 @@ const OrgInvitation = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.name.endsWith(".csv")) {
-      toast.error("Please upload a CSV file");
+    const allowedExtensions = [".csv", ".xlsx", ".xls"];
+    const isAllowed = allowedExtensions.some((ext) =>
+      file.name.toLowerCase().endsWith(ext)
+    );
+
+    if (!isAllowed) {
+      toast.error("Please upload a CSV or Excel file");
       return;
     }
 
@@ -264,8 +275,60 @@ const OrgInvitation = () => {
     setIsLoading(true);
 
     try {
+      const data = await csvFile.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+
+      // Parse all rows to JSON for validation
+      const allRows = XLSX.utils.sheet_to_json<any>(worksheet);
+
+      // Normalize declared departments for case-insensitive check
+      const declaredDepts = orgDepartments.map((d) => d.toLowerCase());
+      const filteredRows: any[] = [];
+      const invalidDepts: string[] = [];
+
+      allRows.forEach((row) => {
+        // Only validate department if not superadmin (who adds orgs, not users usually)
+        // or if department is present in the row.
+        const rowDept = row.department?.toString().trim();
+
+        if (!isSuperAdmin) {
+          if (!rowDept) {
+            invalidDepts.push(`${row.email || "Unknown"}: Missing department`);
+          } else if (!declaredDepts.includes(rowDept.toLowerCase())) {
+            invalidDepts.push(`${row.email || "Unknown"}: Invalid department "${rowDept}"`);
+          } else {
+            filteredRows.push(row);
+          }
+        } else {
+          // Superadmin flow might not require department validation in the same way
+          filteredRows.push(row);
+        }
+      });
+
+      if (filteredRows.length === 0 && allRows.length > 0) {
+        toast.error("Upload Failed: No matching departments found.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (invalidDepts.length > 0) {
+        toast.warn(`Skipped ${invalidDepts.length} user${invalidDepts.length > 1 ? "s" : ""} with undeclared departments.`);
+        console.warn("Filtered users details:", invalidDepts);
+      }
+
+      // Convert filtered rows back to CSV
+      const newWorksheet = XLSX.utils.json_to_sheet(filteredRows);
+      const csvContent = XLSX.utils.sheet_to_csv(newWorksheet);
+      const fileToSend = new Blob([csvContent], { type: "text/csv" });
+
       const formData = new FormData();
-      formData.append("file", csvFile);
+      formData.append(
+        "file",
+        fileToSend,
+        csvFile.name.replace(/\.(xlsx?|csv)$/i, ".csv")
+      );
 
       const res = await api.post("auth/send-bulk-invitation", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -577,7 +640,7 @@ const OrgInvitation = () => {
                 <div className="flex-[1.1] flex flex-col justify-center">
                   <input
                     type="file"
-                    accept=".csv"
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                     id="bulkCsvInput"
                     hidden
                     onChange={handleFileSelect}
@@ -617,7 +680,7 @@ const OrgInvitation = () => {
                       </div>
 
                       <h4 className="text-base font-bold text-[#1a3652] mb-0.5">
-                        Add CSV file
+                        Add CSV or Excel file
                       </h4>
                       <p className="text-xs text-gray-400 mb-3">
                         Browse or drag and drop
@@ -843,7 +906,7 @@ const OrgInvitation = () => {
                           <td className="px-6 py-4 text-sm font-semibold text-gray-700">
                             {indexOfFirstItem + index + 1}
                           </td>
-                          <td className="px-6 py-4 text-sm text-[var(--app-text-color)] font-bold">
+                          <td className="px-6 py-4 text-sm text-[var(--app-text-color)] font-bold capitalize">
                             {isSuperAdmin ? (
                               <Link
                                 to={`/dashboard/organization/${item.orgName}`}
@@ -887,7 +950,7 @@ const OrgInvitation = () => {
                             )}
                           </td>
                           {!isSuperAdmin && (
-                            <td className="px-6 py-4 text-sm text-gray-600">
+                            <td className="px-6 py-4 text-sm text-gray-600 capitalize">
                               {item.department || "—"}
                             </td>
                           )}

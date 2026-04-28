@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
-import { useEffect, useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { Collapse, Tab, Modal, Ripple, initTWE } from "tw-elements";
 import type { DropResult } from "@hello-pangea/dnd";
@@ -2984,29 +2985,46 @@ const CrudModals = (props: CrudModalsProps) => {
                     )}
 
                     {/* Insight Prompt - Matching AssessmentQuestion styling */}
-                    <div
-                      className={`transition-all duration-300 ${
-                        shouldShowPrompt
-                          ? "opacity-100 h-auto"
-                          : "opacity-0 h-0 overflow-hidden"
-                      }`}
-                    >
-                      <label className="text-sm font-bold block mb-2">
-                        {isForcedChoice
-                          ? previewValue === "A"
-                            ? currentQ?.forcedChoice?.optionA?.insightPrompt
-                            : currentQ?.forcedChoice?.optionB?.insightPrompt
-                          : currentQ?.insightPrompt ||
-                            "Why did you choose this score?"}
-                        <span className="text-black"> *</span>
-                      </label>
-                      <textarea
-                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
-                        rows={4}
-                        placeholder="Simulated insight text for now it's readOnly..."
-                        readOnly
-                      ></textarea>
-                    </div>
+                    <AnimatePresence mode="wait">
+                      {shouldShowPrompt && (
+                        isForcedChoice ? (
+                          <motion.div
+                            key={`${previewIdx}-${previewValue}`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="w-full"
+                          >
+                            <label className="text-sm font-bold block mb-2">
+                              {previewValue === "A"
+                                ? currentQ?.forcedChoice?.optionA?.insightPrompt
+                                : currentQ?.forcedChoice?.optionB?.insightPrompt}
+                              <span className="text-black"> *</span>
+                            </label>
+                            <textarea
+                              className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                              rows={4}
+                              placeholder="Simulated insight text for now it's readOnly..."
+                              readOnly
+                            ></textarea>
+                          </motion.div>
+                        ) : (
+                          <div className="w-full transition-all duration-300 opacity-100 h-auto">
+                            <label className="text-sm font-bold block mb-2">
+                              {currentQ?.insightPrompt || "Why did you choose this score?"}
+                              <span className="text-black"> *</span>
+                            </label>
+                            <textarea
+                              className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                              rows={4}
+                              placeholder="Simulated insight text for now it's readOnly..."
+                              readOnly
+                            ></textarea>
+                          </div>
+                        )
+                      )}
+                    </AnimatePresence>
 
                     {/* Footer Buttons - Inside the card for better alignment */}
                     <div className="sm:mt-12 mt-8 flex flex-wrap gap-5 sm:justify-between sm:items-center">

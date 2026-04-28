@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
@@ -476,34 +477,52 @@ const AssessmentQuestion = () => {
                       </div>
                     )}
 
-                    <div
-                      className={`transition-all duration-300 ${
-                        (!isForcedChoice &&
-                          typeof selectedValue === "number" &&
-                          selectedValue <= 2) ||
-                        (isForcedChoice && selectedValue !== null)
-                          ? "opacity-100 h-auto"
-                          : "opacity-0 h-0 overflow-hidden"
-                      }`}
-                    >
-                      <label className="text-sm font-bold block mb-2">
-                        {isForcedChoice
-                          ? selectedValue === "A"
-                            ? currentQuestion?.forcedChoice?.optionA
-                                .insightPrompt
-                            : currentQuestion?.forcedChoice?.optionB
-                                .insightPrompt
-                          : currentQuestion?.insightPrompt ||
-                            "Why did you choose this score?"}
-                        <span className="text-black"> *</span>
-                      </label>
-                      <textarea
-                        className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
-                        rows={4}
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                      ></textarea>
-                    </div>
+                    <AnimatePresence mode="wait">
+                      {((!isForcedChoice &&
+                        typeof selectedValue === "number" &&
+                        selectedValue <= 2) ||
+                        (isForcedChoice && selectedValue !== null)) && (
+                        isForcedChoice ? (
+                          <motion.div
+                            key={`${currentIndex}-${selectedValue}`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="w-full"
+                          >
+                            <label className="text-sm font-bold block mb-2">
+                              {selectedValue === "A"
+                                ? currentQuestion?.forcedChoice?.optionA
+                                    .insightPrompt
+                                : currentQuestion?.forcedChoice?.optionB
+                                    .insightPrompt}
+                              <span className="text-black"> *</span>
+                            </label>
+                            <textarea
+                              className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                              rows={4}
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                            ></textarea>
+                          </motion.div>
+                        ) : (
+                          <div className="w-full transition-all duration-300 opacity-100 h-auto">
+                            <label className="text-sm font-bold block mb-2">
+                              {currentQuestion?.insightPrompt ||
+                                "Why did you choose this score?"}
+                              <span className="text-black"> *</span>
+                            </label>
+                            <textarea
+                              className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                              rows={4}
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                            ></textarea>
+                          </div>
+                        )
+                      )}
+                    </AnimatePresence>
                   </>
                 ) : (
                   <div className="sm:mb-6 mb-4">
@@ -557,7 +576,7 @@ const AssessmentQuestion = () => {
                       <label className="font-bold text-sm">Department *</label>
 
                       <div className="relative w-full">
-                        <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 pointer-events-none">
+                        <div className="absolute inset-y-0 right-0 top-2 hidden items-center pr-3 pointer-events-none">
                           <svg
                             className="h-4 w-4 text-[#5D5D5D]"
                             fill="none"
@@ -603,7 +622,7 @@ const AssessmentQuestion = () => {
                                   department: e.target.value,
                                 })
                               }
-                              className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none capitalize ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                              className={`font-medium text-sm text-[#5D5D5D] opacity-100 w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none capitalize ${isLocked ? "bg-gray-50 cursor-not-allowed" : ""}`}
                             >
                               <option value="">Select your department</option>
                               {options.map((dept) => (
