@@ -50,6 +50,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const modalInstance = useRef<any>(null);
 
@@ -84,22 +85,28 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     }
   }, [onClose]);
 
+  const hasInitialized = useRef(false);
+
   useEffect(() => {
     if (isOpen) {
-      setSelectedDomain(initialDomain);
-      setSelectedSubdomain(initialSubdomain);
-      setInsight(formatWithBullets(rawFeedback?.insight || ""));
-      setCoachingTips(formatWithBullets(rawFeedback?.coachingTips || ""));
-      setRecommendedPrograms(
-        formatWithBullets(rawFeedback?.recommendedPrograms || ""),
-      );
-      setModelDescription(
-        formatWithBullets(rawFeedback?.modelDescription || ""),
-      );
-      setObjectives(formatWithBullets(rawFeedback?.objectives || ""));
-      setProgressScore(rawFeedback?.progressScore || 0);
+      if (!hasInitialized.current) {
+        setSelectedDomain(initialDomain);
+        setSelectedSubdomain(initialSubdomain);
+        setInsight(formatWithBullets(rawFeedback?.insight || ""));
+        setCoachingTips(formatWithBullets(rawFeedback?.coachingTips || ""));
+        setRecommendedPrograms(
+          formatWithBullets(rawFeedback?.recommendedPrograms || ""),
+        );
+        setModelDescription(
+          formatWithBullets(rawFeedback?.modelDescription || ""),
+        );
+        setObjectives(formatWithBullets(rawFeedback?.objectives || ""));
+        setProgressScore(rawFeedback?.progressScore || 0);
+        hasInitialized.current = true;
+      }
       if (modalInstance.current) modalInstance.current.show();
     } else {
+      hasInitialized.current = false;
       if (modalInstance.current) modalInstance.current.hide();
     }
   }, [isOpen, rawFeedback, initialDomain, initialSubdomain]);
@@ -137,6 +144,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
           setObjectives(
             formatWithBullets(pods?.objectives?.items?.join("\n") || ""),
           );
+          setIsDirty(false);
         }
       } catch (err) {
         if (!ignore) console.error("Failed to fetch context data", err);
@@ -224,12 +232,14 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               start + insertion.length;
           }, 0);
         }
+        setIsDirty(true);
       }
     }
   };
 
-  const handleSave = async () => {
-    setLoading(true);
+  const handleSave = async (closeModal = true, isAutoSave = false) => {
+    if (isAutoSave && (!isDirty || fetching)) return;
+    if (!isAutoSave) setLoading(true);
     const payload = {
       domain: selectedDomain,
       subdomain: selectedSubdomain,
@@ -244,16 +254,23 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     };
     try {
       await api.put("dashboard/detailed-insight", payload);
-      toast.success("Feedback updated successfully!");
-      onSuccess();
-      if (modalInstance.current) modalInstance.current.hide();
-      onClose();
+      setIsDirty(false);
+      if (!isAutoSave) {
+        toast.success("Saved and Updated!");
+        onSuccess();
+      }
+      if (closeModal) {
+        if (modalInstance.current) modalInstance.current.hide();
+        onClose();
+      }
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Failed to update feedback.",
-      );
+      if (!isAutoSave) {
+        toast.error(
+          error.response?.data?.message || "Failed to update feedback.",
+        );
+      }
     } finally {
-      setLoading(false);
+      if (!isAutoSave) setLoading(false);
     }
   };
 
@@ -335,12 +352,14 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                     value={selectedDomain}
                     onChange={(e) => {
                       const newDomain = e.target.value;
+                      handleSave(false, true);
                       setSelectedDomain(newDomain);
                       // Automatically pick the first subdomain of the new domain
                       const subs = Object.keys(
                         allDomains?.[newDomain]?.subdomains || {},
                       );
                       if (subs.length > 0) setSelectedSubdomain(subs[0]);
+                      else setSelectedSubdomain("");
                     }}
                     className="font-medium text-sm capitalize appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     id="selectedDomain"
@@ -378,7 +397,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                   </div>
                   <select
                     value={selectedSubdomain}
-                    onChange={(e) => setSelectedSubdomain(e.target.value)}
+                    onChange={(e) => {
+                      handleSave(false, true);
+                      setSelectedSubdomain(e.target.value);
+                    }}
                     className="font-medium text-sm capitalize appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     id="selectedSubDomain"
                   >
@@ -407,7 +429,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               </label>
               <textarea
                 value={insight}
-                onChange={(e) => setInsight(e.target.value)}
+                onChange={(e) => {
+                  setInsight(e.target.value);
+                  setIsDirty(true);
+                }}
                 onKeyDown={(e) => handleKeyDown(e, setInsight)}
                 rows={3}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -420,7 +445,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               </label>
               <textarea
                 value={modelDescription}
-                onChange={(e) => setModelDescription(e.target.value)}
+                onChange={(e) => {
+                  setModelDescription(e.target.value);
+                  setIsDirty(true);
+                }}
                 onKeyDown={(e) => handleKeyDown(e, setModelDescription)}
                 rows={4}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -433,7 +461,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 </label>
                 <textarea
                   value={coachingTips}
-                  onChange={(e) => setCoachingTips(e.target.value)}
+                  onChange={(e) => {
+                    setCoachingTips(e.target.value);
+                    setIsDirty(true);
+                  }}
                   onKeyDown={(e) => handleKeyDown(e, setCoachingTips)}
                   rows={4}
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -446,7 +477,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               </label>
               <textarea
                 value={objectives}
-                onChange={(e) => setObjectives(e.target.value)}
+                onChange={(e) => {
+                  setObjectives(e.target.value);
+                  setIsDirty(true);
+                }}
                 onKeyDown={(e) => handleKeyDown(e, setObjectives)}
                 rows={4}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -459,7 +493,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 </label>
                 <textarea
                   value={recommendedPrograms}
-                  onChange={(e) => setRecommendedPrograms(e.target.value)}
+                  onChange={(e) => {
+                    setRecommendedPrograms(e.target.value);
+                    setIsDirty(true);
+                  }}
                   onKeyDown={(e) => handleKeyDown(e, setRecommendedPrograms)}
                   rows={4}
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -477,7 +514,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               Cancel
             </button>
             <button
-              onClick={handleSave}
+              onClick={() => handleSave(true, false)}
               disabled={loading || fetching}
               className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10 disabled:pointer-events-none"
             >

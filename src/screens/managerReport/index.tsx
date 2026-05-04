@@ -386,7 +386,7 @@ const ManagerReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-        0
+      0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -505,7 +505,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -516,16 +516,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -791,9 +791,9 @@ const ManagerReport = () => {
               value={
                 selectedMember
                   ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                   : null
               }
               onChange={(option: any) => {
@@ -1240,11 +1240,11 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                  .filter((l: string) => l.includes("•"))
-                                  .map((l: string) =>
-                                    l.replace(/•/g, "").trim()
-                                  )
-                                  .filter((l: string) => l.length > 0)
+                                .filter((l: string) => l.includes("•"))
+                                .map((l: string) =>
+                                  l.replace(/•/g, "").trim()
+                                )
+                                .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1867,6 +1867,7 @@ Highlights where misalignment exists, how significant it is, and where it may be
         onClose={() => setIsEditModalOpen(false)}
         domain={selectedDomain}
         subdomain={selectedSubdomain}
+        allDomains={reportData?.scores?.domains}
         userId={userId}
         userEmail={userEmail}
         rawFeedback={{
