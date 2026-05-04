@@ -290,7 +290,7 @@ const ProfileInfo = () => {
                   <select
                     id="department"
                     disabled={isDeptLocked}
-                    className={`font-medium text-sm capitalize appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] capitalize w-full p-3 mt-2 border rounded-lg transition-all ${isDeptLocked ? "opacity-100 border-[#E8E8E8] cursor-not-allowed bg-gray-50" : ""} ${
+                    className={`font-medium text-sm capitalize appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 mt-2 border rounded-lg transition-all ${isDeptLocked ? "opacity-100 border-[#E8E8E8] cursor-not-allowed bg-gray-50" : ""} ${
                       errors.department
                         ? "border-red-500"
                         : "border-[#E8E8E8] focus:border-[var(--primary-color)]"

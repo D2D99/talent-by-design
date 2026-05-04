@@ -79,7 +79,8 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     if (modalElement) {
       const handleHidden = () => onClose();
       modalElement.addEventListener("hidden.twe.modal", handleHidden);
-      return () => modalElement.removeEventListener("hidden.twe.modal", handleHidden);
+      return () =>
+        modalElement.removeEventListener("hidden.twe.modal", handleHidden);
     }
   }, [onClose]);
 
@@ -89,8 +90,12 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       setSelectedSubdomain(initialSubdomain);
       setInsight(formatWithBullets(rawFeedback?.insight || ""));
       setCoachingTips(formatWithBullets(rawFeedback?.coachingTips || ""));
-      setRecommendedPrograms(formatWithBullets(rawFeedback?.recommendedPrograms || ""));
-      setModelDescription(formatWithBullets(rawFeedback?.modelDescription || ""));
+      setRecommendedPrograms(
+        formatWithBullets(rawFeedback?.recommendedPrograms || ""),
+      );
+      setModelDescription(
+        formatWithBullets(rawFeedback?.modelDescription || ""),
+      );
       setObjectives(formatWithBullets(rawFeedback?.objectives || ""));
       setProgressScore(rawFeedback?.progressScore || 0);
       if (modalInstance.current) modalInstance.current.show();
@@ -114,17 +119,24 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
       try {
         let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
-        if (userEmail) url += `&userId=${userId}&email=${encodeURIComponent(userEmail)}`;
+        if (userEmail)
+          url += `&userId=${userId}&email=${encodeURIComponent(userEmail)}`;
         else if (userId) url += `&userId=${userId}`;
         const res = await api.get(url);
 
         if (!ignore) {
           const pods = res.data.pods;
           setInsight(formatWithBullets(pods?.insights?.mainText || ""));
-          setCoachingTips(formatWithBullets(pods?.coachingTips?.items?.join("\n") || ""));
-          setRecommendedPrograms(formatWithBullets(pods?.recommendations?.items?.join("\n") || ""));
+          setCoachingTips(
+            formatWithBullets(pods?.coachingTips?.items?.join("\n") || ""),
+          );
+          setRecommendedPrograms(
+            formatWithBullets(pods?.recommendations?.items?.join("\n") || ""),
+          );
           setModelDescription(formatWithBullets(pods?.modelDescription || ""));
-          setObjectives(formatWithBullets(pods?.objectives?.items?.join("\n") || ""));
+          setObjectives(
+            formatWithBullets(pods?.objectives?.items?.join("\n") || ""),
+          );
         }
       } catch (err) {
         if (!ignore) console.error("Failed to fetch context data", err);
@@ -133,12 +145,14 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       }
     };
     fetchContextData();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [selectedDomain, selectedSubdomain, isOpen]);
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
-    setter: React.Dispatch<React.SetStateAction<string>>
+    setter: React.Dispatch<React.SetStateAction<string>>,
   ) => {
     if (e.key === "Enter") {
       const target = e.currentTarget;
@@ -154,7 +168,11 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       const currentLine = lines[lines.length - 1];
 
       // Option 1: Space + Enter shortcut OR just Enter on non-bulleted line
-      if (currentLine.endsWith(" ") || (!currentLine.trimStart().startsWith("•") && currentLine.trim().length > 0)) {
+      if (
+        currentLine.endsWith(" ") ||
+        (!currentLine.trimStart().startsWith("•") &&
+          currentLine.trim().length > 0)
+      ) {
         e.preventDefault();
         const lineStart = start - currentLine.length;
 
@@ -164,10 +182,18 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
           : "• " + currentLine.trim();
 
         const insertion = "\n• ";
-        const newValue = val.substring(0, lineStart) + formattedCurrentLine + insertion + textAfter;
+        const newValue =
+          val.substring(0, lineStart) +
+          formattedCurrentLine +
+          insertion +
+          textAfter;
         setter(newValue);
 
-        const newPos = (val.substring(0, lineStart) + formattedCurrentLine + insertion).length;
+        const newPos = (
+          val.substring(0, lineStart) +
+          formattedCurrentLine +
+          insertion
+        ).length;
         setTimeout(() => {
           target.selectionStart = target.selectionEnd = newPos;
         }, 0);
@@ -194,7 +220,8 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
           const newValue = textBefore + insertion + textAfter;
           setter(newValue);
           setTimeout(() => {
-            target.selectionStart = target.selectionEnd = start + insertion.length;
+            target.selectionStart = target.selectionEnd =
+              start + insertion.length;
           }, 0);
         }
       }
@@ -222,7 +249,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       if (modalInstance.current) modalInstance.current.hide();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update feedback.");
+      toast.error(
+        error.response?.data?.message || "Failed to update feedback.",
+      );
     } finally {
       setLoading(false);
     }
@@ -230,9 +259,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
 
   // Dynamically derive options from allDomains prop
   const domainOptions = Object.keys(allDomains || {});
-  const subdomainOptions = selectedDomain && allDomains?.[selectedDomain]?.subdomains
-    ? Object.keys(allDomains[selectedDomain].subdomains)
-    : [];
+  const subdomainOptions =
+    selectedDomain && allDomains?.[selectedDomain]?.subdomains
+      ? Object.keys(allDomains[selectedDomain].subdomains)
+      : [];
 
   return (
     <div
@@ -276,43 +306,105 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </button>
           </div>
 
-          <div className="px-5 py-2 grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#676767] uppercase">Selected Domain</label>
-              <select
-                value={selectedDomain}
-                onChange={(e) => {
-                  const newDomain = e.target.value;
-                  setSelectedDomain(newDomain);
-                  // Automatically pick the first subdomain of the new domain
-                  const subs = Object.keys(allDomains?.[newDomain]?.subdomains || {});
-                  if (subs.length > 0) setSelectedSubdomain(subs[0]);
-                }}
-                className="w-full bg-[#EDF5FD] border-none rounded-[4px] text-[12px] min-h-[32px] px-2 font-medium text-[#676767] outline-none"
-              >
-                {domainOptions.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#676767] uppercase">Subdomain Context</label>
-              <select
-                value={selectedSubdomain}
-                onChange={(e) => setSelectedSubdomain(e.target.value)}
-                className="w-full bg-[#EDF5FD] border-none rounded-[4px] text-[12px] min-h-[32px] px-2 font-medium text-[#676767] outline-none"
-              >
-                {subdomainOptions.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
-
           <div className="relative pb-8 pt-2 py-4 px-4 max-h-[calc(100vh-100px)] overflow-y-scroll scroll-thin space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label
+                  className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+                  htmlFor="selectedDomain"
+                >
+                  Selected Domain
+                </label>
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 right-0 top-3.5  items-center pr-3 pointer-events-none">
+                    <svg
+                      className="h-4 w-4 text-[#5D5D5D]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  <select
+                    value={selectedDomain}
+                    onChange={(e) => {
+                      const newDomain = e.target.value;
+                      setSelectedDomain(newDomain);
+                      // Automatically pick the first subdomain of the new domain
+                      const subs = Object.keys(
+                        allDomains?.[newDomain]?.subdomains || {},
+                      );
+                      if (subs.length > 0) setSelectedSubdomain(subs[0]);
+                    }}
+                    className="font-medium text-sm capitalize appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    id="selectedDomain"
+                  >
+                    {domainOptions.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label
+                  className="font-bold cursor-pointer text-[var(--secondary-color)] text-sm"
+                  htmlFor="selectedSubDomain"
+                >
+                  Subdomain Context
+                </label>
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 right-0 top-3.5  items-center pr-3 pointer-events-none">
+                    <svg
+                      className="h-4 w-4 text-[#5D5D5D]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  <select
+                    value={selectedSubdomain}
+                    onChange={(e) => setSelectedSubdomain(e.target.value)}
+                    className="font-medium text-sm capitalize appearance-none text-[#5D5D5D] outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] w-full p-3 border rounded-lg transition-all border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    id="selectedSubDomain"
+                  >
+                    {subdomainOptions.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
             {fetching && (
               <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
-                <Icon icon="line-md:loading-loop" width="30" className="text-[var(--primary-color)]" />
+                <Icon
+                  icon="line-md:loading-loop"
+                  width="30"
+                  className="text-[var(--primary-color)]"
+                />
               </div>
             )}
             <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm">Pod 360 Model</label>
+              <label className="font-bold text-[var(--secondary-color)] text-sm">
+                Pod 360 Model
+              </label>
               <textarea
                 value={insight}
                 onChange={(e) => setInsight(e.target.value)}
@@ -323,7 +415,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               />
             </div>
             <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm">Insight for {selectedSubdomain || selectedDomain}</label>
+              <label className="font-bold text-[var(--secondary-color)] text-sm">
+                Insight for {selectedSubdomain || selectedDomain}
+              </label>
               <textarea
                 value={modelDescription}
                 onChange={(e) => setModelDescription(e.target.value)}
@@ -334,7 +428,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </div>
             {showFullFeedback && (
               <div>
-                <label className="font-bold text-[var(--secondary-color)] text-sm">Coaching Tips</label>
+                <label className="font-bold text-[var(--secondary-color)] text-sm">
+                  Coaching Tips
+                </label>
                 <textarea
                   value={coachingTips}
                   onChange={(e) => setCoachingTips(e.target.value)}
@@ -345,7 +441,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               </div>
             )}
             <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm">Objectives and Key Results (OKRS)</label>
+              <label className="font-bold text-[var(--secondary-color)] text-sm">
+                Objectives and Key Results (OKRS)
+              </label>
               <textarea
                 value={objectives}
                 onChange={(e) => setObjectives(e.target.value)}
@@ -356,7 +454,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             </div>
             {showFullFeedback && (
               <div>
-                <label className="font-bold text-[var(--secondary-color)] text-sm">Recommended Development Programs</label>
+                <label className="font-bold text-[var(--secondary-color)] text-sm">
+                  Recommended Development Programs
+                </label>
                 <textarea
                   value={recommendedPrograms}
                   onChange={(e) => setRecommendedPrograms(e.target.value)}
