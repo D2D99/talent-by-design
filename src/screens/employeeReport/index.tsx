@@ -24,6 +24,7 @@ import ReportEmptyState from "../../components/reportEmptyState";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import ReportPreviewModal from "../../components/reportPreviewModal";
 import EditableTooltip from "../../components/editableTooltip";
+import ConfirmationModal from "../../components/confirmationModal";
 
 const SkeletonPod = () => (
   <div className="animate-pulse border-[1px] border-[#448CD2] border-opacity-10 p-4 rounded-[12px] bg-white h-full min-h-[220px]">
@@ -167,6 +168,7 @@ const EmployeeReport = () => {
   const [detailedPods, setDetailedPods] = useState<any>(null);
   const [isReportReleased, setIsReportReleased] = useState(false);
   const [releasing, setReleasing] = useState(false);
+  const [showReleaseWarning, setShowReleaseWarning] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [aiInsight, setAiInsight] = useState<any>(null); // Kept state but will hide UI
@@ -561,10 +563,10 @@ const EmployeeReport = () => {
                   </button>
                 )}
 
-              {/* Release Section (Super Admin Only) */}
-              {isSuperAdmin && !isReportReleased && reportData && (
+              {/* Release Section (Super Admin or Admin) */}
+              {(isSuperAdmin || isAdmin) && !isReportReleased && reportData && (
                 <button
-                  onClick={handleRelease}
+                  onClick={() => setShowReleaseWarning(true)}
                   disabled={releasing}
                   className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
@@ -578,6 +580,20 @@ const EmployeeReport = () => {
                 </button>
               )}
             </div>
+
+            <ConfirmationModal
+              isOpen={showReleaseWarning}
+              onClose={() => setShowReleaseWarning(false)}
+              onConfirm={() => {
+                setShowReleaseWarning(false);
+                handleRelease();
+              }}
+              title="Release Report?"
+              message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
+              confirmText="Yes, Release Now"
+              cancelText="No, Keep Draft"
+              loading={releasing}
+            />
 
             {userId && (isSuperAdmin || isReportReleased) && (
               <button

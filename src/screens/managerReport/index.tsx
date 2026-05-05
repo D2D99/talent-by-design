@@ -29,6 +29,7 @@ import RadarChart from "../../charts/radarChart";
 import type { RadarData } from "../../charts/radarChart";
 import GapBarChart from "../../charts/gapBarChart";
 import EditableTooltip from "../../components/editableTooltip";
+import ConfirmationModal from "../../components/confirmationModal";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -96,6 +97,7 @@ const ManagerReport = () => {
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [isReportReleased, setIsReportReleased] = useState(false);
   const [releasing, setReleasing] = useState(false);
+  const [showReleaseWarning, setShowReleaseWarning] = useState(false);
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -690,10 +692,10 @@ const ManagerReport = () => {
                   </button>
                 )}
 
-              {/* Release Section (Super Admin Only) */}
-              {isSuperAdmin && !isReportReleased && reportData && (
+              {/* Release Section (Super Admin or Admin) */}
+              {(isSuperAdmin || isAdmin) && !isReportReleased && reportData && (
                 <button
-                  onClick={handleRelease}
+                  onClick={() => setShowReleaseWarning(true)}
                   disabled={releasing}
                   className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
@@ -707,6 +709,20 @@ const ManagerReport = () => {
                 </button>
               )}
             </div>
+
+            <ConfirmationModal
+              isOpen={showReleaseWarning}
+              onClose={() => setShowReleaseWarning(false)}
+              onConfirm={() => {
+                setShowReleaseWarning(false);
+                handleRelease();
+              }}
+              title="Release Report?"
+              message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
+              confirmText="Yes, Release Now"
+              cancelText="No, Keep Draft"
+              loading={releasing}
+            />
 
             {userId && (isSuperAdmin || isReportReleased) && (
               <button
