@@ -1319,7 +1319,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                         <div key={idx} className="flex items-center gap-3 mt-4">
                           <div className="text-lg-progress">
                             <CircularProgress
-                              value={kr.value}
+                              value={Math.ceil(kr.value)}
                               width={60}
                               textColor="#36454F"
                               pathColor="#1A3652"
