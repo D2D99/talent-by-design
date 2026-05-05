@@ -8,7 +8,7 @@ import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 import Pagination from "../../components/Pagination";
 import ProgressIcon from "../../../public/static/img/home/progress-icon.png";
-import { Tooltip } from "react-tooltip";
+// import { Tooltip } from "react-tooltip";
 
 interface UserMember {
   _id: string;
@@ -18,6 +18,7 @@ interface UserMember {
   role: string;
   department?: string;
   assessmentStatus?: string;
+  lastAssessmentId?: string | null;
 }
 
 const AdminAssessments = () => {
@@ -28,6 +29,7 @@ const AdminAssessments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [resetingId, setResetingId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const resetModalInstance = useRef<any>(null);
 
   useEffect(() => {
@@ -77,6 +79,36 @@ const AdminAssessments = () => {
       toast.error(err.response?.data?.message || "Failed to reset assessment");
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleActionClick = (member: UserMember, type: "Report" | "Response" | "Reset") => {
+    setActiveDropdown(null);
+    if (type === "Report") {
+      const roleMapping: Record<string, string> = {
+        superadmin: "org-head",
+        super_admin: "org-head",
+        admin: "org-head",
+        "senior-leader": "senior-leader",
+        leader: "senior-leader",
+        manager: "manager",
+        employee: "employee",
+      };
+      const reportType = roleMapping[member.role?.toLowerCase() || ""] || "employee";
+      navigate(
+        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`
+      );
+    } else if (type === "Response") {
+      if (member.lastAssessmentId) {
+        const userName = `${member.firstName} ${member.lastName}`;
+        navigate(
+          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`
+        );
+      } else {
+        toast.info("No completed assessment found for this member.");
+      }
+    } else if (type === "Reset") {
+      openResetModal(member._id);
     }
   };
 
@@ -222,7 +254,7 @@ const AdminAssessments = () => {
                   Assessment Status
                 </th>
                 <th className="px-6 py-4 font-semibold">Progress</th>
-                <th className="px-6 py-4 font-semibold text-nowrap text-start">
+                <th className="px-6 py-4 font-semibold text-nowrap text-center">
                   Actions
                 </th>
               </tr>
@@ -318,56 +350,81 @@ const AdminAssessments = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-start gap-2">
-                        {status === "Completed" && (
+                    <td className="px-6 py-4 text-center relative">
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() =>
+                            setActiveDropdown(
+                              activeDropdown === member._id ? null : member._id
+                            )
+                          }
+                          className={`p-1.5 rounded-full transition-all ${
+                            activeDropdown === member._id
+                              ? "bg-[#448CD2] text-white shadow-md"
+                              : "text-neutral-800 hover:bg-slate-100"
+                          }`}
+                        >
+                          <Icon
+                            icon="solar:menu-dots-bold"
+                            width="16"
+                            className="rotate-90"
+                          />
+                        </button>
+
+                        {activeDropdown === member._id && (
                           <>
-                            <button
-                              onClick={() => {
-                                const roleMapping: Record<string, string> = {
-                                  superadmin: "org-head",
-                                  super_admin: "org-head",
-                                  admin: "org-head",
-                                  "senior-leader": "senior-leader",
-                                  leader: "senior-leader",
-                                  manager: "manager",
-                                  employee: "employee",
-                                };
-                                const reportType =
-                                  roleMapping[
-                                    member.role?.toLowerCase() || ""
-                                  ] || "employee";
-                                navigate(
-                                  `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`
-                                );
-                              }}
-                              id="viewReport"
-                              className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-[var(--primary-color)]  hover:bg-blue-100 transition-all"
+                            <div
+                              className="fixed inset-0 z-40"
+                              onClick={() => setActiveDropdown(null)}
+                            ></div>
+                            <div
+                              className={`absolute right-12 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5 ${
+                                idx >= currentData.length - 2 ? "bottom-0 right-20" : "bottom-0 right-20"
+                              }`}
                             >
-                              <Icon icon="solar:eye-linear" width="16" />
-                            </button>
-                            <Tooltip anchorSelect="#viewReport">
-                              View Report
-                            </Tooltip>
+                              {status === "Completed" && (
+                                <>
+                                  <button
+                                    onClick={() => handleActionClick(member, "Report")}
+                                    className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
+                                  >
+                                    <Icon
+                                      icon="hugeicons:analysis-text-link"
+                                      width="14"
+                                      height="14"
+                                    />
+                                    <span>Report</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleActionClick(member, "Response")}
+                                    className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
+                                  >
+                                    <Icon
+                                      icon="mage:file-3"
+                                      width="14"
+                                      height="14"
+                                    />
+                                    <span>Response</span>
+                                  </button>
+                                </>
+                              )}
+                              {canReset && (
+                                <button
+                                  onClick={() => handleActionClick(member, "Reset")}
+                                  className="w-full px-4 py-2 text-sm font-medium text-red-500 flex items-center gap-1.5 bg-white hover:bg-red-50 transition-colors"
+                                >
+                                  <Icon icon="solar:restart-linear" width="14" />
+                                  <span>Reset</span>
+                                </button>
+                              )}
+                              {!canReset && status !== "Completed" && (
+                                <div className="px-4 py-3 text-[10px] text-gray-400 italic">
+                                  No actions available
+                                </div>
+                              )}
+                            </div>
                           </>
                         )}
-                        {canReset ? (
-                          <>
-                            <button
-                              id="resetReport"
-                              onClick={() => openResetModal(member._id)}
-                              className="flex justify-center items-center text-[10px] font-semibold rounded-full size-7 text-gray-500 hover:text-red-500  hover:bg-red-100 transition-all"
-                            >
-                              <Icon icon="solar:restart-linear" width="16" />
-                              {/* Reset */}
-                            </button>
-                            <Tooltip anchorSelect="#resetReport">
-                              Reset Assessment
-                            </Tooltip>
-                          </>
-                        ) : !(status === "Completed") ? (
-                          <span className="text-gray-300 text-xs">—</span>
-                        ) : null}
                       </div>
                     </td>
                   </tr>
