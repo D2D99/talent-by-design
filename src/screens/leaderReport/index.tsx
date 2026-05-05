@@ -137,7 +137,7 @@ const LeaderReport = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -151,10 +151,10 @@ const LeaderReport = () => {
   const [members, setMembers] = useState<any[]>([]);
 
   const [selectedOrg, setSelectedOrg] = useState<string>(
-    searchParams.get("orgName") || user?.orgName || ""
+    searchParams.get("orgName") || user?.orgName || "",
   );
   const [selectedDept, setSelectedDept] = useState<string>(
-    searchParams.get("department") || ""
+    searchParams.get("department") || "",
   );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
@@ -184,7 +184,7 @@ const LeaderReport = () => {
           const member = fetchedMembers.find(
             (m: any) =>
               (userId && m._id === userId) ||
-              (userEmail && m.email === userEmail)
+              (userEmail && m.email === userEmail),
           );
           if (member) {
             setSelectedMember(member);
@@ -279,7 +279,7 @@ const LeaderReport = () => {
       setUserData(res.data.user);
       setAiInsight(res.data.aiInsight);
       setIsReportReleased(
-        res.data.isReleased || res.data.report?.isReleased || false
+        res.data.isReleased || res.data.report?.isReleased || false,
       );
       setHasNoReport(false);
     } catch (error: any) {
@@ -303,7 +303,7 @@ const LeaderReport = () => {
         `/dashboard/preview-pdf-report?${qParams.toString()}`,
         {
           responseType: "blob",
-        }
+        },
       );
       const url = URL.createObjectURL(response.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -394,7 +394,7 @@ const LeaderReport = () => {
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[selectedDomain].subdomains
+        reportData.scores.domains[selectedDomain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     }
@@ -421,7 +421,7 @@ const LeaderReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-      0
+        0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -442,7 +442,7 @@ const LeaderReport = () => {
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
-      k.toLowerCase().includes(pattern.toLowerCase())
+      k.toLowerCase().includes(pattern.toLowerCase()),
     );
     return key ? reportData.scores.domains[key].score : 0;
   };
@@ -457,7 +457,7 @@ const LeaderReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -470,7 +470,7 @@ const LeaderReport = () => {
     setSelectedDomain(domain);
     if (reportData?.scores?.domains?.[domain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[domain].subdomains
+        reportData.scores.domains[domain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     } else {
@@ -485,16 +485,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -502,12 +502,53 @@ const LeaderReport = () => {
       ? displayInsights
       : ["No specific insights available yet."];
 
-  const displayKRs =
-    detailedPods?.objectives?.items?.map((text: string, i: number) => ({
-      label: `KR${i + 1}`,
-      text: text,
-      value: detailedPods.objectives.progress || 0,
-    })) || [];
+  const parseObjectivesList = (text: string) => {
+    if (!text || !text.trim()) return { focus: "", list: [] };
+    
+    let focus = "";
+    let remainingText = text;
+    
+    const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
+    if (focusMatch) {
+      focus = focusMatch[1].trim();
+      remainingText = text.replace(focusMatch[0], "").trim();
+    }
+
+    const lines = remainingText.split('\n');
+    const list: { title: string, keyResults: string[] }[] = [];
+    let currentTitle = "";
+    let currentKRs: string[] = [];
+    
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+        currentKRs.push(line.replace(/^[•-]\s*/, '').trim());
+      } else {
+        if (currentKRs.length > 0) {
+          list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+          currentTitle = line;
+          currentKRs = [];
+        } else {
+          currentTitle = currentTitle ? currentTitle + " " + line : line;
+        }
+      }
+    }
+    if (currentTitle || currentKRs.length > 0) {
+      list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+    }
+    return { focus, list };
+  };
+
+  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback?.objectives 
+    ? parseObjectivesList(detailedPods.rawFeedback.objectives)
+    : { focus: "", list: [] };
+
+  const displayObjectives = parsedObjectives.length > 0 ? parsedObjectives : [
+    {
+      title: detailedPods?.objectives?.subtitle || "Enhance domain-specific capabilities",
+      keyResults: detailedPods?.objectives?.items || []
+    }
+  ].filter(obj => obj.keyResults.length > 0);
 
   // const displayRecommendations = detailedPods?.recommendations?.items || [
   //   "No specific recommendations available for this domain yet.",
@@ -527,7 +568,7 @@ const LeaderReport = () => {
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains;
     const mScores: number[] = [];
@@ -548,7 +589,9 @@ const LeaderReport = () => {
       const managerSubScore =
         teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
       tScores.push(
-        managerSubScore !== null ? Number((managerSubScore / 10).toFixed(1)) : 0
+        managerSubScore !== null
+          ? Number((managerSubScore / 10).toFixed(1))
+          : 0,
       );
 
       // Employee avg (employees under the leader)
@@ -557,7 +600,7 @@ const LeaderReport = () => {
       pScores.push(
         employeeSubScore !== null
           ? Number((employeeSubScore / 10).toFixed(1))
-          : 0
+          : 0,
       );
     });
 
@@ -571,7 +614,7 @@ const LeaderReport = () => {
 
     // Manager total POD avg across all domains from department data
     const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const managerAvgScore =
       mScores.length > 0
@@ -580,7 +623,7 @@ const LeaderReport = () => {
 
     // Employee total POD avg across all domains from department data
     const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const employeeAvgScore =
       eScores.length > 0
@@ -695,13 +738,13 @@ const LeaderReport = () => {
       const qCurrent =
         reportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       const qFirst =
         firstReportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
@@ -718,7 +761,7 @@ const LeaderReport = () => {
 
     // Default: subdomain averages
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
     const descriptions = subdomains.map((sub) => sub);
@@ -755,87 +798,89 @@ const LeaderReport = () => {
           {!hasNoReport && (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-              {/* Status Badge */}
-              {isReportReleased && reportData && (
-                <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                  <Icon icon="solar:check-circle-bold-duotone" width="12" />
-                  Released Report
-                </span>
-              )}
-
-              {/* Edit Feedback Button (SA or Admin viewing someone else) */}
-              {userId &&
-                (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
-                  <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                    title="Edit AI Insights, Objectives, and Recommendations"
-                  >
-                    <Icon icon="lucide:pencil" width="16" />
-                  </button>
+                {/* Status Badge */}
+                {isReportReleased && reportData && (
+                  <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                    <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                    Released Report
+                  </span>
                 )}
 
-              {/* Release Section (Super Admin or Admin) */}
-              {(isSuperAdmin || isAdmin) && !isReportReleased && reportData && (
-                <button
-                  onClick={() => setShowReleaseWarning(true)}
-                  disabled={releasing}
-                  className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                >
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                  {releasing ? (
-                    <Icon icon="line-md:loading-loop" width="16" />
-                  ) : (
-                    <Icon icon="solar:star-bold-duotone" width="16" />
+                {/* Edit Feedback Button (SA or Admin viewing someone else) */}
+                {userId &&
+                  (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                      title="Edit AI Insights, Objectives, and Recommendations"
+                    >
+                      <Icon icon="lucide:pencil" width="16" />
+                    </button>
                   )}
-                  {releasing ? "Releasing..." : "Approve & Release"}
+
+                {/* Release Section (Super Admin or Admin) */}
+                {(isSuperAdmin || isAdmin) &&
+                  !isReportReleased &&
+                  reportData && (
+                    <button
+                      onClick={() => setShowReleaseWarning(true)}
+                      disabled={releasing}
+                      className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                    >
+                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                      {releasing ? (
+                        <Icon icon="line-md:loading-loop" width="16" />
+                      ) : (
+                        <Icon icon="solar:star-bold-duotone" width="16" />
+                      )}
+                      {releasing ? "Releasing..." : "Approve & Release"}
+                    </button>
+                  )}
+              </div>
+
+              <ConfirmationModal
+                isOpen={showReleaseWarning}
+                onClose={() => setShowReleaseWarning(false)}
+                onConfirm={() => {
+                  setShowReleaseWarning(false);
+                  handleRelease();
+                }}
+                title="Release Report?"
+                message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
+                confirmText="Confirm"
+                cancelText="Cancel"
+                loading={releasing}
+              />
+
+              <button
+                onClick={handlePreview}
+                disabled={loadingPreview}
+                className=" flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50 hidden"
+              >
+                {loadingPreview ? (
+                  <Icon icon="line-md:loading-loop" width="16" />
+                ) : (
+                  <Icon icon="solar:document-bold-duotone" width="18" />
+                )}
+                {loadingPreview ? "Loading..." : "Live Lab Preview"}
+              </button>
+
+              {userId && (isSuperAdmin || isReportReleased) && (
+                <button
+                  type="button"
+                  onClick={handleExportPDF}
+                  disabled={exportLoading}
+                  className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                >
+                  {exportLoading ? (
+                    <Icon icon="eos-icons:loading" width="16" />
+                  ) : (
+                    <Icon icon="pajamas:export" width="16" height="16" />
+                  )}
+                  {exportLoading ? "Exporting..." : "Export PDF Report"}
                 </button>
               )}
-            </div>
-
-            <ConfirmationModal
-              isOpen={showReleaseWarning}
-              onClose={() => setShowReleaseWarning(false)}
-              onConfirm={() => {
-                setShowReleaseWarning(false);
-                handleRelease();
-              }}
-              title="Release Report?"
-              message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
-              confirmText="Confirm"
-              cancelText="Cancel"
-              loading={releasing}
-            />
-
-            <button
-              onClick={handlePreview}
-              disabled={loadingPreview}
-              className=" flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50 hidden"
-            >
-              {loadingPreview ? (
-                <Icon icon="line-md:loading-loop" width="16" />
-              ) : (
-                <Icon icon="solar:document-bold-duotone" width="18" />
-              )}
-              {loadingPreview ? "Loading..." : "Live Lab Preview"}
-            </button>
-
-            {userId && (isSuperAdmin || isReportReleased) && (
-              <button
-                type="button"
-                onClick={handleExportPDF}
-                disabled={exportLoading}
-                className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              >
-                {exportLoading ? (
-                  <Icon icon="eos-icons:loading" width="16" />
-                ) : (
-                  <Icon icon="pajamas:export" width="16" height="16" />
-                )}
-                {exportLoading ? "Exporting..." : "Export PDF Report"}
-              </button>
-            )}
             </div>
           )}
         </div>
@@ -900,9 +945,9 @@ const LeaderReport = () => {
               value={
                 selectedMember
                   ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                   : null
               }
               onChange={(option: any) => {
@@ -928,7 +973,7 @@ const LeaderReport = () => {
                     : "";
 
                   navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
+                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
                   );
                 }
               }}
@@ -1114,7 +1159,7 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                     {reportData?.scores?.domains?.[selectedDomain]
                       ?.subdomains &&
                       Object.keys(
-                        reportData.scores.domains[selectedDomain].subdomains
+                        reportData.scores.domains[selectedDomain].subdomains,
                       ).map((sub) => (
                         <li key={sub}>
                           <button
@@ -1288,15 +1333,15 @@ Highlights what is happening, why it matters, and where to focus next to improve
                                 .split(/\r?\n/)
                                 .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
-                              l.includes("•")
+                              l.includes("•"),
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) =>
-                                  l.replace(/•/g, "").trim()
-                                )
-                                .filter((l: string) => l.length > 0)
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1314,7 +1359,7 @@ Highlights what is happening, why it matters, and where to focus next to improve
                                     {bullet}
                                   </span>
                                 </li>
-                              )
+                              ),
                             );
                           })()
                         ) : (
@@ -1342,38 +1387,53 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                             />
                           </div>
                         </div>
-                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                          {detailedPods?.objectives?.subtitle ||
-                            "Cultivate high-trust, psychologically safe leadership"}
-                        </p>
                       </div>
                       <div>
                         <img src={Hugeicons} alt="images" className="w-8 h-8" />
                       </div>
                     </div>
-                    <div className="space-y-6">
-                      {displayKRs.map((kr: any, idx: number) => (
-                        <div key={idx} className="flex items-center gap-3 mt-4">
-                          <div className="text-lg-progress">
+                    <div className="space-y-8 mt-1">
+                      {okrFocus && (
+                        <p className="text-sm font-normal text-[var(--secondary-color)] -mt-2 mb-4">
+                          {okrFocus}
+                        </p>
+                      )}
+                      {displayObjectives.map((obj, objIdx) => (
+                        <div key={objIdx} className="flex items-start gap-4">
+                          <div className="text-lg-progress pt-1 shrink-0">
                             <CircularProgress
-                              value={Math.ceil(kr.value)}
-                              width={60}
+                              value={Math.ceil(detailedPods?.objectives?.progress || 0)}
+                              width={70}
                               textColor="#36454F"
                               pathColor="#1A3652"
                               trailColor="#D9D9D9"
                             />
                           </div>
-                          <div>
-                            <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                              {kr.label}
-                            </h2>
-                            <p className="text-sm font-normal text-[var(--secondary-color)]">
-                              {kr.text}
-                            </p>
+                          <div className="flex-1">
+                            <div className="mb-4">
+                              <h2 className="text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                                Objective {objIdx + 1}
+                              </h2>
+                              <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                                {obj.title}
+                              </p>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              {obj.keyResults.map((krText: string, krIdx: number) => (
+                                <div key={krIdx}>
+                                  <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                                    KR {objIdx + 1}.{krIdx + 1}
+                                  </h2>
+                                  <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
+                                    {krText}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       ))}
-                      {displayKRs.length === 0 && (
+                      {displayObjectives.length === 0 && (
                         <p className="text-sm text-gray-500 italic mt-6 font-medium">
                           No strategic objectives have been defined for this
                           area yet.

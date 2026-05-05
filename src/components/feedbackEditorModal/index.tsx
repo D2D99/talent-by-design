@@ -45,7 +45,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
   const [coachingTips, setCoachingTips] = useState("");
   const [recommendedPrograms, setRecommendedPrograms] = useState("");
   const [modelDescription, setModelDescription] = useState("");
-  const [objectives, setObjectives] = useState("");
+  const [objectivesList, setObjectivesList] = useState<{ title: string; keyResults: string }[]>([
+    { title: "", keyResults: "" }
+  ]);
+  const [okrFocus, setOkrFocus] = useState("");
   const [progressScore, setProgressScore] = useState<number>(0);
 
   const [loading, setLoading] = useState(false);
@@ -100,7 +103,53 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
         setModelDescription(
           formatWithBullets(rawFeedback?.modelDescription || ""),
         );
-        setObjectives(formatWithBullets(rawFeedback?.objectives || ""));
+        
+          const parseObjectivesList = (text: string) => {
+            if (!text || !text.trim()) return { focus: "", list: [{ title: "", keyResults: "" }] };
+            
+            let focus = "";
+            let remainingText = text;
+            
+            const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
+            if (focusMatch) {
+              focus = focusMatch[1].trim();
+              remainingText = text.replace(focusMatch[0], "").trim();
+            }
+
+            const lines = remainingText.split('\n');
+            const list: { title: string, keyResults: string[] }[] = [];
+            let currentTitle = "";
+            let currentKRs: string[] = [];
+            
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+                currentKRs.push(line);
+              } else {
+                if (currentKRs.length > 0) {
+                  list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+                  currentTitle = line;
+                  currentKRs = [];
+                } else {
+                  currentTitle = currentTitle ? currentTitle + " " + line : line;
+                }
+              }
+            }
+            if (currentTitle || currentKRs.length > 0) {
+              list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+            }
+            
+            const finalResults = list.map(item => ({
+              title: item.title,
+              keyResults: formatWithBullets(item.keyResults.join('\n'))
+            }));
+
+            return { focus, list: finalResults.length > 0 ? finalResults : [{ title: "", keyResults: "" }] };
+          };
+          
+          const { focus, list } = parseObjectivesList(rawFeedback?.objectives || "");
+          setOkrFocus(focus);
+          setObjectivesList(list);
         setProgressScore(rawFeedback?.progressScore || 0);
         hasInitialized.current = true;
       }
@@ -122,7 +171,8 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       setCoachingTips("");
       setRecommendedPrograms("");
       setModelDescription("");
-      setObjectives("");
+      setObjectivesList([{ title: "", keyResults: "" }]);
+      setOkrFocus("");
 
       try {
         let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
@@ -137,7 +187,53 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
           setCoachingTips(formatWithBullets(raw.coachingTips || ""));
           setRecommendedPrograms(formatWithBullets(raw.recommendedPrograms || ""));
           setModelDescription(formatWithBullets(raw.modelDescription || ""));
-          setObjectives(formatWithBullets(raw.objectives || ""));
+          
+          const parseObjectivesList = (text: string) => {
+            if (!text || !text.trim()) return { focus: "", list: [{ title: "", keyResults: "" }] };
+            
+            let focus = "";
+            let remainingText = text;
+            
+            const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
+            if (focusMatch) {
+              focus = focusMatch[1].trim();
+              remainingText = text.replace(focusMatch[0], "").trim();
+            }
+
+            const lines = remainingText.split('\n');
+            const list: { title: string, keyResults: string[] }[] = [];
+            let currentTitle = "";
+            let currentKRs: string[] = [];
+            
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+                currentKRs.push(line);
+              } else {
+                if (currentKRs.length > 0) {
+                  list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+                  currentTitle = line;
+                  currentKRs = [];
+                } else {
+                  currentTitle = currentTitle ? currentTitle + " " + line : line;
+                }
+              }
+            }
+            if (currentTitle || currentKRs.length > 0) {
+              list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+            }
+            
+            const finalResults = list.map(item => ({
+              title: item.title,
+              keyResults: formatWithBullets(item.keyResults.join('\n'))
+            }));
+
+            return { focus, list: finalResults.length > 0 ? finalResults : [{ title: "", keyResults: "" }] };
+          };
+          
+          const { focus, list } = parseObjectivesList(raw.objectives || "");
+          setOkrFocus(focus);
+          setObjectivesList(list);
           setIsDirty(false);
         }
       } catch (err) {
@@ -243,7 +339,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       coachingTips,
       recommendedPrograms,
       modelDescription,
-      objectives,
+      objectives: (okrFocus ? `[FOCUS] ${okrFocus}\n\n` : "") + objectivesList.map(obj => (obj.title ? `${obj.title}\n` : "") + obj.keyResults).join("\n\n").trim(),
       progressScore,
     };
     try {
@@ -466,20 +562,95 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 />
               </div>
             )}
-            <div>
-              <label className="font-bold text-[var(--secondary-color)] text-sm">
-                Objectives and Key Results (OKRS)
-              </label>
-              <textarea
-                value={objectives}
-                onChange={(e) => {
-                  setObjectives(e.target.value);
+            <div className="space-y-4 mt-4">
+              <div>
+                <label className="font-bold text-[var(--secondary-color)] text-sm">
+                  OKRS Focus
+                </label>
+                <input
+                  type="text"
+                  value={okrFocus}
+                  onChange={(e) => {
+                    setOkrFocus(e.target.value);
+                    setIsDirty(true);
+                  }}
+                  placeholder="Enter OKR focus area..."
+                  className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                />
+              </div>
+
+              {objectivesList.map((obj, index) => (
+                <div key={index} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-[var(--secondary-color)] text-sm">
+                      Objectives {index + 1}
+                    </label>
+                    {index !== 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newList = [...objectivesList];
+                          newList.splice(index, 1);
+                          setObjectivesList(newList);
+                          setIsDirty(true);
+                        }}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        <Icon icon="lucide:trash-2" width="16" />
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={obj.title}
+                    onChange={(e) => {
+                      const newList = [...objectivesList];
+                      newList[index].title = e.target.value;
+                      setObjectivesList(newList);
+                      setIsDirty(true);
+                    }}
+                    placeholder="Enter objective title..."
+                    className="font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                  />
+                  <div>
+                    <label className="font-bold text-[var(--secondary-color)] text-sm">
+                      Key Results
+                    </label>
+                    <textarea
+                      value={obj.keyResults}
+                      onChange={(e) => {
+                        const newList = [...objectivesList];
+                        newList[index].keyResults = e.target.value;
+                        setObjectivesList(newList);
+                        setIsDirty(true);
+                      }}
+                      onKeyDown={(e) => {
+                        const setter = (val: React.SetStateAction<string>) => {
+                          const newList = [...objectivesList];
+                          newList[index].keyResults = typeof val === 'function' ? val(newList[index].keyResults) : val;
+                          setObjectivesList(newList);
+                          setIsDirty(true);
+                        };
+                        handleKeyDown(e, setter);
+                      }}
+                      rows={4}
+                      className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setObjectivesList([...objectivesList, { title: "", keyResults: "" }]);
                   setIsDirty(true);
                 }}
-                onKeyDown={(e) => handleKeyDown(e, setObjectives)}
-                rows={4}
-                className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
-              />
+                className="text-[var(--primary-color)] font-semibold text-sm hover:underline flex items-center gap-1"
+              >
+                <Icon icon="mdi:plus" width="16" />
+                Add More Objective
+              </button>
             </div>
             {showFullFeedback && (
               <div>

@@ -500,12 +500,53 @@ const AdminReport = () => {
       ? displayInsights
       : ["No specific insights available yet."];
 
-  const displayKRs =
-    detailedPods?.objectives?.items?.map((text: string, i: number) => ({
-      label: `KR${i + 1}`,
-      text: text,
-      value: detailedPods.objectives.progress || 0,
-    })) || [];
+  const parseObjectivesList = (text: string) => {
+    if (!text || !text.trim()) return { focus: "", list: [] };
+    
+    let focus = "";
+    let remainingText = text;
+    
+    const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
+    if (focusMatch) {
+      focus = focusMatch[1].trim();
+      remainingText = text.replace(focusMatch[0], "").trim();
+    }
+
+    const lines = remainingText.split('\n');
+    const list: { title: string, keyResults: string[] }[] = [];
+    let currentTitle = "";
+    let currentKRs: string[] = [];
+    
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+        currentKRs.push(line.replace(/^[•-]\s*/, '').trim());
+      } else {
+        if (currentKRs.length > 0) {
+          list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+          currentTitle = line;
+          currentKRs = [];
+        } else {
+          currentTitle = currentTitle ? currentTitle + " " + line : line;
+        }
+      }
+    }
+    if (currentTitle || currentKRs.length > 0) {
+      list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+    }
+    return { focus, list };
+  };
+
+  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback?.objectives 
+    ? parseObjectivesList(detailedPods.rawFeedback.objectives)
+    : { focus: "", list: [] };
+
+  const displayObjectives = parsedObjectives.length > 0 ? parsedObjectives : [
+    {
+      title: detailedPods?.objectives?.subtitle || "Cultivate high-trust, psychologically safe leadership",
+      keyResults: detailedPods?.objectives?.items || []
+    }
+  ].filter(obj => obj.keyResults.length > 0);
 
   const displayCoachingTips = detailedPods?.coachingTips?.items || [];
 
@@ -1288,40 +1329,53 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
 Use this a guide for what to execute, track, and reinforce to drive sustained improvement over time."
                             />
                           </div>
-                        </div>{" "}
-                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                          {detailedPods?.objectives?.subtitle ||
-                            "Cultivate high-trust, psychologically safe leadership"}
-                        </p>
-                      </div>
-
-                      <div>
+                        </div>
+                      </div>                      <div>
                         <img src={Hugeicons} alt="images" className="w-8 h-8" />
                       </div>
                     </div>
-                    <div className="space-y-6">
-                      {displayKRs.map((kr: any, idx: number) => (
-                        <div key={idx} className="flex items-center gap-3 mt-4">
-                          <div className="text-lg-progress">
+                    <div className="space-y-8 mt-4">
+                      {okrFocus && (
+                        <p className="text-sm font-normal text-[var(--secondary-color)] -mt-2 mb-4">
+                          {okrFocus}
+                        </p>
+                      )}
+                      {displayObjectives.map((obj, objIdx) => (
+                        <div key={objIdx} className="flex items-start gap-4">
+                          <div className="text-lg-progress pt-1 shrink-0">
                             <CircularProgress
-                              value={Math.ceil(kr.value)}
-                              width={60}
+                              value={Math.ceil(detailedPods?.objectives?.progress || 0)}
+                              width={70}
                               textColor="#36454F"
                               pathColor="#1A3652"
                               trailColor="#D9D9D9"
                             />
                           </div>
-                          <div>
-                            <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                              {kr.label}
-                            </h2>
-                            <p className="text-sm font-normal text-[var(--secondary-color)]">
-                              {kr.text}
-                            </p>
+                          <div className="flex-1">
+                            <div className="mb-4">
+                              <h2 className="text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                                Objective {objIdx + 1}
+                              </h2>
+                              <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                                {obj.title}
+                              </p>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              {obj.keyResults.map((krText: string, krIdx: number) => (
+                                <div key={krIdx}>
+                                  <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                                    KR {objIdx + 1}.{krIdx + 1}
+                                  </h2>
+                                  <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
+                                    {krText}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       ))}
-                      {displayKRs.length === 0 && (
+                      {displayObjectives.length === 0 && (
                         <p className="text-sm text-gray-500 italic mt-6 font-medium">
                           No strategic objectives have been defined for this
                           area yet.
