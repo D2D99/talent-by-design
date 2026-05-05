@@ -258,27 +258,21 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       const start = target.selectionStart;
       const end = target.selectionEnd;
 
-      if (start !== end) return; // Don't interfere with selection deletion
+      if (start !== end) return;
 
       const textBefore = val.substring(0, start);
       const textAfter = val.substring(start);
       const lines = textBefore.split("\n");
       const currentLine = lines[lines.length - 1];
 
-      // Option 1: Space + Enter shortcut OR just Enter on non-bulleted line
+      // Always bullet any non-empty, non-bulleted line on Enter
       if (
-        currentLine.endsWith(" ") ||
-        (!currentLine.trimStart().startsWith("•") &&
-          currentLine.trim().length > 0)
+        currentLine.trim().length > 0 &&
+        !currentLine.trimStart().startsWith("•")
       ) {
         e.preventDefault();
         const lineStart = start - currentLine.length;
-
-        // Prepend bullet to current line if it's missing
-        const formattedCurrentLine = currentLine.trimStart().startsWith("•")
-          ? currentLine.trimEnd()
-          : "• " + currentLine.trim();
-
+        const formattedCurrentLine = "• " + currentLine.trim();
         const insertion = "\n• ";
         const newValue =
           val.substring(0, lineStart) +
@@ -286,7 +280,6 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
           insertion +
           textAfter;
         setter(newValue);
-
         const newPos = (
           val.substring(0, lineStart) +
           formattedCurrentLine +
@@ -295,17 +288,17 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
         setTimeout(() => {
           target.selectionStart = target.selectionEnd = newPos;
         }, 0);
+        setIsDirty(true);
         return;
       }
 
-      // Option 2: Smart Enter (continue list or end list)
+      // Smart Enter on already-bulleted lines
       if (currentLine.trimStart().startsWith("• ")) {
         e.preventDefault();
         const indentMatch = currentLine.match(/^\s*/);
         const indent = indentMatch ? indentMatch[0] : "";
 
         if (currentLine.trim() === "•") {
-          // Empty bullet line -> clear it (stop list)
           const lineStart = start - currentLine.length;
           const newValue = val.substring(0, lineStart) + "\n" + textAfter;
           setter(newValue);
@@ -313,7 +306,6 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
             target.selectionStart = target.selectionEnd = lineStart + 1;
           }, 0);
         } else {
-          // Continue the list
           const insertion = "\n" + indent + "• ";
           const newValue = textBefore + insertion + textAfter;
           setter(newValue);
@@ -325,6 +317,35 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
         setIsDirty(true);
       }
     }
+  };
+
+  const handleTextareaChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>,
+  ) => {
+    const newVal = e.target.value;
+    const prevVal = (e.target as any)._prevVal ?? "";
+
+    (e.target as any)._prevVal = newVal;
+
+    if (
+      prevVal.trim() === "" &&
+      newVal.trim().length > 0 &&
+      !newVal.trimStart().startsWith("•") &&
+      !newVal.trimStart().startsWith("-") &&
+      !newVal.trimStart().startsWith("*")
+    ) {
+      const bulleted = "• " + newVal.trimStart();
+      setter(bulleted);
+      setTimeout(() => {
+        e.target.selectionStart = e.target.selectionEnd = bulleted.length;
+      }, 0);
+      setIsDirty(true);
+      return;
+    }
+
+    setter(newVal);
+    setIsDirty(true);
   };
 
   const handleSave = async (closeModal = true, isAutoSave = false) => {
@@ -520,10 +541,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               </label>
               <textarea
                 value={insight}
-                onChange={(e) => {
-                  setInsight(e.target.value);
-                  setIsDirty(true);
-                }}
+                onChange={(e) => handleTextareaChange(e, setInsight)}
                 onKeyDown={(e) => handleKeyDown(e, setInsight)}
                 rows={3}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -536,10 +554,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               </label>
               <textarea
                 value={modelDescription}
-                onChange={(e) => {
-                  setModelDescription(e.target.value);
-                  setIsDirty(true);
-                }}
+                onChange={(e) => handleTextareaChange(e, setModelDescription)}
                 onKeyDown={(e) => handleKeyDown(e, setModelDescription)}
                 rows={4}
                 className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -552,10 +567,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 </label>
                 <textarea
                   value={coachingTips}
-                  onChange={(e) => {
-                    setCoachingTips(e.target.value);
-                    setIsDirty(true);
-                  }}
+                  onChange={(e) => handleTextareaChange(e, setCoachingTips)}
                   onKeyDown={(e) => handleKeyDown(e, setCoachingTips)}
                   rows={4}
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
@@ -619,10 +631,12 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                     <textarea
                       value={obj.keyResults}
                       onChange={(e) => {
-                        const newList = [...objectivesList];
-                        newList[index].keyResults = e.target.value;
-                        setObjectivesList(newList);
-                        setIsDirty(true);
+                        const setter: React.Dispatch<React.SetStateAction<string>> = (val) => {
+                          const newList = [...objectivesList];
+                          newList[index].keyResults = typeof val === 'function' ? val(newList[index].keyResults) : val;
+                          setObjectivesList(newList);
+                        };
+                        handleTextareaChange(e, setter);
                       }}
                       onKeyDown={(e) => {
                         const setter = (val: React.SetStateAction<string>) => {
@@ -659,10 +673,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 </label>
                 <textarea
                   value={recommendedPrograms}
-                  onChange={(e) => {
-                    setRecommendedPrograms(e.target.value);
-                    setIsDirty(true);
-                  }}
+                  onChange={(e) => handleTextareaChange(e, setRecommendedPrograms)}
                   onKeyDown={(e) => handleKeyDown(e, setRecommendedPrograms)}
                   rows={4}
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"
