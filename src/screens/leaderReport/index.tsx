@@ -752,8 +752,9 @@ const LeaderReport = () => {
               ""}
           </h3>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
+          {!hasNoReport && (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
               {/* Status Badge */}
               {isReportReleased && reportData && (
                 <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
@@ -802,8 +803,8 @@ const LeaderReport = () => {
               }}
               title="Release Report?"
               message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
-              confirmText="Yes, Release Now"
-              cancelText="No, Keep Draft"
+              confirmText="Confirm"
+              cancelText="Cancel"
               loading={releasing}
             />
 
@@ -835,7 +836,8 @@ const LeaderReport = () => {
                 {exportLoading ? "Exporting..." : "Export PDF Report"}
               </button>
             )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Filters Section */}

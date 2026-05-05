@@ -527,8 +527,9 @@ const EmployeeReport = () => {
               ""}
           </h3>
 
-          <div className="flex items-center gap-3">
-            <button
+          {!hasNoReport && (
+            <div className="flex items-center gap-3">
+              <button
               onClick={handlePreview}
               disabled={loadingPreview}
               className="flex items-center gap-2 h-10 px-4 bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] font-bold text-xs rounded-full hover:bg-[#edf5fd] transition-all disabled:opacity-50 hidden"
@@ -590,8 +591,8 @@ const EmployeeReport = () => {
               }}
               title="Release Report?"
               message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
-              confirmText="Yes, Release Now"
-              cancelText="No, Keep Draft"
+           confirmText="Confirm"
+              cancelText="Cancel"
               loading={releasing}
             />
 
@@ -610,7 +611,8 @@ const EmployeeReport = () => {
                 {exportLoading ? "Exporting..." : "Export PDF Report"}
               </button>
             )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Filters Section */}
