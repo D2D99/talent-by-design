@@ -132,18 +132,12 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
         const res = await api.get(url);
 
         if (!ignore) {
-          const pods = res.data.pods;
-          setInsight(formatWithBullets(pods?.insights?.mainText || ""));
-          setCoachingTips(
-            formatWithBullets(pods?.coachingTips?.items?.join("\n") || ""),
-          );
-          setRecommendedPrograms(
-            formatWithBullets(pods?.recommendations?.items?.join("\n") || ""),
-          );
-          setModelDescription(formatWithBullets(pods?.modelDescription || ""));
-          setObjectives(
-            formatWithBullets(pods?.objectives?.items?.join("\n") || ""),
-          );
+          const raw = res.data.pods?.rawFeedback || {};
+          setInsight(formatWithBullets(raw.insight || ""));
+          setCoachingTips(formatWithBullets(raw.coachingTips || ""));
+          setRecommendedPrograms(formatWithBullets(raw.recommendedPrograms || ""));
+          setModelDescription(formatWithBullets(raw.modelDescription || ""));
+          setObjectives(formatWithBullets(raw.objectives || ""));
           setIsDirty(false);
         }
       } catch (err) {
@@ -413,6 +407,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 </div>
               </div>
             </div>
+
 
             {fetching && (
               <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
