@@ -574,6 +574,7 @@ const LeaderReport = () => {
     const mScores: number[] = [];
     const tScores: number[] = [];
     const pScores: number[] = [];
+    const lScores: number[] = [];
 
     labels.forEach((sub) => {
       // Leader's OWN self-assessment score
@@ -602,33 +603,42 @@ const LeaderReport = () => {
           ? Number((employeeSubScore / 10).toFixed(1))
           : 0,
       );
+
+      // Leader avg (all leaders in same dept)
+      const leaderAvgSubScore =
+        teamAvgData?.leaderAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      lScores.push(
+        leaderAvgSubScore !== null
+          ? Number((leaderAvgSubScore / 10).toFixed(1))
+          : 0,
+      );
     });
 
-    return { labels, manager: mScores, team: tScores, peer: pScores };
+    return {
+      labels,
+      manager: mScores,
+      team: tScores,
+      peer: pScores,
+      admin: lScores,
+    };
   })();
 
   // Derive Role Data and Gaps (Alignment Status)
   const roleAverages = (() => {
-    // Leader's OWN total POD average across all domains
-    const leaderScore = Math.round(reportData?.scores?.overall || 0);
-
-    // Manager total POD avg across all domains from department data
-    const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
-      (d: any) => d.avgScore || 0,
+    // Score based on selected domain
+    const leaderScore = Math.round(
+      reportData?.scores?.domains?.[selectedDomain]?.score || 0,
     );
-    const managerAvgScore =
-      mScores.length > 0
-        ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
-        : 0;
 
-    // Employee total POD avg across all domains from department data
-    const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
-      (d: any) => d.avgScore || 0,
+    // Manager domain avg from department data
+    const managerAvgScore = Math.round(
+      teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0,
     );
-    const employeeAvgScore =
-      eScores.length > 0
-        ? Math.round(eScores.reduce((a, b) => a + b, 0) / eScores.length)
-        : 0;
+
+    // Employee domain avg from department data
+    const employeeAvgScore = Math.round(
+      teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0,
+    );
 
     const getColor = (val: number) => {
       if (val < 50) return "#FF5656"; // Needs Attention
@@ -1730,7 +1740,7 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                       className="w-5 h-2 rounded-sm inline-block"
                       style={{ background: "rgba(74, 144, 226, 0.7)" }}
                     />
-                    <span className="text-xs text-[#474747]">Leader</span>
+                    <span className="text-xs text-[#474747]">You</span>
                   </div>
                   <div
                     className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
@@ -1756,12 +1766,31 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                       Employee Avg ({teamAvgData?.employeeCount || 0})
                     </span>
                   </div>
+                  {teamAvgData?.leaderCount > 0 && (
+                    <div
+                      className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(3) ? "opacity-30" : "opacity-100"}`}
+                      onClick={() => toggleHiddenIndex(3)}
+                    >
+                      <span
+                        className="w-5 h-2 rounded-sm inline-block"
+                        style={{ background: "rgba(155, 89, 182, 0.7)" }}
+                      />
+                      <span className="text-xs text-[#474747]">
+                        Leader Avg ({teamAvgData?.leaderCount || 0})
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="relative w-full min-h-[450px]">
                   <MultiRadarChart
                     data={radarData}
                     onLabelSelect={handleSubdomainChange}
-                    datasetLabels={["Leader", "Manager Avg", "Employee Avg"]}
+                    datasetLabels={[
+                      "You",
+                      "Manager Avg",
+                      "Employee Avg",
+                      "Leader Avg",
+                    ]}
                     hiddenIndices={hiddenIndices}
                   />
                 </div>
