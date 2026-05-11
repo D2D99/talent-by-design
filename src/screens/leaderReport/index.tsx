@@ -504,25 +504,25 @@ const LeaderReport = () => {
 
   const parseObjectivesList = (text: string) => {
     if (!text || !text.trim()) return { focus: "", list: [] };
-    
+
     let focus = "";
     let remainingText = text;
-    
+
     const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
     if (focusMatch) {
       focus = focusMatch[1].trim();
       remainingText = text.replace(focusMatch[0], "").trim();
     }
 
-    const lines = remainingText.split('\n');
-    const list: { title: string, keyResults: string[] }[] = [];
+    const lines = remainingText.split("\n");
+    const list: { title: string; keyResults: string[] }[] = [];
     let currentTitle = "";
     let currentKRs: string[] = [];
-    
+
     for (const line of lines) {
       if (!line.trim()) continue;
-      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-        currentKRs.push(line.replace(/^[•-]\s*/, '').trim());
+      if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
+        currentKRs.push(line.replace(/^[•-]\s*/, "").trim());
       } else {
         if (currentKRs.length > 0) {
           list.push({ title: currentTitle.trim(), keyResults: currentKRs });
@@ -539,16 +539,22 @@ const LeaderReport = () => {
     return { focus, list };
   };
 
-  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback?.objectives 
+  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback
+    ?.objectives
     ? parseObjectivesList(detailedPods.rawFeedback.objectives)
     : { focus: "", list: [] };
 
-  const displayObjectives = parsedObjectives.length > 0 ? parsedObjectives : [
-    {
-      title: detailedPods?.objectives?.subtitle || "Enhance domain-specific capabilities",
-      keyResults: detailedPods?.objectives?.items || []
-    }
-  ].filter(obj => obj.keyResults.length > 0);
+  const displayObjectives =
+    parsedObjectives.length > 0
+      ? parsedObjectives
+      : [
+          {
+            title:
+              detailedPods?.objectives?.subtitle ||
+              "Enhance domain-specific capabilities",
+            keyResults: detailedPods?.objectives?.items || [],
+          },
+        ].filter((obj) => obj.keyResults.length > 0);
 
   // const displayRecommendations = detailedPods?.recommendations?.items || [
   //   "No specific recommendations available for this domain yet.",
@@ -1404,21 +1410,24 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                     </div>
                     <div className="space-y-8 mt-1">
                       {okrFocus && (
-                        <p className="text-sm font-normal text-[var(--secondary-color)] -mt-2 mb-4">
+                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-0 mb-4">
                           {okrFocus}
                         </p>
                       )}
                       {displayObjectives.map((obj, objIdx) => (
                         <div key={objIdx} className="flex items-start gap-4">
-                          <div className="text-lg-progress pt-1 shrink-0">
-                            <CircularProgress
-                              value={Math.ceil(detailedPods?.objectives?.progress || 0)}
-                              width={70}
-                              textColor="#36454F"
-                              pathColor="#1A3652"
-                              trailColor="#D9D9D9"
-                            />
-                          </div>
+                            <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
+                              <CircularProgress
+                                value={Math.ceil(
+                                  detailedPods?.objectives?.progress || 0,
+                                )}
+                                width={70}
+                                textColor="#36454F"
+                                pathColor="#1A3652"
+                                trailColor="#D9D9D9"
+                              />
+                            </div>
+                          
                           <div className="flex-1">
                             <div className="mb-4">
                               <h2 className="text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -1429,16 +1438,18 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               </p>
                             </div>
                             <div className="flex flex-col gap-4">
-                              {obj.keyResults.map((krText: string, krIdx: number) => (
-                                <div key={krIdx}>
-                                  <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                                    KR {objIdx + 1}.{krIdx + 1}
-                                  </h2>
-                                  <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
-                                    {krText}
-                                  </p>
-                                </div>
-                              ))}
+                              {obj.keyResults.map(
+                                (krText: string, krIdx: number) => (
+                                  <div key={krIdx}>
+                                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                                      KR {objIdx + 1}.{krIdx + 1}
+                                    </h2>
+                                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
+                                      {krText}
+                                    </p>
+                                  </div>
+                                ),
+                              )}
                             </div>
                           </div>
                         </div>

@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
+import { Modal } from "tw-elements";
+
 const ProgressIcon = "/static/img/home/progress-icon.png";
 
 interface ConfirmationModalProps {
@@ -35,10 +37,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   useEffect(() => {
     let instance: any = null;
-    let el = modalRef.current;
+    const el = modalRef.current;
 
-    import("tw-elements").then(({ Modal }) => {
-      if (!el) return;
+    if (el) {
       instance = Modal.getOrCreateInstance(el);
       setModalInstance(instance);
 
@@ -46,12 +47,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         onClose();
       };
       el.addEventListener("hidden.twe.modal", handleHidden);
-    });
+    }
 
     return () => {
       if (el) {
-        // We do not call onClose here; we just clean up the event listener
-        // We keep the instance alive for TWE to manage
+        // We keep the instance alive for TWE to manage, but remove listeners
         el.removeEventListener("hidden.twe.modal", () => {});
       }
     };
@@ -95,17 +95,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </div>
 
           <div className="relative sm:py-8 py-4 px-4 grid place-items-center gap-4">
-            {/* {icon ? (
-                            typeof icon === "string" ? (
-                                <img src={icon} alt="Icon" width={80} />
-                            ) : (
-                                icon
-                            )
-                        ) : (
-                            <div className={`flex h-20 w-20 items-center justify-center rounded-full ${isDanger ? "bg-amber-50 text-amber-500" : "bg-blue-50 text-blue-500"}`}>
-                                <Icon icon={isDanger ? "solar:shield-warning-bold-duotone" : "solar:info-circle-bold-duotone"} width="48" />
-                            </div>
-                        )} */}
             <img src={ProgressIcon} alt="Progress Icon" width={80} />
 
             <div className="text-center">

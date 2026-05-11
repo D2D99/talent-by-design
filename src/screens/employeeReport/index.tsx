@@ -1138,7 +1138,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       )}
                       {displayObjectives.map((obj, objIdx) => (
                         <div key={objIdx} className="flex items-start gap-4">
-                          <div className="text-lg-progress pt-1 shrink-0">
+                   <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
                             <CircularProgress
                               value={Math.ceil(detailedPods?.objectives?.progress || 0)}
                               width={70}
