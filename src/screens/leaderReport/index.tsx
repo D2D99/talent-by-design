@@ -1620,7 +1620,6 @@ Provides clear direction on where to stabilize, optimize, or accelerate efforts.
                               <EditableTooltip
                                 id="orgHealth"
                                 defaultContent="A high-level snapshot of overall performance averaged across People, Operations, and Digital.
-
 Indicates whether the organization is on track, at risk, or needs attention, helping you quickly prioritize focus areas."
                               />
                             </div>
