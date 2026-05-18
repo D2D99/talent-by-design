@@ -882,7 +882,7 @@ const LeaderReport = () => {
                 {loadingPreview ? "Loading..." : "Live Lab Preview"}
               </button>
 
-              {userId && (isSuperAdmin || isReportReleased) && (
+              {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
                 <button
                   type="button"
                   onClick={handleExportPDF}

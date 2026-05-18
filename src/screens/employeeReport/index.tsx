@@ -637,7 +637,7 @@ const EmployeeReport = () => {
               loading={releasing}
             />
 
-            {userId && (isSuperAdmin || isReportReleased) && (
+            {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
               <button
                 type="button"
                 onClick={handleExportPDF}

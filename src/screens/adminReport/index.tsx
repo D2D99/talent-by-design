@@ -836,7 +836,7 @@ const AdminReport = () => {
               loading={releasing}
             />
 
-            {userId && (isSuperAdmin || isReportReleased) && (
+            {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
               <button
                 onClick={handleExportPDF}
                 disabled={exportLoading}
