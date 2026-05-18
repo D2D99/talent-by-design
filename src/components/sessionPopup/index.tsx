@@ -1,25 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
-import { Modal, initTWE } from "tw-elements";
+const ProgressIcon = "/static/img/home/progress-icon.png";
 
 const SessionPopup = () => {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const modalRef = useRef<HTMLDivElement>(null);
-  const modalInstance = useRef<any>(null);
-
-  useEffect(() => {
-    initTWE({ Modal });
-  }, []);
-
-  useEffect(() => {
-    if (modalRef.current && !modalInstance.current) {
-      modalInstance.current = Modal.getOrCreateInstance(modalRef.current);
-    }
-  }, []);
 
   useEffect(() => {
     const cleanupBackdrops = () => {
@@ -54,10 +42,22 @@ const SessionPopup = () => {
 
   useEffect(() => {
     if (show) {
-      modalInstance.current?.show();
+      document.body.style.setProperty("overflow", "hidden", "important");
+      document.documentElement.style.setProperty("overflow", "hidden", "important");
+      document.body.style.setProperty("height", "100%", "important");
+      document.documentElement.style.setProperty("height", "100%", "important");
     } else {
-      modalInstance.current?.hide();
+      document.body.style.removeProperty("overflow");
+      document.documentElement.style.removeProperty("overflow");
+      document.body.style.removeProperty("height");
+      document.documentElement.style.removeProperty("height");
     }
+    return () => {
+      document.body.style.removeProperty("overflow");
+      document.documentElement.style.removeProperty("overflow");
+      document.body.style.removeProperty("height");
+      document.documentElement.style.removeProperty("height");
+    };
   }, [show]);
 
   const handleGoToLogin = () => {
@@ -66,35 +66,25 @@ const SessionPopup = () => {
     navigate("/login");
   };
 
+  if (!show) return null;
+
   return (
     <div
-      ref={modalRef}
-      data-twe-modal-init
-      className="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none font-sans"
-      tabIndex={-1}
-      aria-hidden="true"
-      data-twe-backdrop="static"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 overflow-hidden outline-none font-sans p-4"
+      onTouchMove={(e) => e.preventDefault()}
+      onWheel={(e) => e.preventDefault()}
     >
-      <div
-        data-twe-modal-dialog-ref
-        className="pointer-events-none relative flex min-h-[calc(100%-1rem)] w-auto translate-y-[-50px] items-center opacity-0 transition-all duration-300 ease-in-out max-w-md mx-auto px-4"
-      >
-        <div className="pointer-events-auto relative flex w-full flex-col rounded-2xl border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
-          {/* Modal Header */}
-          <div className="flex flex-shrink-0 items-center justify-between rounded-t-md p-4 border-b border-gray-100">
-            <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold">
-              Session Expired
-            </h5>
-          </div>
-
+      <div className="relative w-full max-w-md mx-auto transition-all duration-300 ease-in-out transform scale-100 opacity-100">
+        <div className="relative flex w-full flex-col rounded-2xl border-none bg-white text-current shadow-xl outline-none">
           {/* Modal Body */}
           <div className="relative p-8 text-center flex flex-col items-center">
-            <div className="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center mb-6">
-              <Icon
-                icon="solar:danger-circle-bold"
-                className="text-red-500 w-12 h-12"
-              />
+            <div className="mb-6 flex items-center justify-center">
+              <img src={ProgressIcon} alt="Warning Icon" width={80} />
             </div>
+
+            <h5 className="sm:text-xl text-lg text-[var(--secondary-color)] font-bold mb-3">
+              Session Expired
+            </h5>
 
             <p className="text-gray-600 leading-relaxed text-sm max-w-sm">
               Your session has ended. To keep your information secure, please log in

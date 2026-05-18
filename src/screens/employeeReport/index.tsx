@@ -141,6 +141,7 @@ const EmployeeReport = () => {
   const isLeader = userRole === "leader";
   const isManager = userRole === "manager";
   const isReportPage = location.pathname.includes("reports");
+  const targetUserId = !isSuperAdmin && !isAdmin ? user?._id : userId;
 
   const [orgs, setOrgs] = useState<string[]>([]);
   const [depts, setDepts] = useState<string[]>([]);
@@ -282,7 +283,7 @@ const EmployeeReport = () => {
     const fetchReport = async () => {
       // Admin/Manager/Leader must specify a target user.
       // Employees can view their own report without params.
-      if (!userId && !userEmail && userRole !== "employee") {
+      if (!targetUserId && !userEmail && userRole !== "employee") {
         setLoading(false);
         setHasNoReport(false);
         return;
@@ -293,9 +294,9 @@ const EmployeeReport = () => {
       try {
         let url = `dashboard/employee`;
         if (userEmail) {
-          url = `dashboard/employee?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
-        } else if (userId) {
-          url = `dashboard/employee?userId=${userId}`;
+          url = `dashboard/employee?userId=${targetUserId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (targetUserId) {
+          url = `dashboard/employee?userId=${targetUserId}`;
         }
         const res = await api.get(url);
         setReportData(res.data.report);
@@ -326,13 +327,13 @@ const EmployeeReport = () => {
     };
 
     fetchReport();
-  }, [userId, userEmail, refreshKey]);
+  }, [targetUserId, userEmail, refreshKey]);
 
   const handlePreview = async () => {
     try {
       setLoadingPreview(true);
       const qParams = new URLSearchParams();
-      if (userId) qParams.append("userId", userId);
+      if (targetUserId) qParams.append("userId", targetUserId);
       if (userEmail) qParams.append("email", userEmail);
 
       const response = await api.get(
@@ -370,7 +371,7 @@ const EmployeeReport = () => {
     try {
       setExportLoading(true);
       const params: any = {};
-      if (userId) params.userId = userId;
+      if (targetUserId) params.userId = targetUserId;
       if (userEmail) params.email = userEmail;
 
       const response = await api.get("/dashboard/export-pdf", {
@@ -552,6 +553,27 @@ const EmployeeReport = () => {
     "No specific recommendations available for this domain yet.",
   ];
 
+  if (!(isSuperAdmin || isAdmin) && !isReportReleased) {
+    return (
+      <div>
+        <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A] flex flex-col items-center justify-center">
+          <div className="text-center flex flex-col items-center py-20">
+            <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
+              <Icon
+                icon="hugeicons:audit-02"
+                className="text-[var(--primary-color)] size-10"
+              />
+            </div>
+            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
+            <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
+              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Main Header & Filters Card */}
@@ -585,7 +607,7 @@ const EmployeeReport = () => {
 
             <div className="flex items-center gap-2">
               {/* Status Badge */}
-              {isReportReleased && reportData && (
+              {isReportReleased && reportData && (isSuperAdmin || isAdmin) && (
                 <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
                   <Icon icon="solar:check-circle-bold-duotone" width="12" />
                   Released Report
@@ -637,7 +659,7 @@ const EmployeeReport = () => {
               loading={releasing}
             />
 
-            {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
+            {(isSuperAdmin || isAdmin || isReportReleased) && (
               <button
                 type="button"
                 onClick={handleExportPDF}
@@ -657,100 +679,102 @@ const EmployeeReport = () => {
         </div>
 
         {/* Filters Section */}
-        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
-          <div className="xl:block hidden"></div>
+        {(isSuperAdmin || isAdmin) && (
+          <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
+            <div className="xl:block hidden"></div>
 
-          {isAdmin && <div className="xl:block hidden"></div>}
+            {isAdmin && <div className="xl:block hidden"></div>}
 
-          {isLeader && <div className="xl:block hidden"></div>}
+            {isLeader && <div className="xl:block hidden"></div>}
 
-          {isLeader && <div className="xl:block hidden"></div>}
+            {isLeader && <div className="xl:block hidden"></div>}
 
-          {isManager && <div className="xl:block hidden"></div>}
+            {isManager && <div className="xl:block hidden"></div>}
 
-          {isManager && <div className="xl:block hidden"></div>}
+            {isManager && <div className="xl:block hidden"></div>}
 
-          {isSuperAdmin && (
-            <Select
-              className="select-search"
-              placeholder="Organization"
-              options={orgs.map((o) => ({ value: o, label: o }))}
-              value={
-                selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
-              }
-              onChange={(option: any) => {
-                setSelectedOrg(option?.value || "");
-                setSelectedDept("");
-                setSelectedMember(null);
-              }}
-            />
-          )}
+            {isSuperAdmin && (
+              <Select
+                className="select-search"
+                placeholder="Organization"
+                options={orgs.map((o) => ({ value: o, label: o }))}
+                value={
+                  selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
+                }
+                onChange={(option: any) => {
+                  setSelectedOrg(option?.value || "");
+                  setSelectedDept("");
+                  setSelectedMember(null);
+                }}
+              />
+            )}
 
-          {(isSuperAdmin || isAdmin) && (
-            <Select
-              className="select-search"
-              placeholder="Select Department"
-              options={[
-                { value: "", label: "All Departments" },
-                ...depts.map((d) => ({ value: d, label: d })),
-              ]}
-              value={
-                [
+            {(isSuperAdmin || isAdmin) && (
+              <Select
+                className="select-search"
+                placeholder="Select Department"
+                options={[
                   { value: "", label: "All Departments" },
                   ...depts.map((d) => ({ value: d, label: d })),
-                ].find((o) => o.value === selectedDept) || null
-              }
-              onChange={(option: any) => {
-                setSelectedDept(option?.value || "");
-                setSelectedMember(null);
-              }}
-            />
-          )}
-
-          {(isSuperAdmin || isAdmin || isReportPage) && (
-            <Select
-              className="select-search"
-              placeholder="Select Employee"
-              options={filteredMembers.map((m) => ({
-                value: m._id,
-                label: m.name,
-                data: m,
-              }))}
-              value={
-                selectedMember
-                  ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
-                  : null
-              }
-              onChange={(option: any) => {
-                const m = option?.data;
-                if (m) {
-                  setSelectedMember(m);
-                  const roleMapping: Record<string, string> = {
-                    superadmin: "org-head",
-                    super_admin: "org-head",
-                    admin: "org-head",
-                    "senior-leader": "senior-leader",
-                    leader: "senior-leader",
-                    manager: "manager",
-                    employee: "employee",
-                  };
-                  const reportType =
-                    roleMapping[m.role.toLowerCase()] || "employee";
-                  const currentOrg = searchParams.get("orgName") || "";
-                  const orgQuery = currentOrg
-                    ? `&orgName=${encodeURIComponent(currentOrg)}`
-                    : "";
-                  navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
-                  );
+                ]}
+                value={
+                  [
+                    { value: "", label: "All Departments" },
+                    ...depts.map((d) => ({ value: d, label: d })),
+                  ].find((o) => o.value === selectedDept) || null
                 }
-              }}
-            />
-          )}
-        </div>
+                onChange={(option: any) => {
+                  setSelectedDept(option?.value || "");
+                  setSelectedMember(null);
+                }}
+              />
+            )}
+
+            {(isSuperAdmin || isAdmin || isReportPage) && (
+              <Select
+                className="select-search"
+                placeholder="Select Employee"
+                options={filteredMembers.map((m) => ({
+                  value: m._id,
+                  label: m.name,
+                  data: m,
+                }))}
+                value={
+                  selectedMember
+                    ? {
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
+                    : null
+                }
+                onChange={(option: any) => {
+                  const m = option?.data;
+                  if (m) {
+                    setSelectedMember(m);
+                    const roleMapping: Record<string, string> = {
+                      superadmin: "org-head",
+                      super_admin: "org-head",
+                      admin: "org-head",
+                      "senior-leader": "senior-leader",
+                      leader: "senior-leader",
+                      manager: "manager",
+                      employee: "employee",
+                    };
+                    const reportType =
+                      roleMapping[m.role.toLowerCase()] || "employee";
+                    const currentOrg = searchParams.get("orgName") || "";
+                    const orgQuery = currentOrg
+                      ? `&orgName=${encodeURIComponent(currentOrg)}`
+                      : "";
+                    navigate(
+                      `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
+                    );
+                  }
+                }}
+              />
+            )}
+          </div>
+        )}
 
         {hasNoReport ? (
           <div className="grid place-items-center text-center pt-20">

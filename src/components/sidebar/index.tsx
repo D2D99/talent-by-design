@@ -52,6 +52,12 @@ const Sidebar = ({ onClose }: SidebarProps) => {
   const isReportsRoute = location.pathname.startsWith("/dashboard/reports");
   const [openReports, setOpenReports] = useState(isReportsRoute);
 
+  const userRole = user.role?.toLowerCase();
+  const isAdminOrSuper =
+    userRole === "superadmin" ||
+    userRole === "super_admin" ||
+    userRole === "admin";
+
   useEffect(() => {
     setOpenReports(isReportsRoute);
   }, [isReportsRoute]);
@@ -235,9 +241,12 @@ const Sidebar = ({ onClose }: SidebarProps) => {
           <li className="mb-2">
             <button
               onClick={() => {
-                setOpenReports(true);
-
-                if (!isReportsRoute) {
+                if (isAdminOrSuper) {
+                  setOpenReports(!openReports);
+                  if (!isReportsRoute) {
+                    navigate(getFirstReportRoute());
+                  }
+                } else {
                   navigate(getFirstReportRoute());
                 }
               }}
@@ -256,61 +265,37 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                   place="right"
                 />
               </span>
-              <Icon
-                icon="weui:arrow-filled"
-                width="10"
-                className={`transition-transform ${
-                  openReports ? "rotate-90" : ""
-                }`}
-              />
+              {isAdminOrSuper && (
+                <Icon
+                  icon="weui:arrow-filled"
+                  width="10"
+                  className={`transition-transform ${
+                    openReports ? "rotate-90" : ""
+                  }`}
+                />
+              )}
             </button>
 
-            {openReports && (
+            {openReports && isAdminOrSuper && (
               <ul className="pl-6 mt-2 space-y-1" id="sub-menu">
-                {(() => {
-                  const role = user.role?.toLowerCase();
-                  const isAdminOrSuper =
-                    role === "superadmin" ||
-                    role === "super_admin" ||
-                    role === "admin";
-                  const isLeader = role === "leader";
-                  const isManager = role === "manager";
-
-                  return (
-                    <>
-                      {/* {isAdminOrSuper && (
-                        <ReportLink
-                          to="org-head"
-                          label="Org Head / Coach"
-                          icon="fluent:organization-20-regular"
-                          onClose={onClose}
-                        />
-                      )} */}
-                      {(isAdminOrSuper || isLeader) && (
-                        <ReportLink
-                          to="senior-leader"
-                          label="Senior Leader"
-                          icon="solar:user-rounded-outline"
-                          onClose={onClose}
-                        />
-                      )}
-                      {(isAdminOrSuper || isLeader || isManager) && (
-                        <ReportLink
-                          to="manager"
-                          label="Manager"
-                          icon="solar:users-group-rounded-outline"
-                          onClose={onClose}
-                        />
-                      )}
-                      <ReportLink
-                        to="employee"
-                        label="Employee"
-                        icon="solar:users-group-two-rounded-linear"
-                        onClose={onClose}
-                      />
-                    </>
-                  );
-                })()}
+                <ReportLink
+                  to="senior-leader"
+                  label="Senior Leader"
+                  icon="solar:user-rounded-outline"
+                  onClose={onClose}
+                />
+                <ReportLink
+                  to="manager"
+                  label="Manager"
+                  icon="solar:users-group-rounded-outline"
+                  onClose={onClose}
+                />
+                <ReportLink
+                  to="employee"
+                  label="Employee"
+                  icon="solar:users-group-two-rounded-linear"
+                  onClose={onClose}
+                />
               </ul>
             )}
           </li>

@@ -72,6 +72,8 @@ const ManagerReport = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
   const userEmail = searchParams.get("email"); // Guest employee support
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [reportData, setReportData] = useState<any>(null);
   const [firstReportData, setFirstReportData] = useState<any>(null);
@@ -106,11 +108,10 @@ const ManagerReport = () => {
   };
 
   const { user } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
   const userRole = user?.role?.toLowerCase() || "";
   const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
+  const targetUserId = !isSuperAdmin && !isAdmin ? user?._id : userId;
   const isLeader = userRole === "leader";
   const isManager = userRole === "manager";
 
@@ -232,7 +233,7 @@ const ManagerReport = () => {
     initTWE({ Ripple, Offcanvas, Dropdown });
 
     const fetchReport = async () => {
-      if (!userId && !userEmail) {
+      if (!targetUserId && !userEmail) {
         setLoading(false);
         setHasNoReport(false); // Ensure this is false if no user is selected
         return;
@@ -242,9 +243,9 @@ const ManagerReport = () => {
       try {
         let url = `dashboard/manager`; // Kept as manager for ManagerReport
         if (userEmail) {
-          url = `dashboard/manager?userId=${userId}&email=${encodeURIComponent(userEmail)}`;
-        } else if (userId) {
-          url = `dashboard/manager?userId=${userId}`;
+          url = `dashboard/manager?userId=${targetUserId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (targetUserId) {
+          url = `dashboard/manager?userId=${targetUserId}`;
         }
         const res = await api.get(url);
         setReportData(res.data.report);
@@ -266,17 +267,17 @@ const ManagerReport = () => {
     };
 
     fetchReport();
-  }, [userId, userEmail, refreshKey]);
+  }, [targetUserId, userEmail, refreshKey]);
 
   // 🆕 Fetch real team avg from backend whenever the viewed manager changes
   useEffect(() => {
     const fetchTeamAvg = async () => {
-      if (!userId && !userEmail) return;
+      if (!targetUserId && !userEmail) return;
       setTeamAvgLoading(true);
       try {
         let url = "dashboard/manager-team-avg";
         const params: string[] = [];
-        if (userId) params.push(`userId=${userId}`);
+        if (targetUserId) params.push(`userId=${targetUserId}`);
         if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
         if (params.length) url += `?${params.join("&")}`;
         const res = await api.get(url);
@@ -286,7 +287,7 @@ const ManagerReport = () => {
       }
     };
     fetchTeamAvg();
-  }, [userId, userEmail, refreshKey]);
+  }, [targetUserId, userEmail, refreshKey]);
 
   // Handle label selection from Radar Chart
   const handleRadarChartSelection = (label: string) => {
@@ -374,9 +375,9 @@ const ManagerReport = () => {
       try {
         let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}`;
         if (userEmail) {
-          url += `&userId=${userId}&email=${encodeURIComponent(userEmail)}`;
-        } else if (userId) {
-          url += `&userId=${userId}`;
+          url += `&userId=${targetUserId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (targetUserId) {
+          url += `&userId=${targetUserId}`;
         }
         const res = await api.get(url);
         setDetailedPods(res.data.pods);
@@ -396,7 +397,7 @@ const ManagerReport = () => {
   }, [
     selectedDomain,
     selectedSubdomain,
-    userId,
+    targetUserId,
     userEmail,
     reportData,
     refreshKey,
@@ -406,7 +407,7 @@ const ManagerReport = () => {
     try {
       setLoadingPreview(true);
       const qParams = new URLSearchParams();
-      if (userId) qParams.append("userId", userId);
+      if (targetUserId) qParams.append("userId", targetUserId);
       if (userEmail) qParams.append("email", userEmail);
 
       const response = await api.get(
@@ -444,7 +445,7 @@ const ManagerReport = () => {
     try {
       setExportLoading(true);
       const params: any = {};
-      if (userId) params.userId = userId;
+      if (targetUserId) params.userId = targetUserId;
       if (userEmail) params.email = userEmail;
 
       const response = await api.get("/dashboard/export-pdf", {
@@ -696,6 +697,27 @@ const ManagerReport = () => {
     .sort((a, b) => b.absGap - a.absGap)
     .slice(3);
 
+  if (!(isSuperAdmin || isAdmin) && !isReportReleased) {
+    return (
+      <div>
+        <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A] flex flex-col items-center justify-center">
+          <div className="text-center flex flex-col items-center py-20">
+            <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
+              <Icon
+                icon="hugeicons:audit-02"
+                className="text-[var(--primary-color)] size-10"
+              />
+            </div>
+            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
+            <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
+              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
@@ -715,7 +737,7 @@ const ManagerReport = () => {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
               {/* Status Badge */}
-              {isReportReleased && reportData && (
+              {isReportReleased && reportData && (isSuperAdmin || isAdmin) && (
                 <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
                   <Icon icon="solar:check-circle-bold-duotone" width="12" />
                   Released Report
@@ -766,7 +788,7 @@ const ManagerReport = () => {
               loading={releasing}
             />
 
-            {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
+            {(isSuperAdmin || isAdmin || isReportReleased) && (
               <button
                 type="button"
                 onClick={handleExportPDF}
@@ -786,105 +808,107 @@ const ManagerReport = () => {
         </div>
 
         {/* Filters Section */}
-        <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
-          <div className="xl:block hidden"></div>
+        {(isSuperAdmin || isAdmin) && (
+          <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-6 mb-10 gap-4 items-center">
+            <div className="xl:block hidden"></div>
 
-          {isAdmin && <div className="xl:block hidden"></div>}
+            {isAdmin && <div className="xl:block hidden"></div>}
 
-          {isLeader && <div className="xl:block hidden"></div>}
+            {isLeader && <div className="xl:block hidden"></div>}
 
-          {isLeader && <div className="xl:block hidden"></div>}
+            {isLeader && <div className="xl:block hidden"></div>}
 
-          {isManager && <div className="xl:block hidden"></div>}
+            {isManager && <div className="xl:block hidden"></div>}
 
-          {isManager && <div className="xl:block hidden"></div>}
+            {isManager && <div className="xl:block hidden"></div>}
 
-          {isSuperAdmin && (
-            <Select
-              className="select-search"
-              // styles={customSelectStyles}
-              placeholder="Organization"
-              options={orgs.map((o) => ({ value: o, label: o }))}
-              value={
-                selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
-              }
-              onChange={(option: any) => {
-                setSelectedOrg(option?.value || "");
-                setSelectedDept("");
-                setSelectedMember(null);
-              }}
-            />
-          )}
-
-          {(isSuperAdmin || isAdmin) && (
-            <Select
-              className="select-search"
-              placeholder="Select Department"
-              options={[
-                { value: "", label: "All Departments" },
-                ...[...depts].sort().map((d) => ({ value: d, label: d })),
-              ]}
-              value={
-                [
-                  { value: "", label: "All Departments" },
-                  ...depts.map((d) => ({ value: d, label: d })),
-                ].find((o) => o.value === selectedDept) || null
-              }
-              onChange={(option: any) => {
-                setSelectedDept(option?.value || "");
-                setSelectedMember(null);
-              }}
-            />
-          )}
-
-          {(isSuperAdmin || isAdmin || isReportPage) && (
-            <Select
-              // styles={customSelectStyles}
-              className="select-search"
-              placeholder="Select Manager"
-              options={filteredMembers.map((m) => ({
-                value: m._id,
-                label: m.name,
-                data: m,
-              }))}
-              value={
-                selectedMember
-                  ? {
-                    value: selectedMember._id,
-                    label: selectedMember.name,
-                  }
-                  : null
-              }
-              onChange={(option: any) => {
-                const m = option?.data;
-                if (m) {
-                  setSelectedMember(m);
-                  const roleMapping: Record<string, string> = {
-                    superadmin: "org-head",
-                    super_admin: "org-head",
-                    admin: "org-head",
-                    "senior-leader": "senior-leader",
-                    leader: "senior-leader",
-                    manager: "manager",
-                    employee: "employee",
-                  };
-                  const reportType =
-                    roleMapping[m.role.toLowerCase()] || "employee";
-
-                  // Use orgName from searchParams if available
-                  const currentOrg = searchParams.get("orgName") || "";
-                  const orgQuery = currentOrg
-                    ? `&orgName=${encodeURIComponent(currentOrg)}`
-                    : "";
-
-                  navigate(
-                    `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
-                  );
+            {isSuperAdmin && (
+              <Select
+                className="select-search"
+                // styles={customSelectStyles}
+                placeholder="Organization"
+                options={orgs.map((o) => ({ value: o, label: o }))}
+                value={
+                  selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
                 }
-              }}
-            />
-          )}
-        </div>
+                onChange={(option: any) => {
+                  setSelectedOrg(option?.value || "");
+                  setSelectedDept("");
+                  setSelectedMember(null);
+                }}
+              />
+            )}
+
+            {(isSuperAdmin || isAdmin) && (
+              <Select
+                className="select-search"
+                placeholder="Select Department"
+                options={[
+                  { value: "", label: "All Departments" },
+                  ...[...depts].sort().map((d) => ({ value: d, label: d })),
+                ]}
+                value={
+                  [
+                    { value: "", label: "All Departments" },
+                    ...depts.map((d) => ({ value: d, label: d })),
+                  ].find((o) => o.value === selectedDept) || null
+                }
+                onChange={(option: any) => {
+                  setSelectedDept(option?.value || "");
+                  setSelectedMember(null);
+                }}
+              />
+            )}
+
+            {(isSuperAdmin || isAdmin || isReportPage) && (
+              <Select
+                // styles={customSelectStyles}
+                className="select-search"
+                placeholder="Select Manager"
+                options={filteredMembers.map((m) => ({
+                  value: m._id,
+                  label: m.name,
+                  data: m,
+                }))}
+                value={
+                  selectedMember
+                    ? {
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
+                    : null
+                }
+                onChange={(option: any) => {
+                  const m = option?.data;
+                  if (m) {
+                    setSelectedMember(m);
+                    const roleMapping: Record<string, string> = {
+                      superadmin: "org-head",
+                      super_admin: "org-head",
+                      admin: "org-head",
+                      "senior-leader": "senior-leader",
+                      leader: "senior-leader",
+                      manager: "manager",
+                      employee: "employee",
+                    };
+                    const reportType =
+                      roleMapping[m.role.toLowerCase()] || "employee";
+
+                    // Use orgName from searchParams if available
+                    const currentOrg = searchParams.get("orgName") || "";
+                    const orgQuery = currentOrg
+                      ? `&orgName=${encodeURIComponent(currentOrg)}`
+                      : "";
+
+                    navigate(
+                      `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
+                    );
+                  }
+                }}
+              />
+            )}
+          </div>
+        )}
 
         {hasNoReport ? (
           <div className="grid place-items-center text-center pt-20">
