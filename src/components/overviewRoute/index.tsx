@@ -6,7 +6,9 @@ const AdminOverview = lazy(() => import("../../screens/adminOverview"));
 const LeaderOverview = lazy(() => import("../../screens/leaderOverview"));
 const ManagerOverview = lazy(() => import("../../screens/managerOverview"));
 const PageNotFound = lazy(() => import("../../screens/pageNotFound"));
-const SuperAdminOverview = lazy(() => import("../../screens/superAdminOverview"));
+const SuperAdminOverview = lazy(
+  () => import("../../screens/superAdminOverview")
+);
 
 const Loading = () => (
   <div className="flex h-[400px] w-full items-center justify-center">

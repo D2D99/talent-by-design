@@ -42,7 +42,11 @@ export default defineConfig({
             if (id.match(/[\\/](lottie-react|lottie-web|@lottiefiles)[\\/]/)) {
               return "lottie-vendor";
             }
-            if (id.match(/[\\/](axios|date-fns|react-toastify|react-tooltip)[\\/]/)) {
+            if (
+              id.match(
+                /[\\/](axios|date-fns|react-toastify|react-tooltip)[\\/]/
+              )
+            ) {
               return "utils-vendor";
             }
             if (id.match(/[\\/](react-dom|react-router-dom)[\\/]/)) {

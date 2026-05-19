@@ -184,7 +184,6 @@ const AssessmentQuestion = () => {
         } catch (e) {
           loadQuestions("employee");
         }
-      } finally {
       }
     };
 
@@ -481,8 +480,8 @@ const AssessmentQuestion = () => {
                       {((!isForcedChoice &&
                         typeof selectedValue === "number" &&
                         selectedValue <= 2) ||
-                        (isForcedChoice && selectedValue !== null)) && (
-                        isForcedChoice ? (
+                        (isForcedChoice && selectedValue !== null)) &&
+                        (isForcedChoice ? (
                           <motion.div
                             key={`${currentIndex}-${selectedValue}`}
                             initial={{ opacity: 0 }}
@@ -520,8 +519,7 @@ const AssessmentQuestion = () => {
                               onChange={(e) => setComment(e.target.value)}
                             ></textarea>
                           </div>
-                        )
-                      )}
+                        ))}
                     </AnimatePresence>
                   </>
                 ) : (

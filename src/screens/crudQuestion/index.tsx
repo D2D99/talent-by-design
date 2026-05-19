@@ -228,9 +228,7 @@ const FilterSection = ({
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full group/head pt-2 focus:outline-none"
       >
-        <span className="text-xs font-black uppercase">
-          {title}
-        </span>
+        <span className="text-xs font-black uppercase">{title}</span>
         <Icon
           icon="iconoir:nav-arrow-down"
           className={`transition-transform duration-500 ${
@@ -2986,8 +2984,8 @@ const CrudModals = (props: CrudModalsProps) => {
 
                     {/* Insight Prompt - Matching AssessmentQuestion styling */}
                     <AnimatePresence mode="wait">
-                      {shouldShowPrompt && (
-                        isForcedChoice ? (
+                      {shouldShowPrompt &&
+                        (isForcedChoice ? (
                           <motion.div
                             key={`${previewIdx}-${previewValue}`}
                             initial={{ opacity: 0 }}
@@ -2999,7 +2997,8 @@ const CrudModals = (props: CrudModalsProps) => {
                             <label className="text-sm font-bold block mb-2">
                               {previewValue === "A"
                                 ? currentQ?.forcedChoice?.optionA?.insightPrompt
-                                : currentQ?.forcedChoice?.optionB?.insightPrompt}
+                                : currentQ?.forcedChoice?.optionB
+                                    ?.insightPrompt}
                               <span className="text-black"> *</span>
                             </label>
                             <textarea
@@ -3012,7 +3011,8 @@ const CrudModals = (props: CrudModalsProps) => {
                         ) : (
                           <div className="w-full transition-all duration-300 opacity-100 h-auto">
                             <label className="text-sm font-bold block mb-2">
-                              {currentQ?.insightPrompt || "Why did you choose this score?"}
+                              {currentQ?.insightPrompt ||
+                                "Why did you choose this score?"}
                               <span className="text-black"> *</span>
                             </label>
                             <textarea
@@ -3022,8 +3022,7 @@ const CrudModals = (props: CrudModalsProps) => {
                               readOnly
                             ></textarea>
                           </div>
-                        )
-                      )}
+                        ))}
                     </AnimatePresence>
 
                     {/* Footer Buttons - Inside the card for better alignment */}

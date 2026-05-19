@@ -67,12 +67,6 @@ const UserResponseView = () => {
   const [filterSubdomains, setFilterSubdomains] = useState<string[]>([]);
   const [filterTypes, setFilterTypes] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (assessmentId) {
-      fetchResponses();
-    }
-  }, [assessmentId]);
-
   const fetchResponses = async () => {
     setLoading(true);
     try {
@@ -102,6 +96,12 @@ const UserResponseView = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (assessmentId) {
+      fetchResponses();
+    }
+  }, [assessmentId]);
 
   const DOMAINS = [
     "People Potential",

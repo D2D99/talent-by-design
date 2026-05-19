@@ -412,7 +412,7 @@ const UserProfile = () => {
                 htmlFor="lname"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                Last Name *    
+                Last Name *
               </label>
               <input
                 type="text"

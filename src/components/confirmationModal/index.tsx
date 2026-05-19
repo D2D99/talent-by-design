@@ -28,10 +28,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   confirmText = "Confirm",
   cancelText = "Cancel",
   loading = false,
-//   icon,
-//   variant = "danger",
+  //   icon,
+  //   variant = "danger",
 }) => {
-//   const isDanger = variant === "danger";
+  //   const isDanger = variant === "danger";
   const modalRef = useRef<HTMLDivElement>(null);
   const [modalInstance, setModalInstance] = useState<any>(null);
 

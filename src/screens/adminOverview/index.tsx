@@ -600,8 +600,12 @@ const AdminOverview = () => {
                   <strong className="text-white">'Strategic Alignment'</strong>.{" "}
                   {intelData?.strategicInsight ||
                     "Results indicate high readiness for growth."} */}
-                    Excellent engagement and strong <strong className="text-white capitalize">strategic alignment</strong>, with early indicators showing a healthy operational flow now the focus is driving participation toward critical mass.
-
+                  Excellent engagement and strong{" "}
+                  <strong className="text-white capitalize">
+                    strategic alignment
+                  </strong>
+                  , with early indicators showing a healthy operational flow now
+                  the focus is driving participation toward critical mass.
                 </p>
               </div>
             </div>

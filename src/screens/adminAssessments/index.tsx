@@ -82,7 +82,10 @@ const AdminAssessments = () => {
     }
   };
 
-  const handleActionClick = (member: UserMember, type: "Report" | "Response" | "Reset") => {
+  const handleActionClick = (
+    member: UserMember,
+    type: "Report" | "Response" | "Reset"
+  ) => {
     setActiveDropdown(null);
     if (type === "Report") {
       const roleMapping: Record<string, string> = {
@@ -94,7 +97,8 @@ const AdminAssessments = () => {
         manager: "manager",
         employee: "employee",
       };
-      const reportType = roleMapping[member.role?.toLowerCase() || ""] || "employee";
+      const reportType =
+        roleMapping[member.role?.toLowerCase() || ""] || "employee";
       navigate(
         `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`
       );
@@ -379,13 +383,17 @@ const AdminAssessments = () => {
                             ></div>
                             <div
                               className={`absolute right-12 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5 ${
-                                idx >= currentData.length - 2 ? "bottom-0 right-20" : "bottom-0 right-20"
+                                idx >= currentData.length - 2
+                                  ? "bottom-0 right-20"
+                                  : "bottom-0 right-20"
                               }`}
                             >
                               {status === "Completed" && (
                                 <>
                                   <button
-                                    onClick={() => handleActionClick(member, "Report")}
+                                    onClick={() =>
+                                      handleActionClick(member, "Report")
+                                    }
                                     className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
                                   >
                                     <Icon
@@ -396,7 +404,9 @@ const AdminAssessments = () => {
                                     <span>Report</span>
                                   </button>
                                   <button
-                                    onClick={() => handleActionClick(member, "Response")}
+                                    onClick={() =>
+                                      handleActionClick(member, "Response")
+                                    }
                                     className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
                                   >
                                     <Icon
@@ -410,10 +420,15 @@ const AdminAssessments = () => {
                               )}
                               {canReset && (
                                 <button
-                                  onClick={() => handleActionClick(member, "Reset")}
+                                  onClick={() =>
+                                    handleActionClick(member, "Reset")
+                                  }
                                   className="w-full px-4 py-2 text-sm font-medium text-red-500 flex items-center gap-1.5 bg-white hover:bg-red-50 transition-colors"
                                 >
-                                  <Icon icon="solar:restart-linear" width="14" />
+                                  <Icon
+                                    icon="solar:restart-linear"
+                                    width="14"
+                                  />
                                   <span>Reset</span>
                                 </button>
                               )}

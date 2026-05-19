@@ -83,9 +83,9 @@ export default function Triangle({ data }: Props) {
   // Area(CPD) = wO * TotalArea (Right Sector  -> Digital Fluency)
   // Area(CPO) = wD * TotalArea (Left Sector   -> People Potential)
   const scoreTotal = pS + oS + dS || 1;
-  const wP = oS / scoreTotal; 
-  const wO = dS / scoreTotal; 
-  const wD = pS / scoreTotal; 
+  const wP = oS / scoreTotal;
+  const wO = dS / scoreTotal;
+  const wD = pS / scoreTotal;
 
   // Meeting point (C) based on weights
   const C = {
@@ -94,9 +94,9 @@ export default function Triangle({ data }: Props) {
   };
 
   const colors = {
-    people: "#EDF5FD",   // Lightest — bottom (Operational Steadiness)
+    people: "#EDF5FD", // Lightest — bottom (Operational Steadiness)
     operational: "#C7E0F8", // Medium — right (Digital Fluency)
-    digital: "#3C7CBA",  // Dark    — left (People Potential)
+    digital: "#3C7CBA", // Dark    — left (People Potential)
   };
 
   const hoverColors = {
@@ -156,11 +156,21 @@ export default function Triangle({ data }: Props) {
         {/* SECTOR 1: bottom face (C-O-D) → Operational Steadiness */}
         <polygon
           points={`${C.x},${C.y} ${O.x},${O.y} ${D.x},${D.y}`}
-          fill={tooltip?.label === "Operational Steadiness" ? hoverColors.people : colors.people}
+          fill={
+            tooltip?.label === "Operational Steadiness"
+              ? hoverColors.people
+              : colors.people
+          }
           className="transition-all duration-300 ease-in-out"
           style={{ cursor: "pointer" }}
           onMouseEnter={() =>
-            showTooltip(bottomSectorCentroid.x, bottomSectorCentroid.y, "Operational Steadiness", operationalPct, "#3C7CBA")
+            showTooltip(
+              bottomSectorCentroid.x,
+              bottomSectorCentroid.y,
+              "Operational Steadiness",
+              operationalPct,
+              "#3C7CBA"
+            )
           }
           onMouseLeave={hideTooltip}
         />
@@ -168,11 +178,21 @@ export default function Triangle({ data }: Props) {
         {/* SECTOR 2: right face (C-P-D) → Digital Fluency */}
         <polygon
           points={`${C.x},${C.y} ${P.x},${P.y} ${D.x},${D.y}`}
-          fill={tooltip?.label === "Digital Fluency" ? hoverColors.operational : colors.operational}
+          fill={
+            tooltip?.label === "Digital Fluency"
+              ? hoverColors.operational
+              : colors.operational
+          }
           className="transition-all duration-300 ease-in-out"
           style={{ cursor: "pointer" }}
           onMouseEnter={() =>
-            showTooltip(rightSectorCentroid.x, rightSectorCentroid.y, "Digital Fluency", digitalPct, "#3C7CBA")
+            showTooltip(
+              rightSectorCentroid.x,
+              rightSectorCentroid.y,
+              "Digital Fluency",
+              digitalPct,
+              "#3C7CBA"
+            )
           }
           onMouseLeave={hideTooltip}
         />
@@ -180,11 +200,21 @@ export default function Triangle({ data }: Props) {
         {/* SECTOR 3: left face (C-P-O) → People Potential (dark) */}
         <polygon
           points={`${C.x},${C.y} ${P.x},${P.y} ${O.x},${O.y}`}
-          fill={tooltip?.label === "People Potential" ? hoverColors.digital : colors.digital}
+          fill={
+            tooltip?.label === "People Potential"
+              ? hoverColors.digital
+              : colors.digital
+          }
           className="transition-all duration-300 ease-in-out"
           style={{ cursor: "pointer" }}
           onMouseEnter={() =>
-            showTooltip(leftSectorCentroid.x, leftSectorCentroid.y, "People Potential", peoplePct, "#3C7CBA")
+            showTooltip(
+              leftSectorCentroid.x,
+              leftSectorCentroid.y,
+              "People Potential",
+              peoplePct,
+              "#3C7CBA"
+            )
           }
           onMouseLeave={hideTooltip}
         />
@@ -209,8 +239,12 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={P.x} dy="0">People</tspan>
-        <tspan x={P.x} dy="1.1em">Potential</tspan>
+        <tspan x={P.x} dy="0">
+          People
+        </tspan>
+        <tspan x={P.x} dy="1.1em">
+          Potential
+        </tspan>
       </text>
 
       <text
@@ -222,8 +256,12 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={O.x - 10} dy="0">Operational</tspan>
-        <tspan x={O.x - 10} dy="1.1em">Steadiness</tspan>
+        <tspan x={O.x - 10} dy="0">
+          Operational
+        </tspan>
+        <tspan x={O.x - 10} dy="1.1em">
+          Steadiness
+        </tspan>
       </text>
 
       <text
@@ -235,29 +273,67 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={D.x + 10} dy="0">Digital</tspan>
-        <tspan x={D.x + 10} dy="1.1em">Fluency</tspan>
+        <tspan x={D.x + 10} dy="0">
+          Digital
+        </tspan>
+        <tspan x={D.x + 10} dy="1.1em">
+          Fluency
+        </tspan>
       </text>
 
       {/* TOOLTIP */}
-      {tooltip && (() => {
-        const tx = clampX(tooltip.x);
-        const ty = clampY(tooltip.y);
-        const isAbove = tooltip.y - TH - CARET - 8 >= PADDING;
-        const caretX = Math.min(Math.max(tooltip.x, tx + 10), tx + TW - 10);
-        return (
-          <g style={{ pointerEvents: "none" }}>
-            <rect x={tx} y={ty} width={TW} height={TH} rx={7} ry={7} fill="#2E3B4E" filter="url(#tooltipShadow)" />
-            {isAbove ? (
-              <polygon points={`${caretX - 6},${ty + TH} ${caretX + 6},${ty + TH} ${caretX},${ty + TH + CARET}`} fill="#2E3B4E" />
-            ) : (
-              <polygon points={`${caretX - 6},${ty} ${caretX + 6},${ty} ${caretX},${ty - CARET}`} fill="#2E3B4E" />
-            )}
-            <text x={tx + TW / 2} y={ty + 19} textAnchor="middle" fontSize={8.5} fontWeight="600" fill="#ffffff">{tooltip.label}</text>
-            <text x={tx + TW / 2} y={ty + 36} textAnchor="middle" fontSize={12} fontWeight="800" fill="#ffffff">{tooltip.pct}%</text>
-          </g>
-        );
-      })()}
+      {tooltip &&
+        (() => {
+          const tx = clampX(tooltip.x);
+          const ty = clampY(tooltip.y);
+          const isAbove = tooltip.y - TH - CARET - 8 >= PADDING;
+          const caretX = Math.min(Math.max(tooltip.x, tx + 10), tx + TW - 10);
+          return (
+            <g style={{ pointerEvents: "none" }}>
+              <rect
+                x={tx}
+                y={ty}
+                width={TW}
+                height={TH}
+                rx={7}
+                ry={7}
+                fill="#2E3B4E"
+                filter="url(#tooltipShadow)"
+              />
+              {isAbove ? (
+                <polygon
+                  points={`${caretX - 6},${ty + TH} ${caretX + 6},${ty + TH} ${caretX},${ty + TH + CARET}`}
+                  fill="#2E3B4E"
+                />
+              ) : (
+                <polygon
+                  points={`${caretX - 6},${ty} ${caretX + 6},${ty} ${caretX},${ty - CARET}`}
+                  fill="#2E3B4E"
+                />
+              )}
+              <text
+                x={tx + TW / 2}
+                y={ty + 19}
+                textAnchor="middle"
+                fontSize={8.5}
+                fontWeight="600"
+                fill="#ffffff"
+              >
+                {tooltip.label}
+              </text>
+              <text
+                x={tx + TW / 2}
+                y={ty + 36}
+                textAnchor="middle"
+                fontSize={12}
+                fontWeight="800"
+                fill="#ffffff"
+              >
+                {tooltip.pct}%
+              </text>
+            </g>
+          );
+        })()}
     </svg>
   );
 }

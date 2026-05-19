@@ -81,10 +81,10 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
               padding: 12,
               cornerRadius: 8,
               callbacks: {
-                label: (context) => {
+                label: (context: any) => {
                   if (hasZeroData) return " No data available";
-                  const total = context.dataset.data.reduce(
-                    (a, b) => a + (b as number),
+                  const total = (context.dataset.data as number[]).reduce(
+                    (a: number, b: number) => a + b,
                     0
                   );
                   const value = context.parsed as number;

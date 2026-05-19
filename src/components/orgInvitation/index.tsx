@@ -297,7 +297,9 @@ const OrgInvitation = () => {
           if (!rowDept) {
             invalidDepts.push(`${row.email || "Unknown"}: Missing department`);
           } else if (!declaredDepts.includes(rowDept.toLowerCase())) {
-            invalidDepts.push(`${row.email || "Unknown"}: Invalid department "${rowDept}"`);
+            invalidDepts.push(
+              `${row.email || "Unknown"}: Invalid department "${rowDept}"`
+            );
           } else {
             filteredRows.push(row);
           }
@@ -314,7 +316,9 @@ const OrgInvitation = () => {
       }
 
       if (invalidDepts.length > 0) {
-        toast.warn(`Skipped ${invalidDepts.length} user${invalidDepts.length > 1 ? "s" : ""} with undeclared departments.`);
+        toast.warn(
+          `Skipped ${invalidDepts.length} user${invalidDepts.length > 1 ? "s" : ""} with undeclared departments.`
+        );
         console.warn("Filtered users details:", invalidDepts);
       }
 

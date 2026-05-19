@@ -418,7 +418,7 @@ const AdminReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-      0
+        0
     );
 
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
@@ -455,7 +455,7 @@ const AdminReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -483,16 +483,16 @@ const AdminReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -502,25 +502,25 @@ const AdminReport = () => {
 
   const parseObjectivesList = (text: string) => {
     if (!text || !text.trim()) return { focus: "", list: [] };
-    
+
     let focus = "";
     let remainingText = text;
-    
+
     const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
     if (focusMatch) {
       focus = focusMatch[1].trim();
       remainingText = text.replace(focusMatch[0], "").trim();
     }
 
-    const lines = remainingText.split('\n');
-    const list: { title: string, keyResults: string[] }[] = [];
+    const lines = remainingText.split("\n");
+    const list: { title: string; keyResults: string[] }[] = [];
     let currentTitle = "";
     let currentKRs: string[] = [];
-    
+
     for (const line of lines) {
       if (!line.trim()) continue;
-      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-        currentKRs.push(line.replace(/^[•-]\s*/, '').trim());
+      if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
+        currentKRs.push(line.replace(/^[•-]\s*/, "").trim());
       } else {
         if (currentKRs.length > 0) {
           list.push({ title: currentTitle.trim(), keyResults: currentKRs });
@@ -537,16 +537,22 @@ const AdminReport = () => {
     return { focus, list };
   };
 
-  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback?.objectives 
+  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback
+    ?.objectives
     ? parseObjectivesList(detailedPods.rawFeedback.objectives)
     : { focus: "", list: [] };
 
-  const displayObjectives = parsedObjectives.length > 0 ? parsedObjectives : [
-    {
-      title: detailedPods?.objectives?.subtitle || "Cultivate high-trust, psychologically safe leadership",
-      keyResults: detailedPods?.objectives?.items || []
-    }
-  ].filter(obj => obj.keyResults.length > 0);
+  const displayObjectives =
+    parsedObjectives.length > 0
+      ? parsedObjectives
+      : [
+          {
+            title:
+              detailedPods?.objectives?.subtitle ||
+              "Cultivate high-trust, psychologically safe leadership",
+            keyResults: detailedPods?.objectives?.items || [],
+          },
+        ].filter((obj) => obj.keyResults.length > 0);
 
   const displayCoachingTips = detailedPods?.coachingTips?.items || [];
 
@@ -783,73 +789,75 @@ const AdminReport = () => {
           {!hasNoReport && (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-              {/* Status Badge */}
-              {isReportReleased && reportData && (
-                <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                  <Icon icon="solar:check-circle-bold-duotone" width="12" />
-                  Released Report
-                </span>
-              )}
-
-              {/* Edit Feedback Button (Super Admin or Admin viewing someone else) */}
-              {userId &&
-                (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
-                  <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                    title="Edit AI Insights, Objectives, and Recommendations"
-                  >
-                    <Icon icon="lucide:pencil" width="16" />
-                  </button>
+                {/* Status Badge */}
+                {isReportReleased && reportData && (
+                  <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                    <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                    Released Report
+                  </span>
                 )}
 
-              {/* Release Section (Super Admin or Admin) */}
-              {(isSuperAdmin || isAdmin) && !isReportReleased && reportData && (
-                <button
-                  onClick={() => setShowReleaseWarning(true)}
-                  disabled={releasing}
-                  className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                >
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                  {releasing ? (
-                    <Icon icon="line-md:loading-loop" width="16" />
-                  ) : (
-                    <Icon icon="solar:star-bold-duotone" width="16" />
+                {/* Edit Feedback Button (Super Admin or Admin viewing someone else) */}
+                {userId &&
+                  (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                      title="Edit AI Insights, Objectives, and Recommendations"
+                    >
+                      <Icon icon="lucide:pencil" width="16" />
+                    </button>
                   )}
-                  {releasing ? "Releasing..." : "Approve & Release"}
+
+                {/* Release Section (Super Admin or Admin) */}
+                {(isSuperAdmin || isAdmin) &&
+                  !isReportReleased &&
+                  reportData && (
+                    <button
+                      onClick={() => setShowReleaseWarning(true)}
+                      disabled={releasing}
+                      className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                    >
+                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                      {releasing ? (
+                        <Icon icon="line-md:loading-loop" width="16" />
+                      ) : (
+                        <Icon icon="solar:star-bold-duotone" width="16" />
+                      )}
+                      {releasing ? "Releasing..." : "Approve & Release"}
+                    </button>
+                  )}
+              </div>
+
+              <ConfirmationModal
+                isOpen={showReleaseWarning}
+                onClose={() => setShowReleaseWarning(false)}
+                onConfirm={() => {
+                  setShowReleaseWarning(false);
+                  handleRelease();
+                }}
+                title="Release Report?"
+                message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
+                confirmText="Confirm"
+                cancelText="Cancel"
+                loading={releasing}
+              />
+
+              {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
+                <button
+                  onClick={handleExportPDF}
+                  disabled={exportLoading}
+                  className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                >
+                  {exportLoading ? (
+                    <Icon icon="eos-icons:loading" width="16" />
+                  ) : (
+                    <Icon icon="pajamas:export" width="16" height="16" />
+                  )}
+                  {exportLoading ? "Exporting..." : "Export PDF Report"}
                 </button>
               )}
-            </div>
-
-            <ConfirmationModal
-              isOpen={showReleaseWarning}
-              onClose={() => setShowReleaseWarning(false)}
-              onConfirm={() => {
-                setShowReleaseWarning(false);
-                handleRelease();
-              }}
-              title="Release Report?"
-              message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
-              confirmText="Confirm"
-              cancelText="Cancel"
-              loading={releasing}
-            />
-
-            {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
-              <button
-                onClick={handleExportPDF}
-                disabled={exportLoading}
-                className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              >
-                {exportLoading ? (
-                  <Icon icon="eos-icons:loading" width="16" />
-                ) : (
-                  <Icon icon="pajamas:export" width="16" height="16" />
-                )}
-                {exportLoading ? "Exporting..." : "Export PDF Report"}
-              </button>
-            )}
             </div>
           )}
         </div>
@@ -885,9 +893,9 @@ const AdminReport = () => {
             value={
               selectedMember
                 ? {
-                  value: selectedMember._id,
-                  label: selectedMember.name,
-                }
+                    value: selectedMember._id,
+                    label: selectedMember.name,
+                  }
                 : null
             }
             onChange={(option: any) => {
@@ -1280,11 +1288,11 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) =>
-                                  l.replace(/•/g, "").trim()
-                                )
-                                .filter((l: string) => l.length > 0)
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim()
+                                  )
+                                  .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1330,7 +1338,8 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                             />
                           </div>
                         </div>
-                      </div>                      <div>
+                      </div>{" "}
+                      <div>
                         <img src={Hugeicons} alt="images" className="w-8 h-8" />
                       </div>
                     </div>
@@ -1344,7 +1353,9 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                         <div key={objIdx} className="flex items-start gap-4">
                           <div className="text-lg-progress pt-1 shrink-0">
                             <CircularProgress
-                              value={Math.ceil(detailedPods?.objectives?.progress || 0)}
+                              value={Math.ceil(
+                                detailedPods?.objectives?.progress || 0
+                              )}
                               width={70}
                               textColor="#36454F"
                               pathColor="#1A3652"
@@ -1361,16 +1372,18 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               </p>
                             </div>
                             <div className="flex flex-col gap-4">
-                              {obj.keyResults.map((krText: string, krIdx: number) => (
-                                <div key={krIdx}>
-                                  <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                                    KR {objIdx + 1}.{krIdx + 1}
-                                  </h2>
-                                  <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
-                                    {krText}
-                                  </p>
-                                </div>
-                              ))}
+                              {obj.keyResults.map(
+                                (krText: string, krIdx: number) => (
+                                  <div key={krIdx}>
+                                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                                      KR {objIdx + 1}.{krIdx + 1}
+                                    </h2>
+                                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
+                                      {krText}
+                                    </p>
+                                  </div>
+                                )
+                              )}
                             </div>
                           </div>
                         </div>

@@ -534,7 +534,11 @@ const OrganizationDeepDive = () => {
                 { label: "Completed", value: completed, color: "#10B981" },
                 { label: "In Progress", value: inProgress, color: "#6366F1" },
                 { label: "Pending Member", value: pending, color: "#F59E0B" },
-                { label: "Total Members Joined", value: total, color: "#448CD2" },
+                {
+                  label: "Total Members Joined",
+                  value: total,
+                  color: "#448CD2",
+                },
               ].map((item, i) => (
                 <div
                   key={i}

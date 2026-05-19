@@ -141,7 +141,7 @@ const LeaderReport = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
   };
 
@@ -152,10 +152,10 @@ const LeaderReport = () => {
   const [members, setMembers] = useState<any[]>([]);
 
   const [selectedOrg, setSelectedOrg] = useState<string>(
-    searchParams.get("orgName") || user?.orgName || "",
+    searchParams.get("orgName") || user?.orgName || ""
   );
   const [selectedDept, setSelectedDept] = useState<string>(
-    searchParams.get("department") || "",
+    searchParams.get("department") || ""
   );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
@@ -185,7 +185,7 @@ const LeaderReport = () => {
           const member = fetchedMembers.find(
             (m: any) =>
               (userId && m._id === userId) ||
-              (userEmail && m.email === userEmail),
+              (userEmail && m.email === userEmail)
           );
           if (member) {
             setSelectedMember(member);
@@ -280,7 +280,7 @@ const LeaderReport = () => {
       setUserData(res.data.user);
       setAiInsight(res.data.aiInsight);
       setIsReportReleased(
-        res.data.isReleased || res.data.report?.isReleased || false,
+        res.data.isReleased || res.data.report?.isReleased || false
       );
       setHasNoReport(false);
     } catch (error: any) {
@@ -304,7 +304,7 @@ const LeaderReport = () => {
         `/dashboard/preview-pdf-report?${qParams.toString()}`,
         {
           responseType: "blob",
-        },
+        }
       );
       const url = URL.createObjectURL(response.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -395,7 +395,7 @@ const LeaderReport = () => {
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[selectedDomain].subdomains,
+        reportData.scores.domains[selectedDomain].subdomains
       )[0];
       setSelectedSubdomain(firstSub);
     }
@@ -443,7 +443,7 @@ const LeaderReport = () => {
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
-      k.toLowerCase().includes(pattern.toLowerCase()),
+      k.toLowerCase().includes(pattern.toLowerCase())
     );
     return key ? reportData.scores.domains[key].score : 0;
   };
@@ -471,7 +471,7 @@ const LeaderReport = () => {
     setSelectedDomain(domain);
     if (reportData?.scores?.domains?.[domain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[domain].subdomains,
+        reportData.scores.domains[domain].subdomains
       )[0];
       setSelectedSubdomain(firstSub);
     } else {
@@ -575,7 +575,7 @@ const LeaderReport = () => {
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
     );
     const labels = subdomains;
     const mScores: number[] = [];
@@ -597,9 +597,7 @@ const LeaderReport = () => {
       const managerSubScore =
         teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
       tScores.push(
-        managerSubScore !== null
-          ? Number((managerSubScore / 10).toFixed(1))
-          : 0,
+        managerSubScore !== null ? Number((managerSubScore / 10).toFixed(1)) : 0
       );
 
       // Employee avg (employees under the leader)
@@ -608,7 +606,7 @@ const LeaderReport = () => {
       pScores.push(
         employeeSubScore !== null
           ? Number((employeeSubScore / 10).toFixed(1))
-          : 0,
+          : 0
       );
 
       // Leader avg (all leaders in same dept)
@@ -617,7 +615,7 @@ const LeaderReport = () => {
       lScores.push(
         leaderAvgSubScore !== null
           ? Number((leaderAvgSubScore / 10).toFixed(1))
-          : 0,
+          : 0
       );
     });
 
@@ -634,17 +632,17 @@ const LeaderReport = () => {
   const roleAverages = (() => {
     // Score based on selected domain
     const leaderScore = Math.round(
-      reportData?.scores?.domains?.[selectedDomain]?.score || 0,
+      reportData?.scores?.domains?.[selectedDomain]?.score || 0
     );
 
     // Manager domain avg from department data
     const managerAvgScore = Math.round(
-      teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0,
+      teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0
     );
 
     // Employee domain avg from department data
     const employeeAvgScore = Math.round(
-      teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0,
+      teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0
     );
 
     const getColor = (val: number) => {
@@ -755,13 +753,13 @@ const LeaderReport = () => {
       const qCurrent =
         reportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain
         ) || [];
 
       const qFirst =
         firstReportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain
         ) || [];
 
       const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
@@ -778,7 +776,7 @@ const LeaderReport = () => {
 
     // Default: subdomain averages
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
     );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
     const descriptions = subdomains.map((sub) => sub);
@@ -811,9 +809,13 @@ const LeaderReport = () => {
                 className="text-[var(--primary-color)] size-10"
               />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
+            <h2 className="text-xl font-bold text-gray-800">
+              Report Not Released Yet
+            </h2>
             <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
-              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
+              Your report has not been released yet. Once released by a
+              SuperAdmin or Admin, you will be able to view your scores and
+              insights here.
             </p>
           </div>
         </div>
@@ -837,12 +839,14 @@ const LeaderReport = () => {
             <div className="flex items-center gap-3 justify-start">
               <div className="flex items-center gap-2">
                 {/* Status Badge */}
-                {isReportReleased && reportData && (isSuperAdmin || isAdmin) && (
-                  <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                    <Icon icon="solar:check-circle-bold-duotone" width="12" />
-                    Released Report
-                  </span>
-                )}
+                {isReportReleased &&
+                  reportData &&
+                  (isSuperAdmin || isAdmin) && (
+                    <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                      <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                      Released Report
+                    </span>
+                  )}
 
                 {/* Edit Feedback Button (SA or Admin viewing someone else) */}
                 {userId &&
@@ -940,7 +944,9 @@ const LeaderReport = () => {
                 placeholder="Organization"
                 options={orgs.map((o) => ({ value: o, label: o }))}
                 value={
-                  selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
+                  selectedOrg
+                    ? { value: selectedOrg, label: selectedOrg }
+                    : null
                 }
                 onChange={(option: any) => {
                   setSelectedOrg(option?.value || "");
@@ -1012,7 +1018,7 @@ const LeaderReport = () => {
                       : "";
 
                     navigate(
-                      `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
+                      `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
                     );
                   }
                 }}
@@ -1199,7 +1205,7 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                     {reportData?.scores?.domains?.[selectedDomain]
                       ?.subdomains &&
                       Object.keys(
-                        reportData.scores.domains[selectedDomain].subdomains,
+                        reportData.scores.domains[selectedDomain].subdomains
                       ).map((sub) => (
                         <li key={sub}>
                           <button
@@ -1373,13 +1379,13 @@ Highlights what is happening, why it matters, and where to focus next to improve
                                 .split(/\r?\n/)
                                 .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
-                              l.includes("•"),
+                              l.includes("•")
                             );
                             const finalMLines = hasMBullets
                               ? mLines
                                   .filter((l: string) => l.includes("•"))
                                   .map((l: string) =>
-                                    l.replace(/•/g, "").trim(),
+                                    l.replace(/•/g, "").trim()
                                   )
                                   .filter((l: string) => l.length > 0)
                               : mLines;
@@ -1399,7 +1405,7 @@ Highlights what is happening, why it matters, and where to focus next to improve
                                     {bullet}
                                   </span>
                                 </li>
-                              ),
+                              )
                             );
                           })()
                         ) : (
@@ -1440,18 +1446,20 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       )}
                       {displayObjectives.map((obj, objIdx) => (
                         <div key={objIdx} className="flex items-start gap-4">
-                            <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
-                              <CircularProgress
-                                value={Math.ceil(
-                                  detailedPods?.objectives?.progress || 0,
-                                )}
-                                width={70}
-                                textColor="#36454F"
-                                pathColor="#1A3652"
-                                trailColor="#D9D9D9"
-                              />
-                            </div>
-                          
+                          <div
+                            className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? "visible" : "invisible"}`}
+                          >
+                            <CircularProgress
+                              value={Math.ceil(
+                                detailedPods?.objectives?.progress || 0
+                              )}
+                              width={70}
+                              textColor="#36454F"
+                              pathColor="#1A3652"
+                              trailColor="#D9D9D9"
+                            />
+                          </div>
+
                           <div className="flex-1">
                             <div className="mb-4">
                               <h2 className="text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -1472,7 +1480,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                       {krText}
                                     </p>
                                   </div>
-                                ),
+                                )
                               )}
                             </div>
                           </div>
