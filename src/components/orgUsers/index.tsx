@@ -427,7 +427,7 @@ const OrgUsers = ({
                     )}
                     <td className="px-6 py-4">
                       <span className="uppercase text-xs font-bold">
-                        {member.role}
+                        {member.role?.toLowerCase() === "admin" ? "Business Transformation Partner" : member.role}
                       </span>
                     </td>
                     {showStatusColumn && (

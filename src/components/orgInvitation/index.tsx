@@ -945,7 +945,7 @@ const OrgInvitation = () => {
                               </div>
                             ) : (
                               <span className="uppercase text-xs font-bold">
-                                {item.role}
+                                {item.role?.toLowerCase() === "admin" ? "Business Transformation Partner" : item.role}
                               </span>
                             )}
                           </td>
@@ -1096,7 +1096,7 @@ const OrgInvitation = () => {
                     >
                       <option value="">Select a role...</option>
                       {isSuperAdmin ? (
-                        <option value="admin">Admin</option>
+                        <option value="admin">Business Transformation Partner</option>
                       ) : (
                         <>
                           {currentUserRole === "admin" && (

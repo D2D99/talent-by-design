@@ -253,7 +253,7 @@ const AccountSetting = () => {
                 <div>
                   <h6 className="text-sm font-semibold mb-0.5">User Role:</h6>
                   <p className="text-base text-neutral-500 capitalize">
-                    {profileData?.role || "—"}
+                    {profileData?.role?.toLowerCase() === "admin" ? "Business Transformation Partner" : (profileData?.role || "—")}
                   </p>
                 </div>
 
