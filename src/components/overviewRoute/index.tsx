@@ -3,7 +3,7 @@ import { useAuth } from "../../context/useAuth";
 import { Navigate } from "react-router-dom";
 
 const AdminOverview = lazy(() => import("../../screens/adminOverview"));
-const LeaderOverview = lazy(() => import("../../screens/leaderOverview"));
+// LeaderOverview is replaced by AdminOverview for department-level view
 const ManagerOverview = lazy(() => import("../../screens/managerOverview"));
 const PageNotFound = lazy(() => import("../../screens/pageNotFound"));
 const SuperAdminOverview = lazy(() => import("../../screens/superAdminOverview"));
@@ -29,7 +29,7 @@ const OverviewRoute = () => {
           case "manager":
             return <ManagerOverview />;
           case "leader":
-            return <LeaderOverview />;
+            return <AdminOverview />;
           case "employee":
             if (user?.assessmentStatus === "COMPLETED") {
               return <Navigate to="/dashboard/reports/employee" replace />;

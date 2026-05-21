@@ -1,617 +1,1529 @@
+// @ts-nocheck
 import { Icon } from "@iconify/react";
+import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
+import IconStar from "../../../public/static/img/icons/ic-star.svg";
+import Hugeicons from "../../../public/static/img/home/hugeicons_target-02.svg";
+import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai-technology-spark.svg";
+// import Healthicons from "../../../public/static/img/home/healthicons_i-certificate-paper-outline.svg";
+// import LastGraph from "../../../public/static/img/home/last-graph.svg";
+// import kri from "../../../public/static/img/home/kdi1111.svg";
+// import Employee from "../../../public/static/img/home/employee.svg";
+import OuiSecurity from "../../../public/static/img/home/oui_security-signal-detected.svg";
+import DownArrow from "../../../public/static/img/home/down-arrow.svg";
+import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
+import UpArrow from "../../../public/static/img/home/up-arrow.svg";
 import { useState, useEffect } from "react";
-import PieChart from "../../charts/pieChart";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
+import { toast } from "react-toastify";
 import SpinnerLoader from "../../components/spinnerLoader";
-import { formatDistanceToNow } from "date-fns";
+import ReportEmptyState from "../../components/reportEmptyState";
+import { useAuth } from "../../context/useAuth";
+import ReportPreviewModal from "../../components/reportPreviewModal";
+import { Dropdown, Ripple, initTWE, Offcanvas } from "tw-elements";
+import Select from "react-select";
+import Triangle from "../../components/triangle";
 import CircularProgress from "../../components/percentageCircle";
+import SpeedMeter from "../../components/speedMeter";
+import MultiLineChart from "../../charts/multiLineChart";
+import MultiRadarChart from "../../charts/multiRadarChart";
+import type { RadarData } from "../../charts/radarChart";
+import RoleProgressChart from "../../components/alignmentStatus";
+import FeedbackEditorModal from "../../components/feedbackEditorModal";
+import EditableTooltip from "../../components/editableTooltip";
+import ConfirmationModal from "../../components/confirmationModal";
 
-const AdminOverview = () => {
-  const navigate = useNavigate();
-  const [selectedQuarter, setSelectedQuarter] = useState(
-    Math.floor(new Date().getMonth() / 3) + 1
-  );
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [viewMode, setViewMode] = useState<"list" | "visual">("list");
-  const [selectedRole, setSelectedRole] = useState<string>("Managers");
-  const [intelData, setIntelData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+// Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
+const getNumericScore = (res: any): number => {
+  if (res.scale === "SCALE_1_5" || res.scale === "NEVER_ALWAYS") {
+    return (Number(res.value) || 1) * 20;
+  }
+  if (res.scale === "FORCED_CHOICE") {
+    return res.selectedOption === res.higherValueOption ? 100 : 20;
+  }
+  return 20;
+};
 
-  useEffect(() => {
-    const fetchIntelligence = async () => {
-      try {
-        const res = await api.get(
-          `assessment/admin/intelligence?quarter=${selectedQuarter}&year=${selectedYear}`
-        );
-        setIntelData(res.data);
-      } catch (error) {
-        console.error("Dashboard intel fetch error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchIntelligence();
-  }, [selectedQuarter, selectedYear]);
-
-  if (loading) return <SpinnerLoader />;
-
-  const { stats, roleBreakdown, activityStream } = intelData || {};
-
-  // For Admin/Leader/Manager, the data keys are different from SuperAdmin
-  const completionRate = stats?.completionRate || 0;
-  const completed = stats?.completedAssessments || 0;
-  const total = stats?.totalMembers || 0;
-  const pending = stats?.notStartedAssessments || 0;
-  const inProgress = stats?.inProgressAssessments || 0;
-
-  const displayStats = [
-    {
-      label: "Total Team Members",
-      value: total.toString(),
-      icon: "solar:users-group-two-rounded-broken",
-      color: "#448CD2",
-    },
-    {
-      label: "Active Invitations",
-      value: stats?.activeInvites?.toString() || "0",
-      icon: "solar:letter-broken",
-      color: "#F59E0B",
-    },
-    {
-      label: "Completed Cycles",
-      value: completed.toString(),
-      icon: "solar:checklist-minimalistic-broken",
-      color: "#10B981",
-    },
-    {
-      label: "In Progress",
-      value: inProgress.toString(),
-      icon: "solar:clock-circle-broken",
-      color: "#8E54E9",
-    },
-  ];
-
-  const roleLabels = ["Managers", "Leaders", "Employees"];
-  const roleColors = ["#10B981", "#6366F1", "#F59E0B"];
-  const roleData = [
-    roleBreakdown?.manager || 0,
-    roleBreakdown?.leader || 0,
-    roleBreakdown?.employee || 0,
-  ];
-
-  const totalUsers = roleData.reduce((a, b) => a + b, 0);
-  const getRoleStats = (role: string) => {
-    const idx = roleLabels.indexOf(role);
-    const val = roleData[idx] || 0;
-    const pct = totalUsers > 0 ? ((val / totalUsers) * 100).toFixed(1) : "0";
-    return { val, pct, color: roleColors[idx] };
-  };
-
+const Ring = ({
+  score,
+  r,
+  color,
+}: {
+  score: number;
+  r: number;
+  color: string;
+}) => {
+  const circ = 2 * Math.PI * r;
+  const strokeDashoffset = circ - (circ * score) / 100;
   return (
     <>
-      <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] space-y-6">
-        {/* ── Header ── */}
-        <div className="">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 flex-wrap">
-            <div className="flex items-center gap-3">
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="md:text-2xl mb-1 text-xl font-bold text-gray-800">
-                    Team Intelligence
-                  </h1>
-                </div>
-                <p className="text-gray-500 text-sm">
-                  Organization Workspace · Q{selectedQuarter} {selectedYear}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-5">
-              <div className="flex items-center gap-2">
-                <div className="relative w-full">
-                  <div className="absolute inset-y-0 -right-1 top-0 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      className="size-3 text-[var(--primary-color)]"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="3"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                    className="bg-[#edf5fd] text-[var(--primary-color)] border border-[rgba(68,140,210,0.2)] rounded-full ps-3 pe-6 py-1.5 text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-[var(--primary-color)] transition-all appearance-none"
-                  >
-                    {[2024, 2025, 2026, 2027, 2028].map((y) => (
-                      <option key={y} value={y}>
-                        {y}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-center justify-end bg-[#edf5fd] p-1 rounded-full border border-[rgba(68,140,210,0.2)]">
-                  {[1, 2, 3, 4].map((q) => (
-                    <button
-                      key={q}
-                      onClick={() => setSelectedQuarter(q)}
-                      className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${selectedQuarter === q ? "bg-[var(--primary-color)] text-white shadow-sm" : "text-[#5d5d5d] hover:text-[var(--primary-color)]"}`}
-                    >
-                      Q{q}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <circle
+        cx="100"
+        cy="100"
+        r={r}
+        fill="none"
+        stroke="#F1F5F9"
+        strokeWidth="8"
+      />
+      <circle
+        cx="100"
+        cy="100"
+        r={r}
+        fill="none"
+        stroke={color}
+        strokeWidth="8"
+        strokeDasharray={circ}
+        strokeDashoffset={strokeDashoffset}
+        strokeLinecap="butt"
+        transform="rotate(-90 100 100)"
+        style={{ transition: "stroke-dashoffset 1s ease-out" }}
+      />
+    </>
+  );
+};
 
-        {/* ── Stats Grid — compact horizontal cards ── */}
-        <div className="grid grid-cols-2 pt-5 xl:grid-cols-4 gap-3">
-          {displayStats.map((stat, idx) => (
-            <div
-              key={idx}
-              className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full flex items-center gap-5 flex-nowrap"
-            >
-              <div
-                className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
-                style={{
-                  backgroundColor: `${stat.color}15`,
-                  color: stat.color,
-                }}
-              >
-                <Icon icon={stat.icon} width="24" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-gray-400 text-xs font-bold uppercase tracking-wide truncate">
-                  {stat.label}
-                </p>
-                <p
-                  className="text-2xl font-bold leading-tight mt-0.5"
-                  style={{ color: stat.color }}
-                >
-                  {stat.value}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+const SkeletonPod = () => (
+  <div className="animate-pulse border-[1px] border-[#448CD2] border-opacity-10 p-4 rounded-[12px] bg-white h-full min-h-[220px]">
+    <div className="flex justify-between items-start mb-6">
+      <div className="space-y-3 w-2/3">
+        <div className="h-5 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-3 bg-gray-200 rounded w-full"></div>
+      </div>
+      <div className="h-8 w-8 bg-gray-100 rounded-full"></div>
+    </div>
+    <div className="space-y-4">
+      <div className="flex gap-2 items-center">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-full"></div>
+      </div>
+      <div className="flex gap-2 items-center">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-[90%]"></div>
+      </div>
+      <div className="flex gap-2 items-center hidden sm:flex">
+        <div className="h-4 w-4 bg-gray-100 rounded-full shrink-0"></div>
+        <div className="h-3 bg-gray-100 rounded w-[80%]"></div>
+      </div>
+    </div>
+  </div>
+);
 
-        {/* ── Pulse Row — 3 quick-read cards ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-          {[
-            {
-              label: "Completion Rate",
-              value: `${completionRate}%`,
-              icon: "solar:user-check-broken",
-              color: "#10b981",
-              badge: completionRate >= 70 ? "On Track" : "Action Needed",
-            },
-            {
-              label: "Pending Invites",
-              value: stats?.activeInvites || 0,
-              icon: "la:stopwatch",
-              color: "#448cd2",
-              badge: "Awaiting Join",
-            },
-            {
-              label: "Latest Submission",
-              value: activityStream?.[0]?.user || "N/A",
-              icon: "solar:history-broken",
-              color: "#8E54E9",
-              badge: activityStream?.[0]?.time
-                ? formatDistanceToNow(new Date(activityStream[0].time), {
-                    addSuffix: true,
-                  })
-                : "N/A",
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full flex items-start justify-between"
-            >
-              <div className="flex items-center gap-2.5">
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                  style={{
-                    backgroundColor: `${item.color}15`,
-                    color: item.color,
-                  }}
-                >
-                  <Icon icon={item.icon} width="20" />
-                </div>
-                <div>
-                  <p className="text-xs text-[#5d5d5d] font-medium">
-                    {item.label}
-                  </p>
-                  <p className="text-base font-bold capitalize leading-tight max-w-[120px] truncate">
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-              <span
-                className="text-[9px] font-semibold px-2 py-0.5 rounded-full border"
-                style={{
-                  color: item.color,
-                  backgroundColor: `${item.color}12`,
-                  borderColor: `${item.color}30`,
-                }}
-              >
-                {item.badge}
-              </span>
-            </div>
-          ))}
-        </div>
+const AdminOverview = () => {
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
 
-        {/* ── Main 3-col Grid ── */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-          {/* Member Distribution */}
-          <div className="xl:col-span-4 bg-white rounded-xl border border-[rgba(68,140,210,0.2)] p-5 flex flex-col">
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(68,140,210,0.1)]">
-              <div>
-                <h3 className="text-sm font-bold">Member Distribution</h3>
-                <p className="text-[10px] text-[#5d5d5d] mt-0.5">
-                  Role Breakdown
-                </p>
-              </div>
+  const userId = searchParams.get("userId");
+  const userEmail = searchParams.get("email"); // Guest employee support
+  const userRole = user?.role?.toLowerCase();
+  const isSuperAdmin = userRole === "superadmin" || userRole === "super_admin";
+  const isAdmin = userRole === "admin";
+  const targetUserId = !isSuperAdmin && !isAdmin ? user?._id : userId;
+  const [reportData, setReportData] = useState<any>(null);
+  const [firstReportData, setFirstReportData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
+  const [detailedPods, setDetailedPods] = useState<any>(null);
+  const [hasNoReport, setHasNoReport] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [podsLoading, setPodsLoading] = useState(false);
+  const [teamAvgLoading, setTeamAvgLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [aiInsight, setAiInsight] = useState<any>(null);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [teamAvgData, setTeamAvgData] = useState<any>(null); // 🆕 Real dept and org avg
+  const [hiddenIndices, setHiddenIndices] = useState<number[]>([]); // 🆕 Radar Visibility Toggle
+  const [showPreview, setShowPreview] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [isReportReleased, setIsReportReleased] = useState(false);
+  const [releasing, setReleasing] = useState(false);
+  const [showReleaseWarning, setShowReleaseWarning] = useState(false);
 
-              {viewMode === "visual" && (
-                <div className="relative">
-                  <select
-                    value={selectedRole}
-                    onChange={(e) => {
-                      setSelectedRole(e.target.value);
-                      setViewMode("visual");
-                    }}
-                    className="appearance-none bg-[#edf5fd] border border-[rgba(68,140,210,0.25)] text-[var(--primary-color)] text-[10px] font-semibold py-1 pl-2.5 pr-6 rounded-full outline-none cursor-pointer"
-                  >
-                    {roleLabels.map((r) => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </select>
-                  <Icon
-                    icon="solar:alt-arrow-down-bold"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary-color)] pointer-events-none"
-                    width="9"
-                  />
-                </div>
-              )}
-            </div>
+  const toggleHiddenIndex = (idx: number) => {
+    setHiddenIndices((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
+    );
+  };
 
-            <div className="flex bg-[#edf5fd] p-0.5 rounded-full mb-4 border border-[rgba(68,140,210,0.15)]">
-              <button
-                onClick={() => setViewMode("list")}
-                className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-full text-[10px] font-semibold transition-all duration-200 ${viewMode === "list" ? "bg-white text-[var(--primary-color)] shadow-sm" : "text-[#5d5d5d]"}`}
-              >
-                <Icon icon="solar:list-bold" width="11" /> Breakdown
-              </button>
-              <button
-                onClick={() => setViewMode("visual")}
-                className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-full text-[10px] font-semibold transition-all duration-200 ${viewMode === "visual" ? "bg-white text-[var(--primary-color)] shadow-sm" : "text-[#5d5d5d]"}`}
-              >
-                <Icon icon="solar:pie-chart-bold" width="11" /> Visual
-              </button>
-            </div>
+  const isLeader = userRole === "leader";
+  const isReportPage = location.pathname.includes("reports");
+  const [orgs, setOrgs] = useState<string[]>([]);
+  const [depts, setDepts] = useState<string[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
 
-            <div className="flex-1">
-              {viewMode === "list" ? (
-                <div className="space-y-3">
-                  {roleLabels.map((role, idx) => {
-                    const val = roleData[idx] || 0;
-                    const pct = totalUsers > 0 ? (val / totalUsers) * 100 : 0;
-                    return (
-                      <div
-                        key={role}
-                        className="cursor-pointer group"
-                        onClick={() => {
-                          setSelectedRole(role);
-                          setViewMode("visual");
-                        }}
-                      >
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-[11px] font-semibold text-[#5d5d5d] group-hover:text-[var(--primary-color)] transition-colors">
-                            {role}
-                          </span>
-                          <span className="text-[11px] font-bold">
-                            {val}{" "}
-                            <span className="text-[9px] text-[#5d5d5d] font-normal">
-                              ({pct.toFixed(0)}%)
-                            </span>
-                          </span>
-                        </div>
-                        <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-700"
-                            style={{
-                              width: `${Math.max(pct, 3)}%`,
-                              backgroundColor: roleColors[idx],
-                            }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center animate-in slide-in-from-bottom-1 duration-300">
-                  <div className="w-full bg-[#edf5fd] rounded-xl border border-[rgba(68,140,210,0.12)] px-4 py-3 flex items-center justify-between mb-3">
-                    <div>
-                      <p className="text-[9px] font-semibold text-[#5d5d5d] uppercase tracking-wider">
-                        {selectedRole}
-                      </p>
-                      <span
-                        className="text-3xl font-bold"
-                        style={{ color: getRoleStats(selectedRole).color }}
-                      >
-                        {getRoleStats(selectedRole).pct}%
-                      </span>
-                      <span className="text-[10px] text-[#5d5d5d] ml-1.5">
-                        of total
-                      </span>
-                    </div>
-                    <div className="bg-white rounded-lg px-3 py-2 border border-[rgba(68,140,210,0.15)] text-center shadow-sm">
-                      <span className="text-xl font-bold block">
-                        {getRoleStats(selectedRole).val}
-                      </span>
-                      <span className="text-[8px] text-[#5d5d5d] uppercase tracking-widest">
-                        People
-                      </span>
-                    </div>
-                  </div>
-                  <div className="w-full flex items-center justify-center">
-                    <PieChart
-                      labels={roleLabels}
-                      data={roleData}
-                      colors={roleColors}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+  const [selectedOrg, setSelectedOrg] = useState<string>(
+    searchParams.get("orgName") || user?.orgName || "",
+  );
+  const [selectedDept, setSelectedDept] = useState<string>(
+    searchParams.get("department") || "",
+  );
+  const [selectedMember, setSelectedMember] = useState<any>(null);
 
-          {/* Overall Health (Circular Progress Bar) */}
-          <div className="xl:col-span-4 flex flex-col gap-4">
-            <div className="flex-1 bg-[var(--app-surface)] rounded-xl border border-[var(--app-border-color)] p-7 flex flex-col items-center justify-center text-center shadow-sm relative overflow-hidden group">
-              <h3 className="text-sm font-black mb-6">
-                POD-360™ Assessment Status
-              </h3>
+  useEffect(() => {
+    if (user?.department && !isAdmin && !isSuperAdmin) {
+      setSelectedDept(user.department);
+    }
+  }, [user, isAdmin, isSuperAdmin, selectedDept]);
 
-              <div className="relative inline-flex items-center justify-center mb-8">
-                <CircularProgress
-                  value={completionRate}
-                  pathColor="#448cd2"
-                  trailColor="rgba(68, 140, 210, 0.1)"
-                  textColor="#1a3652"
-                  width={160}
-                />
-              </div>
+  useEffect(() => {
+    if (isSuperAdmin) {
+      api
+        .get("/auth/organizations")
+        .then((res) => setOrgs(res.data.organizations));
+    }
+  }, [isSuperAdmin]);
 
-              <div className="grid grid-cols-2 gap-3 w-full relative z-10">
-                {[
-                  { label: "Completed", value: completed, color: "#10B981" },
-                  { label: "In Progress", value: inProgress, color: "#6366F1" },
-                  { label: "Pending", value: pending, color: "#F59E0B" },
-                  { label: "Total Members", value: total, color: "#448CD2" },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="p-4 bg-[var(--app-surface-soft)] rounded-xl transition-colors"
-                  >
-                    <span className="text-xl font-black text-[var(--app-heading-color)] block tracking-tight">
-                      {item.value}
-                    </span>
-                    <span
-                      className="text-[10px] font-bold uppercase tracking-wider block mt-1"
-                      style={{ color: item.color }}
-                    >
-                      {item.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+  useEffect(() => {
+    if (selectedOrg) {
+      api.get(`/auth/organization-filters/${selectedOrg}`).then((res) => {
+        const fetchedMembers = res.data.members;
+        setDepts(res.data.departments);
+        setMembers(fetchedMembers);
 
-            <button
-              onClick={() => navigate("/dashboard/team-assessments")}
-              className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl shadow-lg flex items-center justify-between text-white"
-            >
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-              <div className="text-left relative z-10">
-                <p className="text-[10px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
-                  Governance Module
-                </p>
-                <h4 className="text-base font-black tracking-wide">
-                  Audit Assessments
-                </h4>
-              </div>
-              <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all relative z-10">
-                <Icon icon="solar:arrow-right-up-bold" width="20" />
-              </div>
-            </button>
-          </div>
+        // Pre-select member if userId or email is in query params
+        if (userId || userEmail) {
+          const member = fetchedMembers.find(
+            (m: any) =>
+              (userId && m._id === userId) ||
+              (userEmail && m.email === userEmail),
+          );
+          if (member) {
+            setSelectedMember(member);
+          }
+        }
+      });
+    }
+  }, [selectedOrg, userId, userEmail]);
 
-          {/* Team Stream */}
-          <div className="xl:col-span-4 bg-[var(--app-surface)] rounded-[20px] border border-[var(--app-border-color)] p-7 flex flex-col shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-[#448CD2]"></div>
-            <div className="flex items-center justify-between mb-8 relative z-10">
-              <div>
-                <h3 className="text-lg font-black text-[var(--app-heading-color)] tracking-tight">
-                  Stream
-                </h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                  Live Feed
-                </p>
-              </div>
-              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10b981]/10 text-[#10b981] rounded-full text-[9px] font-black uppercase tracking-wider border border-[#10b981]/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />{" "}
-                Live
-              </span>
-            </div>
+  const filteredMembers = members.filter((m) => {
+    const roleLower = m.role?.toLowerCase();
+    const memberDept = m.department?.toString().trim().toLowerCase();
+    const searchDept = selectedDept?.toString().trim().toLowerCase();
 
-            <div className="flex-1 space-y-5 overflow-y-auto no-scrollbar max-h-[350px] relative z-10">
-              {activityStream?.length > 0 ? (
-                activityStream.map((log: any, i: number) => (
-                  <div key={i} className="flex gap-4 group/item cursor-default">
-                    <div className="mt-1">
-                      <div
-                        className={`size-5 rounded-full flex shrink-0 items-center justify-center ${log.type === "completion" ? "bg-[#10B981]" : "bg-[#448CD2]"} shadow-sm`}
-                      >
-                        <span className="text-[8px] font-bold text-white uppercase">
-                          {log.user?.[0] || "?"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[12px] font-black text-[var(--app-heading-color)] truncate">
-                        {log.user}
-                      </p>
-                      <p className="text-[11px] text-[var(--app-text-muted)] mt-1 font-medium italic">
-                        {log.action}
-                      </p>
-                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 block hidden">
-                        {log.time
-                          ? formatDistanceToNow(new Date(log.time), {
-                              addSuffix: true,
-                            })
-                          : "N/A"}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-xs text-slate-400 italic text-center py-10 opacity-50">
-                  Monitoring stream...
-                </p>
-              )}
-            </div>
+    const matchesDept = !searchDept || memberDept === searchDept;
 
-            <button
-              onClick={() => navigate("/dashboard/notifications")}
-              className="w-full mt-6 py-4 bg-[var(--app-surface-soft)] border border-[var(--app-border-color)] rounded-[14px] text-[10px] font-black uppercase tracking-widest text-[var(--app-text-muted)] hover:bg-[#448CD2] hover:text-white transition-all shadow-sm"
-            >
-              Analyze Data Stream
-            </button>
-          </div>
-        </div>
+    // Security: Non-Admins only see their own department
+    if (!isAdmin && !isSuperAdmin) {
+      const uDept = String(user?.department || "")
+        .trim()
+        .toLowerCase();
+      if (memberDept !== uDept) return false;
+    }
 
-        {/* ── AI Insights Board ── */}
-        <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">
-                AI-Powered Observations
-              </h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                POD Insights™ Engine Intelligence
-              </p>
-            </div>
-            <div className="w-9 h-9 bg-[#8E54E9]/10 rounded-[12px] flex items-center justify-center">
+    // If the logged-in user is a leader, show them the managers/employees under them
+    if (isLeader) {
+      return (roleLower === "manager" || roleLower === "employee") && !!matchesDept;
+    }
+
+    // Default (Admins): Strictly show only leaders on this page
+    return roleLower === "leader" && !!matchesDept;
+  });
+
+  // const customSelectStyles = {
+  //   control: (provided: any) => ({
+  //     ...provided,
+  //     backgroundColor: '#EDF5FD',
+  //     border: 'none',
+  //     borderRadius: '4px',
+  //     fontSize: '12px',
+  //     minHeight: '32px',
+  //     width: '180px',
+  //     boxShadow: 'none',
+  //     '&:hover': {
+  //       backgroundColor: '#E4F0FC'
+  //     }
+  //   }),
+  //   valueContainer: (provided: any) => ({
+  //     ...provided,
+  //     padding: '0 8px'
+  //   }),
+  //   singleValue: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     fontWeight: '500'
+  //   }),
+  //   placeholder: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     fontWeight: '500'
+  //   }),
+  //   dropdownIndicator: (provided: any) => ({
+  //     ...provided,
+  //     color: '#676767',
+  //     padding: '4px',
+  //     '&:hover': {
+  //       color: '#448CD2'
+  //     }
+  //   }),
+  //   indicatorSeparator: () => ({
+  //     display: 'none'
+  //   }),
+  //   menu: (provided: any) => ({
+  //     ...provided,
+  //     zIndex: 9999
+  //   })
+  // };
+
+  const navigate = useNavigate(); // Assume useNavigate is available or add import
+
+  const fetchReport = async () => {
+    setLoading(true);
+    try {
+      const url = `dashboard/org-average`;
+      const res = await api.get(url);
+      setReportData(res.data.report);
+      setFirstReportData(res.data.firstReport || res.data.report);
+      setUserData(res.data.user);
+      setAiInsight(res.data.aiInsight);
+      setIsReportReleased(
+        res.data.isReleased || res.data.report?.isReleased || false,
+      );
+      setHasNoReport(false);
+    } catch (error: any) {
+      console.error("Failed to fetch report:", error);
+      if (error.response?.status === 404) {
+        setHasNoReport(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePreview = async () => {
+    try {
+      setLoadingPreview(true);
+      const qParams = new URLSearchParams();
+      if (targetUserId) qParams.append("userId", targetUserId);
+      if (userEmail) qParams.append("email", userEmail);
+
+      const response = await api.get(
+        `/dashboard/preview-pdf-report?${qParams.toString()}`,
+        {
+          responseType: "blob",
+        },
+      );
+      const url = URL.createObjectURL(response.data);
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(url);
+      setShowPreview(true);
+    } catch (err) {
+      toast.error("Failed to generate preview");
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
+
+  const handleRelease = async () => {
+    try {
+      setReleasing(true);
+      const payload = { userId, email: userEmail };
+      const res = await api.put("/dashboard/release-report", payload);
+      setIsReportReleased(true);
+      toast.success(res.data.message || "Report released successfully!");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to release report.");
+    } finally {
+      setReleasing(false);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      setExportLoading(true);
+      const params: any = {};
+      if (targetUserId) params.userId = targetUserId;
+      if (userEmail) params.email = userEmail;
+
+      const response = await api.get("/dashboard/export-pdf", {
+        params,
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const fileName = `POD360_Report_${userData?.firstName || "Participant"}.pdf`;
+      link.setAttribute("download", fileName);
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF Export failed:", err);
+      toast.error("Failed to generate PDF report");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    initTWE({ Ripple, Offcanvas, Dropdown });
+    fetchReport();
+  }, [targetUserId, userEmail, refreshKey]);
+
+  // 🆕 Fetch real team avg from backend (org-wide when no specific user selected)
+  useEffect(() => {
+    const fetchTeamAvg = async () => {
+      setTeamAvgLoading(true);
+      try {
+        let url = "dashboard/manager-team-avg"; // It works for leaders too (finds their dept members)
+        const params: string[] = [];
+        if (targetUserId) params.push(`userId=${targetUserId}`);
+        if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
+        if (params.length) url += `?${params.join("&")}`;
+        const res = await api.get(url);
+        setTeamAvgData(res.data);
+      } finally {
+        setTeamAvgLoading(false);
+      }
+    };
+    fetchTeamAvg();
+  }, [targetUserId, userEmail, refreshKey]);
+
+  const [selectedDomain, setSelectedDomain] =
+    useState<string>("People Potential");
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>("");
+
+  useEffect(() => {
+    if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
+      const firstSub = Object.keys(
+        reportData.scores.domains[selectedDomain].subdomains,
+      )[0];
+      setSelectedSubdomain(firstSub);
+    }
+  }, [reportData, selectedDomain]);
+
+  // 🆕 NEW: Fetch detailed insights (Pods) when domain changes
+  useEffect(() => {
+    const fetchDetailedPods = async () => {
+      setPodsLoading(true);
+      try {
+        let url = `dashboard/detailed-insight?domain=${encodeURIComponent(selectedDomain)}&subdomain=${encodeURIComponent(selectedSubdomain)}&isOrgAverage=true`;
+        if (userEmail) {
+          url += `&userId=${targetUserId}&email=${encodeURIComponent(userEmail)}`;
+        } else if (targetUserId) {
+          url += `&userId=${targetUserId}`;
+        }
+        const res = await api.get(url);
+        setDetailedPods(res.data.pods);
+      } finally {
+        setPodsLoading(false);
+      }
+    };
+
+    const hasSubdomains = !!(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
+      Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
+        0
+    );
+    if (reportData && (!hasSubdomains || selectedSubdomain)) {
+      fetchDetailedPods();
+    }
+  }, [
+    selectedDomain,
+    selectedSubdomain,
+    targetUserId,
+    userEmail,
+    reportData,
+    refreshKey,
+  ]);
+
+  const isInitialLoading = loading || teamAvgLoading;
+
+  if (isInitialLoading) return <SpinnerLoader />;
+
+  // Robust triangle data mapping
+  const findDomainScore = (pattern: string) => {
+    const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
+      k.toLowerCase().includes(pattern.toLowerCase()),
+    );
+    return key ? reportData.scores.domains[key].score : 0;
+  };
+
+  const triangleData = {
+    peoplePotential: findDomainScore("people"),
+    operationalSteadiness: findDomainScore("operational"),
+    digitalFluency: findDomainScore("digital"),
+  };
+
+  const domainScore = reportData?.scores?.domains?.[selectedDomain]?.score || 0;
+  const subdomainScore = (() => {
+    const subData =
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
+        selectedSubdomain
+      ];
+    if (typeof subData === "object" && subData !== null) {
+      return subData.score || 0;
+    }
+    return Number(subData) || 0;
+  })();
+  const overallScore = reportData?.scores?.overall || 0;
+
+  const handleDomainChange = (domain: string) => {
+    setSelectedDomain(domain);
+    if (reportData?.scores?.domains?.[domain]?.subdomains) {
+      const firstSub = Object.keys(
+        reportData.scores.domains[domain].subdomains,
+      )[0];
+      setSelectedSubdomain(firstSub);
+    } else {
+      setSelectedSubdomain("");
+    }
+  };
+
+  const handleSubdomainChange = (sub: string) => {
+    setSelectedSubdomain(sub);
+  };
+
+  // Use dynamic pods if available, fallback to legacy
+  const displayInsights = detailedPods?.insights?.mainText
+    ? (() => {
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
+    : ["Processing insights..."];
+
+  const finalInsights =
+    displayInsights.length > 0
+      ? displayInsights
+      : ["No specific insights available yet."];
+
+  const parseObjectivesList = (text: string) => {
+    if (!text || !text.trim()) return { focus: "", list: [] };
+
+    let focus = "";
+    let remainingText = text;
+
+    const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
+    if (focusMatch) {
+      focus = focusMatch[1].trim();
+      remainingText = text.replace(focusMatch[0], "").trim();
+    }
+
+    const lines = remainingText.split("\n");
+    const list: { title: string; keyResults: string[] }[] = [];
+    let currentTitle = "";
+    let currentKRs: string[] = [];
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
+        currentKRs.push(line.replace(/^[•-]\s*/, "").trim());
+      } else {
+        if (currentKRs.length > 0) {
+          list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+          currentTitle = line;
+          currentKRs = [];
+        } else {
+          currentTitle = currentTitle ? currentTitle + " " + line : line;
+        }
+      }
+    }
+    if (currentTitle || currentKRs.length > 0) {
+      list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+    }
+    return { focus, list };
+  };
+
+  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback
+    ?.objectives
+    ? parseObjectivesList(detailedPods.rawFeedback.objectives)
+    : { focus: "", list: [] };
+
+  const displayObjectives =
+    parsedObjectives.length > 0
+      ? parsedObjectives
+      : [
+          {
+            title:
+              detailedPods?.objectives?.subtitle ||
+              "Enhance domain-specific capabilities",
+            keyResults: detailedPods?.objectives?.items || [],
+          },
+        ].filter((obj) => obj.keyResults.length > 0);
+
+  // const displayRecommendations = detailedPods?.recommendations?.items || [
+  //   "No specific recommendations available for this domain yet.",
+  // ];
+
+  const displayCoachingTips = detailedPods?.coachingTips?.items || [];
+
+  const topPriorities = Object.entries(reportData?.scores?.domains || {})
+    .sort(([, a]: any, [, b]: any) => a.score - b.score)
+    .slice(0, 3)
+    .map(([name, data]: any) => ({
+      name,
+      score: Math.round(data.score),
+      color: data.score < 50 ? "#D71818" : "#FF8D28",
+    }));
+
+  // Derive Radar Data from responses
+  const radarData: RadarData = (() => {
+    const subdomains = Object.keys(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+    );
+    const labels = subdomains;
+    const mScores: number[] = [];
+    const tScores: number[] = [];
+    const pScores: number[] = [];
+    const lScores: number[] = [];
+
+    labels.forEach((sub) => {
+      // Leader avg (all leaders in same dept)
+      const leaderAvgSubScore =
+        teamAvgData?.leaderAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      mScores.push(
+        leaderAvgSubScore !== null
+          ? Number((leaderAvgSubScore / 10).toFixed(1))
+          : 0,
+      );
+
+      // Manager avg (managers under the leader)
+      const managerSubScore =
+        teamAvgData?.managerAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      tScores.push(
+        managerSubScore !== null
+          ? Number((managerSubScore / 10).toFixed(1))
+          : 0,
+      );
+
+      // Employee avg (employees under the leader)
+      const employeeSubScore =
+        teamAvgData?.employeeAvg?.[selectedDomain]?.subdomains?.[sub] ?? null;
+      pScores.push(
+        employeeSubScore !== null
+          ? Number((employeeSubScore / 10).toFixed(1))
+          : 0,
+      );
+    });
+
+    return {
+      labels,
+      manager: mScores,
+      team: tScores,
+      peer: pScores,
+    };
+  })();
+
+  // Derive Role Data and Gaps (Alignment Status)
+  const roleAverages = (() => {
+    // Score based on selected domain
+    const leaderScore = Math.round(
+      reportData?.scores?.domains?.[selectedDomain]?.score || 0,
+    );
+
+    // Manager domain avg from department data
+    const managerAvgScore = Math.round(
+      teamAvgData?.managerAvg?.[selectedDomain]?.avgScore || 0,
+    );
+
+    // Employee domain avg from department data
+    const employeeAvgScore = Math.round(
+      teamAvgData?.employeeAvg?.[selectedDomain]?.avgScore || 0,
+    );
+
+    const getColor = (val: number) => {
+      if (val < 50) return "#FF5656"; // Needs Attention
+      if (val < 75) return "#FEE114"; // At Risk
+      return "#30AD43"; // On Track
+    };
+
+    return [
+      {
+        label: "SENIOR LEADER",
+        value: leaderScore,
+        color: getColor(leaderScore),
+      },
+      {
+        label: "MANAGER",
+        value: managerAvgScore,
+        color: getColor(managerAvgScore),
+      },
+      {
+        label: "EMPLOYEE",
+        value: employeeAvgScore,
+        color: getColor(employeeAvgScore),
+      },
+    ];
+  })();
+
+  const alignmentInfo = (() => {
+    const values = roleAverages.map((r) => r.value).filter((v) => v !== 0);
+    if (values.length === 0)
+      return {
+        label: "No Data",
+        status: "Gray",
+        color: "#ccc",
+        bg: "#eee",
+        gap: 0,
+        icon: "solar:info-circle-bold-duotone",
+        coachText: "Insufficient data to calculate alignment.",
+        largestRole: "N/A",
+        lowestRole: "N/A",
+      };
+
+    const maxVal = Math.max(...values);
+    const minVal = Math.min(...values);
+    const gap = maxVal - minVal;
+
+    const largestRole =
+      roleAverages.find((r) => r.value === maxVal)?.label?.split(" (")[0] ||
+      "N/A";
+    const lowestRole =
+      roleAverages.find((r) => r.value === minVal)?.label?.split(" (")[0] ||
+      "N/A";
+
+    if (gap > 15) {
+      return {
+        label: "High Variance",
+        status: "Red",
+        color: "#D71818",
+        bg: "#FFEBEB",
+        icon: "solar:shield-warning-bold-duotone",
+        gap: gap,
+        largestRole,
+        lowestRole,
+        coachText:
+          "High variance detected (> 15%). This indicates Hidden Risk; leadership perception may be disconnected from employee experience.",
+      };
+    }
+
+    if (gap < 10) {
+      return {
+        label: "High Alignment",
+        status: "Green",
+        color: "#30AD43",
+        bg: "#F0FDF4",
+        icon: "solar:check-circle-bold-duotone",
+        gap: gap,
+        largestRole,
+        lowestRole,
+        coachText:
+          "Low variance detected. The organization is moving with Aligned Execution.",
+      };
+    }
+
+    return {
+      label: "Moderate Variance",
+      status: "Amber",
+      color: "#D97706",
+      bg: "#FFFBEB",
+      icon: "fluent:eye-lines-20-regular",
+      gap: gap,
+      largestRole,
+      lowestRole,
+      coachText:
+        "Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.",
+    };
+  })();
+
+  const trendData = (() => {
+    if (!reportData)
+      return { labels: [], manager: [], team: [], descriptions: [] };
+
+    // Convert 0-100 score to /10 scale
+    const getScoreForChart = (val: any) =>
+      Number((getNumericScore(val) / 10).toFixed(1));
+
+    // If a subdomain is selected, show question-level trend
+    if (selectedSubdomain) {
+      const qCurrent =
+        reportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
+
+      const qFirst =
+        firstReportData?.responses?.filter(
+          (r: any) =>
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
+        ) || [];
+
+      const labels = qCurrent.map((_: any, i: number) => `Q${i + 1}`);
+      const descriptions = qCurrent.map((q: any) => q.text);
+
+      const latestScores = qCurrent.map((q: any) => getScoreForChart(q));
+      const firstScores = qCurrent.map((q: any) => {
+        const matched = qFirst.find((fq: any) => fq.text === q.text);
+        return matched ? getScoreForChart(matched) : 0;
+      });
+
+      return { labels, manager: firstScores, team: latestScores, descriptions };
+    }
+
+    // Default: subdomain averages
+    const subdomains = Object.keys(
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
+    );
+    const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
+    const descriptions = subdomains.map((sub) => sub);
+
+    const currentScores = subdomains.map((sub) => {
+      const scoreData =
+        reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    const firstScores = subdomains.map((sub) => {
+      const scoreData =
+        firstReportData?.scores?.domains?.[selectedDomain]?.subdomains?.[sub];
+      const score = typeof scoreData === "object" ? scoreData.score : scoreData;
+      return Number(((score || 0) / 10).toFixed(1));
+    });
+
+    return { labels, manager: firstScores, team: currentScores, descriptions };
+  })();
+
+  if (!(isSuperAdmin || isAdmin) && !isReportReleased) {
+    return (
+      <div>
+        <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A] flex flex-col items-center justify-center">
+          <div className="text-center flex flex-col items-center py-20">
+            <div className="bg-[#448CD208] p-4 rounded-full shadow-sm mb-4">
               <Icon
-                className="text-[#8E54E9]"
-                icon="solar:magic-stick-3-line-duotone"
-                width="20"
-                height="20"
+                icon="hugeicons:audit-02"
+                className="text-[var(--primary-color)] size-10"
               />
             </div>
-          </div>
-          <div className="grid md:grid-cols-2 grid-cols-1 xl:grid-cols-3 gap-4">
-            {[
-              {
-                icon: "solar:graph-broken",
-                color: "#10B981",
-                bg: "bg-[#10B981]/10",
-                title: "Engagement Momentum",
-                desc:
-                  completionRate >= 70
-                    ? `Organization is performing strongly at ${completionRate}% completion. This exceeds the recommended platform threshold.`
-                    : `Current engagement is at ${completionRate}%. Active outreach to the ${pending} pending members is recommended to hit quarterly targets.`,
-              },
-              {
-                icon: "solar:buildings-2-broken",
-                color: "#448CD2",
-                bg: "bg-[#448CD2]/10",
-                title: "Role Distribution",
-                desc: `The team is comprised of ${roleBreakdown?.manager || 0} Managers, ${roleBreakdown?.leader || 0} Leaders, and ${roleBreakdown?.employee || 0} Employees. Digital literacy levels are trending positively.`,
-              },
-              {
-                icon: "oui:security-signal",
-                color: "#F59E0B",
-                bg: "bg-[#F59E0B]/10",
-                title: "Risk & Action Zone",
-                desc:
-                  (stats?.activeInvites || 0) > 0
-                    ? `${stats.activeInvites} invitations are still pending verification. Follow up with these potential joiners to ensure full organizational visibility.`
-                    : "No immediate risks identified. Deployment visibility is at 100% across all onboarded segments.",
-              },
-            ].map((obs, i) => (
-              <div
-                key={i}
-                className="flex gap-4 p-4 bg-[rgba(68,140,210,0.1)] rounded-xl transition-colors"
-              >
-                <div
-                  className={`w-10 h-10 shrink-0 ${obs.bg} rounded-[12px] flex items-center justify-center mt-0.5`}
-                >
-                  <Icon
-                    icon={obs.icon}
-                    width="20"
-                    style={{ color: obs.color }}
-                  />
-                </div>
-                <div>
-                  <h4 className="text-[12px] font-black text-[var(--app-heading-color)] mb-1.5">
-                    {obs.title}
-                  </h4>
-                  <p className="text-[11px] text-[var(--app-text-muted)] leading-relaxed">
-                    {obs.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Strategic Insight Banner ── */}
-        <div className="bg-gradient-to-r from-[#448CD2] to-[#1a3652] rounded-[24px] p-8 text-white relative overflow-hidden shadow-2xl group">
-          {/* <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/10 transition-colors"></div> */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-            <div className="flex items-center gap-8">
-              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[22px] flex items-center justify-center text-white border border-white/20">
-                <Icon
-                  icon="solar:lightbulb-bolt-bold-duotone"
-                  width="40"
-                  className="text-yellow-400"
-                />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black tracking-tight leading-none mb-2">
-                  Strategic Insight
-                </h2>
-                <p className="text-sm text-blue-100/80 font-medium max-w-md leading-relaxed">
-                  {/* Excellent engagement! Your organization shows strong{" "}
-                  <strong className="text-white">'Strategic Alignment'</strong>.{" "}
-                  {intelData?.strategicInsight ||
-                    "Results indicate high readiness for growth."} */}
-                    Excellent engagement and strong <strong className="text-white capitalize">strategic alignment</strong>, with early indicators showing a healthy operational flow now the focus is driving participation toward critical mass.
-
-                </p>
-              </div>
-            </div>
-            <button className="bg-white px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all whitespace-nowrap text-[#1a3652] cursor-pointer">
-              Review Dossier
-            </button>
+            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
+            <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
+              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
+            </p>
           </div>
         </div>
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div>
+      <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <h3 className="text-2xl font-black tracking-tight">
+            {userData || reportData ? (
+              `${userData?.firstName || reportData?.user?.firstName || ""} ${
+                userData?.lastName ||
+                reportData?.user?.lastName ||
+                reportData?.userDetails?.lastName ||
+                ""
+              }`.trim()
+            ) : (
+              "Leader"
+            )}
+          </h3>
+        </div>
+
+        <>
+          <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Score by domain
+                  </h2>
+
+                  <div className="flex items-center">
+                    <EditableTooltip
+                      id="scoreDomain"
+                      defaultContent="Provides a snapshot of performance within the selected POD domain.
+
+Indicates whether this area is a strength to leverage or a risk requiring attention, helping you focus where friction may be impacting outcomes."
+                    />
+                  </div>
+                </div>
+                <div className="relative mt-2" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownDomain"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    {selectedDomain}
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
+                    aria-labelledby="dropdownDomain"
+                    data-twe-dropdown-menu-ref
+                  >
+                    {reportData?.scores?.domains &&
+                      Object.keys(reportData.scores.domains).map((domain) => (
+                        <li key={domain}>
+                          <button
+                            onClick={() => handleDomainChange(domain)}
+                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                          >
+                            {domain}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="w-6 h-2 bg-[#FF5656]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">Low</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="w-6 h-2 bg-[#FEE114]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Medium
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="w-6 h-2 bg-[#30AD43]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">High</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
+                  <SpeedMeter value={domainScore} />
+                </div>
+              </div>
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
+                <div className="flex gap-2">
+                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Score by sub-domain
+                  </h2>
+
+                  <div className="flex items-center">
+                    <EditableTooltip
+                      id="scoreSubDomain"
+                      defaultContent="Breaks the domain down into its core components for deeper insight.
+
+Helps pinpoint specific drivers of friction or performance gaps, enabling more targeted action and coaching."
+                    />
+                  </div>
+                </div>
+                <div className="relative mt-2" data-twe-dropdown-ref>
+                  <button
+                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                    type="button"
+                    id="dropdownSubdomain"
+                    data-twe-dropdown-toggle-ref
+                    aria-expanded="false"
+                    data-twe-ripple-init
+                    data-twe-ripple-color="light"
+                  >
+                    {selectedSubdomain || "Select Sub-domain"}
+                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <ul
+                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                    aria-labelledby="dropdownSubdomain"
+                    data-twe-dropdown-menu-ref
+                  >
+                    {reportData?.scores?.domains?.[selectedDomain]
+                      ?.subdomains &&
+                      Object.keys(
+                        reportData.scores.domains[selectedDomain].subdomains,
+                      ).map((sub) => (
+                        <li key={sub}>
+                          <button
+                            onClick={() => handleSubdomainChange(sub)}
+                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                          >
+                            {sub}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">Low</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Medium
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">High</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
+                  <SpeedMeter value={subdomainScore} />
+                </div>
+              </div>
+
+              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
+                <div className="grid justify-start w-full mb-2">
+                  <div className="flex gap-2">
+                    <div>
+                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                        POD-360™ Model
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center">
+                      <EditableTooltip
+                        id="podScore"
+                        defaultContent="Visualizes the balance across People Potential, Operational Steadiness, and Digital Fluency.
+
+Highlights strengths, gaps, and misalignment—guiding where to stabilize, optimize, or accelerate efforts."
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#64748B] font-medium">
+                    Interconnectivity of focus areas
+                  </p>
+                </div>
+                <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
+                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
+                    <Triangle data={triangleData} />
+                  </div>
+                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                    {finalInsights.map((insight: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <img
+                          src={IconStar}
+                          alt="icon"
+                          className="w-4 h-4 shrink-0 mt-0.5"
+                        />
+                        <span className="text-sm font-medium text-[#64748B] leading-snug">
+                          {insight}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="border border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4 rounded-[12px] w-full hidden ">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Performance Analysis
+                </h2>
+                <div className="flex justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Previous Test
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div>
+                      <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-normal text-[#474747]">
+                        Current Test
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-10">
+                  <MultiLineChart data={trendData} />
+                </div>
+              </div>
+            </div>
+
+            {/* Detailed Insight Pods with Skeleton Loading */}
+            {podsLoading ? (
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+              </div>
+            ) : (
+              <>
+                <div className="grid lg:grid-cols-2 grid-cols-1 xl:gap-x-6 gap-x-5 gap-y-8 mt-8">
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2 items-start">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            {detailedPods?.insights?.title ||
+                              `Insight for ${selectedSubdomain || selectedDomain}`}
+                          </h3>
+
+                          <div className="flex items-center mt-1">
+                            <EditableTooltip
+                              id="insightDomain"
+                              defaultContent="Provides a synthesized interpretation of the data within this domain.
+
+Highlights what is happening, why it matters, and where to focus next to improve performance and reduce friction."
+                            />
+                          </div>
+                        </div>
+                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                          {detailedPods?.insights?.subtitle ||
+                            (selectedSubdomain
+                              ? `Detailed analysis for ${selectedSubdomain}`
+                              : `Overall analysis for ${selectedDomain}`)}
+                        </p>
+                      </div>
+                      <div>
+                        <img
+                          src={Streamline}
+                          alt="images"
+                          className="w-8 h-8"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <ul className="mt-4 space-y-2">
+                        {detailedPods?.insights?.modelDescription ? (
+                          (() => {
+                            const mLines =
+                              detailedPods.insights.modelDescription
+                                .split(/\r?\n/)
+                                .filter((l: string) => l.trim().length > 0);
+                            const hasMBullets = mLines.some((l: string) =>
+                              l.includes("•"),
+                            );
+                            const finalMLines = hasMBullets
+                              ? mLines
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
+                              : mLines;
+
+                            return finalMLines.map(
+                              (bullet: string, idx: number) => (
+                                <li
+                                  key={idx}
+                                  className="feature-list flex gap-2"
+                                >
+                                  <img
+                                    src={IconStar}
+                                    alt="icon"
+                                    className="mt-0.5 w-4 h-4 shrink-0"
+                                  />
+                                  <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                                    {bullet}
+                                  </span>
+                                </li>
+                              ),
+                            );
+                          })()
+                        ) : (
+                          <li className="text-sm text-[var(--secondary-color)] font-normal italic">
+                            No specific insights available yet.
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            Priorities Attention
+                          </h3>
+
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="priAtt"
+                              defaultContent="Identifies the most critical areas requiring attention based on current results.
+
+Provides clear direction on where to stabilize, optimize, or accelerate efforts."
+                            />
+                          </div>
+                        </div>
+
+                        <p className="text-sm font-normal text-[#000000] mt-1">
+                          Top 3 priorities based on current data
+                        </p>
+                      </div>
+                      <div>
+                        <img src={Iconamoon} alt="images" className="w-8 h-8" />
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      {topPriorities.map((item, _idx) => (
+                        <div
+                          key={item.name}
+                          className="flex items-center justify-between"
+                        >
+                          <p
+                            className="text-sm font-semibold flex items-center gap-2"
+                            style={{ color: item.color }}
+                          >
+                            <span
+                              className="w-2.5 h-2.5 flex rounded-full"
+                              style={{ backgroundColor: item.color }}
+                            ></span>
+                            {item.name}
+                          </p>
+                          <p
+                            className="text-sm font-bold"
+                            style={{ color: item.color }}
+                          >
+                            {item.score}%
+                          </p>
+                        </div>
+                      ))}
+                      {topPriorities.length === 0 && (
+                        <p className="text-sm text-gray-500 italic">
+                          No priorities identified yet.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">
+                {(() => {
+                  const getMetricColor = (score: number) => {
+                    if (score < 50) return "#FF5656"; // Needs Attention (Red)
+                    if (score < 75) return "#FEE114"; // At Risk (Yellow)
+                    return "#30AD43"; // On Track (Green)
+                  };
+
+                  const domains = reportData?.scores?.domains || {};
+                  const dNames = Object.keys(domains);
+                  const domainMetrics = [
+                    {
+                      name: dNames[0] || "People Potential",
+                      score: domains[dNames[0]]?.score || 0,
+                      color: getMetricColor(domains[dNames[0]]?.score || 0),
+                    },
+                    {
+                      name: dNames[1] || "Operational Steadiness",
+                      score: domains[dNames[1]]?.score || 0,
+                      color: getMetricColor(domains[dNames[1]]?.score || 0),
+                    },
+                    {
+                      name: dNames[2] || "Digital Fluency",
+                      score: domains[dNames[2]]?.score || 0,
+                      color: getMetricColor(domains[dNames[2]]?.score || 0),
+                    },
+                  ];
+
+                  const getDomainIcon = (idx: number) => {
+                    if (idx === 0) return "solar:users-group-rounded-bold";
+                    if (idx === 1) return "solar:settings-bold";
+                    if (idx === 2) return "solar:laptop-minimalistic-bold";
+                    return "solar:star-bold";
+                  };
+
+                  return (
+                    <>
+                      {/* Header Section */}
+                      <div className="sm:flex-row justify-between items-start mb-10 gap-4">
+                        <div>
+                          <div className="flex gap-2">
+                            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
+                              Organizational Health
+                            </h2>
+                            <div className="flex items-center">
+                              <EditableTooltip
+                                id="orgHealth"
+                                defaultContent="A high-level snapshot of overall performance averaged across People, Operations, and Digital.
+Indicates whether the organization is on track, at risk, or needs attention, helping you quickly prioritize focus areas."
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {/* Legend Pill */}
+                        <div className="flex justify-center items-center gap-4 px-4 mt-4 py-2 flex-wrap">
+                          <div className="flex items-center justify-center gap-2">
+                            <span className="h-2 w-6 bg-[#30AD43]" />
+                            <span className="text-xs font-semibold text-[#64748B]">
+                              On Track
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-6 bg-[#FEE114]" />
+                            <span className="text-xs font-semibold text-[#64748B]">
+                              At Risk
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-6 bg-[#FF5656]" />
+                            <span className="text-xs font-semibold text-[#64748B]">
+                              Needs Attention
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Main Content Grid */}
+                      <div className="flex flex-wrap justify-center items-center gap-10 mt-2 mb-10">
+                        {/* Radial Chart Left */}
+                        <div className="relative flex justify-center items-center">
+                          <svg
+                            width="250"
+                            height="250"
+                            viewBox="0 0 200 200"
+                            className="drop-shadow-sm"
+                          >
+                            <Ring
+                              score={domainMetrics[0]?.score || 0}
+                              r={82}
+                              color={domainMetrics[0]?.color}
+                            />
+                            <Ring
+                              score={domainMetrics[1]?.score || 0}
+                              r={62}
+                              color={domainMetrics[1]?.color}
+                            />
+                            <Ring
+                              score={domainMetrics[2]?.score || 0}
+                              r={42}
+                              color={domainMetrics[2]?.color}
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className="text-3xl font-black text-[#0F172A] tracking-tighter">
+                              {Math.round(overallScore)}
+                              <span className="text-3xl">%</span>
+                            </span>
+                            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[0.2em] mt-1.5">
+                              Aggregate
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Linear Bars Right */}
+                        <div className="flex flex-col justify-center space-y-8">
+                          {domainMetrics.map((dm, idx) => (
+                            <div key={idx}>
+                              <div className="flex justify-between items-center mb-2.5 gap-10">
+                                <div className="flex items-center gap-2">
+                                  <Icon
+                                    icon={getDomainIcon(idx)}
+                                    className="text-[#475569] w-[20px] h-[20px]"
+                                  />
+                                  <span className="text-[15px] font-bold text-[#334155]">
+                                    {dm.name}
+                                  </span>
+                                </div>
+                                <span
+                                  className="text-[15px] font-black"
+                                  style={{ color: dm.color }}
+                                >
+                                  {Math.round(dm.score)}%
+                                </span>
+                              </div>
+                              <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-1000 ease-out"
+                                  style={{
+                                    width: `${dm.score}%`,
+                                    backgroundColor: dm.color,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <div className="flex gap-2">
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      Overall Departmental POD Score
+                    </h3>
+
+                    <div className="flex items-center">
+                      <EditableTooltip
+                        id="podScore"
+                        defaultContent="Compares how Leaders, Managers, and Employees experience the organization across the three POD domains.
+
+Highlights gaps and imbalances that may signal hidden risks to alignment, adoption, and overall performance."
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Legend */}
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(0)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Leader Avg ({teamAvgData?.leaderCount || 0})
+                    </span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(1)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Manager Avg ({teamAvgData?.managerCount || 0})
+                    </span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+                    onClick={() => toggleHiddenIndex(2)}
+                  >
+                    <span
+                      className="w-5 h-2 rounded-sm inline-block"
+                      style={{ background: "rgba(231, 76, 60, 0.6)" }}
+                    />
+                    <span className="text-xs text-[#474747]">
+                      Employee Avg ({teamAvgData?.employeeCount || 0})
+                    </span>
+                  </div>
+                </div>
+                <div className="relative w-full min-h-[450px]">
+                  <MultiRadarChart
+                    data={radarData}
+                    onLabelSelect={handleSubdomainChange}
+                    datasetLabels={[
+                      "Leader Avg",
+                      "Manager Avg",
+                      "Employee Avg",
+                    ]}
+                    hiddenIndices={hiddenIndices}
+                  />
+                </div>
+              </div>
+              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 hidden rounded-[12px] xl:col-span-2 bg-[#448bd21c]">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Trends Analysis
+                </h2>
+                <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Wellbeing
+                    </span>
+                    <img src={DownArrow} alt="arrow" />
+                  </li>
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Improving fast enough
+                    </span>
+                    <img src={UpArrow} alt="arrow" />
+                  </li>
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Improving fast enough
+                    </span>
+                    <img src={UpArrow} alt="arrow" />
+                  </li>
+                  <li className="flex gap-2 items-center ">
+                    <span className="text-base font-medium text-[var(--secondary-color)]">
+                      Lorem Ipsum
+                    </span>
+                    <img src={UpArrow} alt="arrow" />
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+          </>
+      </div>
+
+      <FeedbackEditorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        domain={selectedDomain}
+        subdomain={selectedSubdomain}
+        allDomains={reportData?.scores?.domains || {}}
+        userId={userId}
+        userEmail={userEmail}
+        rawFeedback={{
+          ...detailedPods?.rawFeedback,
+          pod360Title: aiInsight?.title,
+          pod360Description: aiInsight?.description,
+        }}
+        onSuccess={() => setRefreshKey((prev) => prev + 1)}
+      />
+
+      <ReportPreviewModal
+        show={showPreview}
+        onClose={() => {
+          setShowPreview(false);
+          if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+          setPdfUrl(null);
+        }}
+        pdfUrl={pdfUrl}
+        onRefresh={handlePreview}
+        loading={loadingPreview}
+        type="Leader Report Preview"
+      />
+    </div>
   );
 };
 

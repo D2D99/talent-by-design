@@ -40,6 +40,7 @@ const EmployeeReport = lazy(() => import("./screens/employeeReport"));
 const UserResponseView = lazy(() => import("./screens/userResponseView"));
 const ManagerReport = lazy(() => import("./screens/managerReport"));
 const LeaderReport = lazy(() => import("./screens/leaderReport"));
+const TeamIntelligence = lazy(() => import("./screens/teamIntelligence"));
 
 const Loading = () => (
   <div className="flex h-screen w-full items-center justify-center bg-white">
@@ -106,6 +107,7 @@ function App() {
                   path="person-intelligence"
                   element={<PersonDeepDive />}
                 />
+                <Route path="team-intelligence" element={<TeamIntelligence />} />
                 <Route path="users" element={<OrgUsers />} />
                 <Route path="notifications" element={<NotificationHistory />} />
                 <Route

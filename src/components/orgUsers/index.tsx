@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useCallback } from "react";
 import Pagination from "../Pagination";
 import api from "../../services/axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import { useAuth } from "../../context/useAuth";
@@ -41,6 +41,7 @@ const OrgUsers = ({
   hideAdmin = true,
 }: OrgUsersProps) => {
   const { orgName: routeOrgName } = useParams();
+  const navigate = useNavigate();
 
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
@@ -61,6 +62,7 @@ const OrgUsers = ({
   const userRole = user?.role?.toLowerCase() || "";
   const isSuperAdmin = userRole === "superAdmin" || userRole === "super_admin";
   const isAdmin = userRole === "admin";
+  const isLeader = userRole === "leader";
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof UserMember;
@@ -252,19 +254,22 @@ const OrgUsers = ({
               </p>
             </div>
 
-            <button
-              type="button"
-              data-twe-toggle="modal"
-              data-twe-target="#userInviteModal"
-              className="group hidden relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full  justify-center items-center gap-1.5 font-semibold text-base uppercase bg-[var(--primary-color)] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            >
-              <Icon icon="material-symbols:add-rounded" width="22" />
-              Invite New User
-            </button>
+            <div className="flex items-center gap-3">
+              {(isAdmin || isSuperAdmin || isLeader) && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/dashboard/team-intelligence")}
+                  className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-[#10B981] duration-200 hover:bg-[#0EA5E9] transition-colors"
+                >
+                  <Icon icon="solar:graph-broken" width="22" />
+                  Team Intelligence
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Stats Cards */}
-          {(isAdmin || isSuperAdmin) && (
+          {(isAdmin || isSuperAdmin || isLeader) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
               {[
                 {
