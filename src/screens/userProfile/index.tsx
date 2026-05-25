@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, useCallback, type ChangeEvent } from "react";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
@@ -71,7 +71,7 @@ const UserProfile = () => {
   const [orgLogoPreviewUrl, setOrgLogoPreviewUrl] = useState<string>("");
   const [showLogoModal, setShowLogoModal] = useState(false);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const response = await api.get("/auth/my-profile");
       const data = response.data;
@@ -110,11 +110,11 @@ const UserProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [reset]);
 
   useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [fetchProfile]);
 
   const MAX_FILE_SIZE_MB = 4;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;

@@ -38,7 +38,7 @@ const TopBar = () => {
   const fetchNotifications = async () => {
     try {
       const res = await api.get<NotificationItem[]>("/auth/notifications");
-      setNotifications(res.data);
+      setNotifications(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Failed to load notifications", error);
     }
@@ -96,7 +96,7 @@ const TopBar = () => {
   };
 
   // derived state
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = Array.isArray(notifications) ? notifications.filter((n) => !n.isRead).length : 0;
 
   const [user, setUser] = useState({
     firstName: "",
@@ -126,7 +126,7 @@ const TopBar = () => {
     return () => window.removeEventListener("profile-updated", fetchUser);
   }, []);
 
-  const filteredNotifications = notifications.filter((n) => {
+  const filteredNotifications = Array.isArray(notifications) ? notifications.filter((n) => {
     if (activeTab === "All") return true;
     if (activeTab === "Invites")
       return (
@@ -139,7 +139,7 @@ const TopBar = () => {
         !n.message.toLowerCase().includes("invit")
       );
     return true;
-  });
+  }) : [];
 
   return (
     <>

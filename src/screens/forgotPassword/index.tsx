@@ -4,7 +4,7 @@ const Logo = "/static/img/home/logo.svg";
 import { Icon } from "@iconify/react";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 
@@ -35,7 +35,7 @@ const ForgotPassword = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setError,
     clearErrors,
     formState: { errors },
@@ -46,7 +46,7 @@ const ForgotPassword = () => {
   });
 
   // Watch the email value to activate button and rotate icon immediately
-  const emailValue = watch("email");
+  const emailValue = useWatch({ control, name: "email" });
   const isFormValid = emailValue && emailValue.trim() !== "";
 
   // const onSubmit: SubmitHandler<ForgotPasswordFields> = async (data) => {

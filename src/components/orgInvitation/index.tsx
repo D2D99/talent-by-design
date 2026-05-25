@@ -393,14 +393,10 @@ const OrgInvitation = () => {
     setSelectedId(id);
 
     // Open modal programmatically
-    if (deleteModalInstance.current) {
-      deleteModalInstance.current.show();
-    } else {
-      const modalElem = document.getElementById("deleteModal");
-      if (modalElem) {
-        const instance = new Modal(modalElem);
-        instance.show();
-      }
+    const modalElem = document.getElementById("deleteModal");
+    if (modalElem) {
+      const instance = new Modal(modalElem);
+      instance.show();
     }
   };
 

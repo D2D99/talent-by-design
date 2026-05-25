@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import api from "../../services/axios";
 
@@ -67,13 +67,7 @@ const UserResponseView = () => {
   const [filterSubdomains, setFilterSubdomains] = useState<string[]>([]);
   const [filterTypes, setFilterTypes] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (assessmentId) {
-      fetchResponses();
-    }
-  }, [assessmentId]);
-
-  const fetchResponses = async () => {
+  const fetchResponses = useCallback(async () => {
     setLoading(true);
     try {
       const respRes = await api.get<any>(`responses/${assessmentId}`);
@@ -101,7 +95,13 @@ const UserResponseView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [assessmentId]);
+
+  useEffect(() => {
+    if (assessmentId) {
+      fetchResponses();
+    }
+  }, [assessmentId, fetchResponses]);
 
   const DOMAINS = [
     "People Potential",

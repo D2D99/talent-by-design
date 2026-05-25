@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { Icon } from "@iconify/react";
 import Streamline from "../../../public/static/img/home/streamline-plump_graph-bar-increase.svg";
@@ -196,7 +197,7 @@ const AdminOverview = () => {
     }
   }, [selectedOrg, userId, userEmail]);
 
-  const filteredMembers = members.filter((m) => {
+  const filteredMembers = Array.isArray(members) ? members.filter((m) => {
     const roleLower = m.role?.toLowerCase();
     const memberDept = m.department?.toString().trim().toLowerCase();
     const searchDept = selectedDept?.toString().trim().toLowerCase();
@@ -218,7 +219,7 @@ const AdminOverview = () => {
 
     // Default (Admins): Strictly show only leaders on this page
     return roleLower === "leader" && !!matchesDept;
-  });
+  }) : [];
 
   // const customSelectStyles = {
   //   control: (provided: any) => ({

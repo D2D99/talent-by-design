@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import SpinnerLoader from "../../components/spinnerLoader";
 import { toast } from "react-toastify";
 
@@ -50,7 +50,7 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setError,
     clearErrors,
     formState: { errors },
@@ -61,8 +61,8 @@ const Login = () => {
     },
   });
 
-  const emailValue = watch("email");
-  const passwordValue = watch("password");
+  const emailValue = useWatch({ control, name: "email" });
+  const passwordValue = useWatch({ control, name: "password" });
 
   // Improved button disabled logic: only disable if loading or fields are truly empty/whitespace
   const isButtonDisabled =

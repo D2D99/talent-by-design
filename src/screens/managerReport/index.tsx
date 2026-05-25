@@ -1739,7 +1739,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                             Manager
                           </span>
                         </div>
-                        {(teamAvgData?.employeeCount > 0 || true) && (
+                        {(teamAvgData?.employeeCount > 0) && (
                           <div
                             className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
                             onClick={() => toggleHiddenIndex(1)}

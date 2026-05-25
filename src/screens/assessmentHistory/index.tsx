@@ -13,12 +13,6 @@ const AssessmentHistory = () => {
   const [activeTab, setActiveTab] = useState("my-history");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (activeTab === "my-history") {
-      fetchHistory();
-    }
-  }, [activeTab]);
-
   const fetchHistory = async () => {
     setLoading(true);
     try {
@@ -30,6 +24,12 @@ const AssessmentHistory = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === "my-history") {
+      fetchHistory();
+    }
+  }, [activeTab]);
 
   const handleStart = () => {
     navigate("/start-assessment");

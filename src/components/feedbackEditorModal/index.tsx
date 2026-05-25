@@ -246,7 +246,7 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
     return () => {
       ignore = true;
     };
-  }, [selectedDomain, selectedSubdomain, isOpen]);
+  }, [selectedDomain, selectedSubdomain, isOpen, userEmail, userId]);
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,

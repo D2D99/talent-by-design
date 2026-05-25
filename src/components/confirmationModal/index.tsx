@@ -31,9 +31,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 //   icon,
 //   variant = "danger",
 }) => {
-//   const isDanger = variant === "danger";
+  const handleHidden = () => { onClose(); };
   const modalRef = useRef<HTMLDivElement>(null);
   const [modalInstance, setModalInstance] = useState<any>(null);
+
 
   useEffect(() => {
     let instance: any = null;
@@ -42,20 +43,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     if (el) {
       instance = Modal.getOrCreateInstance(el);
       setModalInstance(instance);
-
-      const handleHidden = () => {
-        onClose();
-      };
       el.addEventListener("hidden.twe.modal", handleHidden);
     }
 
     return () => {
       if (el) {
-        // We keep the instance alive for TWE to manage, but remove listeners
-        el.removeEventListener("hidden.twe.modal", () => {});
+        el.removeEventListener("hidden.twe.modal", handleHidden);
       }
     };
-  }, []); // Run once on mount
+  }, [onClose, handleHidden]); // added handleHidden to dependencies
 
   useEffect(() => {
     if (!modalInstance) return;

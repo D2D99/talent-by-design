@@ -85,7 +85,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     // Listen for profile updates
     window.addEventListener("profile-updated", fetchUser);
     return () => window.removeEventListener("profile-updated", fetchUser);
-  }, []);
+  }, [navigate]);
 
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

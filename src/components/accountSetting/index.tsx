@@ -10,6 +10,7 @@ import api from "../../services/axios";
 import { toast } from "react-toastify";
 import { formatPhoneNumberIntl } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import SpinnerLoader from "../../components/spinnerLoader";
 // import { useTheme } from "../../context/useTheme";
 
 const AccountSetting = () => {
@@ -26,9 +27,10 @@ const AccountSetting = () => {
   const {
     register,
     handleSubmit,
-    watch,
     reset,
+    watch,
     formState: { errors },
+    control,
   } = useForm({
     defaultValues: {
       oldPassword: "",
@@ -40,11 +42,11 @@ const AccountSetting = () => {
   const newPassword = watch("newPassword");
 
   const validation = {
-    minLength: newPassword.length >= 8,
-    hasUpper: /[A-Z]/.test(newPassword),
-    hasLower: /[a-z]/.test(newPassword),
-    hasNumber: /[0-9]/.test(newPassword),
-    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
+    minLength: newPassword?.length >= 8,
+    hasUpper: /[A-Z]/.test(newPassword || ""),
+    hasLower: /[a-z]/.test(newPassword || ""),
+    hasNumber: /[0-9]/.test(newPassword || ""),
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword || ""),
   };
 
   const strengthCount = Object.values(validation).filter(Boolean).length;
@@ -55,11 +57,6 @@ const AccountSetting = () => {
         ? "bg-yellow-500"
         : "bg-green-500";
 
-  useEffect(() => {
-    initTWE({ Tab });
-    fetchProfile();
-  }, []);
-
   const fetchProfile = async () => {
     try {
       const response = await api.get("auth/my-profile");
@@ -68,6 +65,11 @@ const AccountSetting = () => {
       console.error("Error fetching profile:", error);
     }
   };
+
+  useEffect(() => {
+    initTWE({ Tab });
+    fetchProfile();
+  }, []);
 
   const onSubmit = async (data: any) => {
     const allValid = Object.values(validation).every(Boolean);
