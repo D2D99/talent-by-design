@@ -10,7 +10,7 @@ import api from "../../services/axios";
 import { toast } from "react-toastify";
 import { formatPhoneNumberIntl } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import SpinnerLoader from "../../components/spinnerLoader";
+// import SpinnerLoader from "../../components/spinnerLoader";
 // import { useTheme } from "../../context/useTheme";
 
 const AccountSetting = () => {
@@ -30,7 +30,7 @@ const AccountSetting = () => {
     reset,
     watch,
     formState: { errors },
-    control,
+    // control
   } = useForm({
     defaultValues: {
       oldPassword: "",
