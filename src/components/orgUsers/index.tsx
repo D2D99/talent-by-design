@@ -140,12 +140,9 @@ const OrgUsers = ({
     return 0;
   });
 
-  const filteredMembers = sortedMembers.filter((m) => {
+  const baseAccessibleMembers = sortedMembers.filter((m) => {
     // Exclude admins
     if (hideAdmin && m.role.toLowerCase() === "admin") return false;
-
-    // Filter out non-accepted users (Pending/Expired)
-    if (m.status !== "Accept") return false;
 
     // 🚀 ROLE-BASED FILTERING FOR LEADERS/MANAGERS
     if (currentUser) {
@@ -170,6 +167,12 @@ const OrgUsers = ({
           return false;
       }
     }
+    return true;
+  });
+
+  const filteredMembers = baseAccessibleMembers.filter((m) => {
+    // Filter out non-accepted users (Pending/Expired)
+    if (m.status !== "Accept") return false;
 
     const matchesSearch =
       `${m.firstName} ${m.lastName} ${m.email} ${m.role} ${m.department || ""} ${m.assessmentStatus || ""}`
@@ -215,22 +218,19 @@ const OrgUsers = ({
     }
   };
 
-  // Calculate stats (excluding admins)wdxwdxWEC
-  const nonAdminMembers = members.filter((m) =>
-    hideAdmin ? m.role.toLowerCase() !== "admin" : true
-  );
-  const acceptedUsers = nonAdminMembers.filter(
+  // Calculate stats (excluding admins)
+  const acceptedUsers = baseAccessibleMembers.filter(
     (m) => m.status === "Accept"
   ).length;
 
   const roleStats = {
-    leaders: nonAdminMembers.filter(
+    leaders: baseAccessibleMembers.filter(
       (m) => m.status === "Accept" && m.role.toLowerCase().includes("leader")
     ).length,
-    managers: nonAdminMembers.filter(
+    managers: baseAccessibleMembers.filter(
       (m) => m.status === "Accept" && m.role.toLowerCase() === "manager"
     ).length,
-    employees: nonAdminMembers.filter(
+    employees: baseAccessibleMembers.filter(
       (m) => m.status === "Accept" && m.role.toLowerCase() === "employee"
     ).length,
   };
