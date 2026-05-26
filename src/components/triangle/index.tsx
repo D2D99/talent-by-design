@@ -36,14 +36,7 @@ function roundedTrianglePath(
   `;
 }
 
-/** Centroid of a triangle given 3 points */
-function centroid(
-  a: { x: number; y: number },
-  b: { x: number; y: number },
-  c: { x: number; y: number }
-) {
-  return { x: (a.x + b.x + c.x) / 3, y: (a.y + b.y + c.y) / 3 };
-}
+
 
 export default function Triangle({ data }: Props) {
 

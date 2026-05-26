@@ -382,10 +382,8 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
 
             },
  
-            formatter: function () {
-
-              return this.y.toFixed(2) + "%";
-
+            formatter: function (this: any) {
+              return (this.y || 0).toFixed(2) + "%";
             },
 
           },
