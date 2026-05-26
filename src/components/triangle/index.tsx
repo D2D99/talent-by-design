@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type TriangleData from "./types";
 
 type Props = {
@@ -46,16 +45,7 @@ function centroid(
   return { x: (a.x + b.x + c.x) / 3, y: (a.y + b.y + c.y) / 3 };
 }
 
-type TooltipInfo = {
-  x: number;
-  y: number;
-  label: string;
-  pct: number;
-  color: string;
-} | null;
-
 export default function Triangle({ data }: Props) {
-  const [tooltip, setTooltip] = useState<TooltipInfo>(null);
 
   // ===== GEOMETRY CONFIG =====
   const center = { x: 150, y: 153 };
@@ -99,42 +89,7 @@ export default function Triangle({ data }: Props) {
     digital: "#3C7CBA",  // Dark    — left (People Potential)
   };
 
-  const hoverColors = {
-    people: "#D0E7F5",
-    operational: "#A8CEEE",
-    digital: "#2E6099",
-  };
-
   const roundedPath = roundedTrianglePath(P, O, D, 0.1);
-
-  // Sector centroids — used to position tooltip anchor
-  const bottomSectorCentroid = centroid(C, O, D);
-  const rightSectorCentroid = centroid(C, P, D);
-  const leftSectorCentroid = centroid(C, P, O);
-
-  // Tooltip box dimensions
-  const TW = 120;
-  const TH = 48;
-  const CARET = 6;
-  const PADDING = 6;
-
-  function clampX(x: number) {
-    return Math.min(Math.max(x - TW / 2, PADDING), 300 - TW - PADDING);
-  }
-  function clampY(y: number) {
-    const above = y - TH - CARET - 8;
-    return above < PADDING ? y + CARET + 8 : above;
-  }
-
-  const showTooltip = (
-    cx: number,
-    cy: number,
-    label: string,
-    pct: number,
-    color: string
-  ) => setTooltip({ x: cx, y: cy, label, pct, color });
-
-  const hideTooltip = () => setTooltip(null);
 
   // Percentage values
   const peoplePct = Math.round(pS);
@@ -147,46 +102,25 @@ export default function Triangle({ data }: Props) {
         <clipPath id="triangleClip">
           <path d={roundedPath} />
         </clipPath>
-        <filter id="tooltipShadow" x="-10%" y="-10%" width="120%" height="140%">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#00000033" />
-        </filter>
       </defs>
 
       <g clipPath="url(#triangleClip)">
         {/* SECTOR 1: bottom face (C-O-D) → Operational Steadiness */}
         <polygon
           points={`${C.x},${C.y} ${O.x},${O.y} ${D.x},${D.y}`}
-          fill={tooltip?.label === "Operational Steadiness" ? hoverColors.people : colors.people}
-          className="transition-all duration-300 ease-in-out"
-          style={{ cursor: "pointer" }}
-          onMouseEnter={() =>
-            showTooltip(bottomSectorCentroid.x, bottomSectorCentroid.y, "Operational Steadiness", operationalPct, "#3C7CBA")
-          }
-          onMouseLeave={hideTooltip}
+          fill={colors.people}
         />
 
         {/* SECTOR 2: right face (C-P-D) → Digital Fluency */}
         <polygon
           points={`${C.x},${C.y} ${P.x},${P.y} ${D.x},${D.y}`}
-          fill={tooltip?.label === "Digital Fluency" ? hoverColors.operational : colors.operational}
-          className="transition-all duration-300 ease-in-out"
-          style={{ cursor: "pointer" }}
-          onMouseEnter={() =>
-            showTooltip(rightSectorCentroid.x, rightSectorCentroid.y, "Digital Fluency", digitalPct, "#3C7CBA")
-          }
-          onMouseLeave={hideTooltip}
+          fill={colors.operational}
         />
 
         {/* SECTOR 3: left face (C-P-O) → People Potential (dark) */}
         <polygon
           points={`${C.x},${C.y} ${P.x},${P.y} ${O.x},${O.y}`}
-          fill={tooltip?.label === "People Potential" ? hoverColors.digital : colors.digital}
-          className="transition-all duration-300 ease-in-out"
-          style={{ cursor: "pointer" }}
-          onMouseEnter={() =>
-            showTooltip(leftSectorCentroid.x, leftSectorCentroid.y, "People Potential", peoplePct, "#3C7CBA")
-          }
-          onMouseLeave={hideTooltip}
+          fill={colors.digital}
         />
       </g>
 
@@ -202,7 +136,7 @@ export default function Triangle({ data }: Props) {
       {/* LABELS */}
       <text
         x={P.x}
-        y={P.y - 12}
+        y={P.y - 28}
         textAnchor="middle"
         fontWeight="800"
         fill="#1E293B"
@@ -211,6 +145,7 @@ export default function Triangle({ data }: Props) {
       >
         <tspan x={P.x} dy="0">People</tspan>
         <tspan x={P.x} dy="1.1em">Potential</tspan>
+        <tspan x={P.x} dy="1.2em" fontSize={14}>({peoplePct}%)</tspan>
       </text>
 
       <text
@@ -224,6 +159,7 @@ export default function Triangle({ data }: Props) {
       >
         <tspan x={O.x - 10} dy="0">Operational</tspan>
         <tspan x={O.x - 10} dy="1.1em">Steadiness</tspan>
+        <tspan x={O.x - 10} dy="1.2em" fontSize={14}>({operationalPct}%)</tspan>
       </text>
 
       <text
@@ -237,27 +173,8 @@ export default function Triangle({ data }: Props) {
       >
         <tspan x={D.x + 10} dy="0">Digital</tspan>
         <tspan x={D.x + 10} dy="1.1em">Fluency</tspan>
+        <tspan x={D.x + 10} dy="1.2em" fontSize={14}>({digitalPct}%)</tspan>
       </text>
-
-      {/* TOOLTIP */}
-      {tooltip && (() => {
-        const tx = clampX(tooltip.x);
-        const ty = clampY(tooltip.y);
-        const isAbove = tooltip.y - TH - CARET - 8 >= PADDING;
-        const caretX = Math.min(Math.max(tooltip.x, tx + 10), tx + TW - 10);
-        return (
-          <g style={{ pointerEvents: "none" }}>
-            <rect x={tx} y={ty} width={TW} height={TH} rx={7} ry={7} fill="#2E3B4E" filter="url(#tooltipShadow)" />
-            {isAbove ? (
-              <polygon points={`${caretX - 6},${ty + TH} ${caretX + 6},${ty + TH} ${caretX},${ty + TH + CARET}`} fill="#2E3B4E" />
-            ) : (
-              <polygon points={`${caretX - 6},${ty} ${caretX + 6},${ty} ${caretX},${ty - CARET}`} fill="#2E3B4E" />
-            )}
-            <text x={tx + TW / 2} y={ty + 19} textAnchor="middle" fontSize={8.5} fontWeight="600" fill="#ffffff">{tooltip.label}</text>
-            <text x={tx + TW / 2} y={ty + 36} textAnchor="middle" fontSize={12} fontWeight="800" fill="#ffffff">{tooltip.pct}%</text>
-          </g>
-        );
-      })()}
     </svg>
   );
 }

@@ -1,163 +1,489 @@
+// import { useEffect, useRef } from "react";
+
+// // Declare Highcharts if it's loaded from a <script> tag
+// declare global {
+//   interface Window {
+//     Highcharts: typeof import("highcharts");
+//   }
+// }
+
+// interface SpeedMeterProps {
+//   value?: number;
+// }
+
+// const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
+//   const chartRef = useRef<HTMLDivElement>(null);
+
+//   useEffect(() => {
+//     // Check if Highcharts is loaded and available
+//     if (window.Highcharts) {
+//       const Highcharts = window.Highcharts; // Use the global Highcharts object
+
+//       const options: Highcharts.Options = {
+//         chart: {
+//           type: "gauge",
+//           height: "100%", // Ensure the chart scales to the div size
+//         },
+//         tooltip: {
+//           enabled: true,
+//           valueSuffix: "%",
+//           headerFormat: "",
+//           pointFormat: "<b>{point.y:.2f}%</b>",
+//           style: {
+//             fontSize: "14px",
+//           },
+//         },
+
+//         // Removed the title from the options
+//         title: undefined,
+
+//         pane: {
+//           startAngle: -90, // Start the arc at -90° (left side of the arc)
+//           endAngle: 90, // End the arc at 90° (right side of the arc)
+//           background: undefined,
+//           center: ["50%", "75%"], // Position of the arc in the container
+//           size: "100%", // Size of the arc in relation to the container (full arc)
+//         },
+
+//         yAxis: {
+//           min: 0,
+//           max: 100, // Set the value range from 0 to 100
+//           tickLength: 0,
+//           tickWidth: 0,
+//           minorTickLength: 0,
+//           lineWidth: 0,
+//           labels: {
+//             enabled: false, // Hide the axis labels
+//           },
+
+//           plotBands: [
+//             {
+//               from: 0,
+//               to: 50,
+//               color: "#ff5c5c",
+//               thickness: 18,
+//               borderWidth: 4,
+//               borderColor: "#ffffff",
+//             },
+//             {
+//               from: 50,
+//               to: 75,
+//               color: "#ffd400",
+//               thickness: 18,
+//               borderWidth: 4,
+//               borderColor: "#ffffff",
+//             },
+//             {
+//               from: 75,
+//               to: 100,
+//               color: "#4caf50",
+//               thickness: 18,
+//               borderWidth: 4,
+//               borderColor: "#ffffff",
+//             },
+//           ],
+
+//           title: {
+//             text: "",
+//           },
+//         },
+
+//         series: [
+//           {
+//             type: "gauge",
+//             data: [value], // Dynamically set value
+//             dial: {
+//               radius: "60%", // Control the size of the dial within the arc
+//               backgroundColor: "#222", // Dial color
+//               baseWidth: 10, // Width of the dial base
+//               baseLength: "0%", // Dial base length
+//               rearLength: "0%", // Rear length of the dial
+//             },
+
+//             pivot: {
+//               radius: 7, // Radius of the pivot (center of the gauge)
+//               backgroundColor: "#222", // Pivot color
+//             },
+
+//             dataLabels: {
+//               enabled: true,
+//               borderWidth: 0,
+//               y: 55,
+//               style: {
+//                 fontSize: "32px",
+//                 fontWeight: "800",
+//                 color: "#000",
+//                 textOutline: "none",
+//                 fontFamily: "Outfit, sans-serif",
+//               },
+//               formatter: function (this: any) {
+//                 return this.y.toFixed(2) + "%";
+//               },
+//             },
+//           } as any,
+//         ],
+
+//         // Add responsiveness and ensure needle stays in correct place
+//         responsive: {
+//           rules: [
+//             {
+//               condition: {
+//                 maxWidth: 500, // Adjust this breakpoint as necessary
+//               },
+//               chartOptions: {
+//                 chart: {
+//                   height: "100%", // Ensure the chart adjusts to container
+//                 },
+//               },
+//             },
+//           ],
+//         },
+//       };
+
+//       // Initialize the Highcharts chart once the component is mounted
+//       if (chartRef.current) {
+//         new Highcharts.Chart(chartRef.current, options);
+//       }
+//     }
+//   }, [value]);
+
+//   return (
+//     <div
+//       style={{
+//         width: "100%", // Make the div container take full width
+//         maxWidth: "500px", // Set the maximum width
+//         height: "375px", // Set the height of the div
+//         margin: "auto", // Center the div container
+//       }}
+//       ref={chartRef}
+//     ></div>
+//   );
+// };
+
+// export default SpeedMeter;
+
+
+
+ 
+ 
 import { useEffect, useRef } from "react";
+ 
+// Declare Highcharts if loaded globally
 
-// Declare Highcharts if it's loaded from a <script> tag
 declare global {
+
   interface Window {
+
     Highcharts: typeof import("highcharts");
+
   }
-}
 
+}
+ 
 interface SpeedMeterProps {
+
   value?: number;
+
 }
-
+ 
 const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
+
   const chartRef = useRef<HTMLDivElement>(null);
-
+ 
   useEffect(() => {
-    // Check if Highcharts is loaded and available
-    if (window.Highcharts) {
-      const Highcharts = window.Highcharts; // Use the global Highcharts object
 
-      const options: Highcharts.Options = {
-        chart: {
-          type: "gauge",
-          height: "100%", // Ensure the chart scales to the div size
-        },
-        tooltip: {
-          enabled: true,
-          valueSuffix: "%",
-          headerFormat: "",
-          pointFormat: "<b>{point.y:.2f}%</b>",
-          style: {
-            fontSize: "14px",
-          },
-        },
+    if (!window.Highcharts || !chartRef.current) return;
+ 
+    const Highcharts = window.Highcharts;
+ 
+    const options: Highcharts.Options = {
 
-        // Removed the title from the options
-        title: undefined,
+      chart: {
 
-        pane: {
-          startAngle: -90, // Start the arc at -90° (left side of the arc)
-          endAngle: 90, // End the arc at 90° (right side of the arc)
-          background: undefined,
-          center: ["50%", "75%"], // Position of the arc in the container
-          size: "100%", // Size of the arc in relation to the container (full arc)
-        },
+        type: "gauge",
 
-        yAxis: {
-          min: 0,
-          max: 100, // Set the value range from 0 to 100
-          tickLength: 0,
-          tickWidth: 0,
-          minorTickLength: 0,
-          lineWidth: 0,
-          labels: {
-            enabled: false, // Hide the axis labels
-          },
+        height: 420,
 
-          plotBands: [
-            {
-              from: 0,
-              to: 50,
-              color: "#ff5c5c",
-              thickness: 18,
-              borderWidth: 4,
-              borderColor: "#ffffff",
-            },
-            {
-              from: 50,
-              to: 75,
-              color: "#ffd400",
-              thickness: 18,
-              borderWidth: 4,
-              borderColor: "#ffffff",
-            },
-            {
-              from: 75,
-              to: 100,
-              color: "#4caf50",
-              thickness: 18,
-              borderWidth: 4,
-              borderColor: "#ffffff",
-            },
-          ],
+        spacingBottom: 40,
 
-          title: {
-            text: "",
-          },
+        backgroundColor: "transparent",
+
+      },
+ 
+      title: undefined,
+ 
+      tooltip: {
+
+        enabled: false,
+
+        valueSuffix: "%",
+
+        headerFormat: "",
+
+        pointFormat: "<b>{point.y:.2f}%</b>",
+
+        style: {
+
+          fontSize: "14px",
+
         },
 
-        series: [
+      },
+ 
+      pane: {
+
+        startAngle: -90,
+
+        endAngle: 90,
+
+        background: undefined,
+
+        center: ["50%", "75%"],
+
+        size: "100%",
+
+      },
+ 
+      yAxis: {
+
+        min: 0,
+
+        max: 100,
+ 
+        tickLength: 0,
+
+        tickWidth: 0,
+
+        minorTickLength: 0,
+
+        lineWidth: 0,
+ 
+        labels: {
+
+          enabled: false,
+
+        },
+ 
+        title: {
+
+          text: "",
+
+        },
+ 
+        plotBands: [
+
           {
-            type: "gauge",
-            data: [value], // Dynamically set value
-            dial: {
-              radius: "60%", // Control the size of the dial within the arc
-              backgroundColor: "#222", // Dial color
-              baseWidth: 10, // Width of the dial base
-              baseLength: "0%", // Dial base length
-              rearLength: "0%", // Rear length of the dial
-            },
 
-            pivot: {
-              radius: 7, // Radius of the pivot (center of the gauge)
-              backgroundColor: "#222", // Pivot color
-            },
+            from: 0,
 
-            dataLabels: {
-              enabled: true,
-              borderWidth: 0,
-              y: 55,
-              style: {
-                fontSize: "32px",
-                fontWeight: "800",
-                color: "#000",
-                textOutline: "none",
-                fontFamily: "Outfit, sans-serif",
-              },
-              formatter: function (this: any) {
-                return this.y.toFixed(2) + "%";
-              },
-            },
-          } as any,
+            to: 50,
+
+            color: "#ff5c5c",
+
+            thickness: 18,
+
+            borderWidth: 4,
+
+            borderColor: "#ffffff",
+
+          },
+
+          {
+
+            from: 50,
+
+            to: 75,
+
+            color: "#ffd400",
+
+            thickness: 18,
+
+            borderWidth: 4,
+
+            borderColor: "#ffffff",
+
+          },
+
+          {
+
+            from: 75,
+
+            to: 100,
+
+            color: "#4caf50",
+
+            thickness: 18,
+
+            borderWidth: 4,
+
+            borderColor: "#ffffff",
+
+          },
+
         ],
 
-        // Add responsiveness and ensure needle stays in correct place
-        responsive: {
-          rules: [
-            {
-              condition: {
-                maxWidth: 500, // Adjust this breakpoint as necessary
-              },
-              chartOptions: {
-                chart: {
-                  height: "100%", // Ensure the chart adjusts to container
-                },
-              },
+      },
+ 
+      series: [
+
+        {
+
+          type: "gauge",
+ 
+          data: [value],
+ 
+          dial: {
+
+            radius: "60%",
+
+            backgroundColor: "#222",
+
+            baseWidth: 10,
+
+            baseLength: "0%",
+
+            rearLength: "0%",
+
+          },
+ 
+          pivot: {
+
+            radius: 7,
+
+            backgroundColor: "#222",
+
+          },
+ 
+          dataLabels: {
+
+            enabled: true,
+
+            borderWidth: 0,
+ 
+            // IMPORTANT FIX
+
+            y: 35,
+
+            crop: false,
+
+            overflow: "allow",
+ 
+            style: {
+
+              fontSize: "32px",
+
+              fontWeight: "800",
+
+              color: "#000",
+
+              textOutline: "none",
+
+              fontFamily: "Outfit, sans-serif",
+
             },
-          ],
-        },
-      };
+ 
+            formatter: function () {
 
-      // Initialize the Highcharts chart once the component is mounted
-      if (chartRef.current) {
-        new Highcharts.Chart(chartRef.current, options);
-      }
-    }
+              return this.y.toFixed(2) + "%";
+
+            },
+
+          },
+
+        } as Highcharts.SeriesGaugeOptions,
+
+      ],
+ 
+      responsive: {
+
+        rules: [
+
+          {
+
+            condition: {
+
+              maxWidth: 500,
+
+            },
+ 
+            chartOptions: {
+
+              chart: {
+
+                height: 380,
+
+              },
+ 
+              series: [
+
+                {
+
+                  type: "gauge",
+ 
+                  dataLabels: {
+
+                    y: 25,
+ 
+                    style: {
+
+                      fontSize: "36px",
+
+                    },
+
+                  },
+
+                },
+
+              ],
+
+            },
+
+          },
+
+        ],
+
+      },
+
+    };
+ 
+    // Create chart
+
+    const chart = Highcharts.chart(chartRef.current, options);
+ 
+    // Cleanup
+
+    return () => {
+
+      chart.destroy();
+
+    };
+
   }, [value]);
-
+ 
   return (
-    <div
-      style={{
-        width: "100%", // Make the div container take full width
-        maxWidth: "500px", // Set the maximum width
-        height: "375px", // Set the height of the div
-        margin: "auto", // Center the div container
-      }}
-      ref={chartRef}
-    ></div>
-  );
-};
+<div
 
+      ref={chartRef}
+
+      style={{
+
+        width: "100%",
+
+        maxWidth: "500px",
+
+        height: "420px",
+
+        margin: "auto",
+
+        overflow: "visible",
+
+      }}
+
+    />
+
+  );
+
+};
+ 
 export default SpeedMeter;
+ 
