@@ -1170,7 +1170,7 @@ Helps pinpoint specific drivers of friction or performance gaps, enabling more t
                           alt="icon"
                           className="w-4 h-4 shrink-0 mt-0.5"
                         />
-                        <span className="text-sm font-medium text-[#64748B] leading-snug">
+                        <span className="text-[16px]  sm:text-sm font-medium text-[#64748B] leading-snug">
                           {insight}
                         </span>
                       </div>
@@ -1513,7 +1513,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                           <div className="flex items-center gap-2">
                             <span className="h-2 w-6 bg-[#FEE114]" />
                             <span className="text-xs font-semibold text-[#64748B]">
-                              At Risk
+                              Monitor
                             </span>
                           </div>
                           <div className="flex items-center gap-2">

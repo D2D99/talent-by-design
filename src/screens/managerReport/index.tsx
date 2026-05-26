@@ -1188,7 +1188,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                           alt="icon"
                           className="w-4 h-4 shrink-0 mt-0.5"
                         />
-                        <span className="text-sm font-medium text-[#64748B] leading-snug">
+                        <span className="text-[16px]  sm:text-sm font-medium text-[#64748B] leading-snug">
                           {insight}
                         </span>
                       </div>
@@ -1490,7 +1490,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 alt="icon"
                                 className="w-4 h-4 shrink-0 mt-0.5"
                               />
-                              <span className="text-sm font-medium text-[#64748B] leading-snug">
+                              <span className="text-[16px]  sm:text-sm font-medium text-[#64748B] leading-snug">
                                 {bullet}
                               </span>
                             </div>

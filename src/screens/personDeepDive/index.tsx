@@ -243,7 +243,7 @@ const PersonDeepDive = () => {
               <div className="flex items-center gap-2">
                 <span className="h-2 w-6 bg-[#FEE114]" />
                 <span className="text-xs font-semibold text-[#64748B]">
-                  At Risk
+                  Monitor
                 </span>
               </div>
               <div className="flex items-center gap-2">
