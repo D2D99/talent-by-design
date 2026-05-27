@@ -4,7 +4,6 @@ import { useParams, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../services/axios";
 
-
 interface ResponseData {
   _id: string;
   domain: string;
@@ -72,7 +71,10 @@ const UserResponseView = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `Individual_Response_Report_${userName.replace(/\s+/g, "_")}.xlsx`);
+      link.setAttribute(
+        "download",
+        `Individual_Response_Report_${userName.replace(/\s+/g, "_")}.xlsx`,
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
@@ -84,7 +86,6 @@ const UserResponseView = () => {
       setIsExporting(false);
     }
   };
-
 
   // -- Filter State (Synced with Crud UI) --
   const [showFilters, setShowFilters] = useState(false);
@@ -137,11 +138,11 @@ const UserResponseView = () => {
   ];
   const allSubdomains = useMemo(
     () => Array.from(new Set(responses.map((r) => r.subdomain))),
-    [responses]
+    [responses],
   );
   const allTypes = useMemo(
     () => Array.from(new Set(responses.map((r) => r.questionType))),
-    [responses]
+    [responses],
   );
 
   const filteredResponses = useMemo(() => {
@@ -171,10 +172,10 @@ const UserResponseView = () => {
 
   const toggleFilter = (
     setter: React.Dispatch<React.SetStateAction<string[]>>,
-    val: string
+    val: string,
   ) => {
     setter((prev) =>
-      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
+      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val],
     );
   };
 
@@ -235,8 +236,9 @@ const UserResponseView = () => {
               {allSubdomains
                 .filter((s) =>
                   responses.find(
-                    (r) => r.subdomain === s && filterDomains.includes(r.domain)
-                  )
+                    (r) =>
+                      r.subdomain === s && filterDomains.includes(r.domain),
+                  ),
                 )
                 .map((s) => (
                   <label
@@ -304,9 +306,17 @@ const UserResponseView = () => {
               </>
             ) : (
               <>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24">
-	<path fill="currentColor" d="m2.859 2.877l12.57-1.795a.5.5 0 0 1 .571.494v20.848a.5.5 0 0 1-.57.494L2.858 21.123a1 1 0 0 1-.859-.99V3.867a1 1 0 0 1 .859-.99M4 4.735v14.53l10 1.429V3.306zM17 19h3V5h-3V3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4zm-6.8-7l2.8 4h-2.4L9 13.714L7.4 16H5l2.8-4L5 8h2.4L9 10.286L10.6 8H13z" />
-</svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18px"
+                  height="18px"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m2.859 2.877l12.57-1.795a.5.5 0 0 1 .571.494v20.848a.5.5 0 0 1-.57.494L2.858 21.123a1 1 0 0 1-.859-.99V3.867a1 1 0 0 1 .859-.99M4 4.735v14.53l10 1.429V3.306zM17 19h3V5h-3V3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4zm-6.8-7l2.8 4h-2.4L9 13.714L7.4 16H5l2.8-4L5 8h2.4L9 10.286L10.6 8H13z"
+                  />
+                </svg>
 
                 {/* <Icon icon="vscode-icons:file-type-excel" width="20" height="20" /> */}
                 <span>Export Excel Report</span>
@@ -314,7 +324,6 @@ const UserResponseView = () => {
             )}
           </button>
         </div>
-
 
         {/* TABS ROW: Same to Same */}
         <div
@@ -374,7 +383,7 @@ const UserResponseView = () => {
             <div className="space-y-4">
               {displayGroups.map((subdomainTitle) => {
                 const questionsInGroup = filteredResponses.filter(
-                  (r) => r.subdomain === subdomainTitle
+                  (r) => r.subdomain === subdomainTitle,
                 );
                 const isOpen = openSubdomains.includes(subdomainTitle);
                 const safeId = subdomainTitle
@@ -394,7 +403,7 @@ const UserResponseView = () => {
                           setOpenSubdomains((prev) =>
                             prev.includes(subdomainTitle)
                               ? prev.filter((s) => s !== subdomainTitle)
-                              : [...prev, subdomainTitle]
+                              : [...prev, subdomainTitle],
                           )
                         }
                       >
@@ -446,7 +455,8 @@ const UserResponseView = () => {
                                       (() => {
                                         const relatedQuestion = questions.find(
                                           (q) =>
-                                            q.questionStem === resp.questionStem
+                                            q.questionStem ===
+                                            resp.questionStem,
                                         );
                                         let actualPrompt =
                                           resp.insightPrompt ||
