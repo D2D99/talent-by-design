@@ -1,7 +1,9 @@
 import { Icon } from "@iconify/react";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import api from "../../services/axios";
+
 
 interface ResponseData {
   _id: string;
@@ -58,6 +60,31 @@ const UserResponseView = () => {
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [openSubdomains, setOpenSubdomains] = useState<string[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportExcel = async () => {
+    if (!assessmentId) return;
+    setIsExporting(true);
+    try {
+      const response = await api.get(`responses/${assessmentId}/export`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Individual_Response_Report_${userName.replace(/\s+/g, "_")}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      toast.success("Excel report exported successfully!");
+    } catch (error) {
+      console.error("Failed to export Excel:", error);
+      toast.error("Failed to export Excel report.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
 
   // -- Filter State (Synced with Crud UI) --
   const [showFilters, setShowFilters] = useState(false);
@@ -264,7 +291,26 @@ const UserResponseView = () => {
               <span className="text-[#448CD2] font-semibold">{userName}</span>
             </p>
           </div>
+
+          <button
+            onClick={handleExportExcel}
+            disabled={isExporting || loading}
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#0F2547] to-[#448CD2] hover:from-[#1a3d6d] hover:to-[#579ee0] text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-[0_4px_10px_rgba(15,37,71,0.2)] hover:shadow-[0_6px_15px_rgba(15,37,71,0.35)] transition-all duration-200 disabled:opacity-50 select-none cursor-pointer"
+          >
+            {isExporting ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Icon icon="vscode-icons:file-type-excel" width="20" height="20" />
+                <span>Export Excel Report</span>
+              </>
+            )}
+          </button>
         </div>
+
 
         {/* TABS ROW: Same to Same */}
         <div
