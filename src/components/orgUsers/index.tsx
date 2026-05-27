@@ -259,7 +259,7 @@ const OrgUsers = ({
                 <button
                   type="button"
                   onClick={() => navigate("/dashboard/team-intelligence")}
-                  className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-4 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-[#10B981] duration-200 hover:bg-[#0EA5E9] transition-colors"
+                  className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
                   <Icon icon="solar:graph-broken" width="22" />
                   Team Intelligence
