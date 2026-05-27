@@ -295,7 +295,7 @@ const UserResponseView = () => {
           <button
             onClick={handleExportExcel}
             disabled={isExporting || loading}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#0F2547] to-[#448CD2] hover:from-[#1a3d6d] hover:to-[#579ee0] text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-[0_4px_10px_rgba(15,37,71,0.2)] hover:shadow-[0_6px_15px_rgba(15,37,71,0.35)] transition-all duration-200 disabled:opacity-50 select-none cursor-pointer"
+            className="group relative overflow-hidden z-0 text-[var(--white-color)] px-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
           >
             {isExporting ? (
               <>
@@ -304,7 +304,11 @@ const UserResponseView = () => {
               </>
             ) : (
               <>
-                <Icon icon="vscode-icons:file-type-excel" width="20" height="20" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24">
+	<path fill="currentColor" d="m2.859 2.877l12.57-1.795a.5.5 0 0 1 .571.494v20.848a.5.5 0 0 1-.57.494L2.858 21.123a1 1 0 0 1-.859-.99V3.867a1 1 0 0 1 .859-.99M4 4.735v14.53l10 1.429V3.306zM17 19h3V5h-3V3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4zm-6.8-7l2.8 4h-2.4L9 13.714L7.4 16H5l2.8-4L5 8h2.4L9 10.286L10.6 8H13z" />
+</svg>
+
+                {/* <Icon icon="vscode-icons:file-type-excel" width="20" height="20" /> */}
                 <span>Export Excel Report</span>
               </>
             )}
