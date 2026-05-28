@@ -59,7 +59,7 @@ const OrgAssessmentDetails = () => {
       setIsExporting(true);
       toast.info("Generating Excel report... Please wait.");
 
-      const res = await api.get(`/response/organization/${encodeURIComponent(routeOrgName)}/export`, {
+      const res = await api.get(`/responses/organization/${encodeURIComponent(routeOrgName)}/export`, {
         responseType: "blob"
       });
 
