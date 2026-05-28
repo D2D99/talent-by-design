@@ -59,22 +59,28 @@ const OrgAssessmentDetails = () => {
       setIsExporting(true);
       toast.info("Generating Excel report... Please wait.");
 
-      const res = await api.get(`/responses/organization/${encodeURIComponent(routeOrgName)}/export`, {
-        responseType: "blob"
-      });
+      const res = await api.get(
+        `/responses/organization/${encodeURIComponent(routeOrgName)}/export`,
+        {
+          responseType: "blob",
+        },
+      );
 
       const blob = new Blob([res.data], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `Organization_Report_${routeOrgName.replace(/\s+/g, "_")}.xlsx`);
+      link.setAttribute(
+        "download",
+        `Organization_Report_${routeOrgName.replace(/\s+/g, "_")}.xlsx`,
+      );
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      
+
       toast.success("Excel report downloaded successfully!");
     } catch (err: any) {
       console.error("Failed to export organization Excel:", err);
@@ -93,7 +99,7 @@ const OrgAssessmentDetails = () => {
       }
 
       const res = await api.get<{ details: OrgDetails; members: UserMember[] }>(
-        `auth/organization/${routeOrgName}`
+        `auth/organization/${routeOrgName}`,
       );
       setMembers(res.data.members);
       setDetails(res.data.details);
@@ -196,21 +202,21 @@ const OrgAssessmentDetails = () => {
 
   // Calculate stats
   const eligibleMembers = members.filter(
-    (m) => m.role?.toLowerCase() !== "admin"
+    (m) => m.role?.toLowerCase() !== "admin",
   );
   const totalMembers = members.length; // Include everyone in total count (e.g. 4)
 
   const completedMembers = eligibleMembers.filter(
-    (m) => m.assessmentStatus === "Completed"
+    (m) => m.assessmentStatus === "Completed",
   ).length;
   const inProgressMembers = eligibleMembers.filter(
-    (m) => m.assessmentStatus === "In Progress"
+    (m) => m.assessmentStatus === "In Progress",
   ).length;
   const dueMembers = eligibleMembers.filter(
-    (m) => m.assessmentStatus === "Due"
+    (m) => m.assessmentStatus === "Due",
   ).length;
   const notStartedMembers = eligibleMembers.filter(
-    (m) => !m.assessmentStatus || m.assessmentStatus === "Not Started"
+    (m) => !m.assessmentStatus || m.assessmentStatus === "Not Started",
   ).length;
 
   // %age based ONLY on eligible members (excluding Admins)
@@ -221,7 +227,7 @@ const OrgAssessmentDetails = () => {
 
   const handleActionClick = (
     member: UserMember,
-    type: "Report" | "Response"
+    type: "Report" | "Response",
   ) => {
     setActiveDropdown(null);
     if (type === "Report") {
@@ -237,13 +243,13 @@ const OrgAssessmentDetails = () => {
       };
       const reportType = roleMapping[member.role.toLowerCase()] || "employee";
       navigate(
-        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`
+        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(details?.orgName || "")}`,
       );
     } else {
       if (member.lastAssessmentId) {
         const userName = `${member.firstName} ${member.lastName}`;
         navigate(
-          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`
+          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`,
         );
       } else {
         toast.info("No completed assessment found for this member.");
@@ -274,22 +280,28 @@ const OrgAssessmentDetails = () => {
 
           <div className="flex items-center gap-3 flex-wrap">
             <button
+              onClick={handleExportOrgExcel}
+              disabled={isExporting}
+              className="group text-[var(--primary-color)] ps-2.5 pe-5 py-2 h-10 rounded-full border border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              <Icon
+                icon={
+                  isExporting
+                    ? "line-md:loading-twotone-loop"
+                    : "ri:file-excel-2-line"}
+                width="18"
+              />
+              {isExporting ? "Exporting..." : "Org Excel report"}
+            </button>
+
+            <button
               onClick={() =>
                 navigate(`/dashboard/org-intelligence/${routeOrgName}`)
               }
               className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
             >
               <Icon icon="solar:chart-2-bold" width="18" />
-              Organization Health Insights
-            </button>
-
-            <button
-              onClick={handleExportOrgExcel}
-              disabled={isExporting}
-              className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#0f2547] to-[#1a3a6b] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#1a3a6b]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            >
-              <Icon icon={isExporting ? "line-md:loading-twotone-loop" : "lucide:file-spreadsheet"} width="18" />
-              {isExporting ? "Exporting..." : "Org Excel report"}
+              Org Health Insights
             </button>
           </div>
         </div>
@@ -677,7 +689,7 @@ const OrgAssessmentDetails = () => {
                     <td className="px-6 py-4">
                       {renderAssessmentBadge(
                         member.assessmentStatus,
-                        member.role
+                        member.role,
                       )}
                     </td>
                     <td className="px-6 py-4 text-center relative">
@@ -689,7 +701,7 @@ const OrgAssessmentDetails = () => {
                               setActiveDropdown(
                                 activeDropdown === member._id
                                   ? null
-                                  : member._id
+                                  : member._id,
                               )
                             }
                             className={`p-1.5 rounded-full transition-all ${activeDropdown === member._id ? "bg-[#448CD2] text-white shadow-md" : "text-neutral-800 hover:bg-slate-100"}`}
