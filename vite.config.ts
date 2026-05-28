@@ -11,8 +11,9 @@ export default defineConfig({
     }),
   ],
   server: {
-    host: "0.0.0.0",
+    host: "localhost",
     port: 5173,
+    strictPort: false,
     allowedHosts: ["talent-by-design.onrender.com"],
   },
   build: {

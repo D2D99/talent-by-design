@@ -35,6 +35,7 @@ const OrgAssessmentDetails = () => {
   const [members, setMembers] = useState<UserMember[]>([]);
   const [details, setDetails] = useState<OrgDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [assessmentFilter] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,6 +48,41 @@ const OrgAssessmentDetails = () => {
   } | null>(null);
 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  const handleExportOrgExcel = async () => {
+    if (isExporting) return;
+    try {
+      if (!routeOrgName) {
+        toast.error("Organization name not found");
+        return;
+      }
+      setIsExporting(true);
+      toast.info("Generating Excel report... Please wait.");
+
+      const res = await api.get(`/response/organization/${encodeURIComponent(routeOrgName)}/export`, {
+        responseType: "blob"
+      });
+
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Organization_Report_${routeOrgName.replace(/\s+/g, "_")}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Excel report downloaded successfully!");
+    } catch (err: any) {
+      console.error("Failed to export organization Excel:", err);
+      toast.error("Failed to generate Excel report");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const fetchMembers = useCallback(async () => {
     setIsLoading(true);
@@ -236,15 +272,26 @@ const OrgAssessmentDetails = () => {
             </p>
           </div>
 
-          <button
-            onClick={() =>
-              navigate(`/dashboard/org-intelligence/${routeOrgName}`)
-            }
-            className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-          >
-            <Icon icon="solar:chart-2-bold" width="18" />
-            Organization Health Insights
-          </button>
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={() =>
+                navigate(`/dashboard/org-intelligence/${routeOrgName}`)
+              }
+              className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              <Icon icon="solar:chart-2-bold" width="18" />
+              Organization Health Insights
+            </button>
+
+            <button
+              onClick={handleExportOrgExcel}
+              disabled={isExporting}
+              className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-3.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#0f2547] to-[#1a3a6b] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#1a3a6b]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              <Icon icon={isExporting ? "line-md:loading-twotone-loop" : "lucide:file-spreadsheet"} width="18" />
+              {isExporting ? "Exporting..." : "Org Excel report"}
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}
