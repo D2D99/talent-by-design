@@ -1314,7 +1314,7 @@ Highlights strengths, gaps, and misalignment—guiding where to stabilize, optim
                     </div>
                   </div>
                 </div>
-                <div className="mt-10">
+                <div className="sm:mt-10 mt-3">
                   <MultiLineChart data={trendData} />
                 </div>
               </div>

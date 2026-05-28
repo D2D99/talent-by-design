@@ -95,20 +95,20 @@ const MultiRadarChart = ({
             },
             ...(data.admin && data.admin.length > 0
               ? [
-                  {
-                    label: datasetLabels?.[3] || "Admin",
-                    data: data.admin,
-                    backgroundColor: "transparent",
-                    borderColor: "#9B59B6",
-                    borderWidth: 2,
-                    pointBackgroundColor: "#9B59B6",
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    fill: "origin",
-                    borderDash: [5, 5], // Dashed border lines
-                    hidden: hiddenIndices.includes(3),
-                  },
-                ]
+                {
+                  label: datasetLabels?.[3] || "Admin",
+                  data: data.admin,
+                  backgroundColor: "transparent",
+                  borderColor: "#9B59B6",
+                  borderWidth: 2,
+                  pointBackgroundColor: "#9B59B6",
+                  pointRadius: 3,
+                  pointHoverRadius: 5,
+                  fill: "origin",
+                  borderDash: [5, 5], // Dashed border lines
+                  hidden: hiddenIndices.includes(3),
+                },
+              ]
               : []),
           ],
         },
@@ -137,10 +137,27 @@ const MultiRadarChart = ({
                   size: 11,
                   weight: "bold",
                 },
-                callback: (label: string) => {
-                  if (!label) return "";
-                  const words = label.split(/[\s&/_-]+/);
-                  return words.map((w) => w.charAt(0).toUpperCase()).join("");
+                callback: function (label: string) {
+                  const maxCharsPerLine = 12;
+                  const words = label.split(" ");
+                  const lines: string[] = [];
+
+                  let currentLine = "";
+
+                  words.forEach((word) => {
+                    if ((currentLine + " " + word).trim().length <= maxCharsPerLine) {
+                      currentLine = (currentLine + " " + word).trim();
+                    } else {
+                      lines.push(currentLine);
+                      currentLine = word;
+                    }
+                  });
+
+                  if (currentLine) {
+                    lines.push(currentLine);
+                  }
+
+                  return lines;
                 },
               },
               grid: {
