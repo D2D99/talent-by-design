@@ -29,6 +29,7 @@ const AdminAssessments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [resetingId, setResetingId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const resetModalInstance = useRef<any>(null);
 
@@ -64,6 +65,46 @@ const AdminAssessments = () => {
       setLoading(false);
     }
   }, [user?.orgName]);
+
+  const handleExportOrgExcel = async () => {
+    if (isExporting) return;
+    try {
+      const orgName = user?.orgName;
+      if (!orgName) {
+        toast.error("Organization name not found");
+        return;
+      }
+      setIsExporting(true);
+      toast.info("Generating Excel report... Please wait.");
+
+      const res = await api.get(
+        `/responses/organization/${encodeURIComponent(orgName)}/export`,
+        { responseType: "blob" }
+      );
+
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `Organization_Report_${orgName.replace(/\s+/g, "_")}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Excel report downloaded successfully!");
+    } catch (err: any) {
+      console.error("Failed to export organization Excel:", err);
+      toast.error("Failed to generate Excel report");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleResetAssessment = async (memberId: string) => {
     setIsProcessing(true);
@@ -153,6 +194,23 @@ const AdminAssessments = () => {
           <p className="text-sm text-gray-500 mt-1">
             Monitor and manage assessment progress for your entire team.
           </p>
+        </div>
+        
+        <div>
+           <button
+              onClick={handleExportOrgExcel}
+              disabled={isExporting}
+             className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+            >
+              <Icon
+                icon={
+                  isExporting
+                    ? "line-md:loading-twotone-loop"
+                    : "ri:file-excel-2-line"}
+                width="18"
+              />
+              {isExporting ? "Exporting..." : "Org Excel report"}
+            </button>
         </div>
       </div>
 
