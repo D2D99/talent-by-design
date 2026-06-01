@@ -57,7 +57,7 @@ const OrgAssessmentDetails = () => {
         return;
       }
       setIsExporting(true);
-      toast.info("Generating Excel report... Please wait.");
+      // toast.info("Generating Excel report... Please wait.");
 
       const res = await api.get(
         `/responses/organization/${encodeURIComponent(routeOrgName)}/export`,
