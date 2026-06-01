@@ -197,29 +197,34 @@ const AdminOverview = () => {
     }
   }, [selectedOrg, userId, userEmail]);
 
-  const filteredMembers = Array.isArray(members) ? members.filter((m) => {
-    const roleLower = m.role?.toLowerCase();
-    const memberDept = m.department?.toString().trim().toLowerCase();
-    const searchDept = selectedDept?.toString().trim().toLowerCase();
+  const filteredMembers = Array.isArray(members)
+    ? members.filter((m) => {
+        const roleLower = m.role?.toLowerCase();
+        const memberDept = m.department?.toString().trim().toLowerCase();
+        const searchDept = selectedDept?.toString().trim().toLowerCase();
 
-    const matchesDept = !searchDept || memberDept === searchDept;
+        const matchesDept = !searchDept || memberDept === searchDept;
 
-    // Security: Non-Admins only see their own department
-    if (!isAdmin && !isSuperAdmin) {
-      const uDept = String(user?.department || "")
-        .trim()
-        .toLowerCase();
-      if (memberDept !== uDept) return false;
-    }
+        // Security: Non-Admins only see their own department
+        if (!isAdmin && !isSuperAdmin) {
+          const uDept = String(user?.department || "")
+            .trim()
+            .toLowerCase();
+          if (memberDept !== uDept) return false;
+        }
 
-    // If the logged-in user is a leader, show them the managers/employees under them
-    if (isLeader) {
-      return (roleLower === "manager" || roleLower === "employee") && !!matchesDept;
-    }
+        // If the logged-in user is a leader, show them the managers/employees under them
+        if (isLeader) {
+          return (
+            (roleLower === "manager" || roleLower === "employee") &&
+            !!matchesDept
+          );
+        }
 
-    // Default (Admins): Strictly show only leaders on this page
-    return roleLower === "leader" && !!matchesDept;
-  }) : [];
+        // Default (Admins): Strictly show only leaders on this page
+        return roleLower === "leader" && !!matchesDept;
+      })
+    : [];
 
   // const customSelectStyles = {
   //   control: (provided: any) => ({
@@ -798,9 +803,13 @@ const AdminOverview = () => {
                 className="text-[var(--primary-color)] size-10"
               />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
+            <h2 className="text-xl font-bold text-gray-800">
+              Report Not Released Yet
+            </h2>
             <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
-              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
+              Your report has not been released yet. Once released by a
+              SuperAdmin or Admin, you will be able to view your scores and
+              insights here.
             </p>
           </div>
         </div>
@@ -813,687 +822,665 @@ const AdminOverview = () => {
       <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
-            {userData || reportData ? (
-              `${userData?.firstName || reportData?.user?.firstName || ""} ${
-                userData?.lastName ||
-                reportData?.user?.lastName ||
-                reportData?.userDetails?.lastName ||
-                ""
-              }`.trim()
-            ) : (
-              "Leader"
-            )}
+            {userData || reportData
+              ? `${userData?.firstName || reportData?.user?.firstName || ""} ${
+                  userData?.lastName ||
+                  reportData?.user?.lastName ||
+                  reportData?.userDetails?.lastName ||
+                  ""
+                }`.trim()
+              : "Leader"}
           </h3>
         </div>
 
         <>
           <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
-              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
-                <div className="flex gap-2">
-                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Score by domain
-                  </h2>
+            <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
+              <div className="flex gap-2">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Score by domain
+                </h2>
 
-                  <div className="flex items-center">
-                    <EditableTooltip
-                      id="scoreDomain"
-                      defaultContent="Provides a snapshot of performance within the selected POD domain.
+                <div className="flex items-center">
+                  <EditableTooltip
+                    id="scoreDomain"
+                    defaultContent="Provides a snapshot of performance within the selected POD domain.
 
 Indicates whether this area is a strength to leverage or a risk requiring attention, helping you focus where friction may be impacting outcomes."
-                    />
-                  </div>
-                </div>
-                <div className="relative mt-2" data-twe-dropdown-ref>
-                  <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                    type="button"
-                    id="dropdownDomain"
-                    data-twe-dropdown-toggle-ref
-                    aria-expanded="false"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
-                  >
-                    {selectedDomain}
-                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                  <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
-                    aria-labelledby="dropdownDomain"
-                    data-twe-dropdown-menu-ref
-                  >
-                    {reportData?.scores?.domains &&
-                      Object.keys(reportData.scores.domains).map((domain) => (
-                        <li key={domain}>
-                          <button
-                            onClick={() => handleDomainChange(domain)}
-                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          >
-                            {domain}
-                          </button>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                <div className="flex justify-center gap-4 mt-6">
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="w-6 h-2 bg-[#FF5656]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">Low</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="w-6 h-2 bg-[#FEE114]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Medium
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="w-6 h-2 bg-[#30AD43]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">High</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
-                  <SpeedMeter value={domainScore} />
-                </div>
-              </div>
-              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
-                <div className="flex gap-2">
-                  <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                    Score by sub-domain
-                  </h2>
-
-                  <div className="flex items-center">
-                    <EditableTooltip
-                      id="scoreSubDomain"
-                      defaultContent="Breaks the domain down into its core components for deeper insight.
-
-Helps pinpoint specific drivers of friction or performance gaps, enabling more targeted action and coaching."
-                    />
-                  </div>
-                </div>
-                <div className="relative mt-2" data-twe-dropdown-ref>
-                  <button
-                    className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
-                    type="button"
-                    id="dropdownSubdomain"
-                    data-twe-dropdown-toggle-ref
-                    aria-expanded="false"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
-                  >
-                    {selectedSubdomain || "Select Sub-domain"}
-                    <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                  <ul
-                    className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
-                    aria-labelledby="dropdownSubdomain"
-                    data-twe-dropdown-menu-ref
-                  >
-                    {reportData?.scores?.domains?.[selectedDomain]
-                      ?.subdomains &&
-                      Object.keys(
-                        reportData.scores.domains[selectedDomain].subdomains,
-                      ).map((sub) => (
-                        <li key={sub}>
-                          <button
-                            onClick={() => handleSubdomainChange(sub)}
-                            className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
-                          >
-                            {sub}
-                          </button>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                <div className="flex justify-center gap-4 mt-6">
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">Low</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Medium
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">High</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
-                  <SpeedMeter value={subdomainScore} />
-                </div>
-              </div>
-
-              <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
-                <div className="grid justify-start w-full mb-2">
-                  <div className="flex gap-2">
-                    <div>
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        POD-360™ Model
-                      </h3>
-                    </div>
-
-                    <div className="flex items-center">
-                      <EditableTooltip
-                        id="podScore"
-                        defaultContent="Visualizes the balance across People Potential, Operational Steadiness, and Digital Fluency.
-
-Highlights strengths, gaps, and misalignment—guiding where to stabilize, optimize, or accelerate efforts."
-                      />
-                    </div>
-                  </div>
-                  <p className="text-xs text-[#64748B] font-medium">
-                    Interconnectivity of focus areas
-                  </p>
-                </div>
-                <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
-                  <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
-                    <Triangle data={triangleData} />
-                  </div>
-                  <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
-                    {finalInsights.map((insight: string, idx: number) => (
-                      <div key={idx} className="flex items-start gap-2">
-                        <img
-                          src={IconStar}
-                          alt="icon"
-                          className="w-4 h-4 shrink-0 mt-0.5"
-                        />
-                        <span className="text-[16px]  sm:text-sm font-medium text-[#64748B] leading-snug">
-                          {insight}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="border border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4 rounded-[12px] w-full hidden ">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Performance Analysis
-                </h2>
-                <div className="flex justify-center gap-4 mt-6">
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Previous Test
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div>
-                      <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-normal text-[#474747]">
-                        Current Test
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-10">
-                  <MultiLineChart data={trendData} />
-                </div>
-              </div>
-            </div>
-
-            {/* Detailed Insight Pods with Skeleton Loading */}
-            {podsLoading ? (
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-                <SkeletonPod />
-                <SkeletonPod />
-                <SkeletonPod />
-                <SkeletonPod />
-              </div>
-            ) : (
-              <>
-                <div className="grid lg:grid-cols-2 grid-cols-1 xl:gap-x-6 gap-x-5 gap-y-8 mt-8">
-                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                    <div className="flex items-center justify-between ">
-                      <div>
-                        <div className="flex gap-2 items-start">
-                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                            {detailedPods?.insights?.title ||
-                              `Insight for ${selectedSubdomain || selectedDomain}`}
-                          </h3>
-
-                          <div className="flex items-center mt-1">
-                            <EditableTooltip
-                              id="insightDomain"
-                              defaultContent="Provides a synthesized interpretation of the data within this domain.
-
-Highlights what is happening, why it matters, and where to focus next to improve performance and reduce friction."
-                            />
-                          </div>
-                        </div>
-                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                          {detailedPods?.insights?.subtitle ||
-                            (selectedSubdomain
-                              ? `Detailed analysis for ${selectedSubdomain}`
-                              : `Overall analysis for ${selectedDomain}`)}
-                        </p>
-                      </div>
-                      <div>
-                        <img
-                          src={Streamline}
-                          alt="images"
-                          className="w-8 h-8"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <ul className="mt-4 space-y-2">
-                        {detailedPods?.insights?.modelDescription ? (
-                          (() => {
-                            const mLines =
-                              detailedPods.insights.modelDescription
-                                .split(/\r?\n/)
-                                .filter((l: string) => l.trim().length > 0);
-                            const hasMBullets = mLines.some((l: string) =>
-                              l.includes("•"),
-                            );
-                            const finalMLines = hasMBullets
-                              ? mLines
-                                  .filter((l: string) => l.includes("•"))
-                                  .map((l: string) =>
-                                    l.replace(/•/g, "").trim(),
-                                  )
-                                  .filter((l: string) => l.length > 0)
-                              : mLines;
-
-                            return finalMLines.map(
-                              (bullet: string, idx: number) => (
-                                <li
-                                  key={idx}
-                                  className="feature-list flex gap-2"
-                                >
-                                  <img
-                                    src={IconStar}
-                                    alt="icon"
-                                    className="mt-0.5 w-4 h-4 shrink-0"
-                                  />
-                                  <span className="text-sm text-[var(--secondary-color)] font-normal italic">
-                                    {bullet}
-                                  </span>
-                                </li>
-                              ),
-                            );
-                          })()
-                        ) : (
-                          <li className="text-sm text-[var(--secondary-color)] font-normal italic">
-                            No specific insights available yet.
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                    <div className="flex items-center justify-between ">
-                      <div>
-                        <div className="flex gap-2">
-                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                            Priorities Attention
-                          </h3>
-
-                          <div className="flex items-center">
-                            <EditableTooltip
-                              id="priAtt"
-                              defaultContent="Identifies the most critical areas requiring attention based on current results.
-
-Provides clear direction on where to stabilize, optimize, or accelerate efforts."
-                            />
-                          </div>
-                        </div>
-
-                        <p className="text-sm font-normal text-[#000000] mt-1">
-                          Top 3 priorities based on current data
-                        </p>
-                      </div>
-                      <div>
-                        <img src={Iconamoon} alt="images" className="w-8 h-8" />
-                      </div>
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      {topPriorities.map((item, _idx) => (
-                        <div
-                          key={item.name}
-                          className="flex items-center justify-between"
-                        >
-                          <p
-                            className="text-sm font-semibold flex items-center gap-2"
-                            style={{ color: item.color }}
-                          >
-                            <span
-                              className="w-2.5 h-2.5 flex rounded-full"
-                              style={{ backgroundColor: item.color }}
-                            ></span>
-                            {item.name}
-                          </p>
-                          <p
-                            className="text-sm font-bold"
-                            style={{ color: item.color }}
-                          >
-                            {item.score}%
-                          </p>
-                        </div>
-                      ))}
-                      {topPriorities.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                          No priorities identified yet.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">
-                {(() => {
-                  const getMetricColor = (score: number) => {
-                    if (score < 50) return "#FF5656"; // Needs Attention (Red)
-                    if (score < 75) return "#FEE114"; // At Risk (Yellow)
-                    return "#30AD43"; // On Track (Green)
-                  };
-
-                  const domains = reportData?.scores?.domains || {};
-                  const dNames = Object.keys(domains);
-                  const domainMetrics = [
-                    {
-                      name: dNames[0] || "People Potential",
-                      score: domains[dNames[0]]?.score || 0,
-                      color: getMetricColor(domains[dNames[0]]?.score || 0),
-                    },
-                    {
-                      name: dNames[1] || "Operational Steadiness",
-                      score: domains[dNames[1]]?.score || 0,
-                      color: getMetricColor(domains[dNames[1]]?.score || 0),
-                    },
-                    {
-                      name: dNames[2] || "Digital Fluency",
-                      score: domains[dNames[2]]?.score || 0,
-                      color: getMetricColor(domains[dNames[2]]?.score || 0),
-                    },
-                  ];
-
-                  const getDomainIcon = (idx: number) => {
-                    if (idx === 0) return "solar:users-group-rounded-bold";
-                    if (idx === 1) return "solar:settings-bold";
-                    if (idx === 2) return "solar:laptop-minimalistic-bold";
-                    return "solar:star-bold";
-                  };
-
-                  return (
-                    <>
-                      {/* Header Section */}
-                      <div className="sm:flex-row justify-between items-start mb-10 gap-4">
-                        <div>
-                          <div className="flex gap-2">
-                            <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
-                              Organizational Health
-                            </h2>
-                            <div className="flex items-center">
-                              <EditableTooltip
-                                id="orgHealth"
-                                defaultContent="A high-level snapshot of overall performance averaged across People, Operations, and Digital.
-Indicates whether the organization is on track, at risk, or needs attention, helping you quickly prioritize focus areas."
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        {/* Legend Pill */}
-                        <div className="flex justify-center items-center gap-4 px-4 mt-4 py-2 flex-wrap">
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="h-2 w-6 bg-[#30AD43]" />
-                            <span className="text-xs font-semibold text-[#64748B]">
-                              On Track
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="h-2 w-6 bg-[#FEE114]" />
-                            <span className="text-xs font-semibold text-[#64748B]">
-                              Monitor
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="h-2 w-6 bg-[#FF5656]" />
-                            <span className="text-xs font-semibold text-[#64748B]">
-                              Needs Attention
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Main Content Grid */}
-                      <div className="flex flex-wrap justify-center items-center gap-10 mt-2 mb-10">
-                        {/* Radial Chart Left */}
-                        <div className="relative flex justify-center items-center">
-                          <svg
-                            width="250"
-                            height="250"
-                            viewBox="0 0 200 200"
-                            className="drop-shadow-sm"
-                          >
-                            <Ring
-                              score={domainMetrics[0]?.score || 0}
-                              r={82}
-                              color={domainMetrics[0]?.color}
-                            />
-                            <Ring
-                              score={domainMetrics[1]?.score || 0}
-                              r={62}
-                              color={domainMetrics[1]?.color}
-                            />
-                            <Ring
-                              score={domainMetrics[2]?.score || 0}
-                              r={42}
-                              color={domainMetrics[2]?.color}
-                            />
-                          </svg>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-3xl font-black text-[#0F172A] tracking-tighter">
-                              {Math.round(overallScore)}
-                              <span className="text-3xl">%</span>
-                            </span>
-                            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[0.2em] mt-1.5">
-                              Aggregate
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Linear Bars Right */}
-                        <div className="flex flex-col justify-center space-y-8">
-                          {domainMetrics.map((dm, idx) => (
-                            <div key={idx}>
-                              <div className="flex justify-between items-center mb-2.5 gap-10">
-                                <div className="flex items-center gap-2">
-                                  <Icon
-                                    icon={getDomainIcon(idx)}
-                                    className="text-[#475569] w-[20px] h-[20px]"
-                                  />
-                                  <span className="text-[15px] font-bold text-[#334155]">
-                                    {dm.name}
-                                  </span>
-                                </div>
-                                <span
-                                  className="text-[15px] font-black"
-                                  style={{ color: dm.color }}
-                                >
-                                  {Math.round(dm.score)}%
-                                </span>
-                              </div>
-                              <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-                                <div
-                                  className="h-full rounded-full transition-all duration-1000 ease-out"
-                                  style={{
-                                    width: `${dm.score}%`,
-                                    backgroundColor: dm.color,
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  <div className="flex gap-2">
-                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                      Overall Departmental POD Score
-                    </h3>
-
-                    <div className="flex items-center">
-                      <EditableTooltip
-                        id="podScore"
-                        defaultContent="Compares how Leaders, Managers, and Employees experience the organization across the three POD domains.
-
-Highlights gaps and imbalances that may signal hidden risks to alignment, adoption, and overall performance."
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* Legend */}
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(0)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(74, 144, 226, 0.7)" }}
-                    />
-                    <span className="text-xs text-[#474747]">
-                      Leader Avg ({teamAvgData?.leaderCount || 0})
-                    </span>
-                  </div>
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(1)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(46, 204, 113, 0.7)" }}
-                    />
-                    <span className="text-xs text-[#474747]">
-                      Manager Avg ({teamAvgData?.managerCount || 0})
-                    </span>
-                  </div>
-                  <div
-                    className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
-                    onClick={() => toggleHiddenIndex(2)}
-                  >
-                    <span
-                      className="w-5 h-2 rounded-sm inline-block"
-                      style={{ background: "rgba(231, 76, 60, 0.6)" }}
-                    />
-                    <span className="text-xs text-[#474747]">
-                      Employee Avg ({teamAvgData?.employeeCount || 0})
-                    </span>
-                  </div>
-                </div>
-                <div className="relative w-full min-h-[450px]">
-                  <MultiRadarChart
-                    data={radarData}
-                    onLabelSelect={handleSubdomainChange}
-                    datasetLabels={[
-                      "Leader Avg",
-                      "Manager Avg",
-                      "Employee Avg",
-                    ]}
-                    hiddenIndices={hiddenIndices}
                   />
                 </div>
               </div>
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 hidden rounded-[12px] xl:col-span-2 bg-[#448bd21c]">
-                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                  Trends Analysis
-                </h2>
-                <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Wellbeing
-                    </span>
-                    <img src={DownArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Improving fast enough
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Improving fast enough
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
-                  <li className="flex gap-2 items-center ">
-                    <span className="text-base font-medium text-[var(--secondary-color)]">
-                      Lorem Ipsum
-                    </span>
-                    <img src={UpArrow} alt="arrow" />
-                  </li>
+              <div className="relative mt-2" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownDomain"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  {selectedDomain}
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block "
+                  aria-labelledby="dropdownDomain"
+                  data-twe-dropdown-menu-ref
+                >
+                  {reportData?.scores?.domains &&
+                    Object.keys(reportData.scores.domains).map((domain) => (
+                      <li key={domain}>
+                        <button
+                          onClick={() => handleDomainChange(domain)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        >
+                          {domain}
+                        </button>
+                      </li>
+                    ))}
                 </ul>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#FF5656]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#FEE114]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="w-6 h-2 bg-[#30AD43]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
+                </div>
+              </div>
+              <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
+                <SpeedMeter value={domainScore} />
+              </div>
+            </div>
+            <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
+              <div className="flex gap-2">
+                <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                  Score by sub-domain
+                </h2>
+
+                <div className="flex items-center">
+                  <EditableTooltip
+                    id="scoreSubDomain"
+                    defaultContent="Breaks the domain down into its core components for deeper insight.
+
+Helps pinpoint specific drivers of friction or performance gaps, enabling more targeted action and coaching."
+                  />
+                </div>
+              </div>
+              <div className="relative mt-2" data-twe-dropdown-ref>
+                <button
+                  className="ml-auto flex items-center  bg-[#EDF5FD] pr-5 pl-3 pb-2 pt-1 xl-text-base text-sm font-medium  leading-normal text-[#676767] rounded-[4px]  "
+                  type="button"
+                  id="dropdownSubdomain"
+                  data-twe-dropdown-toggle-ref
+                  aria-expanded="false"
+                  data-twe-ripple-init
+                  data-twe-ripple-color="light"
+                >
+                  {selectedSubdomain || "Select Sub-domain"}
+                  <span className="ms-2 w-2 [&>svg]:h-5 [&>svg]:w-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  className="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-base shadow-lg data-[twe-dropdown-show]:block"
+                  aria-labelledby="dropdownSubdomain"
+                  data-twe-dropdown-menu-ref
+                >
+                  {reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
+                    Object.keys(
+                      reportData.scores.domains[selectedDomain].subdomains,
+                    ).map((sub) => (
+                      <li key={sub}>
+                        <button
+                          onClick={() => handleSubdomainChange(sub)}
+                          className="block w-full text-left whitespace-nowrap bg-white px-4 py-2 text-sm font-normal text-neutral-700 hover:bg-[#EDF5FD]"
+                        >
+                          {sub}
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#FF5656]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Low</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#FEE114]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">Medium</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#30AD43]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">High</p>
+                  </div>
+                </div>
+              </div>
+              <div className="xl:px-10 2xl:pt-10 2xl:pb-10 lg:pb-0 pb-5">
+                <SpeedMeter value={subdomainScore} />
               </div>
             </div>
 
-          </>
+            <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] h-full bg-white flex flex-col items-center w-full">
+              <div className="grid justify-start w-full mb-2">
+                <div className="flex gap-2">
+                  <div>
+                    <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                      POD-360™ Model
+                    </h3>
+                  </div>
+
+                  <div className="flex items-center">
+                    <EditableTooltip
+                      id="podScore"
+                      defaultContent="Visualizes the balance across People Potential, Operational Steadiness, and Digital Fluency.
+
+Highlights strengths, gaps, and misalignment—guiding where to stabilize, optimize, or accelerate efforts."
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-[#64748B] font-medium">
+                  Interconnectivity of focus areas
+                </p>
+              </div>
+              <div className="flex-1 flex px-2 items-start justify-start py-4 w-full gap-4 flex-col ">
+                <div className="flex-1 max-w-[300px] flex items-center justify-center self-center">
+                  <Triangle data={triangleData} />
+                </div>
+                <div className="flex flex-col justify-center gap-3 shrink-0 overflow-y-auto pr-2 custom-scrollbar">
+                  {finalInsights.map((insight: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <img
+                        src={IconStar}
+                        alt="icon"
+                        className="w-4 h-4 shrink-0 mt-0.5"
+                      />
+                      <span className="text-[16px]  sm:text-sm font-medium text-[#64748B] leading-snug">
+                        {insight}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="border border-[#448CD2] xl:col-span-1 lg:col-span-2 border-opacity-20 p-4 rounded-[12px] w-full hidden ">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Performance Analysis
+              </h2>
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#448CD2]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Previous Test
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div>
+                    <p className="xl-w-6 w-5 h-2 bg-[#1A3652]"></p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-[#474747]">
+                      Current Test
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-10">
+                <MultiLineChart data={trendData} />
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Insight Pods with Skeleton Loading */}
+          {podsLoading ? (
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+              <SkeletonPod />
+              <SkeletonPod />
+              <SkeletonPod />
+              <SkeletonPod />
+            </div>
+          ) : (
+            <>
+              <div className="grid lg:grid-cols-2 grid-cols-1 xl:gap-x-6 gap-x-5 gap-y-8 mt-8">
+                <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                  <div className="flex items-center justify-between ">
+                    <div>
+                      <div className="flex gap-2 items-start">
+                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                          {detailedPods?.insights?.title ||
+                            `Insight for ${selectedSubdomain || selectedDomain}`}
+                        </h3>
+
+                        <div className="flex items-center mt-1">
+                          <EditableTooltip
+                            id="insightDomain"
+                            defaultContent="Provides a synthesized interpretation of the data within this domain.
+
+Highlights what is happening, why it matters, and where to focus next to improve performance and reduce friction."
+                          />
+                        </div>
+                      </div>
+                      <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                        {detailedPods?.insights?.subtitle ||
+                          (selectedSubdomain
+                            ? `Detailed analysis for ${selectedSubdomain}`
+                            : `Overall analysis for ${selectedDomain}`)}
+                      </p>
+                    </div>
+                    <div>
+                      <img src={Streamline} alt="images" className="w-8 h-8" />
+                    </div>
+                  </div>
+                  <div>
+                    <ul className="mt-4 space-y-2">
+                      {detailedPods?.insights?.modelDescription ? (
+                        (() => {
+                          const mLines = detailedPods.insights.modelDescription
+                            .split(/\r?\n/)
+                            .filter((l: string) => l.trim().length > 0);
+                          const hasMBullets = mLines.some((l: string) =>
+                            l.includes("•"),
+                          );
+                          const finalMLines = hasMBullets
+                            ? mLines
+                                .filter((l: string) => l.includes("•"))
+                                .map((l: string) => l.replace(/•/g, "").trim())
+                                .filter((l: string) => l.length > 0)
+                            : mLines;
+
+                          return finalMLines.map(
+                            (bullet: string, idx: number) => (
+                              <li key={idx} className="feature-list flex gap-2">
+                                <img
+                                  src={IconStar}
+                                  alt="icon"
+                                  className="mt-0.5 w-4 h-4 shrink-0"
+                                />
+                                <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                                  {bullet}
+                                </span>
+                              </li>
+                            ),
+                          );
+                        })()
+                      ) : (
+                        <li className="text-sm text-[var(--secondary-color)] font-normal italic">
+                          No specific insights available yet.
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                  <div className="flex items-center justify-between ">
+                    <div>
+                      <div className="flex gap-2">
+                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                          Priorities Attention
+                        </h3>
+
+                        <div className="flex items-center">
+                          <EditableTooltip
+                            id="priAtt"
+                            defaultContent="Identifies the most critical areas requiring attention based on current results.
+
+Provides clear direction on where to stabilize, optimize, or accelerate efforts."
+                          />
+                        </div>
+                      </div>
+
+                      <p className="text-sm font-normal text-[#000000] mt-1">
+                        Top 3 priorities based on current data
+                      </p>
+                    </div>
+                    <div>
+                      <img src={Iconamoon} alt="images" className="w-8 h-8" />
+                    </div>
+                  </div>
+                  <div className="mt-4 space-y-4">
+                    {topPriorities.map((item, _idx) => (
+                      <div
+                        key={item.name}
+                        className="flex items-center justify-between"
+                      >
+                        <p
+                          className="text-sm font-semibold flex items-center gap-2"
+                          style={{ color: item.color }}
+                        >
+                          <span
+                            className="w-2.5 h-2.5 flex rounded-full"
+                            style={{ backgroundColor: item.color }}
+                          ></span>
+                          {item.name}
+                        </p>
+                        <p
+                          className="text-sm font-bold"
+                          style={{ color: item.color }}
+                        >
+                          {item.score}%
+                        </p>
+                      </div>
+                    ))}
+                    {topPriorities.length === 0 && (
+                      <p className="text-sm text-gray-500 italic">
+                        No priorities identified yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">
+              {(() => {
+                const getMetricColor = (score: number) => {
+                  if (score < 50) return "#FF5656"; // Needs Attention (Red)
+                  if (score < 75) return "#FEE114"; // At Risk (Yellow)
+                  return "#30AD43"; // On Track (Green)
+                };
+
+                const domains = reportData?.scores?.domains || {};
+                const dNames = Object.keys(domains);
+                const domainMetrics = [
+                  {
+                    name: dNames[0] || "People Potential",
+                    score: domains[dNames[0]]?.score || 0,
+                    color: getMetricColor(domains[dNames[0]]?.score || 0),
+                  },
+                  {
+                    name: dNames[1] || "Operational Steadiness",
+                    score: domains[dNames[1]]?.score || 0,
+                    color: getMetricColor(domains[dNames[1]]?.score || 0),
+                  },
+                  {
+                    name: dNames[2] || "Digital Fluency",
+                    score: domains[dNames[2]]?.score || 0,
+                    color: getMetricColor(domains[dNames[2]]?.score || 0),
+                  },
+                ];
+
+                const getDomainIcon = (idx: number) => {
+                  if (idx === 0) return "solar:users-group-rounded-bold";
+                  if (idx === 1) return "solar:settings-bold";
+                  if (idx === 2) return "solar:laptop-minimalistic-bold";
+                  return "solar:star-bold";
+                };
+
+                return (
+                  <>
+                    {/* Header Section */}
+                    <div className="sm:flex-row justify-between items-start mb-10 gap-4">
+                      <div>
+                        <div className="flex gap-2">
+                          <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize">
+                            Organizational Health
+                          </h2>
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="orgHealth"
+                              defaultContent="A high-level snapshot of overall performance averaged across People, Operations, and Digital.
+Indicates whether the organization is on track, at risk, or needs attention, helping you quickly prioritize focus areas."
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Legend Pill */}
+                      <div className="flex justify-center items-center gap-4 px-4 mt-4 py-2 flex-wrap">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="h-2 w-6 bg-[#30AD43]" />
+                          <span className="text-xs font-semibold text-[#64748B]">
+                            On Track
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="h-2 w-6 bg-[#FEE114]" />
+                          <span className="text-xs font-semibold text-[#64748B]">
+                            Monitor
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="h-2 w-6 bg-[#FF5656]" />
+                          <span className="text-xs font-semibold text-[#64748B]">
+                            Needs Attention
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Main Content Grid */}
+                    <div className="flex flex-wrap justify-center items-center gap-10 mt-2 mb-10">
+                      {/* Radial Chart Left */}
+                      <div className="relative flex justify-center items-center">
+                        <svg
+                          width="250"
+                          height="250"
+                          viewBox="0 0 200 200"
+                          className="drop-shadow-sm"
+                        >
+                          <Ring
+                            score={domainMetrics[0]?.score || 0}
+                            r={82}
+                            color={domainMetrics[0]?.color}
+                          />
+                          <Ring
+                            score={domainMetrics[1]?.score || 0}
+                            r={62}
+                            color={domainMetrics[1]?.color}
+                          />
+                          <Ring
+                            score={domainMetrics[2]?.score || 0}
+                            r={42}
+                            color={domainMetrics[2]?.color}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                          <span className="text-3xl font-black text-[#0F172A] tracking-tighter">
+                            {Math.round(overallScore)}
+                            <span className="text-3xl">%</span>
+                          </span>
+                          <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[0.2em] mt-1.5">
+                            Aggregate
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Linear Bars Right */}
+                      <div className="flex flex-col justify-center space-y-8">
+                        {domainMetrics.map((dm, idx) => (
+                          <div key={idx}>
+                            <div className="flex justify-between items-center mb-2.5 gap-10">
+                              <div className="flex items-center gap-2">
+                                <Icon
+                                  icon={getDomainIcon(idx)}
+                                  className="text-[#475569] w-[20px] h-[20px]"
+                                />
+                                <span className="text-[15px] font-bold text-[#334155]">
+                                  {dm.name}
+                                </span>
+                              </div>
+                              <span
+                                className="text-[15px] font-black"
+                                style={{ color: dm.color }}
+                              >
+                                {Math.round(dm.score)}%
+                              </span>
+                            </div>
+                            <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-1000 ease-out"
+                                style={{
+                                  width: `${dm.score}%`,
+                                  backgroundColor: dm.color,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] ">
+              <div className="flex flex-wrap justify-between items-center gap-2">
+                <div className="flex gap-2">
+                  <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                    Overall Departmental POD Score
+                  </h3>
+
+                  <div className="flex items-center">
+                    <EditableTooltip
+                      id="podScore"
+                      defaultContent="Compares how Leaders, Managers, and Employees experience the organization across the three POD domains.
+
+Highlights gaps and imbalances that may signal hidden risks to alignment, adoption, and overall performance."
+                    />
+                  </div>
+                </div>
+              </div>
+              {/* Legend */}
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+                <div
+                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                  onClick={() => toggleHiddenIndex(0)}
+                >
+                  <span
+                    className="w-5 h-2 rounded-sm inline-block"
+                    style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                  />
+                  <span className="text-xs text-[#474747]">
+                    Leader Avg ({teamAvgData?.leaderCount || 0})
+                  </span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                  onClick={() => toggleHiddenIndex(1)}
+                >
+                  <span
+                    className="w-5 h-2 rounded-sm inline-block"
+                    style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                  />
+                  <span className="text-xs text-[#474747]">
+                    Manager Avg ({teamAvgData?.managerCount || 0})
+                  </span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+                  onClick={() => toggleHiddenIndex(2)}
+                >
+                  <span
+                    className="w-5 h-2 rounded-sm inline-block"
+                    style={{ background: "rgba(231, 76, 60, 0.6)" }}
+                  />
+                  <span className="text-xs text-[#474747]">
+                    Employee Avg ({teamAvgData?.employeeCount || 0})
+                  </span>
+                </div>
+              </div>
+              <div className="relative w-full min-h-[450px]">
+                <MultiRadarChart
+                  data={radarData}
+                  onLabelSelect={handleSubdomainChange}
+                  datasetLabels={["Leader Avg", "Manager Avg", "Employee Avg"]}
+                  hiddenIndices={hiddenIndices}
+                />
+              </div>
+            </div>
+            <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 hidden rounded-[12px] xl:col-span-2 bg-[#448bd21c]">
+              <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                Trends Analysis
+              </h2>
+              <ul className=" mt-4 grid xl:grid-cols-2 grid-cols-1 justify-between gap-4">
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Wellbeing
+                  </span>
+                  <img src={DownArrow} alt="arrow" />
+                </li>
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Improving fast enough
+                  </span>
+                  <img src={UpArrow} alt="arrow" />
+                </li>
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Improving fast enough
+                  </span>
+                  <img src={UpArrow} alt="arrow" />
+                </li>
+                <li className="flex gap-2 items-center ">
+                  <span className="text-base font-medium text-[var(--secondary-color)]">
+                    Lorem Ipsum
+                  </span>
+                  <img src={UpArrow} alt="arrow" />
+                </li>
+              </ul>
+            </div>
+          </div>
+        </>
       </div>
 
       <FeedbackEditorModal

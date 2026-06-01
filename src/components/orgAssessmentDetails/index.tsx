@@ -288,7 +288,8 @@ const OrgAssessmentDetails = () => {
                 icon={
                   isExporting
                     ? "line-md:loading-twotone-loop"
-                    : "ri:file-excel-2-line"}
+                    : "ri:file-excel-2-line"
+                }
                 width="18"
               />
               {isExporting ? "Exporting..." : "Org Excel report"}

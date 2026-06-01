@@ -30,7 +30,7 @@ const TopBar = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"All" | "Invites" | "Activity">(
-    "All"
+    "All",
   );
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +88,7 @@ const TopBar = () => {
     try {
       await api.patch(`/auth/notifications/${id}/read`);
       setNotifications((prev) =>
-        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
       );
     } catch (error) {
       console.error(error);
@@ -96,7 +96,9 @@ const TopBar = () => {
   };
 
   // derived state
-  const unreadCount = Array.isArray(notifications) ? notifications.filter((n) => !n.isRead).length : 0;
+  const unreadCount = Array.isArray(notifications)
+    ? notifications.filter((n) => !n.isRead).length
+    : 0;
 
   const [user, setUser] = useState({
     firstName: "",
@@ -126,20 +128,22 @@ const TopBar = () => {
     return () => window.removeEventListener("profile-updated", fetchUser);
   }, []);
 
-  const filteredNotifications = Array.isArray(notifications) ? notifications.filter((n) => {
-    if (activeTab === "All") return true;
-    if (activeTab === "Invites")
-      return (
-        n.title.toLowerCase().includes("invit") ||
-        n.message.toLowerCase().includes("invit")
-      );
-    if (activeTab === "Activity")
-      return (
-        !n.title.toLowerCase().includes("invit") &&
-        !n.message.toLowerCase().includes("invit")
-      );
-    return true;
-  }) : [];
+  const filteredNotifications = Array.isArray(notifications)
+    ? notifications.filter((n) => {
+        if (activeTab === "All") return true;
+        if (activeTab === "Invites")
+          return (
+            n.title.toLowerCase().includes("invit") ||
+            n.message.toLowerCase().includes("invit")
+          );
+        if (activeTab === "Activity")
+          return (
+            !n.title.toLowerCase().includes("invit") &&
+            !n.message.toLowerCase().includes("invit")
+          );
+        return true;
+      })
+    : [];
 
   return (
     <>
@@ -206,7 +210,7 @@ const TopBar = () => {
                     const last = index === filteredArray.length - 1;
                     const decodedValue = decodeURIComponent(value).replace(
                       /-/g,
-                      " "
+                      " ",
                     );
 
                     // Logic to handle special route mapping for breadcrumbs
@@ -424,7 +428,7 @@ const TopBar = () => {
                               try {
                                 return formatDistanceToNow(
                                   new Date(notif.createdAt),
-                                  { addSuffix: true }
+                                  { addSuffix: true },
                                 );
                               } catch (e) {
                                 return "Just now";

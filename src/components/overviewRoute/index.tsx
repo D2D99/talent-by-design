@@ -6,7 +6,9 @@ const AdminOverview = lazy(() => import("../../screens/adminOverview"));
 // LeaderOverview is replaced by AdminOverview for department-level view
 const ManagerOverview = lazy(() => import("../../screens/managerOverview"));
 const PageNotFound = lazy(() => import("../../screens/pageNotFound"));
-const SuperAdminOverview = lazy(() => import("../../screens/superAdminOverview"));
+const SuperAdminOverview = lazy(
+  () => import("../../screens/superAdminOverview"),
+);
 
 const Loading = () => (
   <div className="flex h-[400px] w-full items-center justify-center">

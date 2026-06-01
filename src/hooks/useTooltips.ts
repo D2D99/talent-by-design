@@ -33,7 +33,7 @@ const useTooltips = () => {
   const updateTooltip = async (
     tooltipId: string,
     content: string,
-    title?: string
+    title?: string,
   ) => {
     try {
       await api.put("/dashboard/tooltips", { tooltipId, content, title });

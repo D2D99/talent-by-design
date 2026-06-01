@@ -63,7 +63,7 @@ const OrganizationDeepDive = () => {
   const [intelData, setIntelData] = useState<any>(null);
   const [selectedRadarDept, setSelectedRadarDept] = useState<string>("");
   const [selectedQuarter, setSelectedQuarter] = useState(
-    Math.floor(new Date().getMonth() / 3) + 1
+    Math.floor(new Date().getMonth() / 3) + 1,
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("list");
@@ -73,7 +73,7 @@ const OrganizationDeepDive = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -83,7 +83,7 @@ const OrganizationDeepDive = () => {
       setLoading(true);
       try {
         const res = await api.get(
-          `dashboard/admin?orgName=${encodeURIComponent(orgName || "")}`
+          `dashboard/admin?orgName=${encodeURIComponent(orgName || "")}`,
         );
         setReportData(res.data.report);
       } catch (error) {
@@ -101,7 +101,7 @@ const OrganizationDeepDive = () => {
       setIntelLoading(true);
       try {
         const res = await api.get(
-          `assessment/admin/intelligence?orgName=${encodeURIComponent(orgName)}&quarter=${selectedQuarter}&year=${selectedYear}`
+          `assessment/admin/intelligence?orgName=${encodeURIComponent(orgName)}&quarter=${selectedQuarter}&year=${selectedYear}`,
         );
         setIntelData(res.data);
       } catch (error) {
@@ -218,21 +218,21 @@ const OrganizationDeepDive = () => {
 
   const roleAverages = (() => {
     const lScores = Object.values(teamAvgData?.leaderAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const leaderScore =
       lScores.length > 0
         ? Math.round(lScores.reduce((a, b) => a + b, 0) / lScores.length)
         : 0;
     const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const managerScore =
       mScores.length > 0
         ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
         : 0;
     const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const employeeScore =
       eScores.length > 0
@@ -534,7 +534,11 @@ const OrganizationDeepDive = () => {
                 { label: "Completed", value: completed, color: "#10B981" },
                 { label: "In Progress", value: inProgress, color: "#6366F1" },
                 { label: "Pending Member", value: pending, color: "#F59E0B" },
-                { label: "Total Members Joined", value: total, color: "#448CD2" },
+                {
+                  label: "Total Members Joined",
+                  value: total,
+                  color: "#448CD2",
+                },
               ].map((item, i) => (
                 <div
                   key={i}
@@ -897,7 +901,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                               {dept}
                             </button>
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                   </div>

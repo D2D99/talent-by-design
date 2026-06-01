@@ -12,7 +12,7 @@ const TeamIntelligence = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedQuarter, setSelectedQuarter] = useState(
-    Math.floor(new Date().getMonth() / 3) + 1
+    Math.floor(new Date().getMonth() / 3) + 1,
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("list");
@@ -426,7 +426,9 @@ const TeamIntelligence = () => {
               </div>
             </div>
 
-            { (user?.role?.toLowerCase() === "admin" || user?.role?.toLowerCase() === "superadmin" || user?.role?.toLowerCase() === "super_admin") && (
+            {(user?.role?.toLowerCase() === "admin" ||
+              user?.role?.toLowerCase() === "superadmin" ||
+              user?.role?.toLowerCase() === "super_admin") && (
               <button
                 onClick={() => navigate("/dashboard/team-assessments")}
                 className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl shadow-lg flex items-center justify-between text-white mt-4"
@@ -510,7 +512,6 @@ const TeamIntelligence = () => {
             </button>
           </div>
         </div>
-
       </div>
     </>
   );

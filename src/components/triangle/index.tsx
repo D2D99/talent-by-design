@@ -11,7 +11,7 @@ function roundedTrianglePath(
   A: { x: number; y: number },
   B: { x: number; y: number },
   C: { x: number; y: number },
-  r: number
+  r: number,
 ) {
   const lerp = (p1: any, p2: any, t: number) => ({
     x: p1.x + (p2.x - p1.x) * t,
@@ -36,10 +36,7 @@ function roundedTrianglePath(
   `;
 }
 
-
-
 export default function Triangle({ data }: Props) {
-
   // ===== GEOMETRY CONFIG =====
   const center = { x: 150, y: 153 };
   const radius = 120;
@@ -66,9 +63,9 @@ export default function Triangle({ data }: Props) {
   // Area(CPD) = wO * TotalArea (Right Sector  -> Digital Fluency)
   // Area(CPO) = wD * TotalArea (Left Sector   -> People Potential)
   const scoreTotal = pS + oS + dS || 1;
-  const wP = oS / scoreTotal; 
-  const wO = dS / scoreTotal; 
-  const wD = pS / scoreTotal; 
+  const wP = oS / scoreTotal;
+  const wO = dS / scoreTotal;
+  const wD = pS / scoreTotal;
 
   // Meeting point (C) based on weights
   const C = {
@@ -77,9 +74,9 @@ export default function Triangle({ data }: Props) {
   };
 
   const colors = {
-    people: "#EDF5FD",   // Lightest — bottom (Operational Steadiness)
+    people: "#EDF5FD", // Lightest — bottom (Operational Steadiness)
     operational: "#C7E0F8", // Medium — right (Digital Fluency)
-    digital: "#3C7CBA",  // Dark    — left (People Potential)
+    digital: "#3C7CBA", // Dark    — left (People Potential)
   };
 
   const roundedPath = roundedTrianglePath(P, O, D, 0.1);
@@ -136,9 +133,15 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={P.x} dy="0">People</tspan>
-        <tspan x={P.x} dy="1.1em">Potential</tspan>
-        <tspan x={P.x} dy="1.2em" fontSize={14}>({peoplePct}%)</tspan>
+        <tspan x={P.x} dy="0">
+          People
+        </tspan>
+        <tspan x={P.x} dy="1.1em">
+          Potential
+        </tspan>
+        <tspan x={P.x} dy="1.2em" fontSize={14}>
+          ({peoplePct}%)
+        </tspan>
       </text>
 
       <text
@@ -150,9 +153,15 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={O.x - 10} dy="0">Operational</tspan>
-        <tspan x={O.x - 10} dy="1.1em">Steadiness</tspan>
-        <tspan x={O.x - 10} dy="1.2em" fontSize={14}>({operationalPct}%)</tspan>
+        <tspan x={O.x - 10} dy="0">
+          Operational
+        </tspan>
+        <tspan x={O.x - 10} dy="1.1em">
+          Steadiness
+        </tspan>
+        <tspan x={O.x - 10} dy="1.2em" fontSize={14}>
+          ({operationalPct}%)
+        </tspan>
       </text>
 
       <text
@@ -164,9 +173,15 @@ export default function Triangle({ data }: Props) {
         fontSize={10}
         className="uppercase"
       >
-        <tspan x={D.x + 10} dy="0">Digital</tspan>
-        <tspan x={D.x + 10} dy="1.1em">Fluency</tspan>
-        <tspan x={D.x + 10} dy="1.2em" fontSize={14}>({digitalPct}%)</tspan>
+        <tspan x={D.x + 10} dy="0">
+          Digital
+        </tspan>
+        <tspan x={D.x + 10} dy="1.1em">
+          Fluency
+        </tspan>
+        <tspan x={D.x + 10} dy="1.2em" fontSize={14}>
+          ({digitalPct}%)
+        </tspan>
       </text>
     </svg>
   );

@@ -1254,7 +1254,9 @@ const Home = () => {
                     className="h-20 w-20 object-contain mb-3"
                   />
                   <p>
-                  Upload your content such as strategic plans, transformation documents, operating models, reports, and key organizational artifacts. Access quality prompts from our vast library.
+                    Upload your content such as strategic plans, transformation
+                    documents, operating models, reports, and key organizational
+                    artifacts. Access quality prompts from our vast library.
                   </p>
                 </div>
 
@@ -1440,7 +1442,12 @@ const Home = () => {
                   </div>
                   <p className="mt-5">
                     <strong>
-                  We use the POD-360™ Assessment to measure progress and demonstrate clear ROI on your key investments including your engagement with us. Before concluding our work together, we also help establish a Community of Practice to ensure long-term capability, sustainability, and continued success.
+                      We use the POD-360™ Assessment to measure progress and
+                      demonstrate clear ROI on your key investments including
+                      your engagement with us. Before concluding our work
+                      together, we also help establish a Community of Practice
+                      to ensure long-term capability, sustainability, and
+                      continued success.
                     </strong>
                   </p>
                 </div>

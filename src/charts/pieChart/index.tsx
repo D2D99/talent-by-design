@@ -21,11 +21,11 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
     const isDarkMode = document.documentElement.classList.contains("dark");
     const textColor =
       getComputedStyle(document.documentElement).getPropertyValue(
-        "--app-text-muted"
+        "--app-text-muted",
       ) || "#5d5d5d";
     const borderColor =
       getComputedStyle(document.documentElement).getPropertyValue(
-        "--app-surface"
+        "--app-surface",
       ) || "#ffffff";
 
     const hasZeroData = data.every((val) => val === 0);
@@ -85,7 +85,7 @@ const PieChart: React.FC<PieChartProps> = ({ data, labels, colors }) => {
                   if (hasZeroData) return " No data available";
                   const total = context.dataset.data.reduce(
                     (a, b) => a + (b as number),
-                    0
+                    0,
                   );
                   const value = context.parsed as number;
                   const percentage = ((value / total) * 100).toFixed(1) + "%";

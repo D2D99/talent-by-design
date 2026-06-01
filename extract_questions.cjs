@@ -8,7 +8,7 @@ const XLSX = require("xlsx");
 // Read the seedQuestion.js file content
 const seedFilePath = path.resolve(
   __dirname,
-  "../new-tbd-backend/src/scripts/seedQuestion.js"
+  "../new-tbd-backend/src/scripts/seedQuestion.js",
 );
 
 const raw = fs.readFileSync(seedFilePath, "utf-8");
@@ -91,7 +91,7 @@ XLSX.utils.book_append_sheet(wb, wsAll, "All Questions");
     XLSX.utils.book_append_sheet(
       wb,
       ws,
-      role.charAt(0).toUpperCase() + role.slice(1)
+      role.charAt(0).toUpperCase() + role.slice(1),
     );
   }
 });

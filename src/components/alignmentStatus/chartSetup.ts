@@ -14,5 +14,5 @@ ChartJS.register(
   BarElement,
   Tooltip,
   Legend,
-  ChartDataLabels
+  ChartDataLabels,
 );

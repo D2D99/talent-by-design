@@ -151,7 +151,7 @@ const OrgInvitation = () => {
   const handleRemoveDept = async (dept: string) => {
     try {
       await api.delete(
-        `organization/departments?department=${encodeURIComponent(dept)}`
+        `organization/departments?department=${encodeURIComponent(dept)}`,
       );
       fetchDepartments();
       toast.success("Department removed");
@@ -197,7 +197,7 @@ const OrgInvitation = () => {
       toast.success(
         isSuperAdmin
           ? "Organization added successfully!"
-          : "Invitation sent successfully!"
+          : "Invitation sent successfully!",
       );
       fetchData();
     } catch (err: unknown) {
@@ -215,7 +215,7 @@ const OrgInvitation = () => {
     // Validate file type
     const allowedExtensions = [".csv", ".xlsx", ".xls"];
     const isAllowed = allowedExtensions.some((ext) =>
-      file.name.toLowerCase().endsWith(ext)
+      file.name.toLowerCase().endsWith(ext),
     );
 
     if (!isAllowed) {
@@ -230,7 +230,7 @@ const OrgInvitation = () => {
     setCsvFile(null);
     // Reset the file input
     const fileInput = document.getElementById(
-      "bulkCsvInput"
+      "bulkCsvInput",
     ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
@@ -255,7 +255,7 @@ const OrgInvitation = () => {
     // Validate file type
     const allowedExtensions = [".csv", ".xlsx", ".xls"];
     const isAllowed = allowedExtensions.some((ext) =>
-      file.name.toLowerCase().endsWith(ext)
+      file.name.toLowerCase().endsWith(ext),
     );
 
     if (!isAllowed) {
@@ -297,7 +297,9 @@ const OrgInvitation = () => {
           if (!rowDept) {
             invalidDepts.push(`${row.email || "Unknown"}: Missing department`);
           } else if (!declaredDepts.includes(rowDept.toLowerCase())) {
-            invalidDepts.push(`${row.email || "Unknown"}: Invalid department "${rowDept}"`);
+            invalidDepts.push(
+              `${row.email || "Unknown"}: Invalid department "${rowDept}"`,
+            );
           } else {
             filteredRows.push(row);
           }
@@ -314,7 +316,9 @@ const OrgInvitation = () => {
       }
 
       if (invalidDepts.length > 0) {
-        toast.warn(`Skipped ${invalidDepts.length} user${invalidDepts.length > 1 ? "s" : ""} with undeclared departments.`);
+        toast.warn(
+          `Skipped ${invalidDepts.length} user${invalidDepts.length > 1 ? "s" : ""} with undeclared departments.`,
+        );
         console.warn("Filtered users details:", invalidDepts);
       }
 
@@ -327,7 +331,7 @@ const OrgInvitation = () => {
       formData.append(
         "file",
         fileToSend,
-        csvFile.name.replace(/\.(xlsx?|csv)$/i, ".csv")
+        csvFile.name.replace(/\.(xlsx?|csv)$/i, ".csv"),
       );
 
       const res = await api.post("auth/send-bulk-invitation", formData, {
@@ -338,7 +342,7 @@ const OrgInvitation = () => {
 
       if (success > 0) {
         toast.success(
-          `✅ Successfully invited ${success} user${success > 1 ? "s" : ""}!${failedCount > 0 ? ` (${failedCount} failed)` : ""}`
+          `✅ Successfully invited ${success} user${success > 1 ? "s" : ""}!${failedCount > 0 ? ` (${failedCount} failed)` : ""}`,
         );
       }
 
@@ -351,7 +355,7 @@ const OrgInvitation = () => {
 
         if (failed.length > 3) {
           toast.info(
-            `...and ${failed.length - 3} more failures. Check console for details.`
+            `...and ${failed.length - 3} more failures. Check console for details.`,
           );
           console.log("All failed invitations:", failed);
         }
@@ -376,7 +380,7 @@ const OrgInvitation = () => {
       } else if (err.request) {
         // Request made but no response
         toast.error(
-          "❌ No response from server. Please check your connection."
+          "❌ No response from server. Please check your connection.",
         );
       } else {
         // Something else happened
@@ -919,7 +923,7 @@ const OrgInvitation = () => {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {new Date(item.createdAt).toLocaleDateString(
-                              "en-GB"
+                              "en-GB",
                             )}
                           </td>
                           <td className="px-6 py-4 text-xs">
@@ -941,7 +945,9 @@ const OrgInvitation = () => {
                               </div>
                             ) : (
                               <span className="uppercase text-xs font-bold">
-                                {item.role?.toLowerCase() === "admin" ? "Business Transformation Partner" : item.role}
+                                {item.role?.toLowerCase() === "admin"
+                                  ? "Business Transformation Partner"
+                                  : item.role}
                               </span>
                             )}
                           </td>
@@ -1092,7 +1098,9 @@ const OrgInvitation = () => {
                     >
                       <option value="">Select a role...</option>
                       {isSuperAdmin ? (
-                        <option value="admin">Business Transformation Partner</option>
+                        <option value="admin">
+                          Business Transformation Partner
+                        </option>
                       ) : (
                         <>
                           {currentUserRole === "admin" && (
