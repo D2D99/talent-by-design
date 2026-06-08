@@ -389,7 +389,7 @@ const ManagerReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-      0
+        0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -508,7 +508,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -519,16 +519,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -582,13 +582,13 @@ const ManagerReport = () => {
     parsedObjectives.length > 0
       ? parsedObjectives
       : [
-        {
-          title:
-            detailedPods?.objectives?.subtitle ||
-            "Lead team improvements in this domain area",
-          keyResults: detailedPods?.objectives?.items || [],
-        },
-      ].filter((obj) => obj.keyResults.length > 0);
+          {
+            title:
+              detailedPods?.objectives?.subtitle ||
+              "Lead team improvements in this domain area",
+            keyResults: detailedPods?.objectives?.items || [],
+          },
+        ].filter((obj) => obj.keyResults.length > 0);
 
   const displayRecommendations = detailedPods?.recommendations?.items || [
     "No specific recommendations available for this domain yet.",
@@ -889,9 +889,9 @@ const ManagerReport = () => {
                 value={
                   selectedMember
                     ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                        value: selectedMember._id,
+                        label: selectedMember.name,
+                      }
                     : null
                 }
                 onChange={(option: any) => {
@@ -1339,11 +1339,11 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) =>
-                                  l.replace(/•/g, "").trim(),
-                                )
-                                .filter((l: string) => l.length > 0)
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1894,7 +1894,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                     <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
                                       <span>Team Alignment</span>
                                       <span className="text-[#2ECC71]">
-                                        {(teamAvgData?.employeeCount || 0) === 0 ? "No data available" : `${(gap.teamScore * 10).toFixed(0)}%`}
+                                        {(gap.teamScore * 10).toFixed(0)}%
                                       </span>
                                     </div>
                                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">

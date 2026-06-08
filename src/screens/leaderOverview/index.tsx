@@ -315,11 +315,10 @@ const LeaderOverview = () => {
                             {role}
                           </span>
                           <span className="text-[11px] font-bold">
-                            {val === 0 ? (
-                              <span className="text-[9px] text-gray-400 font-normal italic">No Data Available</span>
-                            ) : (
-                              <>{val}{" "}<span className="text-[9px] text-[#5d5d5d] font-normal">({pct.toFixed(0)}%)</span></>
-                            )}
+                            {val}{" "}
+                            <span className="text-[9px] text-[#5d5d5d] font-normal">
+                              ({pct.toFixed(0)}%)
+                            </span>
                           </span>
                         </div>
                         <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">
@@ -475,8 +474,8 @@ const LeaderOverview = () => {
                       <span className="text-[8px] font-black text-slate-400 uppercase hidden tracking-widest mt-1 block">
                         {log.time
                           ? formatDistanceToNow(new Date(log.time), {
-                            addSuffix: true,
-                          })
+                              addSuffix: true,
+                            })
                           : "N/A"}
                       </span>
                     </div>

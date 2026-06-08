@@ -484,11 +484,10 @@ const OrganizationDeepDive = () => {
                           {role}
                         </span>
                         <span className="text-[11px] font-bold">
-                          {val === 0 ? (
-                            <span className="text-[9px] text-gray-400 font-normal italic">No Data Available</span>
-                          ) : (
-                            <>{val}{" "}<span className="text-[9px] text-[#5d5d5d] font-normal">({pct.toFixed(0)}%)</span></>
-                          )}
+                          {val}{" "}
+                          <span className="text-[9px] text-[#5d5d5d] font-normal">
+                            ({pct.toFixed(0)}%)
+                          </span>
                         </span>
                       </div>
                       <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">
@@ -831,7 +830,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
           <div className="relative w-full min-h-[450px]">
             <MultiRadarChart
               data={radarData}
-              onLabelSelect={() => { }}
+              onLabelSelect={() => {}}
               datasetLabels={["Leader", "Manager", "Employee"]}
               hiddenIndices={hiddenIndices}
             />
@@ -975,11 +974,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
               </div>
             </div>
             <div className="sm:w-[400px] w-full my-10">
-              {roleAverages.every((r) => r.value === 0) ? (
-                <p className="text-sm text-gray-400 italic text-center py-10">No Data Available</p>
-              ) : (
-                <RoleProgressChart data={roleAverages} />
-              )}
+              <RoleProgressChart data={roleAverages} />
             </div>
             <p className="text-base font-medium text-[#1A3652]  mt-6">
               <b className="">Largest Gap:</b> {alignmentInfo.largestRole} VS{" "}

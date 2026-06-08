@@ -213,8 +213,8 @@ const TeamIntelligence = () => {
               color: "#8E54E9",
               badge: activityStream?.[0]?.time
                 ? formatDistanceToNow(new Date(activityStream[0].time), {
-                  addSuffix: true,
-                })
+                    addSuffix: true,
+                  })
                 : "N/A",
             },
           ].map((item, i) => (
@@ -327,11 +327,10 @@ const TeamIntelligence = () => {
                             {role}
                           </span>
                           <span className="text-[11px] font-bold">
-                            {val === 0 ? (
-                              <span className="text-[9px] text-gray-400 font-normal italic">No Data Available</span>
-                            ) : (
-                              <>{val}{" "}<span className="text-[9px] text-[#5d5d5d] font-normal">({pct.toFixed(0)}%)</span></>
-                            )}
+                            {val}{" "}
+                            <span className="text-[9px] text-[#5d5d5d] font-normal">
+                              ({pct.toFixed(0)}%)
+                            </span>
                           </span>
                         </div>
                         <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">
@@ -430,24 +429,24 @@ const TeamIntelligence = () => {
             {(user?.role?.toLowerCase() === "admin" ||
               user?.role?.toLowerCase() === "superadmin" ||
               user?.role?.toLowerCase() === "super_admin") && (
-                <button
-                  onClick={() => navigate("/dashboard/team-assessments")}
-                  className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl shadow-lg flex items-center justify-between text-white mt-4"
-                >
-                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-                  <div className="text-left relative z-10">
-                    <p className="text-[10px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
-                      Governance Module
-                    </p>
-                    <h4 className="text-base font-black tracking-wide">
-                      Audit Assessments
-                    </h4>
-                  </div>
-                  <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all relative z-10">
-                    <Icon icon="solar:arrow-right-up-bold" width="20" />
-                  </div>
-                </button>
-              )}
+              <button
+                onClick={() => navigate("/dashboard/team-assessments")}
+                className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl shadow-lg flex items-center justify-between text-white mt-4"
+              >
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                <div className="text-left relative z-10">
+                  <p className="text-[10px] font-black text-blue-200/80 uppercase tracking-[0.2em] mb-1">
+                    Governance Module
+                  </p>
+                  <h4 className="text-base font-black tracking-wide">
+                    Audit Assessments
+                  </h4>
+                </div>
+                <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all relative z-10">
+                  <Icon icon="solar:arrow-right-up-bold" width="20" />
+                </div>
+              </button>
+            )}
           </div>
 
           {/* Team Stream */}
@@ -491,8 +490,8 @@ const TeamIntelligence = () => {
                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 block hidden">
                         {log.time
                           ? formatDistanceToNow(new Date(log.time), {
-                            addSuffix: true,
-                          })
+                              addSuffix: true,
+                            })
                           : "N/A"}
                       </span>
                     </div>

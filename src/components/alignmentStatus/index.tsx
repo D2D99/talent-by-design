@@ -41,7 +41,7 @@ const RoleProgressChart = ({ data }: Props) => {
     responsive: true,
     layout: {
       padding: {
-        right: 140, // Increased to fit "No Data Available"
+        right: 50,
       },
     },
     plugins: {
@@ -71,6 +71,7 @@ const RoleProgressChart = ({ data }: Props) => {
         datasets: [
           {
             data: data.map((d) => d.value),
+            // Pass the function here instead of a static array
             backgroundColor: getGradient,
             borderRadius: 6,
             borderSkipped: false,
@@ -95,29 +96,22 @@ const RoleProgressChart = ({ data }: Props) => {
                   anchor: "end",
                   align: "right",
                   formatter: (value) => {
-                    return value > 0 ? `${value}%` : "No Data Available";
+                    // Only display percentage if it's greater than 0
+                    return value > 0 ? `${value}%` : "";
                   },
-                  color: (ctx) => {
-                    const val = ctx.dataset.data[ctx.dataIndex];
-                    return val === 0 ? "#9ca3af" : "#000"; // Gray if no data
-                  },
+                  color: "#000",
+                  // Shift the percentage to the right
                   offset: (ctx) => {
                     const value = ctx.dataset.data[ctx.dataIndex];
-                    if (typeof value === "number" && value === 0) {
-                      return 160; // Pushes "No Data Available" safely to the right
+                    if (typeof value === "number") {
+                      // Increase the right shift for higher values
+                      return value <= 20 ? 15 : 10; // Increase to move the percentage further right
                     }
-                    return 10;
+                    return 4; // Default offset for invalid values
                   },
-                  font: (ctx: any) => ({
-                    size: 14,
-                    weight: "bold",
-                    style: ctx.dataset.data[ctx.dataIndex] === 0 ? "italic" : "normal",
-                  }),
+                  font: { size: 14, weight: "bold" },
                 },
               },
-            },
-          },
-        ],
       }}
       options={options}
     />
