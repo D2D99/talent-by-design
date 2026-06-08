@@ -83,12 +83,13 @@ const RoleProgressChart = ({ data }: Props) => {
                   anchor: "start",
                   align: "right",
                   formatter: (_, ctx) => ctx.chart.data.labels?.[ctx.dataIndex],
-                  color: (ctx) => {
-                    const val = ctx.dataset.data[ctx.dataIndex];
-                    return val === 0 ? "#9ca3af" : "#000"; // Gray if no data
-                  },
+                  color: "#000",
+
                   padding: { left: 4 },
-                  font: { size: 13, weight: "bold" },
+                  font: {
+                    size: 13,
+                    weight: "bold",
+                  },
                 },
                 value: {
                   anchor: "end",
@@ -109,8 +110,8 @@ const RoleProgressChart = ({ data }: Props) => {
                   },
                   font: (ctx: any) => ({
                     size: 14,
-                    weight: "bold" as const,
-                    style: (ctx.dataset.data[ctx.dataIndex] === 0 ? "italic" : "normal") as any,
+                    weight: "bold",
+                    style: ctx.dataset.data[ctx.dataIndex] === 0 ? "italic" : "normal",
                   }),
                 },
               },

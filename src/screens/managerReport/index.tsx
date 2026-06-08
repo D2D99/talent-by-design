@@ -1748,9 +1748,9 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                 <div className="transition-all duration-500 overflow-visible">
                   {activeTab === "graph" ? (
                     <>
-                      {(teamAvgData?.employeeCount || 0) > 0 && (
+                      {(teamAvgData?.employeeCount || 0) > 0 ? (
                         <>
-                          <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
+                          <div className="flex flex-wrap justify-center mt-4 gap-x-4 gap-y-1 mb-2">
                             <div
                               className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
                               onClick={() => toggleHiddenIndex(0)}
@@ -1759,8 +1759,8 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 className="w-5 h-2 rounded-sm inline-block"
                                 style={{ background: "rgba(74, 144, 226, 0.7)" }}
                               />
-                              <span className="text-xs text-[#474747]">
-                                Manager
+                              <span className="text-xs text-black">
+                                Manager (1)
                               </span>
                             </div>
                             <div
@@ -1771,44 +1771,67 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 className="w-5 h-2 rounded-sm inline-block"
                                 style={{ background: "rgba(46, 204, 113, 0.7)" }}
                               />
-                              <span className="text-xs text-[#474747]">
+                              <span className="text-xs text-black">
                                 {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
                               </span>
                             </div>
                           </div>
 
-                          {/* 🆕 Data Confidence Note */}
-                          <div className="flex justify-center mt-2 mb-4">
-                            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 shadow-sm">
-                              <span className="flex h-1.5 w-1.5 rounded-full bg-[#3498DB]"></span>
-                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                                {((teamAvgData?.employeeCount || 0) < 3) ? (
-                                  <span className="text-[#E67E22]">Note: Comparison based on limited data - proceed with caution</span>
-                                ) : (
-                                  <span>Confidence: High</span>
-                                )}
-                              </p>
-                              <span className="text-[10px] text-slate-400 font-medium ml-1">
-                                Team Responses: {teamAvgData?.employeeCount || 0}
-                              </span>
-                            </div>
+                          <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
+                            <RadarChart
+                              data={radarData}
+                              selectedLabel={selectedLabel}
+                              onLabelSelect={handleRadarChartSelection}
+                              datasetLabels={["Manager", "Employee"]}
+                              hiddenIndices={hiddenIndices}
+                            />
+                          </div>
+
+                          <div className="flex justify-center mt-6 mb-4">
+                            {((teamAvgData?.employeeCount || 0) < 3) ? (
+                              <div className="bg-[#FFF9EE] border border-[#FDE68A] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
+                                <div className="flex-shrink-0 mt-0.5">
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                  </svg>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <p className="text-[13px] text-[#B45309] font-medium leading-relaxed">
+                                    Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-1.5">
+                                    <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#FDE68A]">
+                                      Limited Data
+                                    </span>
+                                    <span className="text-[10px] text-[#D97706] font-medium">
+                                      (Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 shadow-sm">
+                                <span className="flex h-1.5 w-1.5 rounded-full bg-[#3498DB]"></span>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                  Confidence: High
+                                </p>
+                                <span className="text-[10px] text-slate-400 font-medium ml-1">
+                                  Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </>
+                      ) : (
+                        <div className="py-4 space-y-10">
+                          <ReportEmptyState role="Manager" />
+                        </div>
                       )}
-                      <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
-                        <RadarChart
-                          data={radarData}
-                          selectedLabel={selectedLabel}
-                          onLabelSelect={handleRadarChartSelection}
-                          datasetLabels={["Manager", "Employee"]}
-                          hiddenIndices={hiddenIndices}
-                        />
-                      </div>
                     </>
                   ) : (
                     <div className="py-4 space-y-10">
-                      <div className="flex flex-col items-center mb-6 text-center"></div>
-
                       <div className="flex flex-col gap-5 w-full max-w-3xl mx-auto pb-12">
                         {(showAllGaps ? gapInsightsList : topGapsShown).map(
                           (gap, idx) => (
@@ -1937,26 +1960,14 @@ Highlights where misalignment exists, how significant it is, and where it may be
                       </div>
                     </div>
                     <p className="text-sm text-[#64748B] mt-1 mb-6 ">
-                      {userData?.firstName ||
-                        reportData?.user?.firstName ||
-                        "Manager"}
+                      {userData?.firstName || reportData?.user?.firstName || "Manager"}
                       :{" "}
                       <span className="font-bold text-[#448CD2]">
-                        {(
-                          (radarData.manager.reduce((a, b) => a + b, 0) /
-                            (radarData.manager.length || 1)) *
-                          10
-                        ).toFixed(0)}
-                        %
+                        {((radarData.manager.reduce((a, b) => a + b, 0) / (radarData.manager.length || 1)) * 10).toFixed(0)}%
                       </span>{" "}
                       Domain Avg vs Employee Avg:{" "}
                       <span className="font-bold text-[#E74C3C]">
-                        {(
-                          (radarData.team.reduce((a, b) => a + b, 0) /
-                            (radarData.team.length || 1)) *
-                          10
-                        ).toFixed(0)}
-                        %
+                        {((radarData.team.reduce((a, b) => a + b, 0) / (radarData.team.length || 1)) * 10).toFixed(0)}%
                       </span>
                     </p>
                   </div>
@@ -1977,9 +1988,7 @@ Highlights where misalignment exists, how significant it is, and where it may be
               <div className="flex gap-2">
                 <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
                   Overall {selectedDomain} Domain Score —{" "}
-                  {userData?.firstName ||
-                    reportData?.user?.firstName ||
-                    "Manager"}
+                  {userData?.firstName || reportData?.user?.firstName || "Manager"}
                 </h3>
                 <div className="flex items-center">
                   <EditableTooltip

@@ -791,7 +791,44 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
           </div>
           {((teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)) > 0 && (
             <>
-              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+              <div className="flex justify-center mt-6 mb-4">
+                {((teamAvgData?.leaderCount || 0) < 3 || (teamAvgData?.managerCount || 0) < 3 || (teamAvgData?.employeeCount || 0) < 3) ? (
+                  <div className="bg-[#FFF9EE] border border-[#FDE68A] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                      </svg>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-[13px] text-[#B45309] font-medium leading-relaxed">
+                        Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.
+                      </p>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#FDE68A]">
+                          Limited Data
+                        </span>
+                        <span className="text-[10px] text-[#D97706] font-medium">
+                          (Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 shadow-sm">
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-[#3498DB]"></span>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      Confidence: High
+                    </p>
+                    <span className="text-[10px] text-slate-400 font-medium ml-1">
+                      Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-2">
                 <div
                   className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
                   onClick={() => toggleHiddenIndex(0)}
@@ -826,23 +863,6 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                   />
                   <span className="text-xs text-[#474747]">
                     {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
-                  </span>
-                </div>
-              </div>
-
-              {/* 🆕 Data Confidence Note */}
-              <div className="flex justify-center mt-2 mb-4">
-                <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 shadow-sm">
-                  <span className="flex h-1.5 w-1.5 rounded-full bg-[#3498DB]"></span>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                    {((teamAvgData?.leaderCount || 0) < 3 || (teamAvgData?.managerCount || 0) < 3 || (teamAvgData?.employeeCount || 0) < 3) ? (
-                      <span className="text-[#E67E22]">Note: Comparison based on limited data - proceed with caution</span>
-                    ) : (
-                      <span>Confidence: High</span>
-                    )}
-                  </p>
-                  <span className="text-[10px] text-slate-400 font-medium ml-1">
-                    Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)}
                   </span>
                 </div>
               </div>
