@@ -76,37 +76,37 @@ const RadarChart: React.FC<RadarChartProps> = ({
             },
             ...(data.team && data.team.length > 0
               ? [
-                  {
-                    label: datasetLabels?.[1] || "Team",
-                    data: data.team,
-                    backgroundColor: "transparent",
-                    borderColor: "#2ECC71",
-                    pointBackgroundColor: "#2ECC71",
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    fill: "origin",
-                    borderDash: [5, 5],
-                    hidden: hiddenIndices.includes(1),
-                  },
-                ]
+                {
+                  label: datasetLabels?.[1] || "Team",
+                  data: data.team,
+                  backgroundColor: "transparent",
+                  borderColor: "#2ECC71",
+                  pointBackgroundColor: "#2ECC71",
+                  borderWidth: 2,
+                  pointRadius: 3,
+                  pointHoverRadius: 5,
+                  fill: "origin",
+                  borderDash: [5, 5],
+                  hidden: hiddenIndices.includes(1),
+                },
+              ]
               : []),
             ...(data.peer && data.peer.length > 0
               ? [
-                  {
-                    label: datasetLabels?.[2] || "Peer",
-                    data: data.peer,
-                    backgroundColor: "transparent",
-                    borderColor: "#E74C3C",
-                    pointBackgroundColor: "#E74C3C",
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    fill: "origin",
-                    borderDash: [5, 5],
-                    hidden: hiddenIndices.includes(2),
-                  },
-                ]
+                {
+                  label: datasetLabels?.[2] || "Peer",
+                  data: data.peer,
+                  backgroundColor: "transparent",
+                  borderColor: "#E74C3C",
+                  pointBackgroundColor: "#E74C3C",
+                  borderWidth: 2,
+                  pointRadius: 3,
+                  pointHoverRadius: 5,
+                  fill: "origin",
+                  borderDash: [5, 5],
+                  hidden: hiddenIndices.includes(2),
+                },
+              ]
               : []),
           ],
         },
@@ -137,9 +137,21 @@ const RadarChart: React.FC<RadarChartProps> = ({
                 },
                 callback: (label: string) => {
                   if (!label) return "";
-                  // Get first letter of each word (completed sentence)
-                  const words = label.split(/[\s&/_-]+/);
-                  return words.map((w) => w.charAt(0).toUpperCase()).join("");
+                  const maxCharsPerLine = 12;
+                  const words = label.split(" ");
+                  const lines: string[] = [];
+                  let currentLine = "";
+
+                  words.forEach((word) => {
+                    if ((currentLine + " " + word).trim().length <= maxCharsPerLine) {
+                      currentLine = (currentLine + " " + word).trim();
+                    } else {
+                      if (currentLine) lines.push(currentLine);
+                      currentLine = word;
+                    }
+                  });
+                  if (currentLine) lines.push(currentLine);
+                  return lines;
                 },
               },
               grid: {
