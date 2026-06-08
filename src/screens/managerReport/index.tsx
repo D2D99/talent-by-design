@@ -1812,14 +1812,26 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 </div>
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 shadow-sm">
-                                <span className="flex h-1.5 w-1.5 rounded-full bg-[#3498DB]"></span>
-                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                                  Confidence: High
-                                </p>
-                                <span className="text-[10px] text-slate-400 font-medium ml-1">
-                                  Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)}
-                                </span>
+                              <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
+                                <div className="flex-shrink-0 mt-0.5">
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                  </svg>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <p className="text-[13px] text-[#166534] font-medium leading-relaxed">
+                                    High response rate detected. Data provides a statistically significant baseline for leadership alignment and decision-making.
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-1.5">
+                                    <span className="text-[9px] bg-[#DCFCE7] text-[#166534] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#BBF7D0]">
+                                      Confidence: High
+                                    </span>
+                                    <span className="text-[10px] text-[#15803D] font-medium">
+                                      (Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             )}
                           </div>

@@ -789,85 +789,45 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
               ))}
             </ul>
           </div>
-          {((teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)) > 0 && (
-            <>
-              <div className="flex justify-center mt-6 mb-4">
-                {((teamAvgData?.leaderCount || 0) < 3 || (teamAvgData?.managerCount || 0) < 3 || (teamAvgData?.employeeCount || 0) < 3) ? (
-                  <div className="bg-[#FFF9EE] border border-[#FDE68A] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                      </svg>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <p className="text-[13px] text-[#B45309] font-medium leading-relaxed">
-                        Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.
-                      </p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#FDE68A]">
-                          Limited Data
-                        </span>
-                        <span className="text-[10px] text-[#D97706] font-medium">
-                          (Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 shadow-sm">
-                    <span className="flex h-1.5 w-1.5 rounded-full bg-[#3498DB]"></span>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                      Confidence: High
-                    </p>
-                    <span className="text-[10px] text-slate-400 font-medium ml-1">
-                      Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)}
-                    </span>
-                  </div>
-                )}
-              </div>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-2">
+            <div
+              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+              onClick={() => toggleHiddenIndex(0)}
+            >
+              <span
+                className="w-5 h-2 rounded-sm inline-block"
+                style={{ background: "rgba(74, 144, 226, 0.7)" }}
+              />
+              <span className="text-xs text-[#474747]">
+                {(teamAvgData?.leaderCount || 0) === 0 ? "Leader - No Data Available" : `Leader (${teamAvgData?.leaderCount || 0})`}
+              </span>
+            </div>
+            <div
+              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+              onClick={() => toggleHiddenIndex(1)}
+            >
+              <span
+                className="w-5 h-2 rounded-sm inline-block"
+                style={{ background: "rgba(46, 204, 113, 0.7)" }}
+              />
+              <span className="text-xs text-[#474747]">
+                {(teamAvgData?.managerCount || 0) === 0 ? "Manager - No Data Available" : `Manager (${teamAvgData?.managerCount || 0})`}
+              </span>
+            </div>
+            <div
+              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+              onClick={() => toggleHiddenIndex(2)}
+            >
+              <span
+                className="w-5 h-2 rounded-sm inline-block"
+                style={{ background: "rgba(231, 76, 60, 0.6)" }}
+              />
+              <span className="text-xs text-[#474747]">
+                {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
+              </span>
+            </div>
+          </div>
 
-              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-2">
-                <div
-                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-                  onClick={() => toggleHiddenIndex(0)}
-                >
-                  <span
-                    className="w-5 h-2 rounded-sm inline-block"
-                    style={{ background: "rgba(74, 144, 226, 0.7)" }}
-                  />
-                  <span className="text-xs text-[#474747]">
-                    {(teamAvgData?.leaderCount || 0) === 0 ? "Leader - No Data Available" : `Leader (${teamAvgData?.leaderCount || 0})`}
-                  </span>
-                </div>
-                <div
-                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-                  onClick={() => toggleHiddenIndex(1)}
-                >
-                  <span
-                    className="w-5 h-2 rounded-sm inline-block"
-                    style={{ background: "rgba(46, 204, 113, 0.7)" }}
-                  />
-                  <span className="text-xs text-[#474747]">
-                    {(teamAvgData?.managerCount || 0) === 0 ? "Manager - No Data Available" : `Manager (${teamAvgData?.managerCount || 0})`}
-                  </span>
-                </div>
-                <div
-                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
-                  onClick={() => toggleHiddenIndex(2)}
-                >
-                  <span
-                    className="w-5 h-2 rounded-sm inline-block"
-                    style={{ background: "rgba(231, 76, 60, 0.6)" }}
-                  />
-                  <span className="text-xs text-[#474747]">
-                    {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
-                  </span>
-                </div>
-              </div>
-            </>
-          )}
           <div className="relative w-full min-h-[450px]">
             <MultiRadarChart
               data={radarData}
@@ -876,6 +836,57 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
               hiddenIndices={hiddenIndices}
             />
           </div>
+
+          {((teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)) > 0 && (
+            <div className="flex justify-center mt-6 mb-4">
+              {((teamAvgData?.leaderCount || 0) < 3 || (teamAvgData?.managerCount || 0) < 3 || (teamAvgData?.employeeCount || 0) < 3) ? (
+                <div className="bg-[#FFF9EE] border border-[#FDE68A] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[13px] text-[#B45309] font-medium leading-relaxed">
+                      Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.
+                    </p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#FDE68A]">
+                        Limited Data
+                      </span>
+                      <span className="text-[10px] text-[#D97706] font-medium">
+                        (Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[13px] text-[#166534] font-medium leading-relaxed">
+                      High response rate detected. Data provides a statistically significant baseline for leadership alignment and decision-making.
+                    </p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="text-[9px] bg-[#DCFCE7] text-[#166534] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#BBF7D0]">
+                        Confidence: High
+                      </span>
+                      <span className="text-[10px] text-[#15803D] font-medium">
+                        (Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
