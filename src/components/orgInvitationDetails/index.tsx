@@ -52,7 +52,7 @@ const OrgInvitationDetails = () => {
       }
 
       const res = await api.get<{ details: OrgDetails; members: UserMember[] }>(
-        `auth/organization/${routeOrgName}`,
+        `auth/organization/${routeOrgName}`
       );
       setMembers(res.data.members);
       setDetails(res.data.details);
@@ -141,13 +141,13 @@ const OrgInvitationDetails = () => {
   const membersList = members;
   const totalMembers = membersList.length;
   const acceptedMembers = membersList.filter(
-    (m) => m.status === "Accept",
+    (m) => m.status === "Accept"
   ).length;
   const pendingMembers = membersList.filter(
-    (m) => m.status === "Pending",
+    (m) => m.status === "Pending"
   ).length;
   const expiredMembers = membersList.filter(
-    (m) => m.status === "Expire",
+    (m) => m.status === "Expire"
   ).length;
 
   return (

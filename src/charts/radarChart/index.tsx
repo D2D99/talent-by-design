@@ -20,7 +20,7 @@ Chart.register(
   LineElement,
   Tooltip,
   Legend,
-  Filler,
+  Filler
 );
 
 export interface RadarData {
@@ -198,7 +198,7 @@ const RadarChart: React.FC<RadarChartProps> = ({
             event,
             "nearest",
             { intersect: true },
-            true,
+            true
           );
 
           if (points.length > 0) {

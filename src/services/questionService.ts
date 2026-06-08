@@ -70,7 +70,7 @@ class QuestionService {
   // Get single question by ID
   async getQuestionById(
     id: string,
-    orgName?: string | null,
+    orgName?: string | null
   ): Promise<Question> {
     const params = new URLSearchParams();
     if (orgName !== undefined) {
@@ -83,7 +83,7 @@ class QuestionService {
   // Create multiple questions
   async createQuestions(
     questions: Record<string, CreateQuestionData>,
-    orgName?: string | null,
+    orgName?: string | null
   ): Promise<Question[]> {
     const payload = orgName !== undefined ? { orgName, questions } : questions;
     const response = await api.post(`${this.endpoint}/multiple`, payload);
@@ -100,7 +100,7 @@ class QuestionService {
       insightPrompt?: string;
       forcedChoice?: any;
       orgName?: string | null;
-    },
+    }
   ): Promise<Question> {
     const { orgName, ...rest } = updateData;
     const params = new URLSearchParams();
@@ -123,7 +123,7 @@ class QuestionService {
   // Batch reorder questions after drag and drop
   async reorderQuestions(
     updates: { id: string; order: number; subdomain?: string }[],
-    orgName?: string | null,
+    orgName?: string | null
   ): Promise<void> {
     const payload = orgName !== undefined ? { orgName, updates } : updates;
     await api.put(`${this.endpoint}/reorder`, payload);
@@ -133,7 +133,7 @@ class QuestionService {
   async cloneTemplate(
     orgName: string,
     department?: string | null,
-    allDepartments?: boolean,
+    allDepartments?: boolean
   ): Promise<{ success: boolean; message: string; count: number }> {
     const payload: Record<string, unknown> = { orgName };
     if (allDepartments) {
@@ -150,7 +150,7 @@ class QuestionService {
     file: File,
     orgName?: string | null,
     department?: string | null,
-    force?: boolean,
+    force?: boolean
   ): Promise<Question[]> {
     const formData = new FormData();
     formData.append("file", file);
@@ -170,7 +170,7 @@ class QuestionService {
   // Delete all questions for an organization (optionally scoped to a department)
   async deleteOrganizationQuestions(
     orgName?: string | null,
-    department?: string | null,
+    department?: string | null
   ): Promise<void> {
     const data: Record<string, string> = {
       orgName: orgName === null ? "" : (orgName ?? ""),

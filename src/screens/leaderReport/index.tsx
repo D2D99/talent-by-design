@@ -811,13 +811,9 @@ const LeaderReport = () => {
                 className="text-[var(--primary-color)] size-10"
               />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">
-              Report Not Released Yet
-            </h2>
+            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
             <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
-              Your report has not been released yet. Once released by a
-              SuperAdmin or Admin, you will be able to view your scores and
-              insights here.
+              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
             </p>
           </div>
         </div>
@@ -841,14 +837,12 @@ const LeaderReport = () => {
             <div className="flex items-center gap-3 justify-start">
               <div className="flex items-center gap-2">
                 {/* Status Badge */}
-                {isReportReleased &&
-                  reportData &&
-                  (isSuperAdmin || isAdmin) && (
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                      <Icon icon="solar:check-circle-bold-duotone" width="12" />
-                      Released Report
-                    </span>
-                  )}
+                {isReportReleased && reportData && (isSuperAdmin || isAdmin) && (
+                  <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                    <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                    Released Report
+                  </span>
+                )}
 
                 {/* Edit Feedback Button (SA or Admin viewing someone else) */}
                 {userId &&
@@ -946,9 +940,7 @@ const LeaderReport = () => {
                 placeholder="Organization"
                 options={orgs.map((o) => ({ value: o, label: o }))}
                 value={
-                  selectedOrg
-                    ? { value: selectedOrg, label: selectedOrg }
-                    : null
+                  selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
                 }
                 onChange={(option: any) => {
                   setSelectedOrg(option?.value || "");
@@ -1448,20 +1440,18 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       )}
                       {displayObjectives.map((obj, objIdx) => (
                         <div key={objIdx} className="flex items-start gap-4">
-                          <div
-                            className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? "visible" : "invisible"}`}
-                          >
-                            <CircularProgress
-                              value={Math.ceil(
-                                detailedPods?.objectives?.progress || 0,
-                              )}
-                              width={70}
-                              textColor="#36454F"
-                              pathColor="#1A3652"
-                              trailColor="#D9D9D9"
-                            />
-                          </div>
-
+                            <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
+                              <CircularProgress
+                                value={Math.ceil(
+                                  detailedPods?.objectives?.progress || 0,
+                                )}
+                                width={70}
+                                textColor="#36454F"
+                                pathColor="#1A3652"
+                                trailColor="#D9D9D9"
+                              />
+                            </div>
+                          
                           <div className="flex-1">
                             <div className="mb-4">
                               <h2 className="text-lg font-bold text-[var(--secondary-color)] capitalize ">

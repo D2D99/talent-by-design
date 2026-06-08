@@ -18,7 +18,7 @@ Chart.register(
   LineElement,
   Tooltip,
   Legend,
-  Filler,
+  Filler
 );
 
 interface MultiRadarChartProps {
@@ -95,20 +95,20 @@ const MultiRadarChart = ({
             },
             ...(data.admin && data.admin.length > 0
               ? [
-                  {
-                    label: datasetLabels?.[3] || "Admin",
-                    data: data.admin,
-                    backgroundColor: "transparent",
-                    borderColor: "#9B59B6",
-                    borderWidth: 2,
-                    pointBackgroundColor: "#9B59B6",
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    fill: "origin",
-                    borderDash: [5, 5], // Dashed border lines
-                    hidden: hiddenIndices.includes(3),
-                  },
-                ]
+                {
+                  label: datasetLabels?.[3] || "Admin",
+                  data: data.admin,
+                  backgroundColor: "transparent",
+                  borderColor: "#9B59B6",
+                  borderWidth: 2,
+                  pointBackgroundColor: "#9B59B6",
+                  pointRadius: 3,
+                  pointHoverRadius: 5,
+                  fill: "origin",
+                  borderDash: [5, 5], // Dashed border lines
+                  hidden: hiddenIndices.includes(3),
+                },
+              ]
               : []),
           ],
         },
@@ -145,10 +145,7 @@ const MultiRadarChart = ({
                   let currentLine = "";
 
                   words.forEach((word) => {
-                    if (
-                      (currentLine + " " + word).trim().length <=
-                      maxCharsPerLine
-                    ) {
+                    if ((currentLine + " " + word).trim().length <= maxCharsPerLine) {
                       currentLine = (currentLine + " " + word).trim();
                     } else {
                       lines.push(currentLine);
@@ -205,7 +202,7 @@ const MultiRadarChart = ({
             event as any,
             "nearest",
             { intersect: true },
-            true,
+            true
           );
 
           if (points.length > 0) {

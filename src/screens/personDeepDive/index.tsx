@@ -63,7 +63,7 @@ const PersonDeepDive = () => {
         const [reportRes, avgRes] = await Promise.all([
           api.get(`dashboard/admin?userId=${userId}`),
           api.get(
-            `dashboard/manager-team-avg?userId=${userId}&includeSelf=true`,
+            `dashboard/manager-team-avg?userId=${userId}&includeSelf=true`
           ),
         ]);
         setReportData(reportRes.data.report);
@@ -108,7 +108,7 @@ const PersonDeepDive = () => {
 
     const getRoles = (roleData: any, label: string, count: number) => {
       const scores = Object.values(roleData || {}).map(
-        (d: any) => d.avgScore || 0,
+        (d: any) => d.avgScore || 0
       );
       const score =
         scores.length > 0
@@ -164,7 +164,7 @@ const PersonDeepDive = () => {
             <button
               onClick={() =>
                 navigate(
-                  `/dashboard/reports/${userData?.role?.toLowerCase() === "admin" ? "org-head" : userData?.role?.toLowerCase()}?userId=${userId}&orgName=${encodeURIComponent(orgName || "")}`,
+                  `/dashboard/reports/${userData?.role?.toLowerCase() === "admin" ? "org-head" : userData?.role?.toLowerCase()}?userId=${userId}&orgName=${encodeURIComponent(orgName || "")}`
                 )
               }
               className="px-4 py-2 bg-gray-100 font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-gray-200 transition-colors"

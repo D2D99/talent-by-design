@@ -66,7 +66,7 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [selectedOrgLogoFile, setSelectedOrgLogoFile] = useState<File | null>(
-    null,
+    null
   );
   const [orgLogoPreviewUrl, setOrgLogoPreviewUrl] = useState<string>("");
   const [showLogoModal, setShowLogoModal] = useState(false);
@@ -132,7 +132,7 @@ const UserProfile = () => {
 
       if (file.size > MAX_FILE_SIZE_BYTES) {
         toast.error(
-          `Profile image size must be less than ${MAX_FILE_SIZE_MB}MB`,
+          `Profile image size must be less than ${MAX_FILE_SIZE_MB}MB`
         );
         e.target.value = "";
         return;
@@ -154,7 +154,7 @@ const UserProfile = () => {
 
       if (file.size > MAX_FILE_SIZE_BYTES) {
         toast.error(
-          `Organization logo size must be less than ${MAX_FILE_SIZE_MB}MB`,
+          `Organization logo size must be less than ${MAX_FILE_SIZE_MB}MB`
         );
         e.target.value = "";
         return;
@@ -198,7 +198,7 @@ const UserProfile = () => {
         const userObj = JSON.parse(savedUser);
         localStorage.setItem(
           "user",
-          JSON.stringify({ ...userObj, ...response.data.user }),
+          JSON.stringify({ ...userObj, ...response.data.user })
         );
       }
 
@@ -412,7 +412,7 @@ const UserProfile = () => {
                 htmlFor="lname"
                 className="font-bold text-[var(--secondary-color)] text-sm cursor-pointer"
               >
-                Last Name *
+                Last Name *    
               </label>
               <input
                 type="text"

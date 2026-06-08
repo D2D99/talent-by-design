@@ -55,5 +55,5 @@ export const teamScores = scoreData.map((item) => item.team);
 export const peerScores = scoreData.map((item) => item.peer);
 
 export const deltaScores = scoreData.map(
-  (item) => +(item.team - item.manager).toFixed(2),
+  (item) => +(item.team - item.manager).toFixed(2)
 );

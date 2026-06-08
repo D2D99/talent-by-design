@@ -26,7 +26,7 @@ const RoleProgressChart = ({ data }: Props) => {
       chartArea.left,
       0,
       chartArea.right,
-      0,
+      0
     );
 
     // Add color stops: Dark (Base Color) to Light (Base Color with transparency or lighter tint)

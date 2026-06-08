@@ -162,30 +162,44 @@
 
 // export default SpeedMeter;
 
-import { useEffect, useRef } from "react";
 
+
+ 
+ 
+import { useEffect, useRef } from "react";
+ 
 // Declare Highcharts if loaded globally
 
 declare global {
+
   interface Window {
+
     Highcharts: typeof import("highcharts");
+
   }
-}
 
+}
+ 
 interface SpeedMeterProps {
+
   value?: number;
+
 }
-
+ 
 const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
+
   const chartRef = useRef<HTMLDivElement>(null);
-
+ 
   useEffect(() => {
+
     if (!window.Highcharts || !chartRef.current) return;
-
+ 
     const Highcharts = window.Highcharts;
-
+ 
     const options: Highcharts.Options = {
+
       chart: {
+
         type: "gauge",
 
         height: 420,
@@ -193,11 +207,13 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
         spacingBottom: 40,
 
         backgroundColor: "transparent",
+
       },
-
+ 
       title: undefined,
-
+ 
       tooltip: {
+
         enabled: false,
 
         valueSuffix: "%",
@@ -207,11 +223,15 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
         pointFormat: "<b>{point.y:.2f}%</b>",
 
         style: {
-          fontSize: "14px",
-        },
-      },
 
+          fontSize: "14px",
+
+        },
+
+      },
+ 
       pane: {
+
         startAngle: -90,
 
         endAngle: 90,
@@ -221,13 +241,15 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
         center: ["50%", "75%"],
 
         size: "100%",
-      },
 
+      },
+ 
       yAxis: {
+
         min: 0,
 
         max: 100,
-
+ 
         tickLength: 0,
 
         tickWidth: 0,
@@ -235,17 +257,23 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
         minorTickLength: 0,
 
         lineWidth: 0,
-
+ 
         labels: {
+
           enabled: false,
-        },
 
+        },
+ 
         title: {
-          text: "",
-        },
 
+          text: "",
+
+        },
+ 
         plotBands: [
+
           {
+
             from: 0,
 
             to: 50,
@@ -257,9 +285,11 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
             borderWidth: 4,
 
             borderColor: "#ffffff",
+
           },
 
           {
+
             from: 50,
 
             to: 75,
@@ -271,9 +301,11 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
             borderWidth: 4,
 
             borderColor: "#ffffff",
+
           },
 
           {
+
             from: 75,
 
             to: 100,
@@ -285,17 +317,23 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
             borderWidth: 4,
 
             borderColor: "#ffffff",
+
           },
+
         ],
+
       },
-
+ 
       series: [
+
         {
+
           type: "gauge",
-
+ 
           data: [value],
-
+ 
           dial: {
+
             radius: "60%",
 
             backgroundColor: "#222",
@@ -305,19 +343,23 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
             baseLength: "0%",
 
             rearLength: "0%",
-          },
 
+          },
+ 
           pivot: {
+
             radius: 7,
 
             backgroundColor: "#222",
-          },
 
+          },
+ 
           dataLabels: {
+
             enabled: true,
 
             borderWidth: 0,
-
+ 
             // IMPORTANT FIX
 
             y: 35,
@@ -325,8 +367,9 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
             crop: false,
 
             overflow: "allow",
-
+ 
             style: {
+
               fontSize: "32px",
 
               fontWeight: "800",
@@ -336,61 +379,92 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
               textOutline: "none",
 
               fontFamily: "Outfit, sans-serif",
-            },
 
+            },
+ 
             formatter: function (this: any) {
               return (this.y || 0).toFixed(2) + "%";
             },
+
           },
+
         } as Highcharts.SeriesGaugeOptions,
+
       ],
-
+ 
       responsive: {
+
         rules: [
+
           {
+
             condition: {
+
               maxWidth: 500,
-            },
 
+            },
+ 
             chartOptions: {
+
               chart: {
+
                 height: 380,
+
               },
-
+ 
               series: [
+
                 {
+
                   type: "gauge",
-
+ 
                   dataLabels: {
+
                     y: 25,
-
+ 
                     style: {
-                      fontSize: "36px",
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    };
 
+                      fontSize: "36px",
+
+                    },
+
+                  },
+
+                },
+
+              ],
+
+            },
+
+          },
+
+        ],
+
+      },
+
+    };
+ 
     // Create chart
 
     const chart = Highcharts.chart(chartRef.current, options);
-
+ 
     // Cleanup
 
     return () => {
-      chart.destroy();
-    };
-  }, [value]);
 
+      chart.destroy();
+
+    };
+
+  }, [value]);
+ 
   return (
-    <div
+<div
+
       ref={chartRef}
+
       style={{
+
         width: "100%",
 
         maxWidth: "500px",
@@ -400,9 +474,14 @@ const SpeedMeter: React.FC<SpeedMeterProps> = ({ value = 75 }) => {
         margin: "auto",
 
         overflow: "visible",
-      }}
-    />
-  );
-};
 
+      }}
+
+    />
+
+  );
+
+};
+ 
 export default SpeedMeter;
+ 

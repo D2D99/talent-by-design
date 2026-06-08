@@ -423,17 +423,11 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                     ? `${user.firstName}${user.middleInitial ? ` ${user.middleInitial}` : ""} ${user.lastName}`
                     : "Loading..."}
                 </h4>
-                <h5
+                <h5 
                   className="xl:text-base text-sm text-[var(--secondary-color)] font-semibold capitalize !leading-4"
-                  style={
-                    user.role?.toLowerCase() === "admin"
-                      ? { fontSize: "14px", letterSpacing: "-0.5px" }
-                      : {}
-                  }
+                  style={user.role?.toLowerCase() === 'admin' ? { fontSize: '14px', letterSpacing: '-0.5px' } : {}}
                 >
-                  {user.role?.toLowerCase() === "admin"
-                    ? "Business Transformation Partner"
-                    : user.role || "User"}
+                  {user.role?.toLowerCase() === "admin" ? "Business Transformation Partner" : user.role || "User"}
                 </h5>
               </div>
             </div>

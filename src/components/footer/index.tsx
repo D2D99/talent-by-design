@@ -233,11 +233,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <img
-        src={LogoIcon}
-        alt="Logo"
-        className="w-full opacity-25 md:mt-10 mt-5"
-      />
+      <img src={LogoIcon} alt="Logo" className="w-full opacity-25 md:mt-10 mt-5" />
     </div>
   );
 };

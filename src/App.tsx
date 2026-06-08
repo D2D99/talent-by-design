@@ -19,20 +19,14 @@ const NewPassword = lazy(() => import("./screens/newPassword"));
 const Register = lazy(() => import("./screens/register"));
 const AfterRegister = lazy(() => import("./screens/afterRegister"));
 const ProfileInfo = lazy(() => import("./screens/profileInfo"));
-const AssessmentQuestion = lazy(
-  () => import("./components/assessmentQuestion"),
-);
+const AssessmentQuestion = lazy(() => import("./components/assessmentQuestion"));
 const Dashboard = lazy(() => import("./components/dashboard"));
 const StartAssessment = lazy(() => import("./components/startAssessment"));
 const PageNotFound = lazy(() => import("./screens/pageNotFound"));
 const OrgInvitation = lazy(() => import("./components/orgInvitation"));
 const OrgUsers = lazy(() => import("./components/orgUsers"));
-const OrgInvitationDetails = lazy(
-  () => import("./components/orgInvitationDetails"),
-);
-const OrgAssessmentDetails = lazy(
-  () => import("./components/orgAssessmentDetails"),
-);
+const OrgInvitationDetails = lazy(() => import("./components/orgInvitationDetails"));
+const OrgAssessmentDetails = lazy(() => import("./components/orgAssessmentDetails"));
 const OrgDeepDive = lazy(() => import("./screens/orgDeepDive"));
 const PersonDeepDive = lazy(() => import("./screens/personDeepDive"));
 const CrudQuestion = lazy(() => import("./screens/crudQuestion"));
@@ -113,10 +107,7 @@ function App() {
                   path="person-intelligence"
                   element={<PersonDeepDive />}
                 />
-                <Route
-                  path="team-intelligence"
-                  element={<TeamIntelligence />}
-                />
+                <Route path="team-intelligence" element={<TeamIntelligence />} />
                 <Route path="users" element={<OrgUsers />} />
                 <Route path="notifications" element={<NotificationHistory />} />
                 <Route

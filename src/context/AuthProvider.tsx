@@ -5,7 +5,7 @@ import { AuthContext } from "./useAuth";
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Initialize state directly from localStorage
   const [token, setToken] = useState<string | null>(
-    localStorage.getItem("accessToken"),
+    localStorage.getItem("accessToken")
   );
   const [user, setUser] = useState<any | null>(() => {
     const savedUser = localStorage.getItem("user");

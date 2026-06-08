@@ -99,7 +99,7 @@ const OrgUsers = ({
       }
 
       const res = await api.get<{ details: OrgDetails; members: UserMember[] }>(
-        `auth/organization/${targetOrg}`,
+        `auth/organization/${targetOrg}`
       );
       setMembers(res.data.members);
       setDetails(res.data.details);
@@ -220,18 +220,18 @@ const OrgUsers = ({
 
   // Calculate stats (excluding admins)
   const acceptedUsers = baseAccessibleMembers.filter(
-    (m) => m.status === "Accept",
+    (m) => m.status === "Accept"
   ).length;
 
   const roleStats = {
     leaders: baseAccessibleMembers.filter(
-      (m) => m.status === "Accept" && m.role.toLowerCase().includes("leader"),
+      (m) => m.status === "Accept" && m.role.toLowerCase().includes("leader")
     ).length,
     managers: baseAccessibleMembers.filter(
-      (m) => m.status === "Accept" && m.role.toLowerCase() === "manager",
+      (m) => m.status === "Accept" && m.role.toLowerCase() === "manager"
     ).length,
     employees: baseAccessibleMembers.filter(
-      (m) => m.status === "Accept" && m.role.toLowerCase() === "employee",
+      (m) => m.status === "Accept" && m.role.toLowerCase() === "employee"
     ).length,
   };
 
@@ -427,9 +427,7 @@ const OrgUsers = ({
                     )}
                     <td className="px-6 py-4">
                       <span className="uppercase text-xs font-bold">
-                        {member.role?.toLowerCase() === "admin"
-                          ? "Business Transformation Partner"
-                          : member.role}
+                        {member.role?.toLowerCase() === "admin" ? "Business Transformation Partner" : member.role}
                       </span>
                     </td>
                     {showStatusColumn && (
@@ -539,10 +537,10 @@ const OrgUsers = ({
                     <option value="leader">Team Leader</option>
                   )}
                   {["admin", "leader"].includes(
-                    currentUser?.role?.toLowerCase() || "",
+                    currentUser?.role?.toLowerCase() || ""
                   ) && <option value="manager">Department Manager</option>}
                   {["admin", "leader", "manager"].includes(
-                    currentUser?.role?.toLowerCase() || "",
+                    currentUser?.role?.toLowerCase() || ""
                   ) && <option value="employee">Team Associate</option>}
                 </select>
               </div>

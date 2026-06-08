@@ -156,7 +156,7 @@ const Register = () => {
 
       localStorage.setItem("registeredEmail", data.email);
       toast.success(
-        "Registration successful! Please check your email for verification.",
+        "Registration successful! Please check your email for verification."
       );
       navigate("/after-register");
     } catch (error: unknown) {

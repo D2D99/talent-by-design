@@ -63,7 +63,7 @@ const StartAssessment = () => {
         } catch (error) {
           console.error(
             "Failed to fetch /me, falling back to invite token",
-            error,
+            error
           );
         }
       }
@@ -121,11 +121,11 @@ const StartAssessment = () => {
           {},
           {
             headers: { "x-invite-token": inviteToken },
-          },
+          }
         );
 
         navigate(
-          `/assessment-question?assessmentId=${res.data.assessmentId}&token=${inviteToken}`,
+          `/assessment-question?assessmentId=${res.data.assessmentId}&token=${inviteToken}`
         );
         return;
       }

@@ -63,11 +63,11 @@ const curvedArrowPlugin = {
     ctx.moveTo(endX, endY);
     ctx.lineTo(
       endX - headLength * Math.cos(angle) + headWidth * Math.sin(angle),
-      endY - headLength * Math.sin(angle) - headWidth * Math.cos(angle),
+      endY - headLength * Math.sin(angle) - headWidth * Math.cos(angle)
     );
     ctx.lineTo(
       endX - headLength * Math.cos(angle) - headWidth * Math.sin(angle),
-      endY - headLength * Math.sin(angle) + headWidth * Math.cos(angle),
+      endY - headLength * Math.sin(angle) + headWidth * Math.cos(angle)
     );
     ctx.closePath();
     ctx.fill();

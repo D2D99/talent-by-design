@@ -35,7 +35,7 @@ const SuperAdminStats = () => {
   const totalUsers = stats.reduce((acc, curr) => acc + curr.users, 0);
   const totalAssessableUsers = stats.reduce(
     (acc, curr) => acc + (curr.assessableUsers || curr.users),
-    0,
+    0
   );
   const totalCompleted = stats.reduce((acc, curr) => acc + curr.completed, 0);
   const overallProgress =
@@ -44,7 +44,7 @@ const SuperAdminStats = () => {
       : 0;
 
   const filteredStats = stats.filter((org) =>
-    org.orgName.toLowerCase().includes(searchTerm.toLowerCase()),
+    org.orgName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return <SpinnerLoader />;
@@ -145,7 +145,7 @@ const SuperAdminStats = () => {
                       <div
                         onClick={() =>
                           navigate(
-                            `/dashboard/org-assessments/${encodeURIComponent(org.orgName)}`,
+                            `/dashboard/org-assessments/${encodeURIComponent(org.orgName)}`
                           )
                         }
                         className="text-[#448CD2] hover:underline font-bold cursor-pointer"

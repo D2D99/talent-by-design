@@ -158,7 +158,7 @@ const getAbbreviation = (text: string) => {
     .filter(
       (word) =>
         word.length > 0 &&
-        !["and", "the", "with", "or"].includes(word.toLowerCase()),
+        !["and", "the", "with", "or"].includes(word.toLowerCase())
     )
     .map((word) => word[0].toUpperCase())
     .join("");
@@ -168,7 +168,7 @@ const getGeneratedCodePreview = (
   data: QuestionFormData,
   allQuestions: Question[],
   currentBatch: QuestionFormData[] = [],
-  currentIndex: number = -1,
+  currentIndex: number = -1
 ) => {
   if (!data.role || !data.domain || !data.subDomain || !data.type)
     return "Auto-generated";
@@ -228,7 +228,9 @@ const FilterSection = ({
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full group/head pt-2 focus:outline-none"
       >
-        <span className="text-xs font-black uppercase">{title}</span>
+        <span className="text-xs font-black uppercase">
+          {title}
+        </span>
         <Icon
           icon="iconoir:nav-arrow-down"
           className={`transition-transform duration-500 ${
@@ -263,7 +265,7 @@ const CrudQuestion = () => {
   const [selectedDept, setSelectedDept] = useState<string>("All"); // 'All' means no department filter
 
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
-    null,
+    null
   );
   const [isCloningAll, setIsCloningAll] = useState(false);
   const [isOverrideForUpload, setIsOverrideForUpload] = useState(false);
@@ -273,7 +275,7 @@ const CrudQuestion = () => {
   // -- Filter State --
   // -- Filter State (PERSISTENT) --
   const [showFilters, setShowFilters] = useState(() =>
-    JSON.parse(localStorage.getItem("crud_showFilters") || "false"),
+    JSON.parse(localStorage.getItem("crud_showFilters") || "false")
   );
   const [filterRole, setFilterRole] = useState("");
 
@@ -282,42 +284,42 @@ const CrudQuestion = () => {
     return saved ? JSON.parse(saved) : ["People Potential"];
   });
   const [filterSubdomains, setFilterSubdomains] = useState<string[]>(() =>
-    JSON.parse(localStorage.getItem("crud_filterSubdomains") || "[]"),
+    JSON.parse(localStorage.getItem("crud_filterSubdomains") || "[]")
   );
   const [filterTypes, setFilterTypes] = useState<string[]>(() =>
-    JSON.parse(localStorage.getItem("crud_filterTypes") || "[]"),
+    JSON.parse(localStorage.getItem("crud_filterTypes") || "[]")
   );
   const [filterScales, setFilterScales] = useState<string[]>(() =>
-    JSON.parse(localStorage.getItem("crud_filterScales") || "[]"),
+    JSON.parse(localStorage.getItem("crud_filterScales") || "[]")
   );
 
   // Persist State Changes
   useEffect(
     () => localStorage.setItem("crud_showFilters", JSON.stringify(showFilters)),
-    [showFilters],
+    [showFilters]
   );
 
   useEffect(
     () =>
       localStorage.setItem("crud_filterDomains", JSON.stringify(filterDomains)),
-    [filterDomains],
+    [filterDomains]
   );
   useEffect(
     () =>
       localStorage.setItem(
         "crud_filterSubdomains",
-        JSON.stringify(filterSubdomains),
+        JSON.stringify(filterSubdomains)
       ),
-    [filterSubdomains],
+    [filterSubdomains]
   );
   useEffect(
     () => localStorage.setItem("crud_filterTypes", JSON.stringify(filterTypes)),
-    [filterTypes],
+    [filterTypes]
   );
   useEffect(
     () =>
       localStorage.setItem("crud_filterScales", JSON.stringify(filterScales)),
-    [filterScales],
+    [filterScales]
   );
 
   // -- Form State --
@@ -373,12 +375,12 @@ const CrudQuestion = () => {
   // 2. FILTER LOGIC
   const toggleFilter = (
     setter: React.Dispatch<React.SetStateAction<string[]>>,
-    value: string,
+    value: string
   ) => {
     setter((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
-        : [...prev, value],
+        : [...prev, value]
     );
   };
 
@@ -388,7 +390,7 @@ const CrudQuestion = () => {
 
     // Update Types
     setFilterTypes((prev) =>
-      isCurrentlySelected ? prev.filter((t) => t !== type) : [...prev, type],
+      isCurrentlySelected ? prev.filter((t) => t !== type) : [...prev, type]
     );
 
     // Update Scales
@@ -396,7 +398,7 @@ const CrudQuestion = () => {
       if (isCurrentlySelected) {
         // If deselecting, only remove scale filter if no OTHER selected types use it
         const otherTypesUsingScale = filterTypes.some(
-          (t) => t !== type && TYPE_TO_SCALE[t] === targetScale,
+          (t) => t !== type && TYPE_TO_SCALE[t] === targetScale
         );
         if (!otherTypesUsingScale) {
           setFilterScales((prev) => prev.filter((s) => s !== targetScale));
@@ -404,7 +406,7 @@ const CrudQuestion = () => {
       } else {
         // If selecting, add scale filter if not already there
         setFilterScales((prev) =>
-          prev.includes(targetScale) ? prev : [...prev, targetScale],
+          prev.includes(targetScale) ? prev : [...prev, targetScale]
         );
       }
     }
@@ -415,18 +417,18 @@ const CrudQuestion = () => {
 
     // Update Scales
     setFilterScales((prev) =>
-      isCurrentlySelected ? prev.filter((s) => s !== scale) : [...prev, scale],
+      isCurrentlySelected ? prev.filter((s) => s !== scale) : [...prev, scale]
     );
 
     // Update Types
     const associatedTypes = QUESTION_TYPES.filter(
-      (t) => TYPE_TO_SCALE[t] === scale,
+      (t) => TYPE_TO_SCALE[t] === scale
     );
 
     if (isCurrentlySelected) {
       // If deselecting scale, remove all its associated types
       setFilterTypes((prev) =>
-        prev.filter((t) => !associatedTypes.includes(t)),
+        prev.filter((t) => !associatedTypes.includes(t))
       );
     } else {
       // If selecting scale, add its associated types
@@ -501,7 +503,7 @@ const CrudQuestion = () => {
   const displayGroups = useMemo(() => {
     if (filterSubdomains.length > 0) {
       return availableSubdomains.filter((sd: string) =>
-        filterSubdomains.includes(sd),
+        filterSubdomains.includes(sd)
       );
     }
     return availableSubdomains.filter((sd: string) => {
@@ -509,7 +511,7 @@ const CrudQuestion = () => {
         ? [filterRole]
         : Object.keys(ROLE_DOMAIN_SUBDOMAINS);
       return relevantRoles.some((role) =>
-        ROLE_DOMAIN_SUBDOMAINS[role]?.[activeTabDomain]?.includes(sd),
+        ROLE_DOMAIN_SUBDOMAINS[role]?.[activeTabDomain]?.includes(sd)
       );
     });
   }, [availableSubdomains, filterSubdomains, filterRole, activeTabDomain]);
@@ -543,7 +545,7 @@ const CrudQuestion = () => {
 
   const handleUpload = async (
     e?: React.ChangeEvent<HTMLInputElement>,
-    isForced = false,
+    isForced = false
   ) => {
     const file = e ? e.target.files?.[0] : pendingUploadFile;
     if (!file || !selectedOrg) return;
@@ -554,18 +556,18 @@ const CrudQuestion = () => {
         // Delete first to ensure clean state if forcing
         await questionService.deleteOrganizationQuestions(
           selectedOrg,
-          selectedDept === "All" ? null : selectedDept,
+          selectedDept === "All" ? null : selectedDept
         );
       }
       await questionService.uploadQuestions(
         file,
         selectedOrg,
         selectedDept === "All" ? null : selectedDept,
-        isForced,
+        isForced
       );
       toast.success("Questions uploaded successfully");
       Modal.getInstance(
-        document.getElementById("overrideModal") as HTMLElement,
+        document.getElementById("overrideModal") as HTMLElement
       )?.hide();
       setPendingUploadFile(null);
       fetchQuestions();
@@ -575,7 +577,7 @@ const CrudQuestion = () => {
         setIsOverrideForUpload(true);
         setIsCloningAll(selectedDept === "All");
         Modal.getOrCreateInstance(
-          document.getElementById("overrideModal") as HTMLElement,
+          document.getElementById("overrideModal") as HTMLElement
         ).show();
       } else {
         toast.error(err?.response?.data?.message || "Upload failed");
@@ -588,7 +590,7 @@ const CrudQuestion = () => {
 
   const confirmOverrideAction = () => {
     Modal.getInstance(
-      document.getElementById("overrideModal") as HTMLElement,
+      document.getElementById("overrideModal") as HTMLElement
     )?.hide();
     if (isOverrideForUpload) {
       handleUpload(undefined, true);
@@ -599,21 +601,21 @@ const CrudQuestion = () => {
 
   const handleDeleteAll = () => {
     const modal = Modal.getOrCreateInstance(
-      document.getElementById("deleteAllModal") as HTMLElement,
+      document.getElementById("deleteAllModal") as HTMLElement
     );
     modal.show();
   };
 
   const confirmDeleteAll = async () => {
     const modal = Modal.getInstance(
-      document.getElementById("deleteAllModal") as HTMLElement,
+      document.getElementById("deleteAllModal") as HTMLElement
     );
     modal?.hide();
     setLoading(true);
     try {
       await questionService.deleteOrganizationQuestions(
         selectedOrg,
-        selectedDept === "All" ? null : selectedDept,
+        selectedDept === "All" ? null : selectedDept
       );
       toast.success("All questions deleted successfully!");
       fetchQuestions();
@@ -633,14 +635,14 @@ const CrudQuestion = () => {
       const result = await questionService.cloneTemplate(
         selectedOrg,
         selectedDept === "All" ? null : selectedDept,
-        false,
+        false
       );
       toast.success(result.message);
       fetchQuestions();
     } catch (err: any) {
       if (err?.response?.data?.isCollision) {
         Modal.getOrCreateInstance(
-          document.getElementById("overrideModal") as HTMLElement,
+          document.getElementById("overrideModal") as HTMLElement
         ).show();
       } else {
         toast.error(err?.response?.data?.message || "Failed to clone template");
@@ -656,14 +658,14 @@ const CrudQuestion = () => {
       const result = await questionService.cloneTemplate(
         selectedOrg,
         null,
-        true,
+        true
       );
       toast.success(result.message);
       fetchQuestions();
     } catch (err: any) {
       if (err?.response?.data?.isCollision) {
         Modal.getOrCreateInstance(
-          document.getElementById("overrideModal") as HTMLElement,
+          document.getElementById("overrideModal") as HTMLElement
         ).show();
       } else {
         toast.error(err?.response?.data?.message || "Failed to clone template");
@@ -674,7 +676,7 @@ const CrudQuestion = () => {
   const handleCloneWithOverride = async () => {
     if (!selectedOrg) return;
     Modal.getInstance(
-      document.getElementById("overrideModal") as HTMLElement,
+      document.getElementById("overrideModal") as HTMLElement
     )?.hide();
     setLoading(true);
     try {
@@ -684,7 +686,7 @@ const CrudQuestion = () => {
         const result = await questionService.cloneTemplate(
           selectedOrg,
           null,
-          true,
+          true
         );
         toast.success(`Full override complete. ${result.message}`);
       } else {
@@ -693,7 +695,7 @@ const CrudQuestion = () => {
         const result = await questionService.cloneTemplate(
           selectedOrg,
           target,
-          false,
+          false
         );
         toast.success(`Override complete. ${result.message}`);
       }
@@ -775,7 +777,7 @@ const CrudQuestion = () => {
       const stakeholders = ["employee", "manager", "leader"];
       stakeholders.forEach((role) => {
         const filtered = allQuestions.filter(
-          (q) => q.stakeholder?.toLowerCase() === role,
+          (q) => q.stakeholder?.toLowerCase() === role
         );
         if (filtered.length > 0) {
           const roleRows = filtered.map((q, i) => getRowData(q, i));
@@ -864,12 +866,12 @@ const CrudQuestion = () => {
       initialData,
       allQuestions,
       [initialData],
-      0,
+      0
     );
     setAddForms([initialData]);
 
     const modal = Modal.getOrCreateInstance(
-      document.getElementById("addModal") as HTMLElement,
+      document.getElementById("addModal") as HTMLElement
     );
     modal.show();
   };
@@ -892,7 +894,7 @@ const CrudQuestion = () => {
       higherValueOption: q.forcedChoice?.higherValueOption || "A",
     });
     const modal = Modal.getOrCreateInstance(
-      document.getElementById("editModal") as HTMLElement,
+      document.getElementById("editModal") as HTMLElement
     );
     modal.show();
   };
@@ -900,7 +902,7 @@ const CrudQuestion = () => {
   const openDeleteModal = (q: Question) => {
     setSelectedQuestion(q);
     const modal = Modal.getOrCreateInstance(
-      document.getElementById("deleteModal") as HTMLElement,
+      document.getElementById("deleteModal") as HTMLElement
     );
     modal.show();
   };
@@ -918,7 +920,7 @@ const CrudQuestion = () => {
   const updateAddForm = (
     index: number,
     field: keyof QuestionFormData,
-    value: string,
+    value: string
   ) => {
     setAddForms((prev: QuestionFormData[]) => {
       const newList = [...prev];
@@ -932,7 +934,7 @@ const CrudQuestion = () => {
             newList[i],
             allQuestions,
             newList,
-            i,
+            i
           );
         }
       }
@@ -949,7 +951,7 @@ const CrudQuestion = () => {
               { ...newList[i], role: value },
               allQuestions,
               newList,
-              i,
+              i
             ),
           };
         }
@@ -980,7 +982,7 @@ const CrudQuestion = () => {
           newList[i],
           allQuestions,
           newList,
-          i,
+          i
         );
       }
       return newList;
@@ -997,7 +999,7 @@ const CrudQuestion = () => {
           filtered[i],
           allQuestions,
           filtered,
-          i,
+          i
         );
       }
       return filtered;
@@ -1072,7 +1074,7 @@ const CrudQuestion = () => {
       toast.success("Questions created successfully!");
       await fetchQuestions();
       Modal.getInstance(
-        document.getElementById("addModal") as HTMLElement,
+        document.getElementById("addModal") as HTMLElement
       )?.hide();
     } catch (err) {
       const error = err as Error;
@@ -1119,7 +1121,7 @@ const CrudQuestion = () => {
       await fetchQuestions();
       toast.success("Question updated successfully!");
       Modal.getInstance(
-        document.getElementById("editModal") as HTMLElement,
+        document.getElementById("editModal") as HTMLElement
       )?.hide();
     } catch (err) {
       const error = err as Error;
@@ -1140,11 +1142,11 @@ const CrudQuestion = () => {
     try {
       await questionService.deleteQuestion(selectedQuestion._id, selectedOrg);
       setAllQuestions((prev: Question[]) =>
-        prev.filter((q: Question) => q._id !== selectedQuestion._id),
+        prev.filter((q: Question) => q._id !== selectedQuestion._id)
       );
       toast.success("Question deleted successfully!");
       Modal.getInstance(
-        document.getElementById("deleteModal") as HTMLElement,
+        document.getElementById("deleteModal") as HTMLElement
       )?.hide();
     } catch (err) {
       const error = err as Error;
@@ -1208,7 +1210,7 @@ const CrudQuestion = () => {
         insertionIdx = newQuestions.length;
       } else if (destination.index >= targetGroup.length) {
         const lastQuestionIdx = newQuestions.lastIndexOf(
-          targetGroup[targetGroup.length - 1],
+          targetGroup[targetGroup.length - 1]
         );
         insertionIdx = lastQuestionIdx + 1;
       } else {
@@ -1226,7 +1228,7 @@ const CrudQuestion = () => {
       // We only reorder questions for the CURRENT stakeholder to keep it clean
       // The local 'updatedBatch' now has the correct sequence
       const stakeholderQuestions = updatedBatch.filter(
-        (q) => q.stakeholder === filterRole,
+        (q) => q.stakeholder === filterRole
       );
 
       const updates = stakeholderQuestions.map((q, idx) => ({
@@ -1788,7 +1790,7 @@ const CrudQuestion = () => {
               <div className="space-y-4">
                 {displayGroups.map((subdomainTitle) => {
                   const questionsInGroup = filteredQuestions.filter(
-                    (q) => q.subdomain === subdomainTitle,
+                    (q) => q.subdomain === subdomainTitle
                   );
                   const safeId = subdomainTitle
                     .replace(/[^a-zA-Z0-9]/g, "-")
@@ -1807,11 +1809,11 @@ const CrudQuestion = () => {
                             setOpenSubdomains((prev) =>
                               prev.includes(subdomainTitle)
                                 ? prev.filter((t) => t !== subdomainTitle)
-                                : [...prev, subdomainTitle],
+                                : [...prev, subdomainTitle]
                             );
                           }}
                           aria-expanded={openSubdomains.includes(
-                            subdomainTitle,
+                            subdomainTitle
                           )}
                           aria-controls={`collapse-${safeId}`}
                         >
@@ -1965,7 +1967,7 @@ interface CrudModalsProps {
   updateAddForm: (
     index: number,
     field: keyof QuestionFormData,
-    value: string,
+    value: string
   ) => void;
   addMoreQuestion: () => void;
   removeAddForm: (index: number) => void;
@@ -2014,21 +2016,21 @@ const CrudModals = (props: CrudModalsProps) => {
   // Independent role selector for preview
   const [previewSelectedRole, setPreviewSelectedRole] = useState<string>("");
   const [previewStage, setPreviewStage] = useState<"role-select" | "questions">(
-    "role-select",
+    "role-select"
   );
 
   // Compute preview questions from chosen role
   const previewQuestions = previewSelectedRole
     ? allQuestions.filter(
         (q) =>
-          q.stakeholder?.toLowerCase() === previewSelectedRole.toLowerCase(),
+          q.stakeholder?.toLowerCase() === previewSelectedRole.toLowerCase()
       )
     : [];
   const previewRole = previewSelectedRole;
 
   const [previewIdx, setPreviewIdx] = useState(0);
   const [previewValue, setPreviewValue] = useState<number | string | null>(
-    null,
+    null
   );
 
   // Reset everything when going back to role-select stage
@@ -2064,7 +2066,7 @@ const CrudModals = (props: CrudModalsProps) => {
     data: QuestionFormData,
     onChange: ((e: { target: { id: string; value: string } }) => void) | null,
     isAddMode: boolean,
-    index: number = 0,
+    index: number = 0
   ) => {
     const isForcedChoice = data.scale === "FORCED_CHOICE";
     const subdomains = subdomainsGetter(data.role, data.domain);
@@ -2802,7 +2804,7 @@ const CrudModals = (props: CrudModalsProps) => {
                   <div className="space-y-3 mb-10">
                     {["employee", "manager", "leader"].map((r) => {
                       const count = allQuestions.filter(
-                        (q) => q.stakeholder?.toLowerCase() === r,
+                        (q) => q.stakeholder?.toLowerCase() === r
                       ).length;
                       return (
                         <button
@@ -2984,8 +2986,8 @@ const CrudModals = (props: CrudModalsProps) => {
 
                     {/* Insight Prompt - Matching AssessmentQuestion styling */}
                     <AnimatePresence mode="wait">
-                      {shouldShowPrompt &&
-                        (isForcedChoice ? (
+                      {shouldShowPrompt && (
+                        isForcedChoice ? (
                           <motion.div
                             key={`${previewIdx}-${previewValue}`}
                             initial={{ opacity: 0 }}
@@ -2997,8 +2999,7 @@ const CrudModals = (props: CrudModalsProps) => {
                             <label className="text-sm font-bold block mb-2">
                               {previewValue === "A"
                                 ? currentQ?.forcedChoice?.optionA?.insightPrompt
-                                : currentQ?.forcedChoice?.optionB
-                                    ?.insightPrompt}
+                                : currentQ?.forcedChoice?.optionB?.insightPrompt}
                               <span className="text-black"> *</span>
                             </label>
                             <textarea
@@ -3011,8 +3012,7 @@ const CrudModals = (props: CrudModalsProps) => {
                         ) : (
                           <div className="w-full transition-all duration-300 opacity-100 h-auto">
                             <label className="text-sm font-bold block mb-2">
-                              {currentQ?.insightPrompt ||
-                                "Why did you choose this score?"}
+                              {currentQ?.insightPrompt || "Why did you choose this score?"}
                               <span className="text-black"> *</span>
                             </label>
                             <textarea
@@ -3022,7 +3022,8 @@ const CrudModals = (props: CrudModalsProps) => {
                               readOnly
                             ></textarea>
                           </div>
-                        ))}
+                        )
+                      )}
                     </AnimatePresence>
 
                     {/* Footer Buttons - Inside the card for better alignment */}
@@ -3051,7 +3052,7 @@ const CrudModals = (props: CrudModalsProps) => {
                         disabled={previewIdx === previewQuestions.length - 1}
                         onClick={() =>
                           setPreviewIdx((p) =>
-                            Math.min(previewQuestions.length - 1, p + 1),
+                            Math.min(previewQuestions.length - 1, p + 1)
                           )
                         }
                         className="bg-gradient-to-r from-[#1a3652] to-[#448bd2] text-white pe-2.5 ps-3.5 h-10 rounded-full flex items-center gap-1.5 font-semibold uppercase disabled:opacity-40 sm:w-fit w-full sm:justify-start justify-center"

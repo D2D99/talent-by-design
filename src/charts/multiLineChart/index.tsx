@@ -21,7 +21,7 @@ Chart.register(
   CategoryScale,
   Tooltip,
   Legend,
-  Filler,
+  Filler
 );
 
 export interface TrendData {
