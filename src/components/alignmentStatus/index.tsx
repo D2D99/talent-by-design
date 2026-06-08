@@ -41,7 +41,7 @@ const RoleProgressChart = ({ data }: Props) => {
     responsive: true,
     layout: {
       padding: {
-        right: 50,
+        right: 140, // Increased to fit "No Data Available"
       },
     },
     plugins: {
@@ -71,7 +71,6 @@ const RoleProgressChart = ({ data }: Props) => {
         datasets: [
           {
             data: data.map((d) => d.value),
-            // Pass the function here instead of a static array
             backgroundColor: getGradient,
             borderRadius: 6,
             borderSkipped: false,
@@ -84,28 +83,35 @@ const RoleProgressChart = ({ data }: Props) => {
                   anchor: "start",
                   align: "right",
                   formatter: (_, ctx) => ctx.chart.data.labels?.[ctx.dataIndex],
-                  color: "#000",
-                  padding: { left: 2 },
+                  color: (ctx) => {
+                    const val = ctx.dataset.data[ctx.dataIndex];
+                    return val === 0 ? "#9ca3af" : "#000"; // Gray if no data
+                  },
+                  padding: { left: 4 },
                   font: { size: 13, weight: "bold" },
                 },
                 value: {
                   anchor: "end",
                   align: "right",
                   formatter: (value) => {
-                    // Only display percentage if it's greater than 0
-                    return value > 0 ? `${value}%` : "";
+                    return value > 0 ? `${value}%` : "No Data Available";
                   },
-                  color: "#000",
-                  // Shift the percentage to the right
+                  color: (ctx) => {
+                    const val = ctx.dataset.data[ctx.dataIndex];
+                    return val === 0 ? "#9ca3af" : "#000"; // Gray if no data
+                  },
                   offset: (ctx) => {
                     const value = ctx.dataset.data[ctx.dataIndex];
-                    if (typeof value === "number") {
-                      // Increase the right shift for higher values
-                      return value <= 20 ? 15 : 10; // Increase to move the percentage further right
+                    if (typeof value === "number" && value === 0) {
+                      return 160; // Pushes "No Data Available" safely to the right
                     }
-                    return 4; // Default offset for invalid values
+                    return 10;
                   },
-                  font: { size: 14, weight: "bold" },
+                  font: (ctx: any) => ({
+                    size: 14,
+                    weight: "bold" as const,
+                    style: (ctx.dataset.data[ctx.dataIndex] === 0 ? "italic" : "normal") as any,
+                  }),
                 },
               },
             },

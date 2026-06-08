@@ -199,31 +199,31 @@ const AdminOverview = () => {
 
   const filteredMembers = Array.isArray(members)
     ? members.filter((m) => {
-        const roleLower = m.role?.toLowerCase();
-        const memberDept = m.department?.toString().trim().toLowerCase();
-        const searchDept = selectedDept?.toString().trim().toLowerCase();
+      const roleLower = m.role?.toLowerCase();
+      const memberDept = m.department?.toString().trim().toLowerCase();
+      const searchDept = selectedDept?.toString().trim().toLowerCase();
 
-        const matchesDept = !searchDept || memberDept === searchDept;
+      const matchesDept = !searchDept || memberDept === searchDept;
 
-        // Security: Non-Admins only see their own department
-        if (!isAdmin && !isSuperAdmin) {
-          const uDept = String(user?.department || "")
-            .trim()
-            .toLowerCase();
-          if (memberDept !== uDept) return false;
-        }
+      // Security: Non-Admins only see their own department
+      if (!isAdmin && !isSuperAdmin) {
+        const uDept = String(user?.department || "")
+          .trim()
+          .toLowerCase();
+        if (memberDept !== uDept) return false;
+      }
 
-        // If the logged-in user is a leader, show them the managers/employees under them
-        if (isLeader) {
-          return (
-            (roleLower === "manager" || roleLower === "employee") &&
-            !!matchesDept
-          );
-        }
+      // If the logged-in user is a leader, show them the managers/employees under them
+      if (isLeader) {
+        return (
+          (roleLower === "manager" || roleLower === "employee") &&
+          !!matchesDept
+        );
+      }
 
-        // Default (Admins): Strictly show only leaders on this page
-        return roleLower === "leader" && !!matchesDept;
-      })
+      // Default (Admins): Strictly show only leaders on this page
+      return roleLower === "leader" && !!matchesDept;
+    })
     : [];
 
   // const customSelectStyles = {
@@ -424,7 +424,7 @@ const AdminOverview = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-        0
+      0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -460,7 +460,7 @@ const AdminOverview = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -488,16 +488,16 @@ const AdminOverview = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -551,13 +551,13 @@ const AdminOverview = () => {
     parsedObjectives.length > 0
       ? parsedObjectives
       : [
-          {
-            title:
-              detailedPods?.objectives?.subtitle ||
-              "Enhance domain-specific capabilities",
-            keyResults: detailedPods?.objectives?.items || [],
-          },
-        ].filter((obj) => obj.keyResults.length > 0);
+        {
+          title:
+            detailedPods?.objectives?.subtitle ||
+            "Enhance domain-specific capabilities",
+          keyResults: detailedPods?.objectives?.items || [],
+        },
+      ].filter((obj) => obj.keyResults.length > 0);
 
   // const displayRecommendations = detailedPods?.recommendations?.items || [
   //   "No specific recommendations available for this domain yet.",
@@ -823,11 +823,10 @@ const AdminOverview = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
             {userData || reportData
-              ? `${userData?.firstName || reportData?.user?.firstName || ""} ${
-                  userData?.lastName ||
-                  reportData?.user?.lastName ||
-                  reportData?.userDetails?.lastName ||
-                  ""
+              ? `${userData?.firstName || reportData?.user?.firstName || ""} ${userData?.lastName ||
+                reportData?.user?.lastName ||
+                reportData?.userDetails?.lastName ||
+                ""
                 }`.trim()
               : "Leader"}
           </h3>
@@ -1141,9 +1140,9 @@ Highlights what is happening, why it matters, and where to focus next to improve
                           );
                           const finalMLines = hasMBullets
                             ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) => l.replace(/•/g, "").trim())
-                                .filter((l: string) => l.length > 0)
+                              .filter((l: string) => l.includes("•"))
+                              .map((l: string) => l.replace(/•/g, "").trim())
+                              .filter((l: string) => l.length > 0)
                             : mLines;
 
                           return finalMLines.map(
@@ -1411,7 +1410,7 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     style={{ background: "rgba(74, 144, 226, 0.7)" }}
                   />
                   <span className="text-xs text-[#474747]">
-                    Leader Avg ({teamAvgData?.leaderCount || 0})
+                    {(teamAvgData?.leaderCount || 0) === 0 ? "Leader Avg - No Data Available" : `Leader Avg (${teamAvgData?.leaderCount || 0})`}
                   </span>
                 </div>
                 <div
@@ -1423,7 +1422,7 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     style={{ background: "rgba(46, 204, 113, 0.7)" }}
                   />
                   <span className="text-xs text-[#474747]">
-                    Manager Avg ({teamAvgData?.managerCount || 0})
+                    {(teamAvgData?.managerCount || 0) === 0 ? "Manager Avg - No Data Available" : `Manager Avg (${teamAvgData?.managerCount || 0})`}
                   </span>
                 </div>
                 <div
@@ -1435,7 +1434,7 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     style={{ background: "rgba(231, 76, 60, 0.6)" }}
                   />
                   <span className="text-xs text-[#474747]">
-                    Employee Avg ({teamAvgData?.employeeCount || 0})
+                    {(teamAvgData?.employeeCount || 0) === 0 ? "Employee Avg - No Data Available" : `Employee Avg (${teamAvgData?.employeeCount || 0})`}
                   </span>
                 </div>
               </div>

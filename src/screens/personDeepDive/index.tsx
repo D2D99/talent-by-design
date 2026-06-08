@@ -156,7 +156,7 @@ const PersonDeepDive = () => {
                 <Icon icon="solar:user-bold" className="text-[#448CD2]" />
                 {userData?.role &&
                   userData.role.charAt(0).toUpperCase() +
-                    userData.role.slice(1)}
+                  userData.role.slice(1)}
               </span>
             </div>
           </div>
@@ -201,15 +201,17 @@ const PersonDeepDive = () => {
                 </span>
                 <div className="flex items-center gap-2">
                   <span
-                    className="text-sm font-black"
-                    style={{ color: r.color }}
+                    className={`text-sm font-black ${r.value === 0 ? "italic text-gray-400" : ""}`}
+                    style={{ color: r.value === 0 ? undefined : r.color }}
                   >
-                    {r.value}%
+                    {r.value > 0 ? `${r.value}%` : "No Data Available"}
                   </span>
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: r.color }}
-                  ></div>
+                  {r.value > 0 && (
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: r.color }}
+                    ></div>
+                  )}
                 </div>
               </div>
             ))}

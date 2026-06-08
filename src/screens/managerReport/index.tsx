@@ -389,7 +389,7 @@ const ManagerReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-        0
+      0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -508,7 +508,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -519,16 +519,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -582,13 +582,13 @@ const ManagerReport = () => {
     parsedObjectives.length > 0
       ? parsedObjectives
       : [
-          {
-            title:
-              detailedPods?.objectives?.subtitle ||
-              "Lead team improvements in this domain area",
-            keyResults: detailedPods?.objectives?.items || [],
-          },
-        ].filter((obj) => obj.keyResults.length > 0);
+        {
+          title:
+            detailedPods?.objectives?.subtitle ||
+            "Lead team improvements in this domain area",
+          keyResults: detailedPods?.objectives?.items || [],
+        },
+      ].filter((obj) => obj.keyResults.length > 0);
 
   const displayRecommendations = detailedPods?.recommendations?.items || [
     "No specific recommendations available for this domain yet.",
@@ -889,9 +889,9 @@ const ManagerReport = () => {
                 value={
                   selectedMember
                     ? {
-                        value: selectedMember._id,
-                        label: selectedMember.name,
-                      }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                     : null
                 }
                 onChange={(option: any) => {
@@ -1339,11 +1339,11 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                  .filter((l: string) => l.includes("•"))
-                                  .map((l: string) =>
-                                    l.replace(/•/g, "").trim(),
-                                  )
-                                  .filter((l: string) => l.length > 0)
+                                .filter((l: string) => l.includes("•"))
+                                .map((l: string) =>
+                                  l.replace(/•/g, "").trim(),
+                                )
+                                .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1748,34 +1748,53 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                 <div className="transition-all duration-500 overflow-visible">
                   {activeTab === "graph" ? (
                     <>
-                      <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
-                        <div
-                          className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-                          onClick={() => toggleHiddenIndex(0)}
-                        >
-                          <span
-                            className="w-5 h-2 rounded-sm inline-block"
-                            style={{ background: "rgba(74, 144, 226, 0.7)" }}
-                          />
-                          <span className="text-xs text-[#474747]">
-                            Manager
-                          </span>
-                        </div>
-                        {teamAvgData?.employeeCount > 0 && (
-                          <div
-                            className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-                            onClick={() => toggleHiddenIndex(1)}
-                          >
-                            <span
-                              className="w-5 h-2 rounded-sm inline-block"
-                              style={{ background: "rgba(46, 204, 113, 0.7)" }}
-                            />
-                            <span className="text-xs text-[#474747]">
-                              Employee ({teamAvgData?.employeeCount || 0})
-                            </span>
+                      {(teamAvgData?.employeeCount || 0) > 0 && (
+                        <>
+                          <div className="flex flex-wrap justify-center mt-8 gap-x-4 gap-y-1 mt-2 mb-2">
+                            <div
+                              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                              onClick={() => toggleHiddenIndex(0)}
+                            >
+                              <span
+                                className="w-5 h-2 rounded-sm inline-block"
+                                style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                              />
+                              <span className="text-xs text-[#474747]">
+                                Manager
+                              </span>
+                            </div>
+                            <div
+                              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                              onClick={() => toggleHiddenIndex(1)}
+                            >
+                              <span
+                                className="w-5 h-2 rounded-sm inline-block"
+                                style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                              />
+                              <span className="text-xs text-[#474747]">
+                                {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
+                              </span>
+                            </div>
                           </div>
-                        )}
-                      </div>
+
+                          {/* 🆕 Data Confidence Note */}
+                          <div className="flex justify-center mt-2 mb-4">
+                            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 shadow-sm">
+                              <span className="flex h-1.5 w-1.5 rounded-full bg-[#3498DB]"></span>
+                              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                {((teamAvgData?.employeeCount || 0) < 3) ? (
+                                  <span className="text-[#E67E22]">Note: Comparison based on limited data - proceed with caution</span>
+                                ) : (
+                                  <span>Confidence: High</span>
+                                )}
+                              </p>
+                              <span className="text-[10px] text-slate-400 font-medium ml-1">
+                                Team Responses: {teamAvgData?.employeeCount || 0}
+                              </span>
+                            </div>
+                          </div>
+                        </>
+                      )}
                       <div className="flex-1 w-full relative py-2 overflow-visible min-h-[550px]">
                         <RadarChart
                           data={radarData}
@@ -1831,7 +1850,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                     <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
                                       <span>Team Alignment</span>
                                       <span className="text-[#2ECC71]">
-                                        {(gap.teamScore * 10).toFixed(0)}%
+                                        {(teamAvgData?.employeeCount || 0) === 0 ? "No data available" : `${(gap.teamScore * 10).toFixed(0)}%`}
                                       </span>
                                     </div>
                                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
