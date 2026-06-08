@@ -850,7 +850,9 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                   </div>
                   <div className="flex flex-col gap-1">
                     <p className="text-[13px] text-[#B45309] font-medium leading-relaxed">
-                      Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.
+                      {alignmentInfo.coachText.includes("Insufficient")
+                        ? "Moderate variance detected. Data is limited; leadership perception requires validation against front-line experience."
+                        : alignmentInfo.coachText}
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
                       <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#FDE68A]">
@@ -872,7 +874,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                   </div>
                   <div className="flex flex-col gap-1">
                     <p className="text-[13px] text-[#166534] font-medium leading-relaxed">
-                      High response rate detected. Data provides a statistically significant baseline for leadership alignment and decision-making.
+                      {alignmentInfo.coachText}
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
                       <span className="text-[9px] bg-[#DCFCE7] text-[#166534] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#BBF7D0]">

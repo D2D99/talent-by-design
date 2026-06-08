@@ -1799,7 +1799,12 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 </div>
                                 <div className="flex flex-col gap-1">
                                   <p className="text-[13px] text-[#B45309] font-medium leading-relaxed">
-                                    Moderate variance detected. Blind spots may exist — leadership perception requires validation against front-line experience.
+                                    {gapInsights.some(g => g.severity === "Large")
+                                      ? "Significant disconnect detected. Leadership perception differs widely from front-line experience — validation is critical."
+                                      : gapInsights.some(g => g.severity === "Medium")
+                                        ? "Moderate variance detected. Some blind spots may exist; leadership perception requires validation against team feedback."
+                                        : "Preliminary data shows good alignment, though a larger sample is needed to confirm these early trends."
+                                    }
                                   </p>
                                   <div className="flex items-center gap-2 mt-1.5">
                                     <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#FDE68A]">
@@ -1821,7 +1826,11 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 </div>
                                 <div className="flex flex-col gap-1">
                                   <p className="text-[13px] text-[#166534] font-medium leading-relaxed">
-                                    High response rate detected. Data provides a statistically significant baseline for leadership alignment and decision-making.
+                                    {gapInsights.some(g => g.severity === "Large")
+                                      ? "Significant disconnect detected. Even with high participation, the score gaps suggest critical misalignments requiring attention."
+                                      : gapInsights.some(g => g.severity === "Medium")
+                                        ? "Moderate variance detected. Data provides a strong baseline, but some disconnects exist that require validation."
+                                        : "High alignment detected. Data provides a statistically significant baseline confirming consistent experience across roles."}
                                   </p>
                                   <div className="flex items-center gap-2 mt-1.5">
                                     <span className="text-[9px] bg-[#DCFCE7] text-[#166534] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#BBF7D0]">
