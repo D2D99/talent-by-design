@@ -213,8 +213,8 @@ const TeamIntelligence = () => {
               color: "#8E54E9",
               badge: activityStream?.[0]?.time
                 ? formatDistanceToNow(new Date(activityStream[0].time), {
-                    addSuffix: true,
-                  })
+                  addSuffix: true,
+                })
                 : "N/A",
             },
           ].map((item, i) => (
@@ -327,10 +327,18 @@ const TeamIntelligence = () => {
                             {role}
                           </span>
                           <span className="text-[11px] font-bold">
-                            {val}{" "}
-                            <span className="text-[9px] text-[#5d5d5d] font-normal">
-                              ({pct.toFixed(0)}%)
-                            </span>
+                            {val > 0 ? (
+                              <>
+                                {val}{" "}
+                                <span className="text-[9px] text-[#5d5d5d] font-normal">
+                                  ({pct.toFixed(0)}%)
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-[10px] text-gray-400 font-normal italic">
+                                No Data Available
+                              </span>
+                            )}
                           </span>
                         </div>
                         <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">
@@ -426,7 +434,7 @@ const TeamIntelligence = () => {
               </div>
             </div>
 
-            { (user?.role?.toLowerCase() === "admin" || user?.role?.toLowerCase() === "superadmin" || user?.role?.toLowerCase() === "super_admin") && (
+            {(user?.role?.toLowerCase() === "admin" || user?.role?.toLowerCase() === "superadmin" || user?.role?.toLowerCase() === "super_admin") && (
               <button
                 onClick={() => navigate("/dashboard/team-assessments")}
                 className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl shadow-lg flex items-center justify-between text-white mt-4"
@@ -488,8 +496,8 @@ const TeamIntelligence = () => {
                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 block hidden">
                         {log.time
                           ? formatDistanceToNow(new Date(log.time), {
-                              addSuffix: true,
-                            })
+                            addSuffix: true,
+                          })
                           : "N/A"}
                       </span>
                     </div>

@@ -502,10 +502,10 @@ const AdminReport = () => {
 
   const parseObjectivesList = (text: string) => {
     if (!text || !text.trim()) return { focus: "", list: [] };
-    
+
     let focus = "";
     let remainingText = text;
-    
+
     const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
     if (focusMatch) {
       focus = focusMatch[1].trim();
@@ -516,7 +516,7 @@ const AdminReport = () => {
     const list: { title: string, keyResults: string[] }[] = [];
     let currentTitle = "";
     let currentKRs: string[] = [];
-    
+
     for (const line of lines) {
       if (!line.trim()) continue;
       if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
@@ -537,7 +537,7 @@ const AdminReport = () => {
     return { focus, list };
   };
 
-  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback?.objectives 
+  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback?.objectives
     ? parseObjectivesList(detailedPods.rawFeedback.objectives)
     : { focus: "", list: [] };
 
@@ -783,73 +783,73 @@ const AdminReport = () => {
           {!hasNoReport && (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-              {/* Status Badge */}
-              {isReportReleased && reportData && (
-                <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                  <Icon icon="solar:check-circle-bold-duotone" width="12" />
-                  Released Report
-                </span>
-              )}
+                {/* Status Badge */}
+                {isReportReleased && reportData && (
+                  <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                    <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                    Released Report
+                  </span>
+                )}
 
-              {/* Edit Feedback Button (Super Admin or Admin viewing someone else) */}
-              {userId &&
-                (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                {/* Edit Feedback Button (Super Admin or Admin viewing someone else) */}
+                {userId &&
+                  (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                      title="Edit AI Insights, Objectives, and Recommendations"
+                    >
+                      <Icon icon="lucide:pencil" width="16" />
+                    </button>
+                  )}
+
+                {/* Release Section (Super Admin or Admin) */}
+                {(isSuperAdmin || isAdmin) && !isReportReleased && reportData && (
                   <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                    title="Edit AI Insights, Objectives, and Recommendations"
+                    onClick={() => setShowReleaseWarning(true)}
+                    disabled={releasing}
+                    className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                   >
-                    <Icon icon="lucide:pencil" width="16" />
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                    {releasing ? (
+                      <Icon icon="line-md:loading-loop" width="16" />
+                    ) : (
+                      <Icon icon="solar:star-bold-duotone" width="16" />
+                    )}
+                    {releasing ? "Releasing..." : "Approve & Release"}
                   </button>
                 )}
+              </div>
 
-              {/* Release Section (Super Admin or Admin) */}
-              {(isSuperAdmin || isAdmin) && !isReportReleased && reportData && (
+              <ConfirmationModal
+                isOpen={showReleaseWarning}
+                onClose={() => setShowReleaseWarning(false)}
+                onConfirm={() => {
+                  setShowReleaseWarning(false);
+                  handleRelease();
+                }}
+                title="Release Report?"
+                message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
+                confirmText="Confirm"
+                cancelText="Cancel"
+                loading={releasing}
+              />
+
+              {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
                 <button
-                  onClick={() => setShowReleaseWarning(true)}
-                  disabled={releasing}
-                  className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                  onClick={handleExportPDF}
+                  disabled={exportLoading}
+                  className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                 >
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                  {releasing ? (
-                    <Icon icon="line-md:loading-loop" width="16" />
+                  {exportLoading ? (
+                    <Icon icon="eos-icons:loading" width="16" />
                   ) : (
-                    <Icon icon="solar:star-bold-duotone" width="16" />
+                    <Icon icon="pajamas:export" width="16" height="16" />
                   )}
-                  {releasing ? "Releasing..." : "Approve & Release"}
+                  {exportLoading ? "Exporting..." : "Export PDF Report"}
                 </button>
               )}
-            </div>
-
-            <ConfirmationModal
-              isOpen={showReleaseWarning}
-              onClose={() => setShowReleaseWarning(false)}
-              onConfirm={() => {
-                setShowReleaseWarning(false);
-                handleRelease();
-              }}
-              title="Release Report?"
-              message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
-              confirmText="Confirm"
-              cancelText="Cancel"
-              loading={releasing}
-            />
-
-            {userId && (isSuperAdmin || isAdmin || isReportReleased) && (
-              <button
-                onClick={handleExportPDF}
-                disabled={exportLoading}
-                className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              >
-                {exportLoading ? (
-                  <Icon icon="eos-icons:loading" width="16" />
-                ) : (
-                  <Icon icon="pajamas:export" width="16" height="16" />
-                )}
-                {exportLoading ? "Exporting..." : "Export PDF Report"}
-              </button>
-            )}
             </div>
           )}
         </div>
@@ -1896,30 +1896,32 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                     </div>
 
                     <div>
-                      <img src={OuiSecurity} alt="images" className="w-8 h-8" />
+                      <img src={OuiSecurity} alt="images" className="w-8 h-8 opacity-80" />
                     </div>
                   </div>
-                  <div className="sm:w-[400px] w-full my-10">
+                  <div className="w-full my-6">
                     <RoleProgressChart data={roleAverages} />
                   </div>
-                  <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> {alignmentInfo.largestRole}{" "}
-                    VS {alignmentInfo.lowestRole} (+{alignmentInfo.gap})
-                  </p>
-                  <div className="sm:mt-8 mt-6">
+                  <div className="mt-8">
+                    <p className="text-[15px] font-semibold text-gray-700">
+                      Largest Gap: <span className="font-bold text-gray-900 uppercase">{alignmentInfo.largestRole} VS {alignmentInfo.lowestRole} (+{alignmentInfo.gap})</span>
+                    </p>
+                  </div>
+                  <div className="mt-8 flex flex-col items-end">
                     <button
                       type="button"
-                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider mb-4"
+                      className="rounded-full px-6 py-1.5 font-bold text-[11px] uppercase tracking-wider mb-3 shadow-sm border"
                       style={{
                         backgroundColor: alignmentInfo.bg,
                         color: alignmentInfo.color,
+                        borderColor: `${alignmentInfo.color}20`,
                       }}
                     >
                       {alignmentInfo.label}
                     </button>
                     {/* Coach Voice */}
                     <div
-                      className="p-3 rounded-xl border text-sm font-medium leading-relaxed"
+                      className="w-full p-4 rounded-xl border text-[13px] font-medium leading-relaxed flex items-start gap-3"
                       style={{
                         backgroundColor: alignmentInfo.bg,
                         borderColor: `${alignmentInfo.color}30`,
@@ -1927,11 +1929,11 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                       }}
                     >
                       <Icon
-                        icon={alignmentInfo.icon}
-                        className="inline mr-1.5"
-                        width="15"
+                        icon="fluent:arrow-curve-down-right-20-filled"
+                        className="mt-1 flex-shrink-0 opacity-70"
+                        width="18"
                       />
-                      {alignmentInfo.coachText}
+                      <span>{alignmentInfo.coachText}</span>
                     </div>
                   </div>
                   <div></div>

@@ -484,10 +484,18 @@ const OrganizationDeepDive = () => {
                           {role}
                         </span>
                         <span className="text-[11px] font-bold">
-                          {val}{" "}
-                          <span className="text-[9px] text-[#5d5d5d] font-normal">
-                            ({pct.toFixed(0)}%)
-                          </span>
+                          {val > 0 ? (
+                            <>
+                              {val}{" "}
+                              <span className="text-[9px] text-[#5d5d5d] font-normal">
+                                ({pct.toFixed(0)}%)
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-[10px] text-gray-400 font-normal italic">
+                              No Data Available
+                            </span>
+                          )}
                         </span>
                       </div>
                       <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">
@@ -784,49 +792,52 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
               ))}
             </ul>
           </div>
-          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-2">
-            <div
-              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
-              onClick={() => toggleHiddenIndex(0)}
-            >
-              <span
-                className="w-5 h-2 rounded-sm inline-block"
-                style={{ background: "rgba(74, 144, 226, 0.7)" }}
-              />
-              <span className="text-xs text-[#474747]">
-                {(teamAvgData?.leaderCount || 0) === 0 ? "Leader - No Data Available" : `Leader (${teamAvgData?.leaderCount || 0})`}
-              </span>
-            </div>
-            <div
-              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
-              onClick={() => toggleHiddenIndex(1)}
-            >
-              <span
-                className="w-5 h-2 rounded-sm inline-block"
-                style={{ background: "rgba(46, 204, 113, 0.7)" }}
-              />
-              <span className="text-xs text-[#474747]">
-                {(teamAvgData?.managerCount || 0) === 0 ? "Manager - No Data Available" : `Manager (${teamAvgData?.managerCount || 0})`}
-              </span>
-            </div>
-            <div
-              className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
-              onClick={() => toggleHiddenIndex(2)}
-            >
-              <span
-                className="w-5 h-2 rounded-sm inline-block"
-                style={{ background: "rgba(231, 76, 60, 0.6)" }}
-              />
-              <span className="text-xs text-[#474747]">
-                {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
-              </span>
-            </div>
-          </div>
-
+          {((teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)) > 0 && (
+            <>
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
+                <div
+                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(0) ? "opacity-30" : "opacity-100"}`}
+                  onClick={() => toggleHiddenIndex(0)}
+                >
+                  <span
+                    className="w-5 h-2 rounded-sm inline-block"
+                    style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                  />
+                  <span className="text-xs text-[#474747]">
+                    {(teamAvgData?.leaderCount || 0) === 0 ? "Leader - No Data Available" : `Leader (${teamAvgData?.leaderCount || 0})`}
+                  </span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
+                  onClick={() => toggleHiddenIndex(1)}
+                >
+                  <span
+                    className="w-5 h-2 rounded-sm inline-block"
+                    style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                  />
+                  <span className="text-xs text-[#474747]">
+                    {(teamAvgData?.managerCount || 0) === 0 ? "Manager - No Data Available" : `Manager (${teamAvgData?.managerCount || 0})`}
+                  </span>
+                </div>
+                <div
+                  className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(2) ? "opacity-30" : "opacity-100"}`}
+                  onClick={() => toggleHiddenIndex(2)}
+                >
+                  <span
+                    className="w-5 h-2 rounded-sm inline-block"
+                    style={{ background: "rgba(231, 76, 60, 0.6)" }}
+                  />
+                  <span className="text-xs text-[#474747]">
+                    {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
           <div className="relative w-full min-h-[450px]">
             <MultiRadarChart
               data={radarData}
-              onLabelSelect={() => {}}
+              onLabelSelect={() => { }}
               datasetLabels={["Leader", "Manager", "Employee"]}
               hiddenIndices={hiddenIndices}
             />

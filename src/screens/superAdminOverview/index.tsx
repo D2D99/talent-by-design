@@ -421,10 +421,18 @@ const SuperAdminOverview = () => {
                             {role.label}
                           </span>
                           <span className="text-[11px] font-bold text-[#1a3652]">
-                            {role.val}{" "}
-                            <span className="text-[9px] text-[#5d5d5d] font-normal">
-                              ({pct.toFixed(0)}%)
-                            </span>
+                            {role.val > 0 ? (
+                              <>
+                                {role.val}{" "}
+                                <span className="text-[9px] text-[#5d5d5d] font-normal">
+                                  ({pct.toFixed(0)}%)
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-[10px] text-gray-400 font-normal italic">
+                                No Data Available
+                              </span>
+                            )}
                           </span>
                         </div>
                         <div className="h-1.5 bg-[#edf5fd] rounded-full overflow-hidden">

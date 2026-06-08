@@ -13,6 +13,19 @@ type Props = {
 };
 
 const RoleProgressChart = ({ data }: Props) => {
+  // Check if all values are 0 (no data at all)
+  const allZero = data.every((d) => d.value === 0);
+
+  if (allZero) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <p className="text-[11px] text-gray-400 italic font-medium">
+          No Data Available
+        </p>
+      </div>
+    );
+  }
+
   // Helper function to create gradient
   const getGradient = (context: ScriptableContext<"bar">) => {
     const { ctx, chartArea } = context.chart;
@@ -85,33 +98,43 @@ const RoleProgressChart = ({ data }: Props) => {
                   align: "right",
                   formatter: (_, ctx) => ctx.chart.data.labels?.[ctx.dataIndex],
                   color: "#000",
-
-                  padding: { left: 4 },
-                  font: {
-                    size: 13,
-                    weight: "bold",
-                  },
+                  padding: { left: 2 },
+                  font: { size: 13, weight: "bold" },
                 },
                 value: {
                   anchor: "end",
                   align: "right",
                   formatter: (value) => {
-                    // Only display percentage if it's greater than 0
-                    return value > 0 ? `${value}%` : "";
+                    // Show "No Data Available" for zero values
+                    return value > 0 ? `${value}%` : "No Data Available";
                   },
-                  color: "#000",
+                  color: (ctx) => {
+                    const value = ctx.dataset.data[ctx.dataIndex];
+                    return typeof value === "number" && value === 0
+                      ? "#94A3B8"
+                      : "#000";
+                  },
+                  font: (ctx) => {
+                    const value = ctx.dataset.data[ctx.dataIndex];
+                    if (typeof value === "number" && value === 0) {
+                      return { size: 11, weight: "normal", style: "italic" };
+                    }
+                    return { size: 14, weight: "bold" };
+                  },
                   // Shift the percentage to the right
                   offset: (ctx) => {
                     const value = ctx.dataset.data[ctx.dataIndex];
                     if (typeof value === "number") {
-                      // Increase the right shift for higher values
-                      return value <= 20 ? 15 : 10; // Increase to move the percentage further right
+                      if (value === 0) return 140; // Push past the role label text
+                      return value <= 20 ? 15 : 10;
                     }
-                    return 4; // Default offset for invalid values
+                    return 4;
                   },
-                  font: { size: 14, weight: "bold" },
                 },
               },
+            },
+          },
+        ],
       }}
       options={options}
     />

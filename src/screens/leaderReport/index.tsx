@@ -422,7 +422,7 @@ const LeaderReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-        0
+      0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -458,7 +458,7 @@ const LeaderReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-        selectedSubdomain
+      selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -486,16 +486,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-        const lines = detailedPods.insights.mainText
-          .split(/\r?\n/)
-          .filter((l: string) => l.trim().length > 0);
-        const hasBullets = lines.some((l: string) => l.includes("•"));
-        if (!hasBullets) return lines;
-        return lines
-          .filter((line: string) => line.includes("•"))
-          .map((line: string) => line.replace(/•/g, "").trim())
-          .filter((line: string) => line.length > 0);
-      })()
+      const lines = detailedPods.insights.mainText
+        .split(/\r?\n/)
+        .filter((l: string) => l.trim().length > 0);
+      const hasBullets = lines.some((l: string) => l.includes("•"));
+      if (!hasBullets) return lines;
+      return lines
+        .filter((line: string) => line.includes("•"))
+        .map((line: string) => line.replace(/•/g, "").trim())
+        .filter((line: string) => line.length > 0);
+    })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -549,13 +549,13 @@ const LeaderReport = () => {
     parsedObjectives.length > 0
       ? parsedObjectives
       : [
-          {
-            title:
-              detailedPods?.objectives?.subtitle ||
-              "Enhance domain-specific capabilities",
-            keyResults: detailedPods?.objectives?.items || [],
-          },
-        ].filter((obj) => obj.keyResults.length > 0);
+        {
+          title:
+            detailedPods?.objectives?.subtitle ||
+            "Enhance domain-specific capabilities",
+          keyResults: detailedPods?.objectives?.items || [],
+        },
+      ].filter((obj) => obj.keyResults.length > 0);
 
   // const displayRecommendations = detailedPods?.recommendations?.items || [
   //   "No specific recommendations available for this domain yet.",
@@ -984,9 +984,9 @@ const LeaderReport = () => {
                 value={
                   selectedMember
                     ? {
-                        value: selectedMember._id,
-                        label: selectedMember.name,
-                      }
+                      value: selectedMember._id,
+                      label: selectedMember.name,
+                    }
                     : null
                 }
                 onChange={(option: any) => {
@@ -1377,11 +1377,11 @@ Highlights what is happening, why it matters, and where to focus next to improve
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                  .filter((l: string) => l.includes("•"))
-                                  .map((l: string) =>
-                                    l.replace(/•/g, "").trim(),
-                                  )
-                                  .filter((l: string) => l.length > 0)
+                                .filter((l: string) => l.includes("•"))
+                                .map((l: string) =>
+                                  l.replace(/•/g, "").trim(),
+                                )
+                                .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1440,18 +1440,18 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       )}
                       {displayObjectives.map((obj, objIdx) => (
                         <div key={objIdx} className="flex items-start gap-4">
-                            <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
-                              <CircularProgress
-                                value={Math.ceil(
-                                  detailedPods?.objectives?.progress || 0,
-                                )}
-                                width={70}
-                                textColor="#36454F"
-                                pathColor="#1A3652"
-                                trailColor="#D9D9D9"
-                              />
-                            </div>
-                          
+                          <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
+                            <CircularProgress
+                              value={Math.ceil(
+                                detailedPods?.objectives?.progress || 0,
+                              )}
+                              width={70}
+                              textColor="#36454F"
+                              pathColor="#1A3652"
+                              trailColor="#D9D9D9"
+                            />
+                          </div>
+
                           <div className="flex-1">
                             <div className="mb-4">
                               <h2 className="text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -1945,30 +1945,32 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     </div>
 
                     <div>
-                      <img src={OuiSecurity} alt="images" className="w-8 h-8" />
+                      <img src={OuiSecurity} alt="images" className="w-8 h-8 opacity-80" />
                     </div>
                   </div>
-                  {/* <div className="sm:w-[400px] w-full my-10"> */}
-                  <RoleProgressChart data={roleAverages} />
-                  {/* </div> */}
-                  <p className="text-base font-medium text-[var(--secondary-color)]  mt-6">
-                    <b className="">Largest Gap:</b> {alignmentInfo.largestRole}{" "}
-                    VS {alignmentInfo.lowestRole} (+{alignmentInfo.gap})
-                  </p>
-                  <div className="sm:mt-8 mt-6">
+                  <div className="w-full my-6">
+                    <RoleProgressChart data={roleAverages} />
+                  </div>
+                  <div className="mt-8">
+                    <p className="text-[15px] font-semibold text-gray-700">
+                      Largest Gap: <span className="font-bold text-gray-900 uppercase">{alignmentInfo.largestRole} VS {alignmentInfo.lowestRole} (+{alignmentInfo.gap})</span>
+                    </p>
+                  </div>
+                  <div className="mt-8 flex flex-col items-end">
                     <button
                       type="button"
-                      className="ml-auto group rounded-full px-6 py-2 flex items-center gap-2 font-bold text-sm uppercase tracking-wider mb-4"
+                      className="rounded-full px-6 py-1.5 font-bold text-[11px] uppercase tracking-wider mb-3 shadow-sm border"
                       style={{
                         backgroundColor: alignmentInfo.bg,
                         color: alignmentInfo.color,
+                        borderColor: `${alignmentInfo.color}20`,
                       }}
                     >
                       {alignmentInfo.label}
                     </button>
                     {/* Coach Voice */}
                     <div
-                      className="p-3 rounded-xl border text-sm font-medium leading-relaxed"
+                      className="w-full p-4 rounded-xl border text-[13px] font-medium leading-relaxed flex items-start gap-3"
                       style={{
                         backgroundColor: alignmentInfo.bg,
                         borderColor: `${alignmentInfo.color}30`,
@@ -1976,11 +1978,11 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                       }}
                     >
                       <Icon
-                        icon={alignmentInfo.icon}
-                        className="inline mr-1.5"
-                        width="15"
+                        icon="fluent:arrow-curve-down-right-20-filled"
+                        className="mt-1 flex-shrink-0 opacity-70"
+                        width="18"
                       />
-                      {alignmentInfo.coachText}
+                      <span>{alignmentInfo.coachText}</span>
                     </div>
                   </div>
                   <div></div>
