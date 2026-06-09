@@ -13,7 +13,7 @@ const SessionPopup = () => {
     const cleanupBackdrops = () => {
       // Remove stuck TW Elements backdrops (Modals, Offcanvas, etc.)
       const backdrops = document.querySelectorAll(
-        "[data-twe-backdrop-show], [data-twe-modal-backdrop], .modal-backdrop, .offcanvas-backdrop"
+        "[data-twe-backdrop-show], [data-twe-modal-backdrop], .modal-backdrop, .offcanvas-backdrop",
       );
       backdrops.forEach((el) => (el as HTMLElement).remove());
 
@@ -23,7 +23,7 @@ const SessionPopup = () => {
       document.body.classList.remove(
         "modal-open",
         "offcanvas-open",
-        "overflow-hidden"
+        "overflow-hidden",
       );
     };
 
@@ -43,7 +43,11 @@ const SessionPopup = () => {
   useEffect(() => {
     if (show) {
       document.body.style.setProperty("overflow", "hidden", "important");
-      document.documentElement.style.setProperty("overflow", "hidden", "important");
+      document.documentElement.style.setProperty(
+        "overflow",
+        "hidden",
+        "important",
+      );
       document.body.style.setProperty("height", "100%", "important");
       document.documentElement.style.setProperty("height", "100%", "important");
     } else {
@@ -87,8 +91,8 @@ const SessionPopup = () => {
             </h5>
 
             <p className="text-gray-600 leading-relaxed text-sm max-w-sm">
-              Your session has ended. To keep your information secure, please log in
-              again to continue working.
+              Your session has ended. To keep your information secure, please
+              log in again to continue working.
             </p>
           </div>
 

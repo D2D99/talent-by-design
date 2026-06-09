@@ -48,7 +48,7 @@ const AdminAssessments = () => {
         return;
       }
       const res = await api.get(
-        `auth/organization/${encodeURIComponent(orgName)}`
+        `auth/organization/${encodeURIComponent(orgName)}`,
       );
       setMembers(res.data.members || []);
     } catch (err) {
@@ -79,7 +79,7 @@ const AdminAssessments = () => {
 
       const res = await api.get(
         `/responses/organization/${encodeURIComponent(orgName)}/export`,
-        { responseType: "blob" }
+        { responseType: "blob" },
       );
 
       const blob = new Blob([res.data], {
@@ -90,7 +90,7 @@ const AdminAssessments = () => {
       link.href = url;
       link.setAttribute(
         "download",
-        `Organization_Report_${orgName.replace(/\s+/g, "_")}.xlsx`
+        `Organization_Report_${orgName.replace(/\s+/g, "_")}.xlsx`,
       );
       document.body.appendChild(link);
       link.click();
@@ -123,7 +123,10 @@ const AdminAssessments = () => {
     }
   };
 
-  const handleActionClick = (member: UserMember, type: "Report" | "Response" | "Reset") => {
+  const handleActionClick = (
+    member: UserMember,
+    type: "Report" | "Response" | "Reset",
+  ) => {
     setActiveDropdown(null);
     if (type === "Report") {
       const roleMapping: Record<string, string> = {
@@ -135,15 +138,16 @@ const AdminAssessments = () => {
         manager: "manager",
         employee: "employee",
       };
-      const reportType = roleMapping[member.role?.toLowerCase() || ""] || "employee";
+      const reportType =
+        roleMapping[member.role?.toLowerCase() || ""] || "employee";
       navigate(
-        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`
+        `/dashboard/reports/${reportType}?userId=${member._id}&email=${encodeURIComponent(member.email)}&orgName=${encodeURIComponent(user?.orgName || "")}`,
       );
     } else if (type === "Response") {
       if (member.lastAssessmentId) {
         const userName = `${member.firstName} ${member.lastName}`;
         navigate(
-          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`
+          `/dashboard/user-responses/${member.lastAssessmentId}?userName=${encodeURIComponent(userName)}`,
         );
       } else {
         toast.info("No completed assessment found for this member.");
@@ -195,22 +199,23 @@ const AdminAssessments = () => {
             Monitor and manage assessment progress for your entire team.
           </p>
         </div>
-        
+
         <div>
-           <button
-              onClick={handleExportOrgExcel}
-              disabled={isExporting}
-             className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-            >
-              <Icon
-                icon={
-                  isExporting
-                    ? "line-md:loading-twotone-loop"
-                    : "ri:file-excel-2-line"}
-                width="18"
-              />
-              {isExporting ? "Exporting..." : "Org Excel report"}
-            </button>
+          <button
+            onClick={handleExportOrgExcel}
+            disabled={isExporting}
+            className="group relative overflow-hidden z-0 text-[var(--white-color)] ps-2.5 pe-5 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+          >
+            <Icon
+              icon={
+                isExporting
+                  ? "line-md:loading-twotone-loop"
+                  : "ri:file-excel-2-line"
+              }
+              width="18"
+            />
+            {isExporting ? "Exporting..." : "Org Excel report"}
+          </button>
         </div>
       </div>
 
@@ -247,7 +252,7 @@ const AdminAssessments = () => {
             value: members.filter(
               (m) =>
                 m.role?.toLowerCase() !== "admin" &&
-                (!m.assessmentStatus || m.assessmentStatus === "Not Started")
+                (!m.assessmentStatus || m.assessmentStatus === "Not Started"),
             ).length,
             icon: "hugeicons:time-04",
             color: "#F59E0B",
@@ -413,7 +418,7 @@ const AdminAssessments = () => {
                         <button
                           onClick={() =>
                             setActiveDropdown(
-                              activeDropdown === member._id ? null : member._id
+                              activeDropdown === member._id ? null : member._id,
                             )
                           }
                           className={`p-1.5 rounded-full transition-all ${
@@ -437,13 +442,17 @@ const AdminAssessments = () => {
                             ></div>
                             <div
                               className={`absolute right-12 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5 ${
-                                idx >= currentData.length - 2 ? "bottom-0 right-20" : "bottom-0 right-20"
+                                idx >= currentData.length - 2
+                                  ? "bottom-0 right-20"
+                                  : "bottom-0 right-20"
                               }`}
                             >
                               {status === "Completed" && (
                                 <>
                                   <button
-                                    onClick={() => handleActionClick(member, "Report")}
+                                    onClick={() =>
+                                      handleActionClick(member, "Report")
+                                    }
                                     className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
                                   >
                                     <Icon
@@ -454,7 +463,9 @@ const AdminAssessments = () => {
                                     <span>Report</span>
                                   </button>
                                   <button
-                                    onClick={() => handleActionClick(member, "Response")}
+                                    onClick={() =>
+                                      handleActionClick(member, "Response")
+                                    }
                                     className="w-full px-4 py-2 text-sm font-medium text-neutral-700 flex items-center gap-1.5 bg-white hover:bg-neutral-100"
                                   >
                                     <Icon
@@ -468,10 +479,15 @@ const AdminAssessments = () => {
                               )}
                               {canReset && (
                                 <button
-                                  onClick={() => handleActionClick(member, "Reset")}
+                                  onClick={() =>
+                                    handleActionClick(member, "Reset")
+                                  }
                                   className="w-full px-4 py-2 text-sm font-medium text-red-500 flex items-center gap-1.5 bg-white hover:bg-red-50 transition-colors"
                                 >
-                                  <Icon icon="solar:restart-linear" width="14" />
+                                  <Icon
+                                    icon="solar:restart-linear"
+                                    width="14"
+                                  />
                                   <span>Reset</span>
                                 </button>
                               )}

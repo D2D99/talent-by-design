@@ -75,7 +75,7 @@ const AssessmentQuestion = () => {
   });
 
   const [selectedValue, setSelectedValue] = useState<number | "A" | "B" | null>(
-    null
+    null,
   );
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,7 +109,7 @@ const AssessmentQuestion = () => {
         setPageLoading(false);
       }
     },
-    [API_URL, token]
+    [API_URL, token],
   );
 
   useEffect(() => {
@@ -121,7 +121,7 @@ const AssessmentQuestion = () => {
       const lastId = localStorage.getItem(`cur_aid_${token}`);
       if (lastId && lastId !== assessmentIdFromUrl) {
         console.warn(
-          ">>> [Assessment Reset Detected] Clearing local storage..."
+          ">>> [Assessment Reset Detected] Clearing local storage...",
         );
         localStorage.removeItem(`ans_${token}`);
         localStorage.removeItem(`idx_${token}`);
@@ -196,7 +196,7 @@ const AssessmentQuestion = () => {
       const currentQId = questions[currentIndex]?._id;
       const existing = answers[currentQId];
       setSelectedValue(
-        existing ? (existing.answer as number | "A" | "B") : null
+        existing ? (existing.answer as number | "A" | "B") : null,
       );
       setComment(existing ? existing.comment : "");
       localStorage.setItem(`idx_${token}`, currentIndex.toString());
@@ -229,7 +229,7 @@ const AssessmentQuestion = () => {
         await api.post(
           "responses",
           { responses: Object.values(updatedAnswers) },
-          { headers: { "x-invite-token": token } }
+          { headers: { "x-invite-token": token } },
         );
         if (userRole === "employee") {
           setShowFinalForm(true);
@@ -481,8 +481,8 @@ const AssessmentQuestion = () => {
                       {((!isForcedChoice &&
                         typeof selectedValue === "number" &&
                         selectedValue <= 2) ||
-                        (isForcedChoice && selectedValue !== null)) && (
-                        isForcedChoice ? (
+                        (isForcedChoice && selectedValue !== null)) &&
+                        (isForcedChoice ? (
                           <motion.div
                             key={`${currentIndex}-${selectedValue}`}
                             initial={{ opacity: 0 }}
@@ -520,8 +520,7 @@ const AssessmentQuestion = () => {
                               onChange={(e) => setComment(e.target.value)}
                             ></textarea>
                           </div>
-                        )
-                      )}
+                        ))}
                     </AnimatePresence>
                   </>
                 ) : (

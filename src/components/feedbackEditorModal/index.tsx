@@ -45,9 +45,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
   const [coachingTips, setCoachingTips] = useState("");
   const [recommendedPrograms, setRecommendedPrograms] = useState("");
   const [modelDescription, setModelDescription] = useState("");
-  const [objectivesList, setObjectivesList] = useState<{ title: string; keyResults: string }[]>([
-    { title: "", keyResults: "" }
-  ]);
+  const [objectivesList, setObjectivesList] = useState<
+    { title: string; keyResults: string }[]
+  >([{ title: "", keyResults: "" }]);
   const [okrFocus, setOkrFocus] = useState("");
   const [progressScore, setProgressScore] = useState<number>(0);
 
@@ -103,53 +103,65 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
         setModelDescription(
           formatWithBullets(rawFeedback?.modelDescription || ""),
         );
-        
-          const parseObjectivesList = (text: string) => {
-            if (!text || !text.trim()) return { focus: "", list: [{ title: "", keyResults: "" }] };
-            
-            let focus = "";
-            let remainingText = text;
-            
-            const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
-            if (focusMatch) {
-              focus = focusMatch[1].trim();
-              remainingText = text.replace(focusMatch[0], "").trim();
-            }
 
-            const lines = remainingText.split('\n');
-            const list: { title: string, keyResults: string[] }[] = [];
-            let currentTitle = "";
-            let currentKRs: string[] = [];
-            
-            for (const line of lines) {
-              if (!line.trim()) continue;
-              if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-                currentKRs.push(line);
+        const parseObjectivesList = (text: string) => {
+          if (!text || !text.trim())
+            return { focus: "", list: [{ title: "", keyResults: "" }] };
+
+          let focus = "";
+          let remainingText = text;
+
+          const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
+          if (focusMatch) {
+            focus = focusMatch[1].trim();
+            remainingText = text.replace(focusMatch[0], "").trim();
+          }
+
+          const lines = remainingText.split("\n");
+          const list: { title: string; keyResults: string[] }[] = [];
+          let currentTitle = "";
+          let currentKRs: string[] = [];
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
+              currentKRs.push(line);
+            } else {
+              if (currentKRs.length > 0) {
+                list.push({
+                  title: currentTitle.trim(),
+                  keyResults: currentKRs,
+                });
+                currentTitle = line;
+                currentKRs = [];
               } else {
-                if (currentKRs.length > 0) {
-                  list.push({ title: currentTitle.trim(), keyResults: currentKRs });
-                  currentTitle = line;
-                  currentKRs = [];
-                } else {
-                  currentTitle = currentTitle ? currentTitle + " " + line : line;
-                }
+                currentTitle = currentTitle ? currentTitle + " " + line : line;
               }
             }
-            if (currentTitle || currentKRs.length > 0) {
-              list.push({ title: currentTitle.trim(), keyResults: currentKRs });
-            }
-            
-            const finalResults = list.map(item => ({
-              title: item.title,
-              keyResults: formatWithBullets(item.keyResults.join('\n'))
-            }));
+          }
+          if (currentTitle || currentKRs.length > 0) {
+            list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+          }
 
-            return { focus, list: finalResults.length > 0 ? finalResults : [{ title: "", keyResults: "" }] };
+          const finalResults = list.map((item) => ({
+            title: item.title,
+            keyResults: formatWithBullets(item.keyResults.join("\n")),
+          }));
+
+          return {
+            focus,
+            list:
+              finalResults.length > 0
+                ? finalResults
+                : [{ title: "", keyResults: "" }],
           };
-          
-          const { focus, list } = parseObjectivesList(rawFeedback?.objectives || "");
-          setOkrFocus(focus);
-          setObjectivesList(list);
+        };
+
+        const { focus, list } = parseObjectivesList(
+          rawFeedback?.objectives || "",
+        );
+        setOkrFocus(focus);
+        setObjectivesList(list);
         setProgressScore(rawFeedback?.progressScore || 0);
         hasInitialized.current = true;
       }
@@ -185,52 +197,68 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
           const raw = res.data.pods?.rawFeedback || {};
           setInsight(formatWithBullets(raw.insight || ""));
           setCoachingTips(formatWithBullets(raw.coachingTips || ""));
-          setRecommendedPrograms(formatWithBullets(raw.recommendedPrograms || ""));
+          setRecommendedPrograms(
+            formatWithBullets(raw.recommendedPrograms || ""),
+          );
           setModelDescription(formatWithBullets(raw.modelDescription || ""));
-          
+
           const parseObjectivesList = (text: string) => {
-            if (!text || !text.trim()) return { focus: "", list: [{ title: "", keyResults: "" }] };
-            
+            if (!text || !text.trim())
+              return { focus: "", list: [{ title: "", keyResults: "" }] };
+
             let focus = "";
             let remainingText = text;
-            
-            const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
+
+            const focusMatch = text.match(
+              /\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/,
+            );
             if (focusMatch) {
               focus = focusMatch[1].trim();
               remainingText = text.replace(focusMatch[0], "").trim();
             }
 
-            const lines = remainingText.split('\n');
-            const list: { title: string, keyResults: string[] }[] = [];
+            const lines = remainingText.split("\n");
+            const list: { title: string; keyResults: string[] }[] = [];
             let currentTitle = "";
             let currentKRs: string[] = [];
-            
+
             for (const line of lines) {
               if (!line.trim()) continue;
-              if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+              if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
                 currentKRs.push(line);
               } else {
                 if (currentKRs.length > 0) {
-                  list.push({ title: currentTitle.trim(), keyResults: currentKRs });
+                  list.push({
+                    title: currentTitle.trim(),
+                    keyResults: currentKRs,
+                  });
                   currentTitle = line;
                   currentKRs = [];
                 } else {
-                  currentTitle = currentTitle ? currentTitle + " " + line : line;
+                  currentTitle = currentTitle
+                    ? currentTitle + " " + line
+                    : line;
                 }
               }
             }
             if (currentTitle || currentKRs.length > 0) {
               list.push({ title: currentTitle.trim(), keyResults: currentKRs });
             }
-            
-            const finalResults = list.map(item => ({
+
+            const finalResults = list.map((item) => ({
               title: item.title,
-              keyResults: formatWithBullets(item.keyResults.join('\n'))
+              keyResults: formatWithBullets(item.keyResults.join("\n")),
             }));
 
-            return { focus, list: finalResults.length > 0 ? finalResults : [{ title: "", keyResults: "" }] };
+            return {
+              focus,
+              list:
+                finalResults.length > 0
+                  ? finalResults
+                  : [{ title: "", keyResults: "" }],
+            };
           };
-          
+
           const { focus, list } = parseObjectivesList(raw.objectives || "");
           setOkrFocus(focus);
           setObjectivesList(list);
@@ -360,7 +388,12 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
       coachingTips,
       recommendedPrograms,
       modelDescription,
-      objectives: (okrFocus ? `[FOCUS] ${okrFocus}\n\n` : "") + objectivesList.map(obj => (obj.title ? `${obj.title}\n` : "") + obj.keyResults).join("\n\n").trim(),
+      objectives:
+        (okrFocus ? `[FOCUS] ${okrFocus}\n\n` : "") +
+        objectivesList
+          .map((obj) => (obj.title ? `${obj.title}\n` : "") + obj.keyResults)
+          .join("\n\n")
+          .trim(),
       progressScore,
     };
     try {
@@ -525,7 +558,6 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
               </div>
             </div>
 
-
             {fetching && (
               <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
                 <Icon
@@ -631,9 +663,14 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                     <textarea
                       value={obj.keyResults}
                       onChange={(e) => {
-                        const setter: React.Dispatch<React.SetStateAction<string>> = (val) => {
+                        const setter: React.Dispatch<
+                          React.SetStateAction<string>
+                        > = (val) => {
                           const newList = [...objectivesList];
-                          newList[index].keyResults = typeof val === 'function' ? val(newList[index].keyResults) : val;
+                          newList[index].keyResults =
+                            typeof val === "function"
+                              ? val(newList[index].keyResults)
+                              : val;
                           setObjectivesList(newList);
                         };
                         handleTextareaChange(e, setter);
@@ -641,7 +678,10 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                       onKeyDown={(e) => {
                         const setter = (val: React.SetStateAction<string>) => {
                           const newList = [...objectivesList];
-                          newList[index].keyResults = typeof val === 'function' ? val(newList[index].keyResults) : val;
+                          newList[index].keyResults =
+                            typeof val === "function"
+                              ? val(newList[index].keyResults)
+                              : val;
                           setObjectivesList(newList);
                           setIsDirty(true);
                         };
@@ -653,11 +693,14 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                   </div>
                 </div>
               ))}
-              
+
               <button
                 type="button"
                 onClick={() => {
-                  setObjectivesList([...objectivesList, { title: "", keyResults: "" }]);
+                  setObjectivesList([
+                    ...objectivesList,
+                    { title: "", keyResults: "" },
+                  ]);
                   setIsDirty(true);
                 }}
                 className="text-[var(--primary-color)] font-semibold text-sm hover:underline flex items-center gap-1"
@@ -673,7 +716,9 @@ const FeedbackEditorModal: React.FC<FeedbackEditorModalProps> = ({
                 </label>
                 <textarea
                   value={recommendedPrograms}
-                  onChange={(e) => handleTextareaChange(e, setRecommendedPrograms)}
+                  onChange={(e) =>
+                    handleTextareaChange(e, setRecommendedPrograms)
+                  }
                   onKeyDown={(e) => handleKeyDown(e, setRecommendedPrograms)}
                   rows={4}
                   className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] focus:border-[var(--primary-color)]"

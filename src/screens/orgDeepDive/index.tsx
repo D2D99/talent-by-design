@@ -63,7 +63,7 @@ const OrganizationDeepDive = () => {
   const [intelData, setIntelData] = useState<any>(null);
   const [selectedRadarDept, setSelectedRadarDept] = useState<string>("");
   const [selectedQuarter, setSelectedQuarter] = useState(
-    Math.floor(new Date().getMonth() / 3) + 1
+    Math.floor(new Date().getMonth() / 3) + 1,
   );
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<"list" | "visual">("list");
@@ -73,7 +73,7 @@ const OrganizationDeepDive = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -83,7 +83,7 @@ const OrganizationDeepDive = () => {
       setLoading(true);
       try {
         const res = await api.get(
-          `dashboard/admin?orgName=${encodeURIComponent(orgName || "")}`
+          `dashboard/admin?orgName=${encodeURIComponent(orgName || "")}`,
         );
         setReportData(res.data.report);
       } catch (error) {
@@ -101,7 +101,7 @@ const OrganizationDeepDive = () => {
       setIntelLoading(true);
       try {
         const res = await api.get(
-          `assessment/admin/intelligence?orgName=${encodeURIComponent(orgName)}&quarter=${selectedQuarter}&year=${selectedYear}`
+          `assessment/admin/intelligence?orgName=${encodeURIComponent(orgName)}&quarter=${selectedQuarter}&year=${selectedYear}`,
         );
         setIntelData(res.data);
       } catch (error) {
@@ -218,21 +218,21 @@ const OrganizationDeepDive = () => {
 
   const roleAverages = (() => {
     const lScores = Object.values(teamAvgData?.leaderAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const leaderScore =
       lScores.length > 0
         ? Math.round(lScores.reduce((a, b) => a + b, 0) / lScores.length)
         : 0;
     const mScores = Object.values(teamAvgData?.managerAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const managerScore =
       mScores.length > 0
         ? Math.round(mScores.reduce((a, b) => a + b, 0) / mScores.length)
         : 0;
     const eScores = Object.values(teamAvgData?.employeeAvg || {}).map(
-      (d: any) => d.avgScore || 0
+      (d: any) => d.avgScore || 0,
     );
     const employeeScore =
       eScores.length > 0
@@ -542,7 +542,11 @@ const OrganizationDeepDive = () => {
                 { label: "Completed", value: completed, color: "#10B981" },
                 { label: "In Progress", value: inProgress, color: "#6366F1" },
                 { label: "Pending Member", value: pending, color: "#F59E0B" },
-                { label: "Total Members Joined", value: total, color: "#448CD2" },
+                {
+                  label: "Total Members Joined",
+                  value: total,
+                  color: "#448CD2",
+                },
               ].map((item, i) => (
                 <div
                   key={i}
@@ -792,7 +796,10 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
               ))}
             </ul>
           </div>
-          {((teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)) > 0 && (
+          {(teamAvgData?.leaderCount || 0) +
+            (teamAvgData?.managerCount || 0) +
+            (teamAvgData?.employeeCount || 0) >
+            0 && (
             <>
               <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-6 mb-2">
                 <div
@@ -804,7 +811,9 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                     style={{ background: "rgba(74, 144, 226, 0.7)" }}
                   />
                   <span className="text-xs text-[#474747]">
-                    {(teamAvgData?.leaderCount || 0) === 0 ? "Leader - No Data Available" : `Leader (${teamAvgData?.leaderCount || 0})`}
+                    {(teamAvgData?.leaderCount || 0) === 0
+                      ? "Leader - No Data Available"
+                      : `Leader (${teamAvgData?.leaderCount || 0})`}
                   </span>
                 </div>
                 <div
@@ -816,7 +825,9 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                     style={{ background: "rgba(46, 204, 113, 0.7)" }}
                   />
                   <span className="text-xs text-[#474747]">
-                    {(teamAvgData?.managerCount || 0) === 0 ? "Manager - No Data Available" : `Manager (${teamAvgData?.managerCount || 0})`}
+                    {(teamAvgData?.managerCount || 0) === 0
+                      ? "Manager - No Data Available"
+                      : `Manager (${teamAvgData?.managerCount || 0})`}
                   </span>
                 </div>
                 <div
@@ -828,7 +839,9 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                     style={{ background: "rgba(231, 76, 60, 0.6)" }}
                   />
                   <span className="text-xs text-[#474747]">
-                    {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
+                    {(teamAvgData?.employeeCount || 0) === 0
+                      ? "Employee - No Data Available"
+                      : `Employee (${teamAvgData?.employeeCount || 0})`}
                   </span>
                 </div>
               </div>
@@ -837,18 +850,32 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
           <div className="relative w-full min-h-[450px]">
             <MultiRadarChart
               data={radarData}
-              onLabelSelect={() => { }}
+              onLabelSelect={() => {}}
               datasetLabels={["Leader", "Manager", "Employee"]}
               hiddenIndices={hiddenIndices}
             />
           </div>
 
-          {((teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)) > 0 && (
+          {(teamAvgData?.leaderCount || 0) +
+            (teamAvgData?.managerCount || 0) +
+            (teamAvgData?.employeeCount || 0) >
+            0 && (
             <div className="flex justify-center mt-6 mb-4">
-              {((teamAvgData?.leaderCount || 0) < 3 || (teamAvgData?.managerCount || 0) < 3 || (teamAvgData?.employeeCount || 0) < 3) ? (
+              {(teamAvgData?.leaderCount || 0) < 3 ||
+              (teamAvgData?.managerCount || 0) < 3 ||
+              (teamAvgData?.employeeCount || 0) < 3 ? (
                 <div className="bg-[#FFF9EE] border border-[#FDE68A] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
                   <div className="flex-shrink-0 mt-0.5">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#E67E22"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="12" y1="8" x2="12" y2="12"></line>
                       <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -865,7 +892,11 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                         Limited Data
                       </span>
                       <span className="text-[10px] text-[#D97706] font-medium">
-                        (Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                        (Responses:{" "}
+                        {(teamAvgData?.leaderCount || 0) +
+                          (teamAvgData?.managerCount || 0) +
+                          (teamAvgData?.employeeCount || 0)}
+                        )
                       </span>
                     </div>
                   </div>
@@ -873,7 +904,16 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
               ) : (
                 <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
                   <div className="flex-shrink-0 mt-0.5">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#166534"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                       <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
@@ -887,7 +927,11 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                         Confidence: High
                       </span>
                       <span className="text-[10px] text-[#15803D] font-medium">
-                        (Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                        (Total Responses:{" "}
+                        {(teamAvgData?.leaderCount || 0) +
+                          (teamAvgData?.managerCount || 0) +
+                          (teamAvgData?.employeeCount || 0)}
+                        )
                       </span>
                     </div>
                   </div>
@@ -962,7 +1006,7 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                               {dept}
                             </button>
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                   </div>

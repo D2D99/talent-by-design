@@ -422,7 +422,7 @@ const LeaderReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-      0
+        0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -458,7 +458,7 @@ const LeaderReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -486,16 +486,16 @@ const LeaderReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -549,13 +549,13 @@ const LeaderReport = () => {
     parsedObjectives.length > 0
       ? parsedObjectives
       : [
-        {
-          title:
-            detailedPods?.objectives?.subtitle ||
-            "Enhance domain-specific capabilities",
-          keyResults: detailedPods?.objectives?.items || [],
-        },
-      ].filter((obj) => obj.keyResults.length > 0);
+          {
+            title:
+              detailedPods?.objectives?.subtitle ||
+              "Enhance domain-specific capabilities",
+            keyResults: detailedPods?.objectives?.items || [],
+          },
+        ].filter((obj) => obj.keyResults.length > 0);
 
   // const displayRecommendations = detailedPods?.recommendations?.items || [
   //   "No specific recommendations available for this domain yet.",
@@ -811,9 +811,13 @@ const LeaderReport = () => {
                 className="text-[var(--primary-color)] size-10"
               />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
+            <h2 className="text-xl font-bold text-gray-800">
+              Report Not Released Yet
+            </h2>
             <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
-              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
+              Your report has not been released yet. Once released by a
+              SuperAdmin or Admin, you will be able to view your scores and
+              insights here.
             </p>
           </div>
         </div>
@@ -837,12 +841,14 @@ const LeaderReport = () => {
             <div className="flex items-center gap-3 justify-start">
               <div className="flex items-center gap-2">
                 {/* Status Badge */}
-                {isReportReleased && reportData && (isSuperAdmin || isAdmin) && (
-                  <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                    <Icon icon="solar:check-circle-bold-duotone" width="12" />
-                    Released Report
-                  </span>
-                )}
+                {isReportReleased &&
+                  reportData &&
+                  (isSuperAdmin || isAdmin) && (
+                    <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                      <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                      Released Report
+                    </span>
+                  )}
 
                 {/* Edit Feedback Button (SA or Admin viewing someone else) */}
                 {userId &&
@@ -940,7 +946,9 @@ const LeaderReport = () => {
                 placeholder="Organization"
                 options={orgs.map((o) => ({ value: o, label: o }))}
                 value={
-                  selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
+                  selectedOrg
+                    ? { value: selectedOrg, label: selectedOrg }
+                    : null
                 }
                 onChange={(option: any) => {
                   setSelectedOrg(option?.value || "");
@@ -984,9 +992,9 @@ const LeaderReport = () => {
                 value={
                   selectedMember
                     ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                        value: selectedMember._id,
+                        label: selectedMember.name,
+                      }
                     : null
                 }
                 onChange={(option: any) => {
@@ -1377,11 +1385,11 @@ Highlights what is happening, why it matters, and where to focus next to improve
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) =>
-                                  l.replace(/•/g, "").trim(),
-                                )
-                                .filter((l: string) => l.length > 0)
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1440,7 +1448,9 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       )}
                       {displayObjectives.map((obj, objIdx) => (
                         <div key={objIdx} className="flex items-start gap-4">
-                          <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
+                          <div
+                            className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? "visible" : "invisible"}`}
+                          >
                             <CircularProgress
                               value={Math.ceil(
                                 detailedPods?.objectives?.progress || 0,
@@ -1778,7 +1788,10 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     <span className="text-xs text-[#474747]">You (1)</span>
                   </div>
 
-                  {((teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0) + (teamAvgData?.leaderCount || 0)) > 0 && (
+                  {(teamAvgData?.managerCount || 0) +
+                    (teamAvgData?.employeeCount || 0) +
+                    (teamAvgData?.leaderCount || 0) >
+                    0 && (
                     <>
                       <div
                         className={`flex items-center gap-1.5 cursor-pointer transition-opacity ${hiddenIndices.includes(1) ? "opacity-30" : "opacity-100"}`}
@@ -1789,7 +1802,9 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                           style={{ background: "rgba(46, 204, 113, 0.7)" }}
                         />
                         <span className="text-xs text-black">
-                          {(teamAvgData?.managerCount || 0) === 0 ? "Manager Avg - No Data Available" : `Manager Avg (${teamAvgData?.managerCount || 0})`}
+                          {(teamAvgData?.managerCount || 0) === 0
+                            ? "Manager Avg - No Data Available"
+                            : `Manager Avg (${teamAvgData?.managerCount || 0})`}
                         </span>
                       </div>
                       <div
@@ -1801,7 +1816,9 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                           style={{ background: "rgba(231, 76, 60, 0.6)" }}
                         />
                         <span className="text-xs text-black">
-                          {(teamAvgData?.employeeCount || 0) === 0 ? "Employee Avg - No Data Available" : `Employee Avg (${teamAvgData?.employeeCount || 0})`}
+                          {(teamAvgData?.employeeCount || 0) === 0
+                            ? "Employee Avg - No Data Available"
+                            : `Employee Avg (${teamAvgData?.employeeCount || 0})`}
                         </span>
                       </div>
                       <div
@@ -1813,7 +1830,9 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                           style={{ background: "rgba(155, 89, 182, 0.7)" }}
                         />
                         <span className="text-xs text-black">
-                          {(teamAvgData?.leaderCount || 0) === 0 ? "Leader Avg - No Data Available" : `Leader Avg (${teamAvgData?.leaderCount || 0})`}
+                          {(teamAvgData?.leaderCount || 0) === 0
+                            ? "Leader Avg - No Data Available"
+                            : `Leader Avg (${teamAvgData?.leaderCount || 0})`}
                         </span>
                       </div>
                     </>
@@ -1833,12 +1852,26 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                   />
                 </div>
 
-                {((teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0) + (teamAvgData?.leaderCount || 0)) > 0 && (
+                {(teamAvgData?.managerCount || 0) +
+                  (teamAvgData?.employeeCount || 0) +
+                  (teamAvgData?.leaderCount || 0) >
+                  0 && (
                   <div className="flex justify-center mt-6 mb-4">
-                    {((teamAvgData?.leaderCount || 0) < 3 || (teamAvgData?.managerCount || 0) < 3 || (teamAvgData?.employeeCount || 0) < 3) ? (
+                    {(teamAvgData?.leaderCount || 0) < 3 ||
+                    (teamAvgData?.managerCount || 0) < 3 ||
+                    (teamAvgData?.employeeCount || 0) < 3 ? (
                       <div className="bg-[#FFF9EE] border border-[#FDE68A] rounded-xl p-4 flex items-start gap-3 w-full max-w-3xl mx-auto text-left shadow-sm">
                         <div className="flex-shrink-0 mt-0.5">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#E67E22"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="8" x2="12" y2="12"></line>
                             <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -1855,7 +1888,11 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                               Limited Data
                             </span>
                             <span className="text-[10px] text-[#D97706] font-medium">
-                              (Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                              (Responses:{" "}
+                              {(teamAvgData?.leaderCount || 0) +
+                                (teamAvgData?.managerCount || 0) +
+                                (teamAvgData?.employeeCount || 0)}
+                              )
                             </span>
                           </div>
                         </div>
@@ -1863,7 +1900,16 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     ) : (
                       <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex items-start gap-3 w-full max-w-3xl mx-auto text-left shadow-sm">
                         <div className="flex-shrink-0 mt-0.5">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#166534"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
                           </svg>
@@ -1877,7 +1923,11 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                               Confidence: High
                             </span>
                             <span className="text-[10px] text-[#15803D] font-medium">
-                              (Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                              (Total Responses:{" "}
+                              {(teamAvgData?.leaderCount || 0) +
+                                (teamAvgData?.managerCount || 0) +
+                                (teamAvgData?.employeeCount || 0)}
+                              )
                             </span>
                           </div>
                         </div>
@@ -1945,7 +1995,11 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                     </div>
 
                     <div>
-                      <img src={OuiSecurity} alt="images" className="w-8 h-8 opacity-80" />
+                      <img
+                        src={OuiSecurity}
+                        alt="images"
+                        className="w-8 h-8 opacity-80"
+                      />
                     </div>
                   </div>
                   <div className="w-full my-6">
@@ -1953,7 +2007,11 @@ Highlights gaps and imbalances that may signal hidden risks to alignment, adopti
                   </div>
                   <div className="mt-8">
                     <p className="text-[15px] font-semibold text-gray-700">
-                      Largest Gap: <span className="font-bold text-gray-900 uppercase">{alignmentInfo.largestRole} VS {alignmentInfo.lowestRole} (+{alignmentInfo.gap})</span>
+                      Largest Gap:{" "}
+                      <span className="font-bold text-gray-900 uppercase">
+                        {alignmentInfo.largestRole} VS{" "}
+                        {alignmentInfo.lowestRole} (+{alignmentInfo.gap})
+                      </span>
                     </p>
                   </div>
                   <div className="mt-8 flex flex-col items-end">

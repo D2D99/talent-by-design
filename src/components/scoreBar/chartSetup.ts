@@ -12,5 +12,5 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   Tooltip,
-  annotationPlugin
+  annotationPlugin,
 );

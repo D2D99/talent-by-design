@@ -32,6 +32,7 @@ import { useEffect, useState } from "react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 // import LoginModal from "../../components/loginModal";
 import SpinnerLoader from "../../components/spinnerLoader";
+import BackToTop from "../../components/backToTop";
 
 const Home = () => {
   // const [isVisible, setIsVisible] = useState(false);
@@ -1006,7 +1007,7 @@ const Home = () => {
             Together, they create a powerful blueprint for organizational
             optimization.
           </p>
-          <div className="md:sticky relative md:top-28 mt-8 justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+          <div className="md:sticky relative md:top-28 mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
                 1. POD-360™ identifies what’s blocking execution
@@ -1050,7 +1051,7 @@ const Home = () => {
               <img src={Identifies} className="rounded-3xl" alt="Image" />
             </div>
           </div>
-          <div className="md:sticky relative md:top-36 z-[2] mt-8 justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+          <div className="md:sticky relative md:top-36 z-[2] mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)]">
                 2. Translate POD-360™ insights into measurable goals
@@ -1086,7 +1087,7 @@ const Home = () => {
               <img src={Identifies1} className="rounded-3xl" alt="Image" />
             </div>
           </div>
-          <div className="md:sticky relative md:top-44 z-[3] mt-8 justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+          <div className="md:sticky relative md:top-44 z-[3] mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
                 3. POD-360™ makes OKRs realistic, targeted, and achievable
@@ -1115,7 +1116,7 @@ const Home = () => {
               <img src={Identifies2} className="rounded-3xl" alt="Image" />
             </div>
           </div>
-          <div className="mt-8 md:sticky relative md:top-52 z-[4] justify-between items-center flex lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+          <div className="mt-8 md:sticky relative md:top-52 z-[4] md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
                 4. Improve performance every quarter
@@ -1254,7 +1255,9 @@ const Home = () => {
                     className="h-20 w-20 object-contain mb-3"
                   />
                   <p>
-                  Upload your content such as strategic plans, transformation documents, operating models, reports, and key organizational artifacts. Access quality prompts from our vast library.
+                    Upload your content such as strategic plans, transformation
+                    documents, operating models, reports, and key organizational
+                    artifacts. Access quality prompts from our vast library.
                   </p>
                 </div>
 
@@ -1440,7 +1443,12 @@ const Home = () => {
                   </div>
                   <p className="mt-5">
                     <strong>
-                  We use the POD-360™ Assessment to measure progress and demonstrate clear ROI on your key investments including your engagement with us. Before concluding our work together, we also help establish a Community of Practice to ensure long-term capability, sustainability, and continued success.
+                      We use the POD-360™ Assessment to measure progress and
+                      demonstrate clear ROI on your key investments including
+                      your engagement with us. Before concluding our work
+                      together, we also help establish a Community of Practice
+                      to ensure long-term capability, sustainability, and
+                      continued success.
                     </strong>
                   </p>
                 </div>
@@ -1486,6 +1494,8 @@ const Home = () => {
       {/* Cta Section End */}
 
       <Footer />
+
+      <BackToTop />
 
       {/* Build Resilient Start*/}
       {/* <div

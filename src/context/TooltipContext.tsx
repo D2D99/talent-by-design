@@ -14,7 +14,7 @@ interface TooltipContextType {
   updateTooltip: (
     tooltipId: string,
     content: string,
-    title?: string
+    title?: string,
   ) => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -51,7 +51,7 @@ export const TooltipProvider: React.FC<{ children: React.ReactNode }> = ({
   const updateTooltip = async (
     tooltipId: string,
     content: string,
-    title?: string
+    title?: string,
   ) => {
     try {
       await api.put("/dashboard/tooltips", { tooltipId, content, title });

@@ -103,7 +103,7 @@ const ManagerReport = () => {
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx],
     );
   };
 
@@ -122,10 +122,10 @@ const ManagerReport = () => {
   const [members, setMembers] = useState<any[]>([]);
 
   const [selectedOrg, setSelectedOrg] = useState<string>(
-    searchParams.get("orgName") || user?.orgName || ""
+    searchParams.get("orgName") || user?.orgName || "",
   );
   const [selectedDept, setSelectedDept] = useState<string>(
-    searchParams.get("department") || ""
+    searchParams.get("department") || "",
   );
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
@@ -155,7 +155,7 @@ const ManagerReport = () => {
           const member = fetchedMembers.find(
             (m: any) =>
               (userId && m._id === userId) ||
-              (userEmail && m.email === userEmail)
+              (userEmail && m.email === userEmail),
           );
           if (member) {
             setSelectedMember(member);
@@ -253,7 +253,7 @@ const ManagerReport = () => {
         setUserData(res.data.user);
         setAiInsight(res.data.aiInsight);
         setIsReportReleased(
-          res.data.isReleased || res.data.report?.isReleased || false
+          res.data.isReleased || res.data.report?.isReleased || false,
         );
         setHasNoReport(false);
       } catch (error: any) {
@@ -313,13 +313,13 @@ const ManagerReport = () => {
       const qCurrent =
         reportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       const qFirst =
         firstReportData?.responses?.filter(
           (r: any) =>
-            r.domain === selectedDomain && r.subdomain === selectedSubdomain
+            r.domain === selectedDomain && r.subdomain === selectedSubdomain,
         ) || [];
 
       // Sort questions to ensure consistent order
@@ -337,7 +337,7 @@ const ManagerReport = () => {
 
     // Default: subdomain averages
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains.map((_: any, i: number) => `S${i + 1}`);
     const descriptions = subdomains.map((sub) => sub);
@@ -362,7 +362,7 @@ const ManagerReport = () => {
   useEffect(() => {
     if (reportData?.scores?.domains?.[selectedDomain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[selectedDomain].subdomains
+        reportData.scores.domains[selectedDomain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     }
@@ -389,7 +389,7 @@ const ManagerReport = () => {
     const hasSubdomains = !!(
       reportData?.scores?.domains?.[selectedDomain]?.subdomains &&
       Object.keys(reportData.scores.domains[selectedDomain].subdomains).length >
-      0
+        0
     );
     if (reportData && (!hasSubdomains || selectedSubdomain)) {
       fetchDetailedPods();
@@ -414,7 +414,7 @@ const ManagerReport = () => {
         `/dashboard/preview-pdf-report?${qParams.toString()}`,
         {
           responseType: "blob",
-        }
+        },
       );
       const url = URL.createObjectURL(response.data);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -480,7 +480,7 @@ const ManagerReport = () => {
   // Robust triangle data mapping
   const findDomainScore = (pattern: string) => {
     const key = Object.keys(reportData?.scores?.domains || {}).find((k) =>
-      k.toLowerCase().includes(pattern.toLowerCase())
+      k.toLowerCase().includes(pattern.toLowerCase()),
     );
     return key ? reportData.scores.domains[key].score : 0;
   };
@@ -496,7 +496,7 @@ const ManagerReport = () => {
     // 🆕 Auto-select first subdomain when domain changes to ensure SpeedMeter updates
     if (reportData?.scores?.domains?.[domain]?.subdomains) {
       const firstSub = Object.keys(
-        reportData.scores.domains[domain].subdomains
+        reportData.scores.domains[domain].subdomains,
       )[0];
       setSelectedSubdomain(firstSub);
     } else {
@@ -508,7 +508,7 @@ const ManagerReport = () => {
   const subdomainScore = (() => {
     const subData =
       reportData?.scores?.domains?.[selectedDomain]?.subdomains?.[
-      selectedSubdomain
+        selectedSubdomain
       ];
     if (typeof subData === "object" && subData !== null) {
       return subData.score || 0;
@@ -519,16 +519,16 @@ const ManagerReport = () => {
   // Use dynamic pods if available, fallback to legacy
   const displayInsights = detailedPods?.insights?.mainText
     ? (() => {
-      const lines = detailedPods.insights.mainText
-        .split(/\r?\n/)
-        .filter((l: string) => l.trim().length > 0);
-      const hasBullets = lines.some((l: string) => l.includes("•"));
-      if (!hasBullets) return lines;
-      return lines
-        .filter((line: string) => line.includes("•"))
-        .map((line: string) => line.replace(/•/g, "").trim())
-        .filter((line: string) => line.length > 0);
-    })()
+        const lines = detailedPods.insights.mainText
+          .split(/\r?\n/)
+          .filter((l: string) => l.trim().length > 0);
+        const hasBullets = lines.some((l: string) => l.includes("•"));
+        if (!hasBullets) return lines;
+        return lines
+          .filter((line: string) => line.includes("•"))
+          .map((line: string) => line.replace(/•/g, "").trim())
+          .filter((line: string) => line.length > 0);
+      })()
     : ["Processing insights..."];
 
   const finalInsights =
@@ -538,25 +538,25 @@ const ManagerReport = () => {
 
   const parseObjectivesList = (text: string) => {
     if (!text || !text.trim()) return { focus: "", list: [] };
-    
+
     let focus = "";
     let remainingText = text;
-    
+
     const focusMatch = text.match(/\[FOCUS\]\s*([\s\S]*?)(?:\n\n|\n|$)/);
     if (focusMatch) {
       focus = focusMatch[1].trim();
       remainingText = text.replace(focusMatch[0], "").trim();
     }
 
-    const lines = remainingText.split('\n');
-    const list: { title: string, keyResults: string[] }[] = [];
+    const lines = remainingText.split("\n");
+    const list: { title: string; keyResults: string[] }[] = [];
     let currentTitle = "";
     let currentKRs: string[] = [];
-    
+
     for (const line of lines) {
       if (!line.trim()) continue;
-      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-        currentKRs.push(line.replace(/^[•-]\s*/, '').trim());
+      if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
+        currentKRs.push(line.replace(/^[•-]\s*/, "").trim());
       } else {
         if (currentKRs.length > 0) {
           list.push({ title: currentTitle.trim(), keyResults: currentKRs });
@@ -573,16 +573,22 @@ const ManagerReport = () => {
     return { focus, list };
   };
 
-  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback?.objectives 
+  const { focus: okrFocus, list: parsedObjectives } = detailedPods?.rawFeedback
+    ?.objectives
     ? parseObjectivesList(detailedPods.rawFeedback.objectives)
     : { focus: "", list: [] };
 
-  const displayObjectives = parsedObjectives.length > 0 ? parsedObjectives : [
-    {
-      title: detailedPods?.objectives?.subtitle || "Lead team improvements in this domain area",
-      keyResults: detailedPods?.objectives?.items || []
-    }
-  ].filter(obj => obj.keyResults.length > 0);
+  const displayObjectives =
+    parsedObjectives.length > 0
+      ? parsedObjectives
+      : [
+          {
+            title:
+              detailedPods?.objectives?.subtitle ||
+              "Lead team improvements in this domain area",
+            keyResults: detailedPods?.objectives?.items || [],
+          },
+        ].filter((obj) => obj.keyResults.length > 0);
 
   const displayRecommendations = detailedPods?.recommendations?.items || [
     "No specific recommendations available for this domain yet.",
@@ -596,7 +602,7 @@ const ManagerReport = () => {
   // Peer series    = Org-wide benchmark avg (other departments)
   const radarData: RadarData = (() => {
     const subdomains = Object.keys(
-      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {}
+      reportData?.scores?.domains?.[selectedDomain]?.subdomains || {},
     );
     const labels = subdomains;
     const mScores: number[] = [];
@@ -618,7 +624,7 @@ const ManagerReport = () => {
       tScores.push(
         employeeSubScore !== null
           ? Number((employeeSubScore / 10).toFixed(1))
-          : 0
+          : 0,
       );
     });
 
@@ -626,7 +632,7 @@ const ManagerReport = () => {
   })();
 
   const deltaScores = radarData.team.map((t, i) =>
-    Number((t - radarData.manager[i]).toFixed(1))
+    Number((t - radarData.manager[i]).toFixed(1)),
   );
 
   // 🆕 Perception Gap Highlights
@@ -708,9 +714,13 @@ const ManagerReport = () => {
                 className="text-[var(--primary-color)] size-10"
               />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">Report Not Released Yet</h2>
+            <h2 className="text-xl font-bold text-gray-800">
+              Report Not Released Yet
+            </h2>
             <p className="text-gray-500 max-w-sm text-sm leading-relaxed px-4">
-              Your report has not been released yet. Once released by a SuperAdmin or Admin, you will be able to view your scores and insights here.
+              Your report has not been released yet. Once released by a
+              SuperAdmin or Admin, you will be able to view your scores and
+              insights here.
             </p>
           </div>
         </div>
@@ -736,73 +746,77 @@ const ManagerReport = () => {
           {!hasNoReport && (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-              {/* Status Badge */}
-              {isReportReleased && reportData && (isSuperAdmin || isAdmin) && (
-                <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
-                  <Icon icon="solar:check-circle-bold-duotone" width="12" />
-                  Released Report
-                </span>
-              )}
-              {/* Edit Feedback Button (SA or Admin viewing someone else) */}
-              {userId &&
-                (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
-                  <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-oleft before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                    title="Edit AI Insights, Objectives, and Recommendations"
-                  >
-                    <Icon icon="lucide:pencil" width="16" />
-                  </button>
-                )}
-
-              {/* Release Section (Super Admin or Admin) */}
-              {(isSuperAdmin || isAdmin) && !isReportReleased && reportData && (
-                <button
-                  onClick={() => setShowReleaseWarning(true)}
-                  disabled={releasing}
-                  className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-                >
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                  {releasing ? (
-                    <Icon icon="line-md:loading-loop" width="16" />
-                  ) : (
-                    <Icon icon="solar:star-bold-duotone" width="16" />
+                {/* Status Badge */}
+                {isReportReleased &&
+                  reportData &&
+                  (isSuperAdmin || isAdmin) && (
+                    <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                      <Icon icon="solar:check-circle-bold-duotone" width="12" />
+                      Released Report
+                    </span>
                   )}
-                  {releasing ? "Releasing..." : "Approve & Release"}
+                {/* Edit Feedback Button (SA or Admin viewing someone else) */}
+                {userId &&
+                  (isSuperAdmin || (isAdmin && userId !== user?._id)) && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-oleft before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                      title="Edit AI Insights, Objectives, and Recommendations"
+                    >
+                      <Icon icon="lucide:pencil" width="16" />
+                    </button>
+                  )}
+
+                {/* Release Section (Super Admin or Admin) */}
+                {(isSuperAdmin || isAdmin) &&
+                  !isReportReleased &&
+                  reportData && (
+                    <button
+                      onClick={() => setShowReleaseWarning(true)}
+                      disabled={releasing}
+                      className="group text-xs text-[var(--primary-color)] px-5 py-2 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                    >
+                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                      {releasing ? (
+                        <Icon icon="line-md:loading-loop" width="16" />
+                      ) : (
+                        <Icon icon="solar:star-bold-duotone" width="16" />
+                      )}
+                      {releasing ? "Releasing..." : "Approve & Release"}
+                    </button>
+                  )}
+              </div>
+
+              <ConfirmationModal
+                isOpen={showReleaseWarning}
+                onClose={() => setShowReleaseWarning(false)}
+                onConfirm={() => {
+                  setShowReleaseWarning(false);
+                  handleRelease();
+                }}
+                title="Release Report?"
+                message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
+                confirmText="Confirm"
+                cancelText="Cancel"
+                loading={releasing}
+              />
+
+              {(isSuperAdmin || isAdmin || isReportReleased) && (
+                <button
+                  type="button"
+                  onClick={handleExportPDF}
+                  disabled={exportLoading}
+                  className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                >
+                  {exportLoading ? (
+                    <Icon icon="eos-icons:loading" width="16" />
+                  ) : (
+                    <Icon icon="pajamas:export" width="16" height="16" />
+                  )}
+                  {exportLoading ? "Exporting..." : "Export PDF Report"}
                 </button>
               )}
-            </div>
-
-            <ConfirmationModal
-              isOpen={showReleaseWarning}
-              onClose={() => setShowReleaseWarning(false)}
-              onConfirm={() => {
-                setShowReleaseWarning(false);
-                handleRelease();
-              }}
-              title="Release Report?"
-              message="Are you sure you want to release this report to the participant? Once released, they will be able to view their scores and insights. This action cannot be undone."
-               confirmText="Confirm"
-              cancelText="Cancel"
-              loading={releasing}
-            />
-
-            {(isSuperAdmin || isAdmin || isReportReleased) && (
-              <button
-                type="button"
-                onClick={handleExportPDF}
-                disabled={exportLoading}
-                className="relative overflow-hidden z-0 text-[var(--white-color)] px-4 h-10 rounded-full flex justify-center items-center gap-1.5 font-semibold text-xs uppercase bg-gradient-to-r from-[#1a3652] to-[#448bd2] duration-200 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/30 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
-              >
-                {exportLoading ? (
-                  <Icon icon="eos-icons:loading" width="16" />
-                ) : (
-                  <Icon icon="pajamas:export" width="16" height="16" />
-                )}
-                {exportLoading ? "Exporting..." : "Export PDF Report"}
-              </button>
-            )}
             </div>
           )}
         </div>
@@ -829,7 +843,9 @@ const ManagerReport = () => {
                 placeholder="Organization"
                 options={orgs.map((o) => ({ value: o, label: o }))}
                 value={
-                  selectedOrg ? { value: selectedOrg, label: selectedOrg } : null
+                  selectedOrg
+                    ? { value: selectedOrg, label: selectedOrg }
+                    : null
                 }
                 onChange={(option: any) => {
                   setSelectedOrg(option?.value || "");
@@ -873,9 +889,9 @@ const ManagerReport = () => {
                 value={
                   selectedMember
                     ? {
-                      value: selectedMember._id,
-                      label: selectedMember.name,
-                    }
+                        value: selectedMember._id,
+                        label: selectedMember.name,
+                      }
                     : null
                 }
                 onChange={(option: any) => {
@@ -901,7 +917,7 @@ const ManagerReport = () => {
                       : "";
 
                     navigate(
-                      `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`
+                      `/dashboard/reports/${reportType}?userId=${m._id}&email=${encodeURIComponent(m.email)}${orgQuery}`,
                     );
                   }
                 }}
@@ -1097,7 +1113,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                   >
                     {Object.keys(
                       reportData?.scores?.domains?.[selectedDomain]
-                        ?.subdomains || {}
+                        ?.subdomains || {},
                     ).map((s) => (
                       <li key={s}>
                         <button
@@ -1319,15 +1335,15 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                                 .split(/\r?\n/)
                                 .filter((l: string) => l.trim().length > 0);
                             const hasMBullets = mLines.some((l: string) =>
-                              l.includes("•")
+                              l.includes("•"),
                             );
                             const finalMLines = hasMBullets
                               ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) =>
-                                  l.replace(/•/g, "").trim()
-                                )
-                                .filter((l: string) => l.length > 0)
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
                               : mLines;
 
                             return finalMLines.map(
@@ -1345,7 +1361,7 @@ Indicates whether this area is a strength to leverage or a risk requiring attent
                                     {bullet}
                                   </span>
                                 </li>
-                              )
+                              ),
                             );
                           })()
                         ) : (
@@ -1386,9 +1402,13 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                       )}
                       {displayObjectives.map((obj, objIdx) => (
                         <div key={objIdx} className="flex items-start gap-4">
-                          <div className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? 'visible' : 'invisible'}`}>
+                          <div
+                            className={`text-lg-progress pt-1 shrink-0 ${objIdx === 0 ? "visible" : "invisible"}`}
+                          >
                             <CircularProgress
-                              value={Math.ceil(detailedPods?.objectives?.progress || 0)}
+                              value={Math.ceil(
+                                detailedPods?.objectives?.progress || 0,
+                              )}
                               width={70}
                               textColor="#36454F"
                               pathColor="#1A3652"
@@ -1405,16 +1425,18 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               </p>
                             </div>
                             <div className="flex flex-col gap-4">
-                              {obj.keyResults.map((krText: string, krIdx: number) => (
-                                <div key={krIdx}>
-                                  <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
-                                    KR {objIdx + 1}.{krIdx + 1}
-                                  </h2>
-                                  <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
-                                    {krText}
-                                  </p>
-                                </div>
-                              ))}
+                              {obj.keyResults.map(
+                                (krText: string, krIdx: number) => (
+                                  <div key={krIdx}>
+                                    <h2 className="text-base font-bold text-[var(--secondary-color)] capitalize ">
+                                      KR {objIdx + 1}.{krIdx + 1}
+                                    </h2>
+                                    <p className="text-sm font-normal text-[var(--secondary-color)] mt-0.5">
+                                      {krText}
+                                    </p>
+                                  </div>
+                                ),
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1672,7 +1694,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                               {rec}
                             </span>
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                     <div></div>
@@ -1735,7 +1757,9 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                             >
                               <span
                                 className="w-5 h-2 rounded-sm inline-block"
-                                style={{ background: "rgba(74, 144, 226, 0.7)" }}
+                                style={{
+                                  background: "rgba(74, 144, 226, 0.7)",
+                                }}
                               />
                               <span className="text-xs text-black">
                                 Manager (1)
@@ -1747,10 +1771,14 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                             >
                               <span
                                 className="w-5 h-2 rounded-sm inline-block"
-                                style={{ background: "rgba(46, 204, 113, 0.7)" }}
+                                style={{
+                                  background: "rgba(46, 204, 113, 0.7)",
+                                }}
                               />
                               <span className="text-xs text-black">
-                                {(teamAvgData?.employeeCount || 0) === 0 ? "Employee - No Data Available" : `Employee (${teamAvgData?.employeeCount || 0})`}
+                                {(teamAvgData?.employeeCount || 0) === 0
+                                  ? "Employee - No Data Available"
+                                  : `Employee (${teamAvgData?.employeeCount || 0})`}
                               </span>
                             </div>
                           </div>
@@ -1766,30 +1794,51 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                           </div>
 
                           <div className="flex justify-center mt-6 mb-4">
-                            {((teamAvgData?.employeeCount || 0) < 3) ? (
+                            {(teamAvgData?.employeeCount || 0) < 3 ? (
                               <div className="bg-[#FFF9EE] border border-[#FDE68A] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
                                 <div className="flex-shrink-0 mt-0.5">
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#E67E22"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
                                     <circle cx="12" cy="12" r="10"></circle>
                                     <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    <line
+                                      x1="12"
+                                      y1="16"
+                                      x2="12.01"
+                                      y2="16"
+                                    ></line>
                                   </svg>
                                 </div>
                                 <div className="flex flex-col gap-1">
                                   <p className="text-[13px] text-[#B45309] font-medium leading-relaxed">
-                                    {gapInsights.some(g => g.severity === "Large")
+                                    {gapInsights.some(
+                                      (g) => g.severity === "Large",
+                                    )
                                       ? "Significant disconnect detected. Leadership perception differs widely from front-line experience — validation is critical."
-                                      : gapInsights.some(g => g.severity === "Medium")
+                                      : gapInsights.some(
+                                            (g) => g.severity === "Medium",
+                                          )
                                         ? "Moderate variance detected. Some blind spots may exist; leadership perception requires validation against team feedback."
-                                        : "Preliminary data shows good alignment, though a larger sample is needed to confirm these early trends."
-                                    }
+                                        : "Preliminary data shows good alignment, though a larger sample is needed to confirm these early trends."}
                                   </p>
                                   <div className="flex items-center gap-2 mt-1.5">
                                     <span className="text-[9px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#FDE68A]">
                                       Limited Data
                                     </span>
                                     <span className="text-[10px] text-[#D97706] font-medium">
-                                      (Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                                      (Responses:{" "}
+                                      {(teamAvgData?.leaderCount || 0) +
+                                        (teamAvgData?.managerCount || 0) +
+                                        (teamAvgData?.employeeCount || 0)}
+                                      )
                                     </span>
                                   </div>
                                 </div>
@@ -1797,16 +1846,29 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                             ) : (
                               <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex items-start gap-3 w-full text-left shadow-sm">
                                 <div className="flex-shrink-0 mt-0.5">
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#166534"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                   </svg>
                                 </div>
                                 <div className="flex flex-col gap-1">
                                   <p className="text-[13px] text-[#166534] font-medium leading-relaxed">
-                                    {gapInsights.some(g => g.severity === "Large")
+                                    {gapInsights.some(
+                                      (g) => g.severity === "Large",
+                                    )
                                       ? "Significant disconnect detected. Even with high participation, the score gaps suggest critical misalignments requiring attention."
-                                      : gapInsights.some(g => g.severity === "Medium")
+                                      : gapInsights.some(
+                                            (g) => g.severity === "Medium",
+                                          )
                                         ? "Moderate variance detected. Data provides a strong baseline, but some disconnects exist that require validation."
                                         : "High alignment detected. Data provides a statistically significant baseline confirming consistent experience across roles."}
                                   </p>
@@ -1815,7 +1877,11 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                       Confidence: High
                                     </span>
                                     <span className="text-[10px] text-[#15803D] font-medium">
-                                      (Total Responses: {(teamAvgData?.leaderCount || 0) + (teamAvgData?.managerCount || 0) + (teamAvgData?.employeeCount || 0)})
+                                      (Total Responses:{" "}
+                                      {(teamAvgData?.leaderCount || 0) +
+                                        (teamAvgData?.managerCount || 0) +
+                                        (teamAvgData?.employeeCount || 0)}
+                                      )
                                     </span>
                                   </div>
                                 </div>
@@ -1912,7 +1978,7 @@ Use this a guide for what to execute, track, and reinforce to drive sustained im
                                 </div>
                               </div>
                             </div>
-                          )
+                          ),
                         )}
 
                         {otherGaps.length > 0 && !showAllGaps && (
@@ -1959,14 +2025,26 @@ Highlights where misalignment exists, how significant it is, and where it may be
                       </div>
                     </div>
                     <p className="text-sm text-[#64748B] mt-1 mb-6 ">
-                      {userData?.firstName || reportData?.user?.firstName || "Manager"}
+                      {userData?.firstName ||
+                        reportData?.user?.firstName ||
+                        "Manager"}
                       :{" "}
                       <span className="font-bold text-[#448CD2]">
-                        {((radarData.manager.reduce((a, b) => a + b, 0) / (radarData.manager.length || 1)) * 10).toFixed(0)}%
+                        {(
+                          (radarData.manager.reduce((a, b) => a + b, 0) /
+                            (radarData.manager.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
                       </span>{" "}
                       Domain Avg vs Employee Avg:{" "}
                       <span className="font-bold text-[#E74C3C]">
-                        {((radarData.team.reduce((a, b) => a + b, 0) / (radarData.team.length || 1)) * 10).toFixed(0)}%
+                        {(
+                          (radarData.team.reduce((a, b) => a + b, 0) /
+                            (radarData.team.length || 1)) *
+                          10
+                        ).toFixed(0)}
+                        %
                       </span>
                     </p>
                   </div>
@@ -1987,7 +2065,9 @@ Highlights where misalignment exists, how significant it is, and where it may be
               <div className="flex gap-2">
                 <h3 className="text-lg font-bold text-[var(--secondary-color)]  capitalize text-left">
                   Overall {selectedDomain} Domain Score —{" "}
-                  {userData?.firstName || reportData?.user?.firstName || "Manager"}
+                  {userData?.firstName ||
+                    reportData?.user?.firstName ||
+                    "Manager"}
                 </h3>
                 <div className="flex items-center">
                   <EditableTooltip
