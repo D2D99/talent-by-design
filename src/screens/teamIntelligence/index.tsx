@@ -7,6 +7,9 @@ import SpinnerLoader from "../../components/spinnerLoader";
 import { formatDistanceToNow } from "date-fns";
 import CircularProgress from "../../components/percentageCircle";
 import { useAuth } from "../../context/useAuth";
+import NeedsAttentionCard from "../../components/needsAttentionCard";
+import type { TopPriority } from "../../components/needsAttentionCard";
+import { resolveDashboardPriorities } from "../../utils/priorityUtils";
 
 const TeamIntelligence = () => {
   const navigate = useNavigate();
@@ -18,6 +21,9 @@ const TeamIntelligence = () => {
   const [viewMode, setViewMode] = useState<"list" | "visual">("list");
   const [selectedRole, setSelectedRole] = useState<string>("Managers");
   const [intelData, setIntelData] = useState<any>(null);
+  const [topPriorities, setTopPriorities] = useState<TopPriority[]>([]);
+  const [orgScores, setOrgScores] = useState<any>(null);
+  const [prioritiesLoading, setPrioritiesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,6 +45,24 @@ const TeamIntelligence = () => {
     };
     fetchIntelligence();
   }, [selectedQuarter, selectedYear, user]);
+
+  useEffect(() => {
+    const fetchPriorities = async () => {
+      setPrioritiesLoading(true);
+      try {
+        const res = await api.get("dashboard/org-average");
+        setTopPriorities(res.data.topPriorities || []);
+        setOrgScores(res.data.report?.scores || null);
+      } catch (error) {
+        console.error("Org priorities fetch error:", error);
+        setTopPriorities([]);
+        setOrgScores(null);
+      } finally {
+        setPrioritiesLoading(false);
+      }
+    };
+    fetchPriorities();
+  }, [selectedQuarter, selectedYear]);
 
   if (loading) return <SpinnerLoader />;
 
@@ -93,6 +117,14 @@ const TeamIntelligence = () => {
     const pct = totalUsers > 0 ? ((val / totalUsers) * 100).toFixed(1) : "0";
     return { val, pct, color: roleColors[idx] };
   };
+
+  const displayPriorities = resolveDashboardPriorities({
+    apiPriorities: topPriorities,
+    scores: orgScores,
+    operationalStats: stats,
+    limit: 2,
+    scoreThreshold: 75,
+  });
 
   return (
     <>
@@ -157,6 +189,12 @@ const TeamIntelligence = () => {
             </div>
           </div>
         </div>
+
+        <NeedsAttentionCard
+          priorities={displayPriorities}
+          loading={prioritiesLoading}
+          subtitle="Organization-wide performance gaps and workflow items requiring leadership action"
+        />
 
         {/* ── Stats Grid — compact horizontal cards ── */}
         <div className="grid grid-cols-2 pt-5 xl:grid-cols-4 gap-3">

@@ -33,6 +33,15 @@ import RoleProgressChart from "../../components/alignmentStatus";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import EditableTooltip from "../../components/editableTooltip";
 import ConfirmationModal from "../../components/confirmationModal";
+import NeedsAttentionCard from "../../components/needsAttentionCard";
+import type { TopPriority } from "../../components/needsAttentionCard";
+import { resolveDashboardPriorities } from "../../utils/priorityUtils";
+import OverviewScopeBanner from "../../components/overviewScopeBanner";
+import {
+  buildFallbackScope,
+  scopePrioritySubtitle,
+  type OverviewScope,
+} from "../../utils/overviewScope";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -140,6 +149,8 @@ const AdminOverview = () => {
   const [isReportReleased, setIsReportReleased] = useState(false);
   const [releasing, setReleasing] = useState(false);
   const [showReleaseWarning, setShowReleaseWarning] = useState(false);
+  const [topPrioritiesData, setTopPrioritiesData] = useState<TopPriority[]>([]);
+  const [overviewScope, setOverviewScope] = useState<OverviewScope | null>(null);
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -282,6 +293,8 @@ const AdminOverview = () => {
       setFirstReportData(res.data.firstReport || res.data.report);
       setUserData(res.data.user);
       setAiInsight(res.data.aiInsight);
+      setTopPrioritiesData(res.data.topPriorities || []);
+      if (res.data.scope) setOverviewScope(res.data.scope);
       setIsReportReleased(
         res.data.isReleased || res.data.report?.isReleased || false,
       );
@@ -378,6 +391,7 @@ const AdminOverview = () => {
       try {
         let url = "dashboard/manager-team-avg"; // It works for leaders too (finds their dept members)
         const params: string[] = [];
+        if (isAdmin || isSuperAdmin) params.push("skipDeptContext=true");
         if (targetUserId) params.push(`userId=${targetUserId}`);
         if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
         if (params.length) url += `?${params.join("&")}`;
@@ -792,6 +806,39 @@ const AdminOverview = () => {
     return { labels, manager: firstScores, team: currentScores, descriptions };
   })();
 
+  const displayScope =
+    overviewScope ||
+    buildFallbackScope({
+      role: userRole,
+      orgName: user?.orgName || teamAvgData?.orgName,
+      department: user?.department || teamAvgData?.department,
+      counts: {
+        leaders: teamAvgData?.leaderCount,
+        managers: teamAvgData?.managerCount,
+        employees: teamAvgData?.employeeCount,
+        total: teamAvgData?.memberCount,
+      },
+    });
+
+  const resolvedAttentionPriorities = resolveDashboardPriorities({
+    apiPriorities: topPrioritiesData,
+    scores: reportData?.scores,
+    limit: 2,
+    scoreThreshold: 75,
+  });
+
+  const handlePriorityClick = (priority: TopPriority) => {
+    if (priority.domain && reportData?.scores?.domains?.[priority.domain]) {
+      setSelectedDomain(priority.domain);
+      if (priority.subdomain || priority.area) {
+        setSelectedSubdomain(priority.subdomain || priority.area);
+      }
+      document
+        .getElementById("detailed-insights-section")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (!(isSuperAdmin || isAdmin) && !isReportReleased) {
     return (
       <div>
@@ -820,18 +867,18 @@ const AdminOverview = () => {
   return (
     <div>
       <div className="bg-white border border-[#448CD2] border-opacity-20 sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <h3 className="text-2xl font-black tracking-tight">
-            {userData || reportData
-              ? `${userData?.firstName || reportData?.user?.firstName || ""} ${
-                  userData?.lastName ||
-                  reportData?.user?.lastName ||
-                  reportData?.userDetails?.lastName ||
-                  ""
-                }`.trim()
-              : "Leader"}
-          </h3>
-        </div>
+        <OverviewScopeBanner
+          scope={displayScope}
+          overallScore={reportData?.scores?.overall}
+          loading={loading}
+        />
+
+        <NeedsAttentionCard
+          priorities={resolvedAttentionPriorities}
+          loading={loading}
+          subtitle={scopePrioritySubtitle(displayScope)}
+          onPriorityClick={handlePriorityClick}
+        />
 
         <>
           <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
@@ -1090,6 +1137,7 @@ Highlights strengths, gaps, and misalignment—guiding where to stabilize, optim
           </div>
 
           {/* Detailed Insight Pods with Skeleton Loading */}
+          <div id="detailed-insights-section">
           {podsLoading ? (
             <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
               <SkeletonPod />
@@ -1230,6 +1278,7 @@ Provides clear direction on where to stabilize, optimize, or accelerate efforts.
               </div>
             </>
           )}
+          </div>
 
           <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
             <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">
