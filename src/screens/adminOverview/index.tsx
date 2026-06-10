@@ -150,7 +150,9 @@ const AdminOverview = () => {
   const [releasing, setReleasing] = useState(false);
   const [showReleaseWarning, setShowReleaseWarning] = useState(false);
   const [topPrioritiesData, setTopPrioritiesData] = useState<TopPriority[]>([]);
-  const [overviewScope, setOverviewScope] = useState<OverviewScope | null>(null);
+  const [overviewScope, setOverviewScope] = useState<OverviewScope | null>(
+    null,
+  );
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -1138,146 +1140,156 @@ Highlights strengths, gaps, and misalignment—guiding where to stabilize, optim
 
           {/* Detailed Insight Pods with Skeleton Loading */}
           <div id="detailed-insights-section">
-          {podsLoading ? (
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
-              <SkeletonPod />
-              <SkeletonPod />
-              <SkeletonPod />
-              <SkeletonPod />
-            </div>
-          ) : (
-            <>
-              <div className="grid lg:grid-cols-2 grid-cols-1 xl:gap-x-6 gap-x-5 gap-y-8 mt-8">
-                <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <div className="flex gap-2 items-start">
-                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                          {detailedPods?.insights?.title ||
-                            `Insight for ${selectedSubdomain || selectedDomain}`}
-                        </h3>
+            {podsLoading ? (
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8">
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+                <SkeletonPod />
+              </div>
+            ) : (
+              <>
+                <div className="grid lg:grid-cols-2 grid-cols-1 xl:gap-x-6 gap-x-5 gap-y-8 mt-8">
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2 items-start">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            {detailedPods?.insights?.title ||
+                              `Insight for ${selectedSubdomain || selectedDomain}`}
+                          </h3>
 
-                        <div className="flex items-center mt-1">
-                          <EditableTooltip
-                            id="insightDomain"
-                            defaultContent="Provides a synthesized interpretation of the data within this domain.
+                          <div className="flex items-center mt-1">
+                            <EditableTooltip
+                              id="insightDomain"
+                              defaultContent="Provides a synthesized interpretation of the data within this domain.
 
 Highlights what is happening, why it matters, and where to focus next to improve performance and reduce friction."
-                          />
+                            />
+                          </div>
                         </div>
+                        <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
+                          {detailedPods?.insights?.subtitle ||
+                            (selectedSubdomain
+                              ? `Detailed analysis for ${selectedSubdomain}`
+                              : `Overall analysis for ${selectedDomain}`)}
+                        </p>
                       </div>
-                      <p className="text-sm font-normal text-[var(--secondary-color)] mt-1">
-                        {detailedPods?.insights?.subtitle ||
-                          (selectedSubdomain
-                            ? `Detailed analysis for ${selectedSubdomain}`
-                            : `Overall analysis for ${selectedDomain}`)}
-                      </p>
+                      <div>
+                        <img
+                          src={Streamline}
+                          alt="images"
+                          className="w-8 h-8"
+                        />
+                      </div>
                     </div>
                     <div>
-                      <img src={Streamline} alt="images" className="w-8 h-8" />
+                      <ul className="mt-4 space-y-2">
+                        {detailedPods?.insights?.modelDescription ? (
+                          (() => {
+                            const mLines =
+                              detailedPods.insights.modelDescription
+                                .split(/\r?\n/)
+                                .filter((l: string) => l.trim().length > 0);
+                            const hasMBullets = mLines.some((l: string) =>
+                              l.includes("•"),
+                            );
+                            const finalMLines = hasMBullets
+                              ? mLines
+                                  .filter((l: string) => l.includes("•"))
+                                  .map((l: string) =>
+                                    l.replace(/•/g, "").trim(),
+                                  )
+                                  .filter((l: string) => l.length > 0)
+                              : mLines;
+
+                            return finalMLines.map(
+                              (bullet: string, idx: number) => (
+                                <li
+                                  key={idx}
+                                  className="feature-list flex gap-2"
+                                >
+                                  <img
+                                    src={IconStar}
+                                    alt="icon"
+                                    className="mt-0.5 w-4 h-4 shrink-0"
+                                  />
+                                  <span className="text-sm text-[var(--secondary-color)] font-normal italic">
+                                    {bullet}
+                                  </span>
+                                </li>
+                              ),
+                            );
+                          })()
+                        ) : (
+                          <li className="text-sm text-[var(--secondary-color)] font-normal italic">
+                            No specific insights available yet.
+                          </li>
+                        )}
+                      </ul>
                     </div>
                   </div>
-                  <div>
-                    <ul className="mt-4 space-y-2">
-                      {detailedPods?.insights?.modelDescription ? (
-                        (() => {
-                          const mLines = detailedPods.insights.modelDescription
-                            .split(/\r?\n/)
-                            .filter((l: string) => l.trim().length > 0);
-                          const hasMBullets = mLines.some((l: string) =>
-                            l.includes("•"),
-                          );
-                          const finalMLines = hasMBullets
-                            ? mLines
-                                .filter((l: string) => l.includes("•"))
-                                .map((l: string) => l.replace(/•/g, "").trim())
-                                .filter((l: string) => l.length > 0)
-                            : mLines;
 
-                          return finalMLines.map(
-                            (bullet: string, idx: number) => (
-                              <li key={idx} className="feature-list flex gap-2">
-                                <img
-                                  src={IconStar}
-                                  alt="icon"
-                                  className="mt-0.5 w-4 h-4 shrink-0"
-                                />
-                                <span className="text-sm text-[var(--secondary-color)] font-normal italic">
-                                  {bullet}
-                                </span>
-                              </li>
-                            ),
-                          );
-                        })()
-                      ) : (
-                        <li className="text-sm text-[var(--secondary-color)] font-normal italic">
-                          No specific insights available yet.
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                </div>
+                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <div className="flex gap-2">
+                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
+                            Priorities Attention
+                          </h3>
 
-                <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                  <div className="flex items-center justify-between ">
-                    <div>
-                      <div className="flex gap-2">
-                        <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                          Priorities Attention
-                        </h3>
-
-                        <div className="flex items-center">
-                          <EditableTooltip
-                            id="priAtt"
-                            defaultContent="Identifies the most critical areas requiring attention based on current results.
+                          <div className="flex items-center">
+                            <EditableTooltip
+                              id="priAtt"
+                              defaultContent="Identifies the most critical areas requiring attention based on current results.
 
 Provides clear direction on where to stabilize, optimize, or accelerate efforts."
-                          />
+                            />
+                          </div>
                         </div>
-                      </div>
 
-                      <p className="text-sm font-normal text-[#000000] mt-1">
-                        Top 3 priorities based on current data
-                      </p>
-                    </div>
-                    <div>
-                      <img src={Iconamoon} alt="images" className="w-8 h-8" />
-                    </div>
-                  </div>
-                  <div className="mt-4 space-y-4">
-                    {topPriorities.map((item, _idx) => (
-                      <div
-                        key={item.name}
-                        className="flex items-center justify-between"
-                      >
-                        <p
-                          className="text-sm font-semibold flex items-center gap-2"
-                          style={{ color: item.color }}
-                        >
-                          <span
-                            className="w-2.5 h-2.5 flex rounded-full"
-                            style={{ backgroundColor: item.color }}
-                          ></span>
-                          {item.name}
-                        </p>
-                        <p
-                          className="text-sm font-bold"
-                          style={{ color: item.color }}
-                        >
-                          {item.score}%
+                        <p className="text-sm font-normal text-[#000000] mt-1">
+                          Top 3 priorities based on current data
                         </p>
                       </div>
-                    ))}
-                    {topPriorities.length === 0 && (
-                      <p className="text-sm text-gray-500 italic">
-                        No priorities identified yet.
-                      </p>
-                    )}
+                      <div>
+                        <img src={Iconamoon} alt="images" className="w-8 h-8" />
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      {topPriorities.map((item, _idx) => (
+                        <div
+                          key={item.name}
+                          className="flex items-center justify-between"
+                        >
+                          <p
+                            className="text-sm font-semibold flex items-center gap-2"
+                            style={{ color: item.color }}
+                          >
+                            <span
+                              className="w-2.5 h-2.5 flex rounded-full"
+                              style={{ backgroundColor: item.color }}
+                            ></span>
+                            {item.name}
+                          </p>
+                          <p
+                            className="text-sm font-bold"
+                            style={{ color: item.color }}
+                          >
+                            {item.score}%
+                          </p>
+                        </div>
+                      ))}
+                      {topPriorities.length === 0 && (
+                        <p className="text-sm text-gray-500 italic">
+                          No priorities identified yet.
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
           </div>
 
           <div className="mt-8 grid lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">

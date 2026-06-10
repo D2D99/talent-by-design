@@ -25,9 +25,7 @@ export type TeamAvgShape = Record<
   }
 >;
 
-export const getClassification = (
-  score: number,
-): "Low" | "Medium" | "High" => {
+export const getClassification = (score: number): "Low" | "Medium" | "High" => {
   if (score < 50) return "Low";
   if (score < 75) return "Medium";
   return "High";
@@ -49,7 +47,11 @@ const firstStep = (text?: string) => {
   return line || text.trim();
 };
 
-const defaultImpact = (area: string, domain: string, classification: string) => {
+const defaultImpact = (
+  area: string,
+  domain: string,
+  classification: string,
+) => {
   if (classification === "Low") {
     return `${area} is underperforming within ${domain} and may be creating friction that limits team and organizational outcomes.`;
   }
