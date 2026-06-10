@@ -11,11 +11,18 @@ import CircularProgress from "../../components/percentageCircle";
 // import { formatDistanceToNow } from "date-fns";
 import PieChart from "../../charts/pieChart";
 import RoleProgressChart from "../../components/alignmentStatus";
+import NeedsAttentionCard from "../../components/needsAttentionCard";
+import type { TopPriority } from "../../components/needsAttentionCard";
+import OverviewScopeBanner from "../../components/overviewScopeBanner";
+import { resolveDashboardPriorities } from "../../utils/priorityUtils";
+import {
+  buildFallbackScope,
+  scopePrioritySubtitle,
+  type OverviewScope,
+} from "../../utils/overviewScope";
 
 // --- Assets (using same names as in user request for consistency) ---
 import OuiSecurity from "../../../public/static/img/home/oui_security-signal-detected.svg";
-import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
-
 const Ring = ({
   score,
   r,
@@ -70,6 +77,8 @@ const OrganizationDeepDive = () => {
   const [selectedRole, setSelectedRole] = useState<string>("Managers");
   const [hiddenIndices, setHiddenIndices] = useState<number[]>([]);
   const [intelLoading, setIntelLoading] = useState(false);
+  const [overviewScope, setOverviewScope] = useState<OverviewScope | null>(null);
+  const [topPrioritiesData, setTopPrioritiesData] = useState<TopPriority[]>([]);
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -118,14 +127,19 @@ const OrganizationDeepDive = () => {
       if (!orgName) return;
       try {
         let url = "dashboard/manager-team-avg";
-        const params: string[] = ["includeSelf=true"];
-        params.push(`orgName=${encodeURIComponent(orgName)}`);
+        const params: string[] = [
+          "includeSelf=true",
+          "skipDeptContext=true",
+          `orgName=${encodeURIComponent(orgName)}`,
+        ];
         if (selectedRadarDept)
           params.push(`department=${encodeURIComponent(selectedRadarDept)}`);
 
-        if (params.length) url += `?${params.join("&")}`;
+        url += `?${params.join("&")}`;
         const res = await api.get(url);
         setTeamAvgData(res.data);
+        setTopPrioritiesData(res.data.topPriorities || []);
+        if (res.data.scope) setOverviewScope(res.data.scope);
       } catch (e) {
         console.error(e);
       }
@@ -207,14 +221,34 @@ const OrganizationDeepDive = () => {
     return { labels, manager: lScores, team: mScores, peer: eScores };
   })();
 
-  const topPriorities = Object.entries(reportData?.scores?.domains || {})
-    .sort(([, a]: any, [, b]: any) => a.score - b.score)
-    .slice(0, 3)
-    .map(([name, data]: any) => ({
-      name,
-      score: Math.round(data.score),
-      color: data.score < 50 ? "#D71818" : "#FF8D28",
-    }));
+  const displayScope =
+    overviewScope ||
+    buildFallbackScope({
+      role: "superadmin",
+      orgName: orgName || teamAvgData?.orgName,
+      counts: {
+        leaders: teamAvgData?.leaderCount,
+        managers: teamAvgData?.managerCount,
+        employees: teamAvgData?.employeeCount,
+        total: teamAvgData?.memberCount,
+      },
+    });
+
+  const resolvedAttentionPriorities = resolveDashboardPriorities({
+    apiPriorities: topPrioritiesData,
+    scores: reportData?.scores,
+    teamAvg: teamAvgData?.teamAvg,
+    limit: 2,
+    scoreThreshold: 75,
+  });
+
+  const handlePriorityClick = (priority: TopPriority) => {
+    if (priority.domain || priority.area) {
+      document
+        .getElementById("org-health-insights")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   const roleAverages = (() => {
     const lScores = Object.values(teamAvgData?.leaderAvg || {}).map(
@@ -394,6 +428,19 @@ const OrganizationDeepDive = () => {
         </div>
       </div>
 
+      <OverviewScopeBanner
+        scope={displayScope}
+        overallScore={reportData?.scores?.overall}
+        loading={loading}
+      />
+
+      <NeedsAttentionCard
+        priorities={resolvedAttentionPriorities}
+        loading={loading}
+        subtitle={scopePrioritySubtitle(displayScope)}
+        onPriorityClick={handlePriorityClick}
+      />
+
       {/* ── Stats Grid ── */}
       <div className="grid grid-cols-2 pt-5 xl:grid-cols-5 gap-3">
         {displayStats.map((stat, idx) => (
@@ -570,7 +617,10 @@ const OrganizationDeepDive = () => {
 
       {/* ────────── BELOW 3 SECTIONS: COPIED FROM USER REQUEST ────────── */}
 
-      <div className="mt-8 grid lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5">
+      <div
+        id="org-health-insights"
+        className="mt-8 grid lg:grid-cols-2 grid-cols-1  justify-between xl:gap-6 gap-5"
+      >
         <div className="border-[1px] border-[#448CD2] border-opacity-20 p-5 rounded-[12px] h-full bg-white w-full">
           {(() => {
             const getMetricColor = (score: number) => {
@@ -1063,61 +1113,6 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
           </div>
         </div>
 
-        <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex gap-2">
-                <h3 className="sm:text-xl text-lg font-bold text-[#1A3652] capitalize ">
-                  Priorities Attention
-                </h3>
-
-                <div className="flex items-center">
-                  <EditableTooltip
-                    id="priAtt"
-                    defaultContent="Identifies the most critical areas requiring attention based on current results.
-
-Provides clear direction on where to stabilize, optimize, or accelerate efforts."
-                  />
-                </div>
-              </div>
-
-              <p className="text-sm font-normal text-[#000000] mt-1">
-                Top 3 priorities based on current data
-              </p>
-            </div>
-
-            <div>
-              <img src={Iconamoon} alt="images" className="w-8 h-8" />
-            </div>
-          </div>
-          <div className="mt-4 space-y-4">
-            {topPriorities.map((item, _idx) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between"
-              >
-                <p
-                  className="text-sm font-semibold flex items-center gap-2"
-                  style={{ color: item.color }}
-                >
-                  <span
-                    className="w-2.5 h-2.5 flex rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  ></span>
-                  {item.name}
-                </p>
-                <p className="text-sm font-bold" style={{ color: item.color }}>
-                  {item.score}%
-                </p>
-              </div>
-            ))}
-            {topPriorities.length === 0 && (
-              <p className="text-sm text-gray-500 italic">
-                No priorities identified yet.
-              </p>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );
