@@ -165,7 +165,7 @@ export const NeedsAttentionCard = ({
 
   return (
     <div className="mt-6 bg-white border border-red-500 border-opacity-20 rounded-xl  overflow-hidden">
-      <div className="bg-[#FFEBEB] px-6 py-5 text-[#D71818]">
+      <div className="bg-[#FFEBEB] sm:px-6 px-3 py-5 text-[#D71818]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
             <div className="size-12 rounded-xl bg-[#D71818]/5 flex items-center justify-center shrink-0 border border-[#D71818]/10 text-[#D71818]">
@@ -203,7 +203,7 @@ export const NeedsAttentionCard = ({
         </div>
       </div>
 
-      <div className="p-6 bg-red-50/10">
+      <div className="sm:p-6 p-3 bg-red-50/10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {priorities.map((item, idx) => {
             const colors = getScoreColor(item.score, item.classification);
@@ -229,7 +229,7 @@ export const NeedsAttentionCard = ({
                     e.stopPropagation();
                     toggleAccordion(idx);
                   }}
-                  className="w-full text-left p-5 flex items-start gap-4 focus:outline-none focus:bg-slate-50/50"
+                  className="w-full text-left sm:p-5 p-3 flex items-start gap-4 focus:outline-none focus:bg-slate-50/50"
                 >
                   <div
                     className={`w-10 h-10 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center shrink-0 border ${colors.border}`}
@@ -297,11 +297,11 @@ export const NeedsAttentionCard = ({
                   <div
                     className={`transition-all duration-300 ease-in-out overflow-hidden ${
                       isExpanded
-                        ? "max-h-[500px] opacity-100 scale-100"
+                        ? "md:max-h-[500px] opacity-100 scale-100"
                         : "max-h-0 opacity-0 scale-95 pointer-events-none"
                     }`}
                   >
-                    <div className="p-5 space-y-4 divide-y divide-slate-100/80">
+                    <div className="sm:p-5 p-3 space-y-4 divide-y divide-slate-100/80">
                       <div className="flex gap-3 pt-0">
                         <Icon
                           icon="solar:danger-circle-linear"
@@ -399,11 +399,11 @@ export const NeedsAttentionCard = ({
           })}
         </div>
 
-        <p className="text-xs text-slate-500 text-center mt-5 flex items-center justify-center gap-2">
+        <p className="text-xs text-slate-500 text-center mt-5 flex items-star justify-centert gap-1">
           <Icon
             icon="solar:info-circle-linear"
             width={14}
-            className="text-slate-500"
+            className="text-slate-500 min-w-[14px]"
           />
           Click any card to inspect internal metrics · Transfer direct steps
           instantly using the action buttons.

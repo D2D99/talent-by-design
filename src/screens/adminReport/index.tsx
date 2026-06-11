@@ -774,7 +774,7 @@ const AdminReport = () => {
   return (
     <div>
       <div className="bg-white border border-[#448CD2] border-opacity-20  sm:p-6 p-3 rounded-[12px] min-h-[calc(100vh-162px)] shadow-[4px_4px_4px_0px_#448CD21A]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <h3 className="text-2xl font-black tracking-tight">
             {userData?.firstName ||
               reportData?.user?.firstName ||
@@ -787,7 +787,7 @@ const AdminReport = () => {
           </h3>
 
           {!hasNoReport && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 sm:flex-nowrap flex-wrap">
               <div className="flex items-center gap-2">
                 {/* Status Badge */}
                 {isReportReleased && reportData && (
@@ -803,7 +803,7 @@ const AdminReport = () => {
                     <button
                       type="button"
                       onClick={() => setIsEditModalOpen(true)}
-                      className="group text-[var(--primary-color)] w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
+                      className="group text-[var(--primary-color)] min-w-10 h-10 rounded-full border-2 border-[var(--primary-color)] flex justify-center items-center gap-1.5 font-semibold text-base uppercase relative overflow-hidden z-0 duration-200 disabled:opacity-40 hover:before:scale-x-100 before:content-[''] before:absolute before:inset-0 before:bg-[#448cd2]/10 before:origin-bottom-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out before:-z-10"
                       title="Edit AI Insights, Objectives, and Recommendations"
                     >
                       <Icon icon="lucide:pencil" width="16" />

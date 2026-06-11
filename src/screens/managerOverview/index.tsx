@@ -422,7 +422,7 @@ const ManagerOverview = () => {
             </div>
 
             <button
-              onClick={() => navigate("/dashboard/org-assessments")}
+              onClick={() => navigate("/dashboard/users")}
               className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--app-heading-color)] to-[var(--primary-color)] p-5 rounded-xl flex items-center justify-between text-white"
             >
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
@@ -505,7 +505,7 @@ const ManagerOverview = () => {
         </div>
 
         {/* ── AI Insights Board ── */}
-        <div className="bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
+        <div className=" hidden bg-[var(--app-surface)] rounded-[24px] border border-[var(--app-border-color)] p-8 flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-black text-[var(--app-heading-color)] tracking-tight">
@@ -581,7 +581,7 @@ const ManagerOverview = () => {
         </div>
 
         {/* ── Strategic Insight Banner ── */}
-        <div className="bg-gradient-to-r from-[#448CD2] to-[#1a3652] rounded-[24px] p-8 text-white relative overflow-hidden shadow-2xl ">
+        <div className=" hidden bg-gradient-to-r from-[#448CD2] to-[#1a3652] rounded-[24px] p-8 text-white relative overflow-hidden shadow-2xl ">
           {/* <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/10 transition-colors"></div> */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
             <div className="flex items-center gap-8">

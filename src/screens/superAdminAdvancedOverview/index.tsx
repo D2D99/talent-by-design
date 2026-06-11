@@ -71,7 +71,7 @@ const SuperAdminAdvancedOverview = () => {
   return (
     <div className="min-h-screen p-4 sm:p-6 space-y-8 animate-in fade-in duration-700">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/40 backdrop-blur-xl border border-white/20 p-6 rounded-2xl shadow-xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white/40 backdrop-blur-xl border border-white/20 p-6 rounded-2xl shadow-xl">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#1a3652] to-[#448bd2] bg-clip-text text-transparent">
             Super Admin Intelligence Overview
