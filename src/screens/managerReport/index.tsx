@@ -30,6 +30,10 @@ import type { RadarData } from "../../charts/radarChart";
 import GapBarChart from "../../charts/gapBarChart";
 import EditableTooltip from "../../components/editableTooltip";
 import ConfirmationModal from "../../components/confirmationModal";
+import NeedsAttentionCard from "../../components/needsAttentionCard";
+import type { TopPriority } from "../../components/needsAttentionCard";
+import { resolveDashboardPriorities } from "../../utils/priorityUtils";
+import { reportNeedsAttentionSubtitle } from "../../utils/overviewScope";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -703,6 +707,25 @@ const ManagerReport = () => {
     .sort((a, b) => b.absGap - a.absGap)
     .slice(3);
 
+  const resolvedAttentionPriorities = resolveDashboardPriorities({
+    scores: reportData?.scores,
+    teamAvg: teamAvgData?.employeeAvg,
+    limit: 2,
+    scoreThreshold: 75,
+  });
+
+  const handlePriorityClick = (priority: TopPriority) => {
+    if (priority.domain && reportData?.scores?.domains?.[priority.domain]) {
+      setSelectedDomain(priority.domain);
+      if (priority.subdomain || priority.area) {
+        setSelectedSubdomain(priority.subdomain || priority.area);
+      }
+      document
+        .getElementById("report-domain-insights")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (!(isSuperAdmin || isAdmin) && !isReportReleased) {
     return (
       <div>
@@ -965,7 +988,17 @@ const ManagerReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
+            <NeedsAttentionCard
+              priorities={resolvedAttentionPriorities}
+              loading={loading || teamAvgLoading}
+              subtitle={reportNeedsAttentionSubtitle("manager")}
+              onPriorityClick={handlePriorityClick}
+            />
+
+            <div
+              id="report-domain-insights"
+              className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8"
+            >
               <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold capitalize">

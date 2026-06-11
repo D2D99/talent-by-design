@@ -9,7 +9,6 @@ import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai
 // import Employee from "../../../public/static/img/home/employee.svg";
 import OuiSecurity from "../../../public/static/img/home/oui_security-signal-detected.svg";
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
-import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
 import { useState, useEffect } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
@@ -31,6 +30,10 @@ import RoleProgressChart from "../../components/alignmentStatus";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import EditableTooltip from "../../components/editableTooltip";
 import ConfirmationModal from "../../components/confirmationModal";
+import NeedsAttentionCard from "../../components/needsAttentionCard";
+import type { TopPriority } from "../../components/needsAttentionCard";
+import { resolveDashboardPriorities } from "../../utils/priorityUtils";
+import { reportNeedsAttentionSubtitle } from "../../utils/overviewScope";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -563,14 +566,23 @@ const LeaderReport = () => {
 
   const displayCoachingTips = detailedPods?.coachingTips?.items || [];
 
-  const topPriorities = Object.entries(reportData?.scores?.domains || {})
-    .sort(([, a]: any, [, b]: any) => a.score - b.score)
-    .slice(0, 3)
-    .map(([name, data]: any) => ({
-      name,
-      score: Math.round(data.score),
-      color: data.score < 50 ? "#D71818" : "#FF8D28",
-    }));
+  const resolvedAttentionPriorities = resolveDashboardPriorities({
+    scores: reportData?.scores,
+    limit: 2,
+    scoreThreshold: 75,
+  });
+
+  const handlePriorityClick = (priority: TopPriority) => {
+    if (priority.domain && reportData?.scores?.domains?.[priority.domain]) {
+      setSelectedDomain(priority.domain);
+      if (priority.subdomain || priority.area) {
+        setSelectedSubdomain(priority.subdomain || priority.area);
+      }
+      document
+        .getElementById("report-domain-insights")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   // Derive Radar Data from responses
   const radarData: RadarData = (() => {
@@ -1068,7 +1080,22 @@ const LeaderReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
+            <NeedsAttentionCard
+              priorities={resolvedAttentionPriorities}
+              loading={loading || teamAvgLoading}
+              subtitle={reportNeedsAttentionSubtitle("leader", {
+                department:
+                  userData?.department ||
+                  reportData?.userDetails?.department ||
+                  teamAvgData?.department,
+              })}
+              onPriorityClick={handlePriorityClick}
+            />
+
+            <div
+              id="report-domain-insights"
+              className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8"
+            >
               <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full ">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -1544,63 +1571,6 @@ Aligned to key capability areas these tips help address friction, build consiste
                     <div></div>
                   </div>
 
-                  <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                    <div className="flex items-center justify-between ">
-                      <div>
-                        <div className="flex gap-2">
-                          <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                            Priorities Attention
-                          </h3>
-
-                          <div className="flex items-center">
-                            <EditableTooltip
-                              id="priAtt"
-                              defaultContent="Identifies the most critical areas requiring attention based on current results.
-
-Provides clear direction on where to stabilize, optimize, or accelerate efforts."
-                            />
-                          </div>
-                        </div>
-
-                        <p className="text-sm font-normal text-[#000000] mt-1">
-                          Top 3 priorities based on current data
-                        </p>
-                      </div>
-                      <div>
-                        <img src={Iconamoon} alt="images" className="w-8 h-8" />
-                      </div>
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      {topPriorities.map((item, _idx) => (
-                        <div
-                          key={item.name}
-                          className="flex items-center justify-between"
-                        >
-                          <p
-                            className="text-sm font-semibold flex items-center gap-2"
-                            style={{ color: item.color }}
-                          >
-                            <span
-                              className="w-2.5 h-2.5 flex rounded-full"
-                              style={{ backgroundColor: item.color }}
-                            ></span>
-                            {item.name}
-                          </p>
-                          <p
-                            className="text-sm font-bold"
-                            style={{ color: item.color }}
-                          >
-                            {item.score}%
-                          </p>
-                        </div>
-                      ))}
-                      {topPriorities.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                          No priorities identified yet.
-                        </p>
-                      )}
-                    </div>
-                  </div>
                 </div>
               </>
             )}

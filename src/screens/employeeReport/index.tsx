@@ -25,6 +25,10 @@ import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import ReportPreviewModal from "../../components/reportPreviewModal";
 import EditableTooltip from "../../components/editableTooltip";
 import ConfirmationModal from "../../components/confirmationModal";
+import NeedsAttentionCard from "../../components/needsAttentionCard";
+import type { TopPriority } from "../../components/needsAttentionCard";
+import { resolveDashboardPriorities } from "../../utils/priorityUtils";
+import { reportNeedsAttentionSubtitle } from "../../utils/overviewScope";
 
 const SkeletonPod = () => (
   <div className="animate-pulse border-[1px] border-[#448CD2] border-opacity-10 p-4 rounded-[12px] bg-white h-full min-h-[220px]">
@@ -559,6 +563,24 @@ const EmployeeReport = () => {
     "No specific recommendations available for this domain yet.",
   ];
 
+  const resolvedAttentionPriorities = resolveDashboardPriorities({
+    scores: reportData?.scores,
+    limit: 2,
+    scoreThreshold: 75,
+  });
+
+  const handlePriorityClick = (priority: TopPriority) => {
+    if (priority.domain && reportData?.scores?.domains?.[priority.domain]) {
+      setSelectedDomain(priority.domain);
+      if (priority.subdomain || priority.area) {
+        setSelectedSubdomain(priority.subdomain || priority.area);
+      }
+      document
+        .getElementById("report-domain-insights")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (!(isSuperAdmin || isAdmin) && !isReportReleased) {
     return (
       <div>
@@ -831,7 +853,17 @@ const EmployeeReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8">
+            <NeedsAttentionCard
+              priorities={resolvedAttentionPriorities}
+              loading={loading}
+              subtitle={reportNeedsAttentionSubtitle("employee")}
+              onPriorityClick={handlePriorityClick}
+            />
+
+            <div
+              id="report-domain-insights"
+              className="mt-6 grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-x-6 gap-x-5 gap-y-8"
+            >
               {/* Domain Score Section */}
               <div className="border border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full bg-white">
                 <div className="flex gap-2">
