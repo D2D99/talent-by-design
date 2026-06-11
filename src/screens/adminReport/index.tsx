@@ -9,7 +9,6 @@ import StreamlinePlump from "../../../public/static/img/home/streamline-plump_ai
 // import Employee from "../../../public/static/img/home/employee.svg";
 import OuiSecurity from "../../../public/static/img/home/oui_security-signal-detected.svg";
 import DownArrow from "../../../public/static/img/home/down-arrow.svg";
-import Iconamoon from "../../../public/static/img/home/iconamoon_attention-square.svg";
 import UpArrow from "../../../public/static/img/home/up-arrow.svg";
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -31,6 +30,10 @@ import RoleProgressChart from "../../components/alignmentStatus";
 import FeedbackEditorModal from "../../components/feedbackEditorModal";
 import EditableTooltip from "../../components/editableTooltip";
 import ConfirmationModal from "../../components/confirmationModal";
+import NeedsAttentionCard from "../../components/needsAttentionCard";
+import type { TopPriority } from "../../components/needsAttentionCard";
+import { resolveDashboardPriorities } from "../../utils/priorityUtils";
+import { reportNeedsAttentionSubtitle } from "../../utils/overviewScope";
 
 // Score mapping: SCALE_1_5: 1→20,2→40,3→60,4→80,5→100; FORCED_CHOICE: low→20,high→100
 const getNumericScore = (res: any): number => {
@@ -135,6 +138,7 @@ const AdminReport = () => {
   const [isReportReleased, setIsReportReleased] = useState(false);
   const [releasing, setReleasing] = useState(false);
   const [showReleaseWarning, setShowReleaseWarning] = useState(false);
+  const [topPrioritiesData, setTopPrioritiesData] = useState<TopPriority[]>([]);
 
   const toggleHiddenIndex = (idx: number) => {
     setHiddenIndices((prev) =>
@@ -296,16 +300,17 @@ const AdminReport = () => {
       setTeamAvgLoading(true);
       try {
         let url = "dashboard/manager-team-avg";
-        const params: string[] = ["includeSelf=true"];
+        const params: string[] = ["includeSelf=true", "skipDeptContext=true"];
         if (userId) params.push(`userId=${userId}`);
         if (userEmail) params.push(`email=${encodeURIComponent(userEmail)}`);
         if (selectedOrg && !userId)
           params.push(`orgName=${encodeURIComponent(selectedOrg)}`);
         if (selectedRadarDept)
           params.push(`department=${encodeURIComponent(selectedRadarDept)}`);
-        if (params.length) url += `?${params.join("&")}`;
+        url += `?${params.join("&")}`;
         const res = await api.get(url);
         setTeamAvgData(res.data);
+        setTopPrioritiesData(res.data.topPriorities || []);
       } finally {
         setTeamAvgLoading(false);
       }
@@ -560,14 +565,28 @@ const AdminReport = () => {
   //   "No specific recommendations available for this domain yet.",
   // ];
 
-  const topPriorities = Object.entries(reportData?.scores?.domains || {})
-    .sort(([, a]: any, [, b]: any) => a.score - b.score)
-    .slice(0, 3)
-    .map(([name, data]: any) => ({
-      name,
-      score: Math.round(data.score),
-      color: data.score < 50 ? "#D71818" : "#FF8D28",
-    }));
+  const isOrgCollectiveReport =
+    reportData?.userDetails?.lastName === "Collective Report";
+
+  const resolvedAttentionPriorities = resolveDashboardPriorities({
+    apiPriorities: isOrgCollectiveReport ? topPrioritiesData : [],
+    scores: reportData?.scores,
+    teamAvg: isOrgCollectiveReport ? teamAvgData?.teamAvg : undefined,
+    limit: 2,
+    scoreThreshold: 75,
+  });
+
+  const handlePriorityClick = (priority: TopPriority) => {
+    if (priority.domain && reportData?.scores?.domains?.[priority.domain]) {
+      setSelectedDomain(priority.domain);
+      if (priority.subdomain || priority.area) {
+        setSelectedSubdomain(priority.subdomain || priority.area);
+      }
+      document
+        .getElementById("report-domain-insights")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   // Derive Radar Data from responses (Aggregated by Domain instead of Subdomain)
   const radarData: RadarData = (() => {
@@ -953,7 +972,19 @@ const AdminReport = () => {
           </div>
         ) : reportData ? (
           <>
-            <div className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5">
+            <NeedsAttentionCard
+              priorities={resolvedAttentionPriorities}
+              loading={loading || teamAvgLoading}
+              subtitle={reportNeedsAttentionSubtitle("admin", {
+                orgWide: isOrgCollectiveReport,
+              })}
+              onPriorityClick={handlePriorityClick}
+            />
+
+            <div
+              id="report-domain-insights"
+              className="mt-6 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 justify-between xl:gap-6 gap-5"
+            >
               <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] w-full">
                 <div className="flex gap-2">
                   <h2 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
@@ -1998,64 +2029,6 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
                 </div>
               </div>
 
-              <div className="border-[1px] border-[#448CD2] border-opacity-20 p-4 rounded-[12px] bg-[#448bd21c]">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex gap-2">
-                      <h3 className="sm:text-xl text-lg font-bold text-[var(--secondary-color)] capitalize ">
-                        Priorities Attention
-                      </h3>
-
-                      <div className="flex items-center">
-                        <EditableTooltip
-                          id="priAtt"
-                          defaultContent="Identifies the most critical areas requiring attention based on current results.
-
-Provides clear direction on where to stabilize, optimize, or accelerate efforts."
-                        />
-                      </div>
-                    </div>
-
-                    <p className="text-sm font-normal text-[#000000] mt-1">
-                      Top 3 priorities based on current data
-                    </p>
-                  </div>
-
-                  <div>
-                    <img src={Iconamoon} alt="images" className="w-8 h-8" />
-                  </div>
-                </div>
-                <div className="mt-4 space-y-4">
-                  {topPriorities.map((item, _idx) => (
-                    <div
-                      key={item.name}
-                      className="flex items-center justify-between"
-                    >
-                      <p
-                        className="text-sm font-semibold flex items-center gap-2"
-                        style={{ color: item.color }}
-                      >
-                        <span
-                          className="w-2.5 h-2.5 flex rounded-full"
-                          style={{ backgroundColor: item.color }}
-                        ></span>
-                        {item.name}
-                      </p>
-                      <p
-                        className="text-sm font-bold"
-                        style={{ color: item.color }}
-                      >
-                        {item.score}%
-                      </p>
-                    </div>
-                  ))}
-                  {topPriorities.length === 0 && (
-                    <p className="text-sm text-gray-500 italic">
-                      No priorities identified yet.
-                    </p>
-                  )}
-                </div>
-              </div>
             </div>
           </>
         ) : (

@@ -125,3 +125,19 @@ export const scopePrioritySubtitle = (scope: OverviewScope) => {
   }
   return "Ranked by performance gaps among your direct-report employees";
 };
+
+export const reportNeedsAttentionSubtitle = (
+  reportRole: "admin" | "leader" | "manager" | "employee",
+  options?: { department?: string; orgWide?: boolean },
+) => {
+  if (reportRole === "admin" && options?.orgWide) {
+    return "Ranked by lowest subdomain performance across the entire organization";
+  }
+  if (reportRole === "leader") {
+    return `Ranked by performance gaps within ${options?.department || "this department"}`;
+  }
+  if (reportRole === "manager") {
+    return "Ranked by performance gaps among direct-report employees";
+  }
+  return "Ranked by lowest subdomain performance in this assessment";
+};
