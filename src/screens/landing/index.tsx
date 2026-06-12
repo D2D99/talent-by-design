@@ -80,10 +80,10 @@ const Home = () => {
                 height="15"
               />
               <a
-                href="mailto:info@tbdcollective.ca"
+                href="mailto:infopod360@gmail.com"
                 className="text-xs font-normal text-[var(--white-color)]"
               >
-                info@tbdcollective.ca
+                infopod360@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-1">
@@ -1475,9 +1475,9 @@ const Home = () => {
             Build on a foundation of clarity, capability, with real data.
           </h2>
           <div className="sm:mt-9 mt-5">
-            <button
-              type="button"
-              className="mx-auto group text-[var(--dark-primary-color)] rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase 
+            <a
+              href="#"
+              className="mx-auto w-fit group text-[var(--dark-primary-color)] rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase 
                bg-gradient-to-r bg-[var(--white-color)] border-solid border-[var(--primary-color)] border"
             >
               Book a Strategy Call
@@ -1487,7 +1487,7 @@ const Home = () => {
                 height="24"
                 className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
               />
-            </button>
+            </a>
           </div>
         </div>
       </div>

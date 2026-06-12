@@ -9,6 +9,7 @@ import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
 import SessionPopup from "./components/sessionPopup";
 import { ToastContainer } from "react-toastify";
+import Pricing from "./screens/pricing";
 
 // Lazy load screens/components
 const Login = lazy(() => import("./screens/login"));
@@ -77,6 +78,7 @@ function App() {
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

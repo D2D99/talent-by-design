@@ -77,7 +77,9 @@ const OrganizationDeepDive = () => {
   const [selectedRole, setSelectedRole] = useState<string>("Managers");
   const [hiddenIndices, setHiddenIndices] = useState<number[]>([]);
   const [intelLoading, setIntelLoading] = useState(false);
-  const [overviewScope, setOverviewScope] = useState<OverviewScope | null>(null);
+  const [overviewScope, setOverviewScope] = useState<OverviewScope | null>(
+    null,
+  );
   const [topPrioritiesData, setTopPrioritiesData] = useState<TopPriority[]>([]);
 
   const toggleHiddenIndex = (idx: number) => {
@@ -1112,7 +1114,6 @@ Indicates whether the organization is on track, at risk, or needs attention, hel
             <div></div>
           </div>
         </div>
-
       </div>
     </div>
   );

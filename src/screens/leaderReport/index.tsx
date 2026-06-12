@@ -1570,7 +1570,6 @@ Aligned to key capability areas these tips help address friction, build consiste
                     </ul>
                     <div></div>
                   </div>
-
                 </div>
               </>
             )}

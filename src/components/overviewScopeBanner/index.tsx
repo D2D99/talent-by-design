@@ -110,7 +110,7 @@ const OverviewScopeBanner = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#1A3652] bg-opacity-5  border border-[#1A3652] border-opacity-10 hidden">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#1A3652] bg-opacity-5  border border-[#1A3652] border-opacity-10 hidden">
               {scope.totalMembers} total in scope
             </span>
             {scope.includesRoles.map((chip) => (
