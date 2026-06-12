@@ -1,7 +1,23 @@
 import { Icon } from "@iconify/react";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
+import SpinnerLoader from "../../components/spinnerLoader";
+import { useEffect, useState } from "react";
 const Pricing = () => {
+  const [pageLoading, setPageLoading] = useState(true);
+
+  // Page Loader
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
   return (
     <>
       <Header />
