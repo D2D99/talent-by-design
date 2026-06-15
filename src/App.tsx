@@ -10,6 +10,8 @@ import OverviewRoute from "./components/overviewRoute";
 import SessionPopup from "./components/sessionPopup";
 import { ToastContainer } from "react-toastify";
 import Pricing from "./screens/pricing";
+import PrivacyPolicy from "./screens/privacyPolicy";
+import TermsOfService from "./screens/termsOfService";
 
 // Lazy load screens/components
 const Login = lazy(() => import("./screens/login"));
@@ -79,6 +81,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

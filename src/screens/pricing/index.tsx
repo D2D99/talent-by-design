@@ -70,10 +70,10 @@ const Pricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="max-w-7xl mx-auto lg:px-4 sm:px-10 my-24">
+        <div className="max-w-7xl mx-auto lg:px-4 sm:px-10 lg:my-24 my-14">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             {/* Option 1 */}
-            <div className="bg-white rounded-[2rem] sm:p-8 p-6 border border-gray-100/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full z-0 md:h-[95%]">
+            <div className="bg-white rounded-[2rem] sm:p-8 p-6 border border-gray-100/80 shadow-sm lg:hover:shadow-xl lg:hover:-translate-y-1 transition-all duration-300 flex flex-col !h-full z-0 md:h-[95%]">
               <h2 className="text-2xl font-bold mb-2 text-slate-900">
                 Baseline
               </h2>
@@ -142,7 +142,7 @@ const Pricing = () => {
             </div>
 
             {/* Option 2 (Middle / Most Popular) */}
-            <div className="rounded-[2rem] p-1.5 flex flex-col h-full transform md:scale-105 z-10 relative bg-gradient-to-b from-[var(--primary-color)] to-[var(--dark-primary-color)] shadow-2xl shadow-[var(--primary-color)]/20 hover:-translate-y-2 transition-transform duration-300">
+            <div className="rounded-[2rem] p-1.5 flex flex-col h-full transform lg:scale-105 z-10 relative bg-gradient-to-b from-[var(--primary-color)] to-[var(--dark-primary-color)] shadow-2xl shadow-[var(--primary-color)]/20 lg:hover:-translate-y-2 transition-transform duration-300">
               <div className="text-white text-center pt-2 pb-3 text-sm font-bold tracking-wide uppercase flex items-center justify-center gap-1.5 animate-pulse">
                 <Icon icon="solar:fire-bold-duotone" className="size-5" /> Most
                 Popular
@@ -232,7 +232,7 @@ const Pricing = () => {
             </div>
 
             {/* Option 3 */}
-            <div className="bg-white rounded-[2rem] sm:p-8 p-6 border border-gray-100/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full z-0 md:h-[95%]">
+            <div className="bg-white rounded-[2rem] sm:p-8 p-6 border border-gray-100/80 shadow-sm lg:hover:shadow-xl lg:hover:-translate-y-1 transition-all duration-300 flex flex-col !h-full z-0 md:h-[95%]">
               <h2 className="text-2xl font-bold mb-2 text-slate-900">
                 Full Realization
               </h2>
@@ -311,8 +311,8 @@ const Pricing = () => {
         </div>
 
         {/* Compare Plans Table */}
-        <div className="max-w-6xl mx-auto px-4 mt-20 relative z-10">
-          <div className="text-center mb-12">
+        <div className="max-w-6xl mx-auto sm:px-4 mt-20 relative z-10">
+          <div className="text-center md:mb-14 mb-7">
             <h2 className="text-4xl font-bold text-slate-900 mb-4">
               Compare Plans
             </h2>
@@ -324,12 +324,11 @@ const Pricing = () => {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[700px]">
-              {/* Sticky Plan Header */}
-              <thead className="sticky top-[64px] z-20 bg-white shadow-sm">
+              <thead className="">
                 <tr>
-                  <th className="py-6 pr-6 w-2/5 align-bottom bg-white" />
+                  <th className="py-6 pr-6 w-1/5 align-bottom sticky left-0 z-20 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]" />
                   {/* Baseline */}
-                  <th className="py-6 px-4 text-center align-bottom w-1/5 bg-white">
+                  <th className="py-6 px-4 text-center align-bottom w-1/5">
                     <div className="text-base font-bold text-slate-900 mb-1">
                       Baseline
                     </div>
@@ -339,7 +338,7 @@ const Pricing = () => {
                     <div className="text-xs text-slate-400 font-normal mb-4">
                       6-month engagement
                     </div>
-                    <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200">
+                    <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200 text-nowrap">
                       Get Started
                     </button>
                   </th>
@@ -356,13 +355,13 @@ const Pricing = () => {
                       <div className="text-xs text-slate-400 font-normal mb-4">
                         Up to 12 months
                       </div>
-                      <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-bold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] text-white hover:opacity-90 transition-opacity duration-200 shadow-md shadow-[var(--primary-color)]/20">
+                      <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-bold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] text-white hover:opacity-90 transition-opacity duration-200 shadow-md shadow-[var(--primary-color)]/20 text-nowrap">
                         Get Started
                       </button>
                     </div>
                   </th>
                   {/* Full Realization */}
-                  <th className="py-6 px-4 text-center align-bottom w-1/5 bg-white">
+                  <th className="py-6 px-4 text-center align-bottom w-1/5">
                     <div className="text-base font-bold text-slate-900 mb-1">
                       Full Realization
                     </div>
@@ -372,7 +371,7 @@ const Pricing = () => {
                     <div className="text-xs text-slate-400 font-normal mb-4">
                       18–24 months
                     </div>
-                    <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200">
+                    <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200 text-nowrap">
                       Contact Us
                     </button>
                   </th>
@@ -382,7 +381,7 @@ const Pricing = () => {
               <tbody>
                 {/* ── Section: Engagement Setup ── */}
                 <tr className="border-t border-gray-200">
-                  <td className="py-4 pr-6">
+                  <td className="py-4 pr-6 sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-slate-800 uppercase tracking-wide">
                         Engagement Setup
@@ -429,7 +428,7 @@ const Pricing = () => {
                     key={i}
                     className="border-t border-gray-100 hover:bg-[var(--light-primary-color)]/50 transition-colors"
                   >
-                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium">
+                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                       {row.feature}
                     </td>
                     <td className="py-4 px-4 text-center">
@@ -476,7 +475,7 @@ const Pricing = () => {
 
                 {/* ── Section: Tracking & Reporting ── */}
                 <tr className="border-t border-gray-200">
-                  <td className="py-4 pr-6">
+                  <td className="py-4 pr-6 sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                     <span className="text-sm font-bold text-slate-800 uppercase tracking-wide">
                       Tracking &amp; Reporting
                     </span>
@@ -527,7 +526,7 @@ const Pricing = () => {
                     key={i}
                     className="border-t border-gray-100 hover:bg-[var(--light-primary-color)]/50 transition-colors"
                   >
-                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium">
+                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                       {row.feature}
                     </td>
                     <td className="py-4 px-4 text-center">
@@ -574,7 +573,7 @@ const Pricing = () => {
 
                 {/* ── Section: OCM & Advisory ── */}
                 <tr className="border-t border-gray-200">
-                  <td className="py-4 pr-6">
+                  <td className="py-4 pr-6 sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                     <span className="text-sm font-bold text-slate-800 uppercase tracking-wide">
                       OCM &amp; Advisory
                     </span>
@@ -625,7 +624,7 @@ const Pricing = () => {
                     key={i}
                     className="border-t border-gray-100 hover:bg-[var(--light-primary-color)]/50 transition-colors"
                   >
-                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium">
+                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                       {row.feature}
                     </td>
                     <td className="py-4 px-4 text-center">
@@ -672,7 +671,7 @@ const Pricing = () => {
 
                 {/* ── Section: Sustainment & Closure ── */}
                 <tr className="border-t border-gray-200">
-                  <td className="py-4 pr-6">
+                  <td className="py-4 pr-6 sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                     <span className="text-sm font-bold text-slate-800 uppercase tracking-wide">
                       Sustainment &amp; Closure
                     </span>
@@ -729,7 +728,7 @@ const Pricing = () => {
                     key={i}
                     className="border-t border-gray-100 hover:bg-[var(--light-primary-color)]/50 transition-colors"
                   >
-                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium">
+                    <td className="py-4 pr-6 text-sm text-slate-600 font-medium sticky left-0 z-10 bg-white md:static md:bg-transparent md:z-auto md:shadow-none shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
                       {row.feature}
                     </td>
                     <td className="py-4 px-4 text-center">

@@ -79,7 +79,7 @@ const Header = () => {
             >
               <a
                 className="mb-4 me-5 ms-2 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 lg:mb-0 lg:mt-0"
-                href="#"
+                href="/"
               >
                 <img src={Logo} alt="logo" className="lg:block hidden" />
               </a>

@@ -62,7 +62,7 @@ const Footer = () => {
                     href="#"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Lorem
+                    About Us
                   </a>
                 </li>
                 <li>
@@ -70,7 +70,7 @@ const Footer = () => {
                     href="#"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Lorem
+                    What we offer
                   </a>
                 </li>
                 <li>
@@ -78,7 +78,7 @@ const Footer = () => {
                     href="#"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Lorem
+                    Our Process
                   </a>
                 </li>
                 <li>
@@ -86,23 +86,15 @@ const Footer = () => {
                     href="#"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Lorem
+                    FAQ
                   </a>
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/pricing"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Lorem
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
-                  >
-                    Lorem
+                    Pricing
                   </a>
                 </li>
               </ul>
@@ -114,7 +106,7 @@ const Footer = () => {
               <ul className="space-y-1.5">
                 <li>
                   <a
-                    href="#"
+                    href="/privacy-policy"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
                     Privacy Policy
@@ -122,7 +114,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/terms-of-service"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
                     Terms & Conditions
