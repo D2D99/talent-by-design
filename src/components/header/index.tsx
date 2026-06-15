@@ -8,6 +8,7 @@ import { useAuth } from "../../context/useAuth";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { token, user } = useAuth();
   const isSessionActive = !!(token && user);
 
@@ -40,12 +41,18 @@ const Header = () => {
   return (
     <>
       <nav
-        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300
-        ${scrolled ? "shadow-lg bg-white/50 backdrop-blur-xl" : "bg-transparent"}`}
+        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${
+          scrolled ? "shadow-md" : "shadow-none"
+        }`}
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
           <div className="flex w-full flex-wrap items-center justify-between">
-            <img src={Logo} alt="logo" className="lg:hidden block" />
+            <a
+              href="/"
+              className="lg:hidden block"
+            >
+              <img src={Logo} alt="logo" />
+            </a>
 
             <button
               className="block border-0 bg-transparent px-2 text-black/50 hover:no-underline hover:shadow-none focus:no-underline focus:shadow-none focus:outline-none focus:ring-0 lg:hidden"
@@ -55,37 +62,29 @@ const Header = () => {
               aria-controls="navbarSupportedContent1"
               aria-expanded="false"
               aria-label="Toggle navigation"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              <span className="[&>svg]:w-7 text-black/50">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 5.995C2 5.445 2.446 5 2.995 5H11.005C11.2689 5 11.522 5.10483 11.7086 5.29143C11.8952 5.47803 12 5.73111 12 5.995C12 6.25889 11.8952 6.51197 11.7086 6.69857C11.522 6.88517 11.2689 6.99 11.005 6.99H2.995C2.73111 6.99 2.47803 6.88517 2.29143 6.69857C2.10483 6.51197 2 6.25889 2 5.995ZM2 12C2 11.45 2.446 11.005 2.995 11.005H21.005C21.2689 11.005 21.522 11.1098 21.7086 11.2964C21.8952 11.483 22 11.7361 22 12C22 12.2639 21.8952 12.517 21.7086 12.7036C21.522 12.8902 21.2689 12.995 21.005 12.995H2.995C2.73111 12.995 2.47803 12.8902 2.29143 12.7036C2.10483 12.517 2 12.2639 2 12ZM2.995 17.01C2.73111 17.01 2.47803 17.1148 2.29143 17.3014C2.10483 17.488 2 17.7411 2 18.005C2 18.2689 2.10483 18.522 2.29143 18.7086C2.47803 18.8952 2.73111 19 2.995 19H15.005C15.2689 19 15.522 18.8952 15.7086 18.7086C15.8952 18.522 16 18.2689 16 18.005C16 17.7411 15.8952 17.488 15.7086 17.3014C15.522 17.1148 15.2689 17.01 15.005 17.01H2.995Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </span>
+              <div className="w-6 h-5 relative flex flex-col justify-center items-start">
+                <span className={`absolute h-[2px] w-full bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'rotate-45' : '-translate-y-2'}`} />
+                <span className={`absolute h-[2px] w-1/2 bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`} />
+                <span className={`absolute h-[2px] w-full bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? '-rotate-45' : 'translate-y-2'}`} />
+              </div>
             </button>
 
             <div
-              className="!visible hidden flex-grow basis-[100%] items-center lg:!flex lg:basis-auto mt-3 lg:mt-0 p-4 lg:p-0 rounded-lg lg:rounded-none lg:bg-transparent lg:border-none "
+              className="!visible hidden flex-grow basis-[100%] items-center lg:!flex lg:basis-auto mt-3 lg:mt-0 p-0 rounded-lg lg:rounded-none lg:bg-transparent lg:border-none "
               id="navbarSupportedContent1"
               data-twe-collapse-item
             >
               <a
-                className="mb-4 me-5 ms-2 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 lg:mb-0 lg:mt-0"
+                className="mb-4 me-5 ms-2 mt-3 items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 lg:mb-0 lg:mt-0 lg:flex hidden"
                 href="/"
               >
-                <img src={Logo} alt="logo" className="lg:block hidden" />
+                <img src={Logo} alt="logo" />
               </a>
 
               <ul
-                className="list-style-none mx-auto flex flex-col ps-0 lg:flex-row"
+                className="list-style-none mx-auto flex flex-col ps-0 lg:flex-row mt-4 lg:mt-0"
                 data-twe-navbar-nav-ref
               >
                 <li className="mb-4 lg:mb-0 lg:pe-2" data-twe-nav-item-ref>
@@ -128,10 +127,10 @@ const Header = () => {
                       type="button"
                       className={ctaButtonClasses}
                       onClick={handleClick}
-                      // data-twe-toggle="modal"
-                      // data-twe-target="#exampleModalCenter"
-                      // data-twe-ripple-init
-                      // data-twe-ripple-color="light"
+                    // data-twe-toggle="modal"
+                    // data-twe-target="#exampleModalCenter"
+                    // data-twe-ripple-init
+                    // data-twe-ripple-color="light"
                     >
                       {isSessionActive ? "Access POD-360™" : "Login"}
                       <Icon
@@ -151,10 +150,10 @@ const Header = () => {
                 type="button"
                 className={ctaButtonClasses}
                 onClick={handleClick}
-                // data-twe-toggle="modal"
-                // data-twe-target="#exampleModalCenter"
-                // data-twe-ripple-init
-                // data-twe-ripple-color="light"
+              // data-twe-toggle="modal"
+              // data-twe-target="#exampleModalCenter"
+              // data-twe-ripple-init
+              // data-twe-ripple-color="light"
               >
                 {isSessionActive ? "Access POD-360™" : "Login"}
                 <Icon
