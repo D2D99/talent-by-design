@@ -16,6 +16,7 @@ import TermsOfService from "./screens/termsOfService";
 // Lazy load screens/components
 const Login = lazy(() => import("./screens/login"));
 const Home = lazy(() => import("./screens/landing"));
+const ContactUs = lazy(() => import("./screens/contactUs"));
 const ForgotPassword = lazy(() => import("./screens/forgotPassword"));
 const AfterSendEmail = lazy(() => import("./screens/afterSendEmail"));
 const NewPassword = lazy(() => import("./screens/newPassword"));
@@ -81,6 +82,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/login" element={<Login />} />
