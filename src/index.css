@@ -64,6 +64,11 @@ body {
     color 0.2s ease;
 }
 
+::selection{
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+
 #cta-bg {
   position: relative;
   overflow: hidden;

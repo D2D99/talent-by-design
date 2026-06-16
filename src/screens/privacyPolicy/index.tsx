@@ -6,21 +6,270 @@ import SpinnerLoader from "../../components/spinnerLoader";
 
 const sections = [
   {
-    id: "information-collection",
-    title: "1. How We Collect and Use Information",
+    id: "scope",
+    title: "1. Scope of This Policy",
+    content: (
+      <>
+        <p>This Privacy Policy applies to personal information we collect from or about:</p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>Client contacts and administrators;</li>
+          <li>Assessment participants;</li>
+          <li>Leaders, managers, employees, contractors, or stakeholders invited to complete POD-360 assessments;</li>
+          <li>Website visitors;</li>
+          <li>Prospective clients, vendors, and business contacts;</li>
+          <li>Users of POD-360 dashboards, reports, or related services.</li>
+        </ul>
+        <p className="mt-4">Where POD-360 is provided to a client organization, the client may also have its own privacy notices, policies, employment obligations, or consent practices. We encourage participants to review any privacy information provided by their organization.</p>
+      </>
+    )
   },
-  { id: "subprocessor-list", title: "2. Subprocessor List" },
-  { id: "cookies", title: "3. How We Use Cookies" },
-  { id: "sharing", title: "4. How We Share Personal Information" },
-  { id: "control", title: "5. Control Over Your Information" },
-  { id: "tracking", title: "6. Third-Party Tracking" },
-  { id: "customer-data", title: "7. Customer Data" },
-  { id: "security", title: "8. Security" },
-  { id: "retention", title: "9. Data Retention" },
-  { id: "third-party", title: "10. Links to Third-Party Websites" },
-  { id: "childrens-privacy", title: "11. Children's Privacy" },
-  { id: "changes", title: "12. Changes to Privacy Notice" },
-  { id: "contact", title: "13. Contact Us" },
+  {
+    id: "what-we-collect",
+    title: "2. What Personal Information We Collect",
+    content: (
+      <>
+        <p>Depending on how the Services are used, we may collect the following types of information:</p>
+        <h3 className="font-semibold text-slate-800 mt-4 text-lg">Account and Contact Information</h3>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>Name;</li>
+          <li>Email address;</li>
+          <li>Organization name;</li>
+          <li>Job title or role;</li>
+          <li>Department, team, business unit, or stakeholder group;</li>
+          <li>Login or account credentials;</li>
+          <li>Communication preferences.</li>
+        </ul>
+        <h3 className="font-semibold text-slate-800 mt-6 text-lg">Assessment Information</h3>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>Assessment responses;</li>
+          <li>Ratings, scores, and selected answers;</li>
+          <li>Written comments or open-text responses;</li>
+          <li>Role or stakeholder group;</li>
+          <li>Manager, leader, employee, or administrator designation;</li>
+          <li>Assessment completion status;</li>
+          <li>Date and time of completion.</li>
+        </ul>
+        <h3 className="font-semibold text-slate-800 mt-6 text-lg">Organizational Context</h3>
+        <p className="mt-2">Clients may provide organizational information to support assessment setup and reporting, such as:</p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>Strategic priorities;</li>
+          <li>Project or program objectives;</li>
+          <li>Change initiatives;</li>
+          <li>Benefits, KPIs, or OKRs;</li>
+          <li>Business unit or team structures;</li>
+          <li>Uploaded documents or background materials.</li>
+        </ul>
+        <p className="mt-4">Clients should avoid uploading unnecessary personal information or sensitive personal information unless it is required and authorized.</p>
+        <h3 className="font-semibold text-slate-800 mt-6 text-lg">Usage and Technical Information</h3>
+        <p className="mt-2">We may collect technical and usage data, such as:</p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>IP address;</li>
+          <li>Browser type;</li>
+          <li>Device information;</li>
+          <li>Operating system;</li>
+          <li>Pages or features accessed;</li>
+          <li>Log-in and log-out activity;</li>
+          <li>Error logs;</li>
+          <li>Audit logs;</li>
+          <li>Cookie or similar technology data.</li>
+        </ul>
+        <h3 className="font-semibold text-slate-800 mt-6 text-lg">Communications</h3>
+        <p className="mt-2">If you contact us, we may collect information included in your message, inquiry, support request, meeting notes, or feedback.</p>
+      </>
+    )
+  },
+  {
+    id: "sensitive",
+    title: "3. Sensitive Information",
+    content: (
+      <>
+        <p>POD-360 is not designed to collect medical, diagnostic, psychological, financial, government identification, or other highly sensitive personal information.</p>
+        <p className="mt-4">Participants should avoid including sensitive personal information about themselves or others in open-text responses unless specifically requested and clearly appropriate.</p>
+        <p className="mt-4">Client organizations are responsible for ensuring assessment questions, participant communications, and uploaded materials are appropriate for the intended purpose.</p>
+      </>
+    )
+  },
+  {
+    id: "how-we-use",
+    title: "4. How We Use Personal Information",
+    content: (
+      <>
+        <p>We may use personal information to:</p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>Provide, operate, configure, and support POD-360;</li>
+          <li>Administer assessments;</li>
+          <li>Authenticate users and manage accounts;</li>
+          <li>Generate dashboards, reports, summaries, insights, and recommendations;</li>
+          <li>Analyze assessment results by organization, role, stakeholder group, project, program, or assessment checkpoint;</li>
+          <li>Support change management, benefits realization, organizational effectiveness, and leadership planning;</li>
+          <li>Provide customer support;</li>
+          <li>Improve platform functionality, scoring, reporting, and user experience;</li>
+          <li>Develop aggregated or de-identified benchmarks and insights;</li>
+          <li>Protect the security and integrity of the Services;</li>
+          <li>Communicate with clients and users;</li>
+          <li>Meet legal, regulatory, contractual, accounting, or security obligations.</li>
+        </ul>
+      </>
+    )
+  },
+  {
+    id: "ai",
+    title: "5. AI-Enabled Processing",
+    content: (
+      <>
+        <p>POD-360 may use AI-enabled tools to support analysis, summarization, theme identification, recommendations, action planning, benefits tracking, OKR suggestions, risk indicators, and executive reporting.</p>
+        <p className="mt-4">AI-enabled outputs are intended to support human review and decision-making. They should not be used as the sole basis for decisions that may significantly affect an individual.</p>
+        <p className="mt-4">Where AI features are used, personal information may be processed to generate insights unless the feature is configured to use aggregated, de-identified, or limited data.</p>
+        <p className="mt-4">We aim to apply reasonable safeguards and data minimization practices when using AI-enabled features.</p>
+      </>
+    )
+  },
+  {
+    id: "consent",
+    title: "6. Consent and Legal Basis for Use",
+    content: (
+      <>
+        <p>We collect, use, and disclose personal information with consent or as otherwise permitted or required by applicable law.</p>
+        <p className="mt-4">Consent may be provided directly by an individual, through participation in an assessment, through account registration, through communications with us, or through a client organization where appropriate.</p>
+        <p className="mt-4">Before completing an assessment, participants should be informed of the purpose of the assessment, how results will be used, who may access reports, and whether results will be reported individually, by group, or in aggregated form.</p>
+      </>
+    )
+  },
+  {
+    id: "reporting",
+    title: "7. How Assessment Results Are Reported",
+    content: (
+      <>
+        <p>POD-360 may report assessment results in individual, role-based, team-based, stakeholder group, organizational, or aggregated formats depending on the service configuration and client agreement.</p>
+        <p className="mt-4">Where possible, reports are designed to support organizational insight rather than individual monitoring. We encourage clients to use minimum group-size thresholds, aggregation, and de-identification where appropriate.</p>
+        <p className="mt-4">Open-text comments may be summarized, themed, edited, or displayed in reports. Participants should not include names or identifying details about others in open-text responses.</p>
+      </>
+    )
+  },
+  {
+    id: "disclosure",
+    title: "8. Disclosure of Personal Information",
+    content: (
+      <>
+        <p>We may disclose personal information to:</p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li>The client organization that invited users to complete an assessment;</li>
+          <li>Authorized administrators, leaders, consultants, or project team members designated by the client;</li>
+          <li>Service providers who help us host, operate, secure, support, analyze, or improve the Services;</li>
+          <li>Professional advisors, such as lawyers, accountants, insurers, or auditors;</li>
+          <li>Government, regulatory, law enforcement, or legal authorities where required or permitted by law;</li>
+          <li>A successor organization in connection with a merger, acquisition, financing, restructuring, or sale of business assets, subject to appropriate protections.</li>
+        </ul>
+        <p className="mt-4">We do not sell personal information.</p>
+      </>
+    )
+  },
+  {
+    id: "service-providers",
+    title: "9. Service Providers and Cross-Border Processing",
+    content: (
+      <>
+        <p>We may use service providers located in Canada or other jurisdictions. Personal information may be stored or processed outside the province or country where the individual resides.</p>
+        <p className="mt-4">Where personal information is processed outside Canada, it may be subject to the laws of that jurisdiction. We use contractual, technical, and organizational safeguards intended to protect personal information handled by service providers.</p>
+      </>
+    )
+  },
+  {
+    id: "retention",
+    title: "10. Data Retention",
+    content: (
+      <>
+        <p>We retain personal information only as long as reasonably necessary for the purposes described in this Privacy Policy, to provide the Services, to meet client agreement requirements, to comply with legal or accounting obligations, to resolve disputes, and to maintain security records.</p>
+        <p className="mt-4">Retention periods may vary depending on the client agreement, type of data, legal requirements, and operational needs.</p>
+        <p className="mt-4">When personal information is no longer required, we will delete, anonymize, de-identify, or securely dispose of it, subject to legal and contractual obligations.</p>
+      </>
+    )
+  },
+  {
+    id: "security",
+    title: "11. Security Safeguards",
+    content: (
+      <>
+        <p>We use reasonable administrative, technical, and physical safeguards designed to protect personal information against unauthorized access, use, disclosure, alteration, loss, or destruction.</p>
+        <p className="mt-4">Safeguards may include access controls, authentication, encryption where appropriate, audit logging, secure hosting practices, confidentiality obligations, and role-based access.</p>
+        <p className="mt-4">No system can be guaranteed to be completely secure. Users are responsible for protecting account credentials and notifying us promptly of suspected unauthorized access.</p>
+      </>
+    )
+  },
+  {
+    id: "cookies",
+    title: "12. Cookies and Analytics",
+    content: (
+      <>
+        <p>Our website or platform may use cookies and similar technologies to support authentication, remember preferences, improve functionality, analyze usage, and maintain security.</p>
+        <p className="mt-4">Users may adjust browser settings to block or delete cookies, but some features may not function properly without them.</p>
+      </>
+    )
+  },
+  {
+    id: "access",
+    title: "13. Accessing or Correcting Personal Information",
+    content: (
+      <>
+        <p>Individuals may request access to or correction of their personal information, subject to legal, contractual, and security limitations.</p>
+        <p className="mt-4">Where POD-360 is provided through a client organization, we may direct certain requests to the client organization, especially where the client controls the assessment relationship or determines how the information is used.</p>
+        <p className="mt-4">Requests may be sent to the contact listed below.</p>
+      </>
+    )
+  },
+  {
+    id: "withdraw",
+    title: "14. Withdrawing Consent",
+    content: (
+      <>
+        <p>Where we rely on consent, individuals may withdraw consent, subject to legal or contractual restrictions and reasonable notice.</p>
+        <p className="mt-4">Withdrawing consent may limit access to certain Services or prevent participation in an assessment.</p>
+      </>
+    )
+  },
+  {
+    id: "complaints",
+    title: "15. Privacy Questions or Complaints",
+    content: (
+      <>
+        <p>Individuals may contact us with privacy questions, access requests, correction requests, or complaints.</p>
+        <p className="mt-4">We will review privacy complaints and respond within a reasonable time. If we cannot resolve a concern, individuals may have the right to contact the applicable privacy commissioner or regulatory authority.</p>
+      </>
+    )
+  },
+  {
+    id: "children",
+    title: "16. Children and Minors",
+    content: (
+      <>
+        <p>The Services are intended for organizational and professional use and are not directed to children. We do not knowingly collect personal information from children without appropriate authorization.</p>
+      </>
+    )
+  },
+  {
+    id: "changes",
+    title: "17. Changes to This Privacy Policy",
+    content: (
+      <>
+        <p>We may update this Privacy Policy from time to time. The updated version will be posted with a revised “Last Updated” date.</p>
+        <p className="mt-4">For material changes, we may provide additional notice where appropriate or required by law.</p>
+      </>
+    )
+  },
+  {
+    id: "contact",
+    title: "18. Contact Us",
+    content: (
+      <>
+        <p>Privacy questions, requests, or complaints may be directed to:</p>
+        <p className="mt-4 font-semibold text-slate-800">Talent By Design Collective Inc.</p>
+        <p className="mt-2"><strong>Privacy Officer:</strong> Suzanna de Souza</p>
+        <p className="mt-2"><strong>Email:</strong> sdesouza@tbdcollective.ca</p>
+        <p className="mt-2"><strong>Address:</strong> 3350 Wellington Street, Port Coquitlam, BC</p>
+        <p className="mt-2"><strong>Phone:</strong> +1-604-785-8966</p>
+      </>
+    )
+  }
 ];
 
 const PrivacyPolicy = () => {
@@ -38,25 +287,31 @@ const PrivacyPolicy = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle scroll to highlight the active section in the sidebar
+  // Reliable scroll-spy: tracks which section is in view, handles bottom-of-page edge case
   useEffect(() => {
+    const OFFSET = 160; // px from top to trigger active (accounts for sticky header)
+
     const handleScroll = () => {
-      let currentSection = sections[0].id;
+      // If user has scrolled to (or near) the bottom, activate the last section
+      const atBottom =
+        window.innerHeight + window.scrollY >= document.body.scrollHeight - 80;
+      if (atBottom) {
+        setActiveSection(sections[sections.length - 1].id);
+        return;
+      }
+
+      let current = sections[0].id;
       for (const section of sections) {
-        const element = document.getElementById(section.id);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          // Adjust offset as needed based on header height
-          if (rect.top <= 150) {
-            currentSection = section.id;
-          }
+        const el = document.getElementById(section.id);
+        if (el && el.getBoundingClientRect().top <= OFFSET) {
+          current = section.id;
         }
       }
-      setActiveSection(currentSection);
+      setActiveSection(current);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Trigger once on mount
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // set correct state on initial render
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -91,7 +346,7 @@ const PrivacyPolicy = () => {
               Privacy Policy
             </h1>
             <p className="text-lg md:text-xl text-slate-500 font-medium">
-              Last Updated: October 26th, 2026
+              Last Updated: June 15, 2026
             </p>
           </div>
         </section>
@@ -141,7 +396,7 @@ const PrivacyPolicy = () => {
               </div>
 
               {/* Desktop Vertical Navigation */}
-              <div className="hidden md:block relative">
+              <div className="hidden md:block relative overflow-y-auto pr-4" style={{ scrollbarWidth: 'thin' }}>
                 {/* Vertical Line */}
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-100 rounded-full" />
 
@@ -171,72 +426,25 @@ const PrivacyPolicy = () => {
               {/* Introduction */}
               <div className="text-slate-600 mb-16 leading-relaxed text-base">
                 <p>
-                  Welcome and thank you for your interest in our services. This
-                  Privacy Notice explains how information about you, that
-                  directly identifies you, or that makes you identifiable
-                  ("personal information") is collected, used and disclosed by
-                  us in connection with our websites and mobile applications.
+                  This Privacy Policy explains how Talent By Design Collective Inc. (“Company,” “we,” “us,” or “our”) collects, uses, discloses, stores, and protects personal information in connection with POD-360™, POD-Insights AI™, our website, assessment platform, dashboards, reports, and related services collectively referred to as the “Services.”
                 </p>
                 <p className="mt-4">
-                  Wherever our customers use our Service to submit, manage, or
-                  otherwise use content relating to our customers’ end users
-                  ("Customer Data") during the provision of our Service, we have
-                  contractually committed ourselves to only process such
-                  information on behalf and under the instruction of the
-                  respective customer, who is the data controller.
+                  We are committed to protecting personal information and using it responsibly, transparently, and only for appropriate purposes.
                 </p>
               </div>
 
-              {/* Dynamic Sections with Dummy Content */}
+              {/* Dynamic Sections */}
               {sections.map((section) => (
                 <section
                   key={section.id}
                   id={section.id}
                   className="scroll-mt-32 mb-16 group"
                 >
-                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3  transition-colors duration-300">
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-6 transition-colors duration-300">
                     {section.title}
                   </h2>
-                  <div className="text-slate-600 space-y-5 leading-relaxed">
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla pariatur.
-                    </p>
-                    <p>
-                      Excepteur sint occaecat cupidatat non proident, sunt in
-                      culpa qui officia deserunt mollit anim id est laborum.
-                      Nunc aliquet bibendum enim facilisis gravida neque
-                      convallis a cras. Non curabitur gravida arcu ac tortor
-                      dignissim convallis aenean.
-                    </p>
-                    <ul className="list-none space-y-3 mt-6 text-sm p-6 rounded-2xl border border-gray-100 shadow-sm bg-white">
-                      <li className="flex items-start gap-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary-color)] mt-2 flex-shrink-0" />
-                        <span>
-                          <strong>Data Collection:</strong> Pellentesque
-                          habitant morbi tristique senectus et netus et
-                          malesuada fames ac turpis egestas.
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary-color)] mt-2 flex-shrink-0" />
-                        <span>
-                          <strong>Usage Metrics:</strong> Malesuada fames ac
-                          turpis egestas integer eget aliquet nibh.
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary-color)] mt-2 flex-shrink-0" />
-                        <span>
-                          <strong>Third-Party Sharing:</strong> Donec ac odio
-                          tempor orci dapibus ultrices in iaculis nunc.
-                        </span>
-                      </li>
-                    </ul>
+                  <div className="text-slate-600 space-y-5 leading-relaxed text-base">
+                    {section.content}
                   </div>
                 </section>
               ))}
