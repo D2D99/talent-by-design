@@ -188,6 +188,7 @@ const Home = () => {
             <button
               type="button"
               className="group text-white rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)]"
+              onClick={() => {window.location.href = "/contact-us";}}
             >
               Let’s Talk
               <Icon
