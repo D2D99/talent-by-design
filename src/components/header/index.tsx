@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const Logo = "/static/img/home/logo.svg";
+const Logo = "/static/img/POD-logo.svg";
 import { Collapse, Dropdown, initTWE } from "tw-elements";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
@@ -47,11 +47,8 @@ const Header = () => {
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
           <div className="flex w-full flex-wrap items-center justify-between">
-            <a
-              href="/"
-              className="lg:hidden block"
-            >
-              <img src={Logo} alt="logo" />
+            <a href="/" className="lg:hidden block">
+              <img src={Logo} alt="logo" className="h-20 w-auto" />
             </a>
 
             <button
@@ -65,9 +62,15 @@ const Header = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               <div className="w-6 h-5 relative flex flex-col justify-center items-start">
-                <span className={`absolute h-[2px] w-full bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'rotate-45' : '-translate-y-2'}`} />
-                <span className={`absolute h-[2px] w-1/2 bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`} />
-                <span className={`absolute h-[2px] w-full bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? '-rotate-45' : 'translate-y-2'}`} />
+                <span
+                  className={`absolute h-[2px] w-full bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "rotate-45" : "-translate-y-2"}`}
+                />
+                <span
+                  className={`absolute h-[2px] w-1/2 bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "opacity-0" : "opacity-100"}`}
+                />
+                <span
+                  className={`absolute h-[2px] w-full bg-black/50 rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "-rotate-45" : "translate-y-2"}`}
+                />
               </div>
             </button>
 
@@ -80,7 +83,7 @@ const Header = () => {
                 className="mb-4 me-5 ms-2 mt-3 items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 lg:mb-0 lg:mt-0 lg:flex hidden"
                 href="/"
               >
-                <img src={Logo} alt="logo" />
+                <img src={Logo} alt="logo" className="h-20 w-auto" />
               </a>
 
               <ul
@@ -127,10 +130,10 @@ const Header = () => {
                       type="button"
                       className={ctaButtonClasses}
                       onClick={handleClick}
-                    // data-twe-toggle="modal"
-                    // data-twe-target="#exampleModalCenter"
-                    // data-twe-ripple-init
-                    // data-twe-ripple-color="light"
+                      // data-twe-toggle="modal"
+                      // data-twe-target="#exampleModalCenter"
+                      // data-twe-ripple-init
+                      // data-twe-ripple-color="light"
                     >
                       {isSessionActive ? "Access POD-360™" : "Login"}
                       <Icon
@@ -150,10 +153,10 @@ const Header = () => {
                 type="button"
                 className={ctaButtonClasses}
                 onClick={handleClick}
-              // data-twe-toggle="modal"
-              // data-twe-target="#exampleModalCenter"
-              // data-twe-ripple-init
-              // data-twe-ripple-color="light"
+                // data-twe-toggle="modal"
+                // data-twe-target="#exampleModalCenter"
+                // data-twe-ripple-init
+                // data-twe-ripple-color="light"
               >
                 {isSessionActive ? "Access POD-360™" : "Login"}
                 <Icon

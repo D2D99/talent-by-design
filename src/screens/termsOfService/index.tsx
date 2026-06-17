@@ -10,9 +10,23 @@ const sections = [
     title: "1. Purpose of POD-360",
     content: (
       <>
-        <p>POD-360 is an organizational assessment and insight platform designed to help organizations better understand people readiness, operational steadiness, digital fluency, change impacts, benefits realization, and related organizational effectiveness themes.</p>
-        <p className="mt-4">The Services may include assessments, dashboards, reports, action cards, executive summaries, benchmarking, artificial intelligence-enabled analysis, and recommendations.</p>
-        <p className="mt-4">POD-360 is intended to support organizational learning, planning, change management, leadership discussions, and decision-making. It is not a substitute for legal, financial, medical, psychological, human resources, labour relations, or professional advice.</p>
+        <p>
+          POD-360 is an organizational assessment and insight platform designed
+          to help organizations better understand people readiness, operational
+          steadiness, digital fluency, change impacts, benefits realization, and
+          related organizational effectiveness themes.
+        </p>
+        <p className="mt-4">
+          The Services may include assessments, dashboards, reports, action
+          cards, executive summaries, benchmarking, artificial
+          intelligence-enabled analysis, and recommendations.
+        </p>
+        <p className="mt-4">
+          POD-360 is intended to support organizational learning, planning,
+          change management, leadership discussions, and decision-making. It is
+          not a substitute for legal, financial, medical, psychological, human
+          resources, labour relations, or professional advice.
+        </p>
       </>
     ),
   },
@@ -24,11 +38,23 @@ const sections = [
         <p>The Services may be used by:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Client organizations that purchase, pilot, or access POD-360;</li>
-          <li>Authorized administrators, leaders, managers, consultants, or project teams;</li>
-          <li>Employees, contractors, stakeholders, or participants invited to complete an assessment;</li>
-          <li>Talent By Design Collective Inc. team members or authorized service providers who support the Services.</li>
+          <li>
+            Authorized administrators, leaders, managers, consultants, or
+            project teams;
+          </li>
+          <li>
+            Employees, contractors, stakeholders, or participants invited to
+            complete an assessment;
+          </li>
+          <li>
+            Talent By Design Collective Inc. team members or authorized service
+            providers who support the Services.
+          </li>
         </ul>
-        <p className="mt-4">You agree to use the Services only for lawful, ethical, and authorized business purposes.</p>
+        <p className="mt-4">
+          You agree to use the Services only for lawful, ethical, and authorized
+          business purposes.
+        </p>
       </>
     ),
   },
@@ -39,14 +65,27 @@ const sections = [
       <>
         <p>Client organizations are responsible for:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>Ensuring they have the right to invite participants to complete assessments;</li>
+          <li>
+            Ensuring they have the right to invite participants to complete
+            assessments;
+          </li>
           <li>Communicating the purpose of the assessment to participants;</li>
           <li>Using reports and insights responsibly and in context;</li>
-          <li>Avoiding decisions about employment, discipline, termination, promotion, compensation, or individual performance based solely on POD-360 outputs;</li>
-          <li>Maintaining the confidentiality of account credentials, dashboards, reports, and exported data;</li>
+          <li>
+            Avoiding decisions about employment, discipline, termination,
+            promotion, compensation, or individual performance based solely on
+            POD-360 outputs;
+          </li>
+          <li>
+            Maintaining the confidentiality of account credentials, dashboards,
+            reports, and exported data;
+          </li>
           <li>Ensuring that authorized users comply with these Terms.</li>
         </ul>
-        <p className="mt-4">Clients must not use POD-360 to target, discipline, shame, retaliate against, or unfairly evaluate individual employees or participants.</p>
+        <p className="mt-4">
+          Clients must not use POD-360 to target, discipline, shame, retaliate
+          against, or unfairly evaluate individual employees or participants.
+        </p>
       </>
     ),
   },
@@ -55,8 +94,17 @@ const sections = [
     title: "4. Participant Responsibilities",
     content: (
       <>
-        <p>Participants are expected to provide honest and respectful responses. Participants must not submit unlawful, threatening, discriminatory, defamatory, confidential third-party information, or personal information about others unless they are authorized to do so.</p>
-        <p className="mt-4">Participants understand that their responses may be analyzed and reported in aggregated, summarized, or role-based formats, depending on the configuration agreed with the client organization.</p>
+        <p>
+          Participants are expected to provide honest and respectful responses.
+          Participants must not submit unlawful, threatening, discriminatory,
+          defamatory, confidential third-party information, or personal
+          information about others unless they are authorized to do so.
+        </p>
+        <p className="mt-4">
+          Participants understand that their responses may be analyzed and
+          reported in aggregated, summarized, or role-based formats, depending
+          on the configuration agreed with the client organization.
+        </p>
       </>
     ),
   },
@@ -65,8 +113,17 @@ const sections = [
     title: "5. Account Access and Security",
     content: (
       <>
-        <p>Users may be required to create an account or access POD-360 through an invitation link. You are responsible for keeping login credentials secure and for notifying us promptly of any suspected unauthorized access.</p>
-        <p className="mt-4">We may suspend or restrict access if we reasonably believe there has been unauthorized use, misuse, a security risk, or a breach of these Terms.</p>
+        <p>
+          Users may be required to create an account or access POD-360 through
+          an invitation link. You are responsible for keeping login credentials
+          secure and for notifying us promptly of any suspected unauthorized
+          access.
+        </p>
+        <p className="mt-4">
+          We may suspend or restrict access if we reasonably believe there has
+          been unauthorized use, misuse, a security risk, or a breach of these
+          Terms.
+        </p>
       </>
     ),
   },
@@ -75,19 +132,29 @@ const sections = [
     title: "6. Assessment Results and Reporting",
     content: (
       <>
-        <p>POD-360 results are based on participant responses, client-provided information, assessment design, scoring logic, platform configuration, and, where applicable, AI-assisted analysis.</p>
+        <p>
+          POD-360 results are based on participant responses, client-provided
+          information, assessment design, scoring logic, platform configuration,
+          and, where applicable, AI-assisted analysis.
+        </p>
         <p className="mt-4">Outputs may include:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Domain and sub-domain scores;</li>
           <li>Stakeholder group comparisons;</li>
           <li>Readiness indicators;</li>
           <li>Risk flags;</li>
-          <li>Suggested objectives, key results, actions, or benefits measures;</li>
+          <li>
+            Suggested objectives, key results, actions, or benefits measures;
+          </li>
           <li>Executive summaries;</li>
           <li>Trends between assessment checkpoints;</li>
           <li>De-identified or aggregated insights.</li>
         </ul>
-        <p className="mt-4">Results are intended to support discussion and planning. They should be interpreted alongside other organizational context, stakeholder input, leadership judgment, and professional advice where appropriate.</p>
+        <p className="mt-4">
+          Results are intended to support discussion and planning. They should
+          be interpreted alongside other organizational context, stakeholder
+          input, leadership judgment, and professional advice where appropriate.
+        </p>
       </>
     ),
   },
@@ -96,9 +163,21 @@ const sections = [
     title: "7. AI-Enabled Features",
     content: (
       <>
-        <p>POD-360 may include AI-enabled functionality under POD-Insights AI™ or related modules. AI-generated outputs may include summaries, themes, recommendations, risk indicators, suggested OKRs, action cards, or benefit tracking suggestions.</p>
-        <p className="mt-4">AI-generated outputs may be incomplete, inaccurate, or require human review. The client is responsible for reviewing, validating, and deciding how to use any AI-generated content.</p>
-        <p className="mt-4">We do not guarantee that AI outputs will be error-free, exhaustive, unbiased, or suitable for every organizational context.</p>
+        <p>
+          POD-360 may include AI-enabled functionality under POD-Insights AI™ or
+          related modules. AI-generated outputs may include summaries, themes,
+          recommendations, risk indicators, suggested OKRs, action cards, or
+          benefit tracking suggestions.
+        </p>
+        <p className="mt-4">
+          AI-generated outputs may be incomplete, inaccurate, or require human
+          review. The client is responsible for reviewing, validating, and
+          deciding how to use any AI-generated content.
+        </p>
+        <p className="mt-4">
+          We do not guarantee that AI outputs will be error-free, exhaustive,
+          unbiased, or suitable for every organizational context.
+        </p>
       </>
     ),
   },
@@ -109,14 +188,27 @@ const sections = [
       <>
         <p>You agree not to:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>Use the Services for unlawful, harmful, discriminatory, or retaliatory purposes;</li>
-          <li>Attempt to identify individual respondents where reports are intended to be aggregated or anonymous;</li>
+          <li>
+            Use the Services for unlawful, harmful, discriminatory, or
+            retaliatory purposes;
+          </li>
+          <li>
+            Attempt to identify individual respondents where reports are
+            intended to be aggregated or anonymous;
+          </li>
           <li>Upload malicious code, viruses, or harmful content;</li>
-          <li>Attempt to reverse engineer, scrape, copy, or reproduce the platform;</li>
+          <li>
+            Attempt to reverse engineer, scrape, copy, or reproduce the
+            platform;
+          </li>
           <li>Interfere with platform security or availability;</li>
           <li>Misrepresent your identity or authority;</li>
           <li>Use outputs in a misleading way;</li>
-          <li>Use the Services to make automated decisions that create significant effects for individuals without appropriate human review and legal compliance.</li>
+          <li>
+            Use the Services to make automated decisions that create significant
+            effects for individuals without appropriate human review and legal
+            compliance.
+          </li>
         </ul>
       </>
     ),
@@ -126,9 +218,22 @@ const sections = [
     title: "9. Intellectual Property",
     content: (
       <>
-        <p>POD-360™, POD-Insights AI™, assessment models, scoring logic, dashboards, reports, templates, frameworks, content, designs, product names, trademarks, and related intellectual property are owned by Talent By Design Collective Inc. or its licensors.</p>
-        <p className="mt-4">Clients receive a limited, non-exclusive, non-transferable right to access and use the Services for their internal organizational purposes during the applicable subscription, pilot, or service period.</p>
-        <p className="mt-4">You may not copy, reproduce, sell, sublicense, distribute, or create derivative products from POD-360 materials without our prior written consent.</p>
+        <p>
+          POD-360™, POD-Insights AI™, assessment models, scoring logic,
+          dashboards, reports, templates, frameworks, content, designs, product
+          names, trademarks, and related intellectual property are owned by
+          Talent By Design Collective Inc. or its licensors.
+        </p>
+        <p className="mt-4">
+          Clients receive a limited, non-exclusive, non-transferable right to
+          access and use the Services for their internal organizational purposes
+          during the applicable subscription, pilot, or service period.
+        </p>
+        <p className="mt-4">
+          You may not copy, reproduce, sell, sublicense, distribute, or create
+          derivative products from POD-360 materials without our prior written
+          consent.
+        </p>
       </>
     ),
   },
@@ -137,8 +242,18 @@ const sections = [
     title: "10. Client Data",
     content: (
       <>
-        <p>Client data may include organizational information, assessment configuration, participant responses, uploaded documents, assessment results, dashboard content, reports, comments, and other information provided through the Services.</p>
-        <p className="mt-4">As between the client and the Company, the client retains ownership of its underlying client data. The Company may process client data to provide, secure, maintain, improve, and support the Services, subject to our Privacy Policy and any written agreement with the client.</p>
+        <p>
+          Client data may include organizational information, assessment
+          configuration, participant responses, uploaded documents, assessment
+          results, dashboard content, reports, comments, and other information
+          provided through the Services.
+        </p>
+        <p className="mt-4">
+          As between the client and the Company, the client retains ownership of
+          its underlying client data. The Company may process client data to
+          provide, secure, maintain, improve, and support the Services, subject
+          to our Privacy Policy and any written agreement with the client.
+        </p>
       </>
     ),
   },
@@ -147,8 +262,17 @@ const sections = [
     title: "11. Aggregated and De-Identified Data",
     content: (
       <>
-        <p>We may use aggregated or de-identified information to improve POD-360, develop benchmarks, enhance scoring models, conduct research, improve AI-assisted insights, and create generalized industry or organizational effectiveness insights.</p>
-        <p className="mt-4">We will not intentionally identify an individual or disclose a client's confidential information through aggregated or de-identified outputs.</p>
+        <p>
+          We may use aggregated or de-identified information to improve POD-360,
+          develop benchmarks, enhance scoring models, conduct research, improve
+          AI-assisted insights, and create generalized industry or
+          organizational effectiveness insights.
+        </p>
+        <p className="mt-4">
+          We will not intentionally identify an individual or disclose a
+          client's confidential information through aggregated or de-identified
+          outputs.
+        </p>
       </>
     ),
   },
@@ -157,8 +281,17 @@ const sections = [
     title: "12. Confidentiality",
     content: (
       <>
-        <p>Each party may receive confidential information from the other. Confidential information includes non-public business, technical, financial, product, assessment, client, participant, or strategic information.</p>
-        <p className="mt-4">Each party agrees to protect confidential information using reasonable safeguards and to use it only for the purposes of providing or receiving the Services, unless disclosure is required by law.</p>
+        <p>
+          Each party may receive confidential information from the other.
+          Confidential information includes non-public business, technical,
+          financial, product, assessment, client, participant, or strategic
+          information.
+        </p>
+        <p className="mt-4">
+          Each party agrees to protect confidential information using reasonable
+          safeguards and to use it only for the purposes of providing or
+          receiving the Services, unless disclosure is required by law.
+        </p>
       </>
     ),
   },
@@ -167,8 +300,16 @@ const sections = [
     title: "13. Fees, Payment, Pilots, and Subscriptions",
     content: (
       <>
-        <p>Fees, payment terms, subscription periods, pilot terms, implementation fees, renewal terms, and cancellation terms will be set out in the applicable order form, statement of work, proposal, invoice, or written agreement.</p>
-        <p className="mt-4">Unless otherwise stated in writing, fees are non-refundable once Services have been provided or access has been granted.</p>
+        <p>
+          Fees, payment terms, subscription periods, pilot terms, implementation
+          fees, renewal terms, and cancellation terms will be set out in the
+          applicable order form, statement of work, proposal, invoice, or
+          written agreement.
+        </p>
+        <p className="mt-4">
+          Unless otherwise stated in writing, fees are non-refundable once
+          Services have been provided or access has been granted.
+        </p>
       </>
     ),
   },
@@ -177,8 +318,16 @@ const sections = [
     title: "14. Availability and Changes to the Services",
     content: (
       <>
-        <p>We aim to provide reliable access to POD-360, but we do not guarantee uninterrupted or error-free availability. The Services may be unavailable due to maintenance, updates, technical issues, third-party service outages, or events beyond our control.</p>
-        <p className="mt-4">We may modify, improve, suspend, or discontinue parts of the Services from time to time.</p>
+        <p>
+          We aim to provide reliable access to POD-360, but we do not guarantee
+          uninterrupted or error-free availability. The Services may be
+          unavailable due to maintenance, updates, technical issues, third-party
+          service outages, or events beyond our control.
+        </p>
+        <p className="mt-4">
+          We may modify, improve, suspend, or discontinue parts of the Services
+          from time to time.
+        </p>
       </>
     ),
   },
@@ -187,8 +336,17 @@ const sections = [
     title: "15. Third-Party Services",
     content: (
       <>
-        <p>The Services may integrate with or rely on third-party providers, such as hosting providers, analytics tools, authentication services, AI service providers, email services, payment processors, or productivity platforms.</p>
-        <p className="mt-4">We are not responsible for third-party services that are not controlled by us. Use of third-party services may be subject to separate terms and privacy policies.</p>
+        <p>
+          The Services may integrate with or rely on third-party providers, such
+          as hosting providers, analytics tools, authentication services, AI
+          service providers, email services, payment processors, or productivity
+          platforms.
+        </p>
+        <p className="mt-4">
+          We are not responsible for third-party services that are not
+          controlled by us. Use of third-party services may be subject to
+          separate terms and privacy policies.
+        </p>
       </>
     ),
   },
@@ -197,8 +355,17 @@ const sections = [
     title: "16. No Professional Advice",
     content: (
       <>
-        <p>POD-360 outputs are informational and advisory in nature. They do not constitute legal, employment, labour relations, psychological, medical, financial, accounting, or other regulated professional advice.</p>
-        <p className="mt-4">Clients should seek appropriate professional advice before making decisions that may affect individuals, employment relationships, legal obligations, financial matters, or organizational risk.</p>
+        <p>
+          POD-360 outputs are informational and advisory in nature. They do not
+          constitute legal, employment, labour relations, psychological,
+          medical, financial, accounting, or other regulated professional
+          advice.
+        </p>
+        <p className="mt-4">
+          Clients should seek appropriate professional advice before making
+          decisions that may affect individuals, employment relationships, legal
+          obligations, financial matters, or organizational risk.
+        </p>
       </>
     ),
   },
@@ -207,8 +374,17 @@ const sections = [
     title: "17. Disclaimers",
     content: (
       <>
-        <p>The Services are provided on an "as is" and "as available" basis. To the fullest extent permitted by law, we disclaim warranties of merchantability, fitness for a particular purpose, non-infringement, accuracy, completeness, and uninterrupted availability.</p>
-        <p className="mt-4">We do not guarantee specific organizational outcomes, business results, employee engagement improvements, productivity gains, adoption results, benefits realization, or return on investment.</p>
+        <p>
+          The Services are provided on an "as is" and "as available" basis. To
+          the fullest extent permitted by law, we disclaim warranties of
+          merchantability, fitness for a particular purpose, non-infringement,
+          accuracy, completeness, and uninterrupted availability.
+        </p>
+        <p className="mt-4">
+          We do not guarantee specific organizational outcomes, business
+          results, employee engagement improvements, productivity gains,
+          adoption results, benefits realization, or return on investment.
+        </p>
       </>
     ),
   },
@@ -217,9 +393,22 @@ const sections = [
     title: "18. Limitation of Liability",
     content: (
       <>
-        <p>To the fullest extent permitted by law, Talent By Design Collective Inc. will not be liable for indirect, incidental, consequential, special, exemplary, or punitive damages, including lost profits, lost revenue, business interruption, loss of goodwill, or loss of data.</p>
-        <p className="mt-4">Unless otherwise agreed in writing, our total liability arising from or related to the Services will not exceed the amount paid by the client for the Services in the six months before the event giving rise to the claim.</p>
-        <p className="mt-4">Some jurisdictions do not allow certain limitations of liability, so some limitations may not apply.</p>
+        <p>
+          To the fullest extent permitted by law, Talent By Design Collective
+          Inc. will not be liable for indirect, incidental, consequential,
+          special, exemplary, or punitive damages, including lost profits, lost
+          revenue, business interruption, loss of goodwill, or loss of data.
+        </p>
+        <p className="mt-4">
+          Unless otherwise agreed in writing, our total liability arising from
+          or related to the Services will not exceed the amount paid by the
+          client for the Services in the six months before the event giving rise
+          to the claim.
+        </p>
+        <p className="mt-4">
+          Some jurisdictions do not allow certain limitations of liability, so
+          some limitations may not apply.
+        </p>
       </>
     ),
   },
@@ -228,7 +417,12 @@ const sections = [
     title: "19. Indemnity",
     content: (
       <>
-        <p>You agree to indemnify and hold harmless Talent By Design Collective Inc. from claims, damages, losses, liabilities, costs, and expenses arising from your misuse of the Services, breach of these Terms, violation of law, or unauthorized use of third-party information.</p>
+        <p>
+          You agree to indemnify and hold harmless Talent By Design Collective
+          Inc. from claims, damages, losses, liabilities, costs, and expenses
+          arising from your misuse of the Services, breach of these Terms,
+          violation of law, or unauthorized use of third-party information.
+        </p>
       </>
     ),
   },
@@ -237,8 +431,16 @@ const sections = [
     title: "20. Termination",
     content: (
       <>
-        <p>We may suspend or terminate access to the Services if a user or client breaches these Terms, fails to pay applicable fees, creates a security risk, misuses the platform, or uses the Services unlawfully.</p>
-        <p className="mt-4">Upon termination, access to the Services may be disabled. Data return, deletion, or retention will be handled according to the applicable agreement and our Privacy Policy.</p>
+        <p>
+          We may suspend or terminate access to the Services if a user or client
+          breaches these Terms, fails to pay applicable fees, creates a security
+          risk, misuses the platform, or uses the Services unlawfully.
+        </p>
+        <p className="mt-4">
+          Upon termination, access to the Services may be disabled. Data return,
+          deletion, or retention will be handled according to the applicable
+          agreement and our Privacy Policy.
+        </p>
       </>
     ),
   },
@@ -247,8 +449,16 @@ const sections = [
     title: "21. Governing Law",
     content: (
       <>
-        <p>These Terms are governed by the laws of the Province of British Columbia and the applicable laws of Canada, unless another jurisdiction is required by law or agreed in writing.</p>
-        <p className="mt-4">The parties agree to the exclusive jurisdiction of the courts of British Columbia for disputes arising from these Terms, unless otherwise agreed in writing.</p>
+        <p>
+          These Terms are governed by the laws of the Province of British
+          Columbia and the applicable laws of Canada, unless another
+          jurisdiction is required by law or agreed in writing.
+        </p>
+        <p className="mt-4">
+          The parties agree to the exclusive jurisdiction of the courts of
+          British Columbia for disputes arising from these Terms, unless
+          otherwise agreed in writing.
+        </p>
       </>
     ),
   },
@@ -257,7 +467,11 @@ const sections = [
     title: "22. Changes to These Terms",
     content: (
       <>
-        <p>We may update these Terms from time to time. The updated version will be posted with a revised "Last Updated" date. Continued use of the Services after changes are posted means you accept the updated Terms.</p>
+        <p>
+          We may update these Terms from time to time. The updated version will
+          be posted with a revised "Last Updated" date. Continued use of the
+          Services after changes are posted means you accept the updated Terms.
+        </p>
       </>
     ),
   },
@@ -267,10 +481,18 @@ const sections = [
     content: (
       <>
         <p>Questions about these Terms may be directed to:</p>
-        <p className="mt-4 font-semibold text-slate-800">Talent By Design Collective Inc.</p>
-        <p className="mt-2"><strong>Email:</strong> sdesouza@tbdcollective.ca</p>
-        <p className="mt-2"><strong>Address:</strong> 3350 Wellington Street, Port Coquitlam, BC</p>
-        <p className="mt-2"><strong>Privacy / Legal Contact:</strong> Confidential</p>
+        <p className="mt-4 font-semibold text-slate-800">
+          Talent By Design Collective Inc.
+        </p>
+        <p className="mt-2">
+          <strong>Email:</strong> sdesouza@tbdcollective.ca
+        </p>
+        <p className="mt-2">
+          <strong>Address:</strong> 3350 Wellington Street, Port Coquitlam, BC
+        </p>
+        <p className="mt-2">
+          <strong>Privacy / Legal Contact:</strong> Confidential
+        </p>
       </>
     ),
   },
@@ -396,7 +618,10 @@ const TermsOfService = () => {
               </div>
 
               {/* Desktop Vertical Navigation */}
-              <div className="hidden md:block relative pr-4" style={{ scrollbarWidth: "thin" }}>
+              <div
+                className="hidden md:block relative pr-4"
+                style={{ scrollbarWidth: "thin" }}
+              >
                 {/* Vertical Line */}
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-100 rounded-full" />
 
@@ -426,10 +651,17 @@ const TermsOfService = () => {
               {/* Introduction */}
               <div className="text-slate-600 mb-16 leading-relaxed text-base">
                 <p>
-                  These Terms and Conditions ("Terms") govern access to and use of the POD-360™ platform, assessment tools, dashboards, reports, insights, AI-enabled features, and related services collectively referred to as the "Services."
+                  These Terms and Conditions ("Terms") govern access to and use
+                  of the POD-360™ platform, assessment tools, dashboards,
+                  reports, insights, AI-enabled features, and related services
+                  collectively referred to as the "Services."
                 </p>
                 <p className="mt-4">
-                  The Services are provided by Talent By Design Collective Inc. ("Company," "we," "us," or "our"). By accessing or using the Services, you agree to these Terms. If you are using the Services on behalf of an organization, you confirm that you have authority to bind that organization to these Terms.
+                  The Services are provided by Talent By Design Collective Inc.
+                  ("Company," "we," "us," or "our"). By accessing or using the
+                  Services, you agree to these Terms. If you are using the
+                  Services on behalf of an organization, you confirm that you
+                  have authority to bind that organization to these Terms.
                 </p>
               </div>
 

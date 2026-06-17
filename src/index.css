@@ -64,7 +64,7 @@ body {
     color 0.2s ease;
 }
 
-::selection{
+::selection {
   background-color: var(--primary-color);
   color: var(--white-color);
 }

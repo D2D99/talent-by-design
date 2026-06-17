@@ -26,7 +26,7 @@ const ContactUs = () => {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
-    reset
+    reset,
   } = useForm<ContactFormFields>();
 
   const onSubmit: SubmitHandler<ContactFormFields> = async (data) => {
@@ -83,7 +83,7 @@ const ContactUs = () => {
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none bg-[linear-gradient(53deg,rgba(237,245,253,0.3)_75%,#e4f0fc_100%)]">
           {/* Grid pattern */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.3] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_70%,transparent_110%)]" />
-          
+
           {/* Subtle Glows matching brand colors */}
           <div
             className="absolute -top-[20%] -left-[10%] w-[600px] h-[600px] bg-gradient-to-br from-[var(--primary-color)] via-[#C7E0F8] to-transparent opacity-[0.15] rounded-full blur-[100px] mix-blend-multiply animate-pulse"
@@ -100,12 +100,10 @@ const ContactUs = () => {
             {/* Left Content */}
             <div className="max-w-xl">
               <h4 className="badge">CONNECT WITH US</h4>
-              <h1 className="heading text-left !mx-0">
-                Contact Us
-              </h1>
+              <h1 className="heading text-left !mx-0">Contact Us</h1>
               <p className="text-lg text-[var(--secondary-color)] font-medium mb-8 leading-relaxed">
-                Email, call, or complete the form to learn how POD-360 can
-                solve your strategic transformation challenges.
+                Email, call, or complete the form to learn how POD-360 can solve
+                your strategic transformation challenges.
               </p>
 
               <div className="space-y-4 mb-12">
@@ -137,8 +135,8 @@ const ContactUs = () => {
                     Customer Support
                   </h3>
                   <p className="text-[var(--secondary-color)] text-sm leading-relaxed">
-                    Our support team is available around the clock to address any
-                    concerns or queries you may have.
+                    Our support team is available around the clock to address
+                    any concerns or queries you may have.
                   </p>
                 </div>
                 <div>
@@ -171,19 +169,29 @@ const ContactUs = () => {
                 You can reach us anytime
               </p>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-4"
+                noValidate
+              >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <input
                       type="text"
                       placeholder="First name"
                       className={`font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
-                        errors.firstName ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                        errors.firstName
+                          ? "border-red-500"
+                          : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                       }`}
-                      {...register("firstName", { required: "First name is required" })}
+                      {...register("firstName", {
+                        required: "First name is required",
+                      })}
                     />
                     {errors.firstName && (
-                      <span className="text-red-500 text-xs mt-1 block">{errors.firstName.message}</span>
+                      <span className="text-red-500 text-xs mt-1 block">
+                        {errors.firstName.message}
+                      </span>
                     )}
                   </div>
                   <div>
@@ -191,12 +199,18 @@ const ContactUs = () => {
                       type="text"
                       placeholder="Last name"
                       className={`font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
-                        errors.lastName ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                        errors.lastName
+                          ? "border-red-500"
+                          : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                       }`}
-                      {...register("lastName", { required: "Last name is required" })}
+                      {...register("lastName", {
+                        required: "Last name is required",
+                      })}
                     />
                     {errors.lastName && (
-                      <span className="text-red-500 text-xs mt-1 block">{errors.lastName.message}</span>
+                      <span className="text-red-500 text-xs mt-1 block">
+                        {errors.lastName.message}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -206,7 +220,9 @@ const ContactUs = () => {
                     type="email"
                     placeholder="Your email"
                     className={`font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] ${
-                      errors.email ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                      errors.email
+                        ? "border-red-500"
+                        : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
                     {...register("email", {
                       required: "Email is required",
@@ -217,7 +233,9 @@ const ContactUs = () => {
                     })}
                   />
                   {errors.email && (
-                    <span className="text-red-500 text-xs mt-1 block">{errors.email.message}</span>
+                    <span className="text-red-500 text-xs mt-1 block">
+                      {errors.email.message}
+                    </span>
                   )}
                 </div>
 
@@ -248,7 +266,9 @@ const ContactUs = () => {
                     )}
                   />
                   {errors.phone && (
-                    <span className="text-red-500 text-xs mt-1 block">{errors.phone.message}</span>
+                    <span className="text-red-500 text-xs mt-1 block">
+                      {errors.phone.message}
+                    </span>
                   )}
                 </div>
 
@@ -257,12 +277,18 @@ const ContactUs = () => {
                     rows={4}
                     placeholder="How can we help?"
                     className={`font-medium text-sm text-[#5D5D5D] w-full p-3 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] resize-none ${
-                      errors.message ? "border-red-500" : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                      errors.message
+                        ? "border-red-500"
+                        : "border-[#E8E8E8] focus:border-[var(--primary-color)]"
                     }`}
-                    {...register("message", { required: "Message is required" })}
+                    {...register("message", {
+                      required: "Message is required",
+                    })}
                   ></textarea>
                   {errors.message && (
-                    <span className="text-red-500 text-xs mt-1 block">{errors.message.message}</span>
+                    <span className="text-red-500 text-xs mt-1 block">
+                      {errors.message.message}
+                    </span>
                   )}
                 </div>
 
@@ -286,14 +312,20 @@ const ContactUs = () => {
                     />
                   )}
                 </button>
-                
+
                 <p className="text-center text-xs text-[var(--secondary-color)] mt-4">
                   By contacting us, you agree to our{" "}
-                  <Link to="/terms-of-service" className="text-[var(--primary-color)] font-medium hover:underline transition-colors">
+                  <Link
+                    to="/terms-of-service"
+                    className="text-[var(--primary-color)] font-medium hover:underline transition-colors"
+                  >
                     Terms of service
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy-policy" className="text-[var(--primary-color)] font-medium hover:underline transition-colors">
+                  <Link
+                    to="/privacy-policy"
+                    className="text-[var(--primary-color)] font-medium hover:underline transition-colors"
+                  >
                     Privacy Policy
                   </Link>
                 </p>
@@ -311,27 +343,43 @@ const ContactUs = () => {
             <div className="rounded-xl overflow-hidden bg-[#E4F0FC] aspect-square sm:aspect-[4/3] relative border border-[rgba(68,140,210,0.2)] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] group">
               {/* Fake Map Image / Design */}
               <div className="absolute inset-0 opacity-40 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZGVmcz48cGF0dGVybiBpZD0icC1ncmlkIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gNDAgMCBMMCAwIDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3AtZ3JpZCkiLz48cGF0aCBkPSJNMTAwLDE1MCBMMjAwLDMwMCBMMzAwLDE1MCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC4yIi8+PC9zdmc+')] bg-cover" />
-              
+
               <div className="absolute inset-0 flex items-center justify-center p-6">
                 <div className="bg-white p-5 rounded-xl shadow-[4px_4px_15px_0_rgba(68,140,210,0.15)] border border-[rgba(68,140,210,0.1)] w-full max-w-sm transform group-hover:-translate-y-1 transition-transform duration-300">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-[var(--primary-color)] flex items-center justify-center shrink-0">
-                      <Icon icon="heroicons:building-office-2" className="text-white w-5 h-5" />
+                      <Icon
+                        icon="heroicons:building-office-2"
+                        className="text-white w-5 h-5"
+                      />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[var(--dark-primary-color)]">Talent By Design</h4>
-                      <p className="text-xs text-[var(--secondary-color)] mb-3">Strategic Transformation Partner</p>
-                      
+                      <h4 className="font-bold text-[var(--dark-primary-color)]">
+                        Talent By Design
+                      </h4>
+                      <p className="text-xs text-[var(--secondary-color)] mb-3">
+                        Strategic Transformation Partner
+                      </p>
+
                       <div className="text-sm text-[var(--dark-primary-color)] font-medium">
-                        Virtually Everywhere<br />
-                        Vancouver, BC<br />
-                        Kelowna, BC<br />
+                        Virtually Everywhere
+                        <br />
+                        Vancouver, BC
+                        <br />
+                        Kelowna, BC
+                        <br />
                         Edmonton, AB
                       </div>
-                      
-                      <a href="#" className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--primary-color)] mt-3 hover:underline transition-colors">
+
+                      <a
+                        href="#"
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--primary-color)] mt-3 hover:underline transition-colors"
+                      >
                         Open Google Maps
-                        <Icon icon="heroicons:chevron-right" className="w-4 h-4" />
+                        <Icon
+                          icon="heroicons:chevron-right"
+                          className="w-4 h-4"
+                        />
                       </a>
                     </div>
                   </div>
@@ -343,15 +391,21 @@ const ContactUs = () => {
             <div>
               <h4 className="badge">OUR LOCATION</h4>
               <h2 className="sub-heading !text-left !mx-0">
-                Connecting <span className="sub-heading-highlight">Near</span> and <span className="sub-heading-highlight">Far</span>
+                Connecting <span className="sub-heading-highlight">Near</span>{" "}
+                and <span className="sub-heading-highlight">Far</span>
               </h2>
 
               <div className="space-y-2 mt-8">
-                <h3 className="text-xl font-bold text-[var(--dark-primary-color)] mb-4">Locations</h3>
+                <h3 className="text-xl font-bold text-[var(--dark-primary-color)] mb-4">
+                  Locations
+                </h3>
                 <p className="text-[var(--secondary-color)] text-base font-medium leading-relaxed">
-                  Virtually Everywhere<br />
-                  Vancouver, BC<br />
-                  Kelowna, BC<br />
+                  Virtually Everywhere
+                  <br />
+                  Vancouver, BC
+                  <br />
+                  Kelowna, BC
+                  <br />
                   Edmonton, AB
                 </p>
               </div>
@@ -367,33 +421,40 @@ const ContactUs = () => {
             <div>
               <h4 className="badge">FAQ</h4>
               <h2 className="sub-heading !text-left !mx-0 mb-6">
-                Do you have any<br /><span className="sub-heading-highlight">questions</span> for us?
+                Do you have any
+                <br />
+                <span className="sub-heading-highlight">questions</span> for us?
               </h2>
               <p className="text-base font-medium mt-2 text-[var(--secondary-color)] mb-10 max-w-sm leading-relaxed">
-                If there are any questions you want to ask, we will answer all your questions.
+                If there are any questions you want to ask, we will answer all
+                your questions.
               </p>
             </div>
 
             <div className="space-y-4">
               {faqs.map((faq, idx) => (
-                <div 
-                  key={idx} 
-                  className={`border-b border-[rgba(68,140,210,0.2)] pb-4`}
+                <div
+                  key={idx}
+                  className={`border-b border-[rgba(68,140,210,0.2)] last:border-b-0 pb-4`}
                 >
                   <button
                     onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
                     className="w-full flex items-center justify-between py-4 text-left group"
                   >
-                    <span className={`text-lg font-medium transition-colors ${activeFaq === idx ? 'text-[var(--primary-color)]' : 'text-slate-900 group-hover:text-[var(--primary-color)]'}`}>
+                    <span
+                      className={`text-lg font-medium transition-colors ${activeFaq === idx ? "text-[var(--primary-color)]" : "text-slate-900 group-hover:text-[var(--primary-color)]"}`}
+                    >
                       {faq.question}
                     </span>
-                    <Icon 
-                      icon={activeFaq === idx ? "heroicons:minus" : "heroicons:plus"} 
-                      className={`w-5 h-5 text-[var(--primary-color)] transition-transform duration-300`} 
+                    <Icon
+                      icon={
+                        activeFaq === idx ? "heroicons:minus" : "heroicons:plus"
+                      }
+                      className={`w-5 h-5 text-[var(--primary-color)] transition-transform duration-300`}
                     />
                   </button>
-                  <div 
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${activeFaq === idx ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${activeFaq === idx ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
                   >
                     <p className="text-[var(--secondary-color)] pb-4 pr-8 text-base font-normal leading-relaxed">
                       {faq.answer}

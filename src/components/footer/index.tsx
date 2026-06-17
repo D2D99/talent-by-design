@@ -1,4 +1,4 @@
-const FooterLogo = "/static/img/home/footer-logo.svg";
+const FooterLogo = "/static/img/pod-footer-logo.svg";
 const Facebook = "/static/img/icons/facebook-icon.svg";
 const Instagram = "/static/img/icons/instagram-icon.svg";
 const Twitter = "/static/img/icons/twitter.svg";
@@ -16,11 +16,12 @@ const Footer = () => {
       <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
         <div className="flex lg:flex-nowrap flex-wrap gap-10 justify-between">
           <div className="">
-            <img src={FooterLogo} alt="logo" />
+            <a href="/">
+              <img src={FooterLogo} alt="logo" className="h-24 w-auto" />
+            </a>
             <p className="text-xs font-normal text-[var(--white-color)] mt-3 lg:max-w-xs">
-              ©{new Date().getFullYear()}{" "}
-              <strong>TALENT BY DESIGN COLLECTIVE Inc.</strong> All rights
-              reserved.
+              ©{new Date().getFullYear()} <strong>POD-360™ Inc.</strong> All
+              rights reserved.
             </p>
             <h3 className="uppercase font-bold text-lg text-[var(--white-color)] mt-4">
               Follow us
@@ -197,6 +198,7 @@ const Footer = () => {
               <form action="">
                 <input
                   type="email"
+                  
                   className="py-2 pl-4 pr-7 w-full
                     border border-white
                     bg-gradient-to-r
@@ -228,7 +230,7 @@ const Footer = () => {
       <img
         src={LogoIcon}
         alt="Logo"
-        className="w-full opacity-25 md:mt-10 mt-5"
+        className="w-full opacity-25 mt-10 lg:mt-20"
       />
     </div>
   );
