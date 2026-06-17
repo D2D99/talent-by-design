@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-const Logo = "/static/img/home/logo.svg";
+const Logo = "/static/img/POD-logo.svg";
 import { Icon } from "@iconify/react";
 import api from "../../services/axios";
 import { AxiosError } from "axios";
@@ -116,7 +116,7 @@ const ForgotPassword = () => {
     <div className="flex min-h-screen bg-[var(--light-primary-color)]">
       <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
         <div className="text-center mb-8 mx-auto">
-          <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
+          <img src={Logo} className="h-24 w-auto mx-auto" alt="Logo" />
         </div>
 
         <div className="w-full mx-auto sm:max-w-96 max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">

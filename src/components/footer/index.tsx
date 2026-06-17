@@ -198,7 +198,6 @@ const Footer = () => {
               <form action="">
                 <input
                   type="email"
-                  
                   className="py-2 pl-4 pr-7 w-full
                     border border-white
                     bg-gradient-to-r

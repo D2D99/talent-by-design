@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const Logo = "/static/img/home/logo.svg";
+const Logo = "/static/img/POD-logo.svg";
 const ImageOpen = "/static/img/icons/eye-open.png";
 const ImageClose = "/static/img/icons/eye-closed.png";
 import { Icon } from "@iconify/react";
@@ -172,7 +172,7 @@ const Login = () => {
       <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
         <div className="text-center mb-8 mx-auto flex items-center justify-center">
           <Link to={"/"}>
-            <img src={Logo} alt="Logo" className="w-fit mx-auto" />
+            <img src={Logo} alt="Logo" className="h-24 w-auto mx-auto" />
           </Link>
         </div>
 

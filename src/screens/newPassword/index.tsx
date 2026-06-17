@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Logo from "../../../public/static/img/home/logo.svg";
+const Logo = "/static/img/POD-logo.svg";
 import ImageClose from "../../../public/static/img/icons/eye-closed.png";
 import ImageOpen from "../../../public/static/img/icons/eye-open.png";
 import { Icon } from "@iconify/react";
@@ -119,7 +119,7 @@ const NewPassword = () => {
     <div className="flex min-h-screen bg-[var(--light-primary-color)]">
       <div className="lg:w-1/2 w-full mx-auto sm:pt-20 pt-10 px-3">
         <div className="text-center mb-8 mx-auto">
-          <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
+          <img src={Logo} className="h-24 w-auto mx-auto" alt="Logo" />
         </div>
 
         <div className="w-full mx-auto max-w-96 rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">

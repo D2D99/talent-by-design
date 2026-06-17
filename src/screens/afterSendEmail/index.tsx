@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/axios";
 import { toast } from "react-toastify";
 
-const Logo = "/static/img/home/logo.svg";
+const Logo = "/static/img/POD-logo.svg";
 const ResendMail = "/static/img/icons/resend-email-icon.svg";
 const BackIcon = "/static/img/icons/back-icon.svg";
 import SpinnerLoader from "../../components/spinnerLoader";
@@ -121,7 +121,7 @@ const AfterSendEmail = () => {
     <div className="min-h-screen bg-[var(--light-primary-color)] relative">
       <div className="min-h-screen bg-[var(--light-primary-color)] relative sm:pt-20 pt-10">
         <div className="text-center mb-8 mx-auto">
-          <img src={Logo} className="max-w-[150px] w-full mx-auto" alt="Logo" />
+          <img src={Logo} className="h-24 w-auto mx-auto" alt="Logo" />
         </div>
 
         <div className="w-full mx-auto max-w-96 rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4 text-center">

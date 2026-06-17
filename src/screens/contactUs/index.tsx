@@ -8,14 +8,10 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-
-type ContactFormFields = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  message: string;
-};
+import {
+  sendContactEmail,
+  type ContactFormFields,
+} from "../../services/contactService";
 
 const ContactUs = () => {
   const [pageLoading, setPageLoading] = useState(true);
@@ -30,11 +26,14 @@ const ContactUs = () => {
   } = useForm<ContactFormFields>();
 
   const onSubmit: SubmitHandler<ContactFormFields> = async (data) => {
-    // mock submit delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Form data:", data);
-    toast.success("Thank you! Your message has been sent successfully.");
-    reset();
+    try {
+      await sendContactEmail(data);
+      toast.success("Thank you! Your message has been sent successfully.");
+      reset();
+    } catch (error) {
+      console.error("Failed to send contact email:", error);
+      toast.error("Failed to send your message. Please try again later.");
+    }
   };
 
   // Page Loader
