@@ -23,6 +23,7 @@ const NewPassword = lazy(() => import("./screens/newPassword"));
 const Register = lazy(() => import("./screens/register"));
 const AfterRegister = lazy(() => import("./screens/afterRegister"));
 const ProfileInfo = lazy(() => import("./screens/profileInfo"));
+const Faq = lazy(() => import("./screens/faq"));
 const AssessmentQuestion = lazy(
   () => import("./components/assessmentQuestion"),
 );
@@ -82,6 +83,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/faq" element={<Faq />} />
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />

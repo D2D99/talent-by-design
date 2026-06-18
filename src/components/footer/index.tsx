@@ -98,6 +98,14 @@ const Footer = () => {
                     Pricing
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="/contact-us"
+                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                  >
+                    Contact Us
+                  </a>
+                </li>
               </ul>
             </div>
             <div>

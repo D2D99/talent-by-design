@@ -109,7 +109,11 @@ const Header = () => {
                 </li>
 
                 <li className="mb-4 lg:mb-0 lg:pe-2" data-twe-nav-item-ref>
-                  <a className={navLinkClasses} href="#" data-twe-nav-link-ref>
+                  <a
+                    className={navLinkClasses}
+                    href="/faq"
+                    data-twe-nav-link-ref
+                  >
                     Faq
                   </a>
                 </li>
