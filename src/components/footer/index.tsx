@@ -58,15 +58,7 @@ const Footer = () => {
                 Quick links
               </h3>
               <ul className="space-y-1.5">
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
-                  >
-                    About Us
-                  </a>
-                </li>
-                <li>
+                               <li>
                   <a
                     href="#"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
@@ -98,6 +90,14 @@ const Footer = () => {
                     Pricing
                   </a>
                 </li>
+                 <li>
+                  <a
+                    href="#"
+                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                  >
+                    About Us
+                  </a>
+                </li>
                 <li>
                   <a
                     href="/contact-us"
@@ -127,22 +127,6 @@ const Footer = () => {
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
                     Terms & Conditions
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
-                  >
-                    AGB
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
-                  >
-                    EGB
                   </a>
                 </li>
               </ul>
