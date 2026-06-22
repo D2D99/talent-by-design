@@ -107,10 +107,10 @@ const ContactUs = () => {
 
               <div className="space-y-4 mb-12">
                 <a
-                  href="mailto:infopod360@gmail.com"
+                  href="mailto:info@pod360.ca"
                   className="block text-xl font-bold text-[var(--dark-primary-color)] hover:text-[var(--primary-color)] transition-colors"
                 >
-                  infopod360@gmail.com
+                  info@pod360.ca
                 </a>
                 <a
                   href="tel:6047858966"

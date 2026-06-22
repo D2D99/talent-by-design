@@ -82,10 +82,10 @@ const Home = () => {
                 height="15"
               />
               <a
-                href="mailto:infopod360@gmail.com"
+                href="mailto:info@pod360.ca"
                 className="text-xs font-normal text-[var(--white-color)]"
               >
-                infopod360@gmail.com
+                info@pod360.ca
               </a>
             </div>
             <div className="flex items-center gap-1">

@@ -147,11 +147,11 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="mailto:infopod360@gmail.com"
+                    href="mailto:info@pod360.ca"
                     className="flex gap-2 items-center text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
                     <img src={GmailIcon} alt="gmail icon" />
-                    <span>infopod360@gmail.com</span>
+                    <span>info@pod360.ca</span>
                   </a>
                 </li>
                 <li>
