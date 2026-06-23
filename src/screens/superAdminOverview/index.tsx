@@ -74,6 +74,13 @@ const SuperAdminOverview = () => {
       color: "#448CD2",
     },
     {
+      label: "Total Participants",
+      longDesc: "Total participants assigned across all organizations.",
+      value: intelData?.totalParticipants ?? "0",
+      icon: "solar:users-group-two-rounded-broken",
+      color: "#4776E6",
+    },
+    {
       label: "Client Base Users",
       // detail: "Total registered individuals",
       longDesc: "Total active user accounts across all organization layers.",
@@ -88,14 +95,6 @@ const SuperAdminOverview = () => {
       value: intelData?.stats?.[2]?.value || "0",
       icon: "solar:diploma-verified-broken",
       color: "#2d5d8c",
-    },
-    {
-      label: "Active This Quarter",
-      longDesc:
-        "Percentage of organizations with at least one completed assessment this quarter.",
-      value: intelData?.stats?.[3]?.value || "0%",
-      icon: "solar:ticker-star-linear",
-      color: "#10b981",
     },
   ];
 
@@ -266,10 +265,10 @@ const SuperAdminOverview = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {[
             {
-              label: "Assessments completed",
-              value: intelData?.participation?.completed || 0,
-              badge: `${intelData?.participation?.rate || 0}% rate`,
-              icon: "solar:user-check-broken",
+              label: "Active This Quarter",
+              value: intelData?.stats?.[3]?.value || "0%",
+              badge: intelData?.stats?.[3]?.growth || "Stable",
+              icon: "solar:ticker-star-linear",
               color: "#10b981",
             },
             {
