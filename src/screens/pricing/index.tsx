@@ -5,7 +5,6 @@ import SpinnerLoader from "../../components/spinnerLoader";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 const Pricing = () => {
-
   const navigate = useNavigate();
   const [pageLoading, setPageLoading] = useState(true);
 
@@ -98,9 +97,10 @@ const Pricing = () => {
                 6-month engagement
               </p>
 
-              <button className="group uppercase text-slate-700 rounded-full py-3 pl-7 pr-4 flex items-center gap-2 font-semibold text-base justify-center bg-white border border-gray-200 my-8 overflow-hidden isolate relative hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-300 shadow-sm min-h-12"
+              <button
+                className="group uppercase text-slate-700 rounded-full py-3 pl-7 pr-4 flex items-center gap-2 font-semibold text-base justify-center bg-white border border-gray-200 my-8 overflow-hidden isolate relative hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-300 shadow-sm min-h-12"
                 onClick={() => {
-                  navigate('/contact-us')
+                  navigate("/contact-us");
                 }}
               >
                 <span className="relative z-10 tracking-wide">contact us</span>
@@ -176,9 +176,10 @@ const Pricing = () => {
                   Up to 12 months
                 </p>
 
-                <button className="group relative text-white rounded-full py-3 pl-7 pr-4 flex items-center justify-center gap-2 font-semibold text-base bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] my-8 overflow-hidden isolate shadow-md shadow-[var(--primary-color)]/30 hover:shadow-lg hover:shadow-[var(--primary-color)]/40 transition-all duration-300 min-h-12 uppercase"
+                <button
+                  className="group relative text-white rounded-full py-3 pl-7 pr-4 flex items-center justify-center gap-2 font-semibold text-base bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] my-8 overflow-hidden isolate shadow-md shadow-[var(--primary-color)]/30 hover:shadow-lg hover:shadow-[var(--primary-color)]/40 transition-all duration-300 min-h-12 uppercase"
                   onClick={() => {
-                    navigate('/contact-us')
+                    navigate("/contact-us");
                   }}
                 >
                   {/* Button Text */}
@@ -263,8 +264,9 @@ const Pricing = () => {
               </div>
               <p className="text-slate-400 text-sm font-medium">18–24 months</p>
 
-              <button className="group text-slate-700 rounded-full py-3 pl-7 pr-4 flex items-center gap-2 font-semibold text-base justify-center bg-white border border-gray-200 my-8 overflow-hidden isolate relative hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-300 shadow-sm min-h-12 uppercase"
-                onClick={() => navigate('/contact-us')}
+              <button
+                className="group text-slate-700 rounded-full py-3 pl-7 pr-4 flex items-center gap-2 font-semibold text-base justify-center bg-white border border-gray-200 my-8 overflow-hidden isolate relative hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-300 shadow-sm min-h-12 uppercase"
+                onClick={() => navigate("/contact-us")}
               >
                 <span className="relative z-10 tracking-wide">Contact Us</span>
 
@@ -351,8 +353,9 @@ const Pricing = () => {
                     <div className="text-xs text-slate-400 font-normal mb-4">
                       6-month engagement
                     </div>
-                    <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200 text-nowrap"
-                      onClick={() => navigate('/contact-us')}
+                    <button
+                      className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200 text-nowrap"
+                      onClick={() => navigate("/contact-us")}
                     >
                       Contact Us
                     </button>
@@ -370,8 +373,9 @@ const Pricing = () => {
                       <div className="text-xs text-slate-400 font-normal mb-4">
                         Up to 12 months
                       </div>
-                      <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-bold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] text-white hover:opacity-90 transition-opacity duration-200 shadow-md shadow-[var(--primary-color)]/20 text-nowrap"
-                        onClick={() => navigate('/contact-us')}
+                      <button
+                        className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-bold text-sm uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] text-white hover:opacity-90 transition-opacity duration-200 shadow-md shadow-[var(--primary-color)]/20 text-nowrap"
+                        onClick={() => navigate("/contact-us")}
                       >
                         Contact Us
                       </button>
@@ -388,8 +392,9 @@ const Pricing = () => {
                     <div className="text-xs text-slate-400 font-normal mb-4">
                       18–24 months
                     </div>
-                    <button className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200 text-nowrap"
-                      onClick={() => navigate('/contact-us')}
+                    <button
+                      className="group w-full rounded-full py-2.5 px-4 flex items-center justify-center gap-1.5 font-semibold text-sm uppercase border border-gray-200 text-slate-700 bg-white hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors duration-200 text-nowrap"
+                      onClick={() => navigate("/contact-us")}
                     >
                       Contact Us
                     </button>

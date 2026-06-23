@@ -6,7 +6,7 @@ const Linkedin = "/static/img/icons/linkedin.png";
 const CallIcon = "/static/img/icons/phone-icon.svg";
 const GmailIcon = "/static/img/icons/gmail-icon.svg";
 const LocationIcon = "/static/img/icons/location-icon.svg";
-const HomeIcon = "/static/img/icons/home-icon.svg";
+// const HomeIcon = "/static/img/icons/home-icon.svg";
 const LogoIcon = "/static/img/footer-logo.svg";
 
 import { Icon } from "@iconify/react";
@@ -52,15 +52,15 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="flex justify-between md:flex-nowrap flex-wrap lg:w-7/12 w-full xl:pe-32 lg:pe-16 sm:gap-x-0 gap-x-10">
+          <div className="flex justify-between md:flex-nowrap flex-wrap lg:w-7/12 w-full xl:pe-32 lg:pe-8 sm:gap-x-0 gap-x-0">
             <div>
               <h3 className="uppercase font-bold md:text-lg text-base text-[var(--white-color)] mt-4 mb-3">
                 Quick links
               </h3>
               <ul className="space-y-1.5">
-                               <li>
+                <li>
                   <a
-                    href="#"
+                    href="/what-we-offer"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
                     What we offer
@@ -68,7 +68,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/our-process"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
                     Our Process
@@ -76,7 +76,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/faq"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
                     FAQ
@@ -90,9 +90,9 @@ const Footer = () => {
                     Pricing
                   </a>
                 </li>
-                 <li>
+                <li>
                   <a
-                    href="#"
+                    href="/about-us"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
                     About Us
@@ -116,7 +116,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="/privacy-policy"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
                     Privacy Policy
                   </a>
@@ -139,7 +139,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="tel:6047858966"
-                    className="flex gap-2 items-center text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
+                    className="flex gap-2 items-center text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] w-fit"
                   >
                     <img src={CallIcon} alt="call icon" />
                     <span>6047858966</span>
@@ -148,30 +148,33 @@ const Footer = () => {
                 <li>
                   <a
                     href="mailto:info@pod360.ca"
-                    className="flex gap-2 items-center text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="flex gap-2 items-center text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] w-fit"
                   >
                     <img src={GmailIcon} alt="gmail icon" />
                     <span>info@pod360.ca</span>
                   </a>
                 </li>
+
                 <li>
                   <a
-                    href=""
-                    className="flex gap-2 items-center text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    href="https://www.google.com/maps/search/?api=1&query=Talent+By+Design+3350+Wellington+Street+Port+Coquitlam+BC+V3B+3X9+Canada"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex gap-2 items-start text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
-                    <img src={LocationIcon} alt="location icon" />
-                    <span>Virtually Everywhere</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=""
-                    className="flex gap-2 items-start text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
-                  >
-                    <img src={HomeIcon} alt="call icon" />
+                    <img
+                      src={LocationIcon}
+                      alt="location icon"
+                      className="mt-0.5"
+                    />
                     <span>
-                      Vancouver, BC <br />
-                      Kelowna, BC <br /> Edmonton, AB
+                      <strong>Talent By Design</strong>
+                      <br />
+                      3350 Wellington Street,
+                      <br />
+                      Port Coquitlam, British Columbia,
+                      <br />
+                      V3B 3X9, Canada
                     </span>
                   </a>
                 </li>

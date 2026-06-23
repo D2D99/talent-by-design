@@ -41,8 +41,9 @@ const Header = () => {
   return (
     <>
       <nav
-        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${scrolled ? "shadow-md" : "shadow-none"
-          }`}
+        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${
+          scrolled ? "shadow-md" : "shadow-none"
+        }`}
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
           <div className="flex w-full flex-wrap items-center justify-between">
@@ -90,13 +91,21 @@ const Header = () => {
                 data-twe-navbar-nav-ref
               >
                 <li className="mb-4 lg:mb-0 lg:pe-2" data-twe-nav-item-ref>
-                  <a className={navLinkClasses} href="#" data-twe-nav-link-ref>
+                  <a
+                    className={navLinkClasses}
+                    href="/what-we-offer"
+                    data-twe-nav-link-ref
+                  >
                     What We Offer
                   </a>
                 </li>
 
                 <li className="mb-4 lg:mb-0 lg:pe-2" data-twe-nav-item-ref>
-                  <a className={navLinkClasses} href="#" data-twe-nav-link-ref>
+                  <a
+                    className={navLinkClasses}
+                    href="/our-process"
+                    data-twe-nav-link-ref
+                  >
                     our process
                   </a>
                 </li>
@@ -114,7 +123,7 @@ const Header = () => {
                 <li className="mb-4 lg:mb-0 lg:pe-2" data-twe-nav-item-ref>
                   <a
                     className={navLinkClasses}
-                    href="pricing"
+                    href="/pricing"
                     data-twe-nav-link-ref
                   >
                     Pricing
@@ -122,7 +131,11 @@ const Header = () => {
                 </li>
 
                 <li className="mb-4 lg:mb-0 lg:pe-2" data-twe-nav-item-ref>
-                  <a className={navLinkClasses} href="#" data-twe-nav-link-ref>
+                  <a
+                    className={navLinkClasses}
+                    href="/about-us"
+                    data-twe-nav-link-ref
+                  >
                     About us
                   </a>
                 </li>
@@ -133,10 +146,10 @@ const Header = () => {
                       type="button"
                       className={ctaButtonClasses}
                       onClick={handleClick}
-                    // data-twe-toggle="modal"
-                    // data-twe-target="#exampleModalCenter"
-                    // data-twe-ripple-init
-                    // data-twe-ripple-color="light"
+                      // data-twe-toggle="modal"
+                      // data-twe-target="#exampleModalCenter"
+                      // data-twe-ripple-init
+                      // data-twe-ripple-color="light"
                     >
                       {isSessionActive ? "Access POD-360™" : "Login"}
                       <Icon
@@ -156,10 +169,10 @@ const Header = () => {
                 type="button"
                 className={ctaButtonClasses}
                 onClick={handleClick}
-              // data-twe-toggle="modal"
-              // data-twe-target="#exampleModalCenter"
-              // data-twe-ripple-init
-              // data-twe-ripple-color="light"
+                // data-twe-toggle="modal"
+                // data-twe-target="#exampleModalCenter"
+                // data-twe-ripple-init
+                // data-twe-ripple-color="light"
               >
                 {isSessionActive ? "Access POD-360™" : "Login"}
                 <Icon

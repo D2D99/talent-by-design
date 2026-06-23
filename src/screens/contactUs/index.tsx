@@ -95,12 +95,12 @@ const ContactUs = () => {
         </div>
 
         <div className="max-w-7xl mx-auto lg:px-4 sm:px-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
             {/* Left Content */}
-            <div className="max-w-xl">
+            <div className="max-w-2xl">
               <h4 className="badge">CONNECT WITH US</h4>
               <h1 className="heading text-left !mx-0">Contact Us</h1>
-              <p className="text-lg text-[var(--secondary-color)] font-medium mb-8 leading-relaxed">
+              <p className="text-lg text-[var(--secondary-color)] font-medium mb-8 leading-relaxed max-w-xl">
                 Email, call, or complete the form to learn how POD-360 can solve
                 your strategic transformation challenges.
               </p>
@@ -118,16 +118,16 @@ const ContactUs = () => {
                 >
                   604 785 8966
                 </a>
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <a
                     href="#"
                     className="inline-block text-base font-semibold text-[var(--primary-color)] hover:text-[var(--dark-primary-color)] border-b-2 border-[var(--primary-color)] transition-colors pb-0.5"
                   >
                     Customer Support
                   </a>
-                </div>
+                </div> */}
               </div>
-
+              <hr className="mb-12 border-[var(--light-primary-color)]" />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                 <div>
                   <h3 className="font-bold text-[var(--dark-primary-color)] mb-2 text-sm uppercase tracking-wide">
@@ -294,7 +294,7 @@ const ContactUs = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full group text-white p-2.5 rounded-full flex justify-center items-center gap-1.5 font-semibold text-base uppercase transition-all bg-gradient-to-r from-[#1a3652] to-[#448bd2] ${
+                  className={`group rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-base min-h-12 uppercase transition-all text-white bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] hover:opacity-90 w-full justify-center ${
                     isSubmitting
                       ? "disabled:pointer-events-none disabled:opacity-40"
                       : "opacity-100 active:scale-95"
@@ -304,8 +304,9 @@ const ContactUs = () => {
                   {!isSubmitting && (
                     <Icon
                       icon="mynaui:arrow-right-circle-solid"
-                      width="25"
-                      className={`transition-transform duration-300 ${
+                      width="20"
+                      height="20"
+                      className={`transition-transform duration-300 !-rotate-45 group-hover:!rotate-0 ${
                         isSubmitting ? "-rotate-45" : "rotate-0"
                       }`}
                     />
@@ -361,17 +362,17 @@ const ContactUs = () => {
                       </p>
 
                       <div className="text-sm text-[var(--dark-primary-color)] font-medium">
-                        Virtually Everywhere
+                        3350 Wellington Street,
                         <br />
-                        Vancouver, BC
+                        Port Coquitlam, British Columbia,
                         <br />
-                        Kelowna, BC
-                        <br />
-                        Edmonton, AB
+                        V3B 3X9, Canada
                       </div>
 
                       <a
-                        href="#"
+                        href="https://www.google.com/maps/search/?api=1&query=Talent+By+Design+3350+Wellington+Street+Port+Coquitlam+BC+V3B+3X9+Canada"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--primary-color)] mt-3 hover:underline transition-colors"
                       >
                         Open Google Maps
@@ -396,16 +397,16 @@ const ContactUs = () => {
 
               <div className="space-y-2 mt-8">
                 <h3 className="text-xl font-bold text-[var(--dark-primary-color)] mb-4">
-                  Locations
+                  Our Office
                 </h3>
                 <p className="text-[var(--secondary-color)] text-base font-medium leading-relaxed">
-                  Virtually Everywhere
+                  Talent By Design
                   <br />
-                  Vancouver, BC
+                  3350 Wellington Street,
                   <br />
-                  Kelowna, BC
+                  Port Coquitlam, British Columbia,
                   <br />
-                  Edmonton, AB
+                  V3B 3X9, Canada
                 </p>
               </div>
             </div>
