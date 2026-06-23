@@ -25,6 +25,7 @@ const AfterRegister = lazy(() => import("./screens/afterRegister"));
 const ProfileInfo = lazy(() => import("./screens/profileInfo"));
 const Faq = lazy(() => import("./screens/faq"));
 const WhatWeOffer = lazy(() => import("./screens/whatWeOffer"));
+const OurProcess = lazy(() => import("./screens/ourProcess"));
 const AssessmentQuestion = lazy(
   () => import("./components/assessmentQuestion"),
 );
@@ -86,6 +87,7 @@ function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/what-we-offer" element={<WhatWeOffer />} />
+            <Route path="/our-process" element={<OurProcess />} />
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
