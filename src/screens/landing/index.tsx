@@ -168,7 +168,7 @@ const Home = () => {
         </div>
         <div className="relative z-10 max-w-5xl mx-auto text-center px-4">
           <h4 className="badge">
-            TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE testing sgregrtgrtgtrgrt
+            TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
           </h4>
           <h1 className="heading">
             Clarity for Leaders. Stability for Teams. Readiness for the Future.
