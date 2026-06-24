@@ -41,9 +41,8 @@ const Header = () => {
   return (
     <>
       <nav
-        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${
-          scrolled ? "shadow-md" : "shadow-none"
-        }`}
+        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${scrolled ? "shadow-md" : "shadow-none"
+          }`}
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
           <div className="flex w-full flex-wrap items-center justify-between">
@@ -103,7 +102,7 @@ const Header = () => {
                 <li className="mb-4 lg:mb-0 lg:pe-2" data-twe-nav-item-ref>
                   <a
                     className={navLinkClasses}
-                    href="#"
+                    href="/our-process"
                     data-twe-nav-link-ref
                   >
                     our process
@@ -146,10 +145,10 @@ const Header = () => {
                       type="button"
                       className={ctaButtonClasses}
                       onClick={handleClick}
-                      // data-twe-toggle="modal"
-                      // data-twe-target="#exampleModalCenter"
-                      // data-twe-ripple-init
-                      // data-twe-ripple-color="light"
+                    // data-twe-toggle="modal"
+                    // data-twe-target="#exampleModalCenter"
+                    // data-twe-ripple-init
+                    // data-twe-ripple-color="light"
                     >
                       {isSessionActive ? "Access POD-360™" : "Login"}
                       <Icon
@@ -169,10 +168,10 @@ const Header = () => {
                 type="button"
                 className={ctaButtonClasses}
                 onClick={handleClick}
-                // data-twe-toggle="modal"
-                // data-twe-target="#exampleModalCenter"
-                // data-twe-ripple-init
-                // data-twe-ripple-color="light"
+              // data-twe-toggle="modal"
+              // data-twe-target="#exampleModalCenter"
+              // data-twe-ripple-init
+              // data-twe-ripple-color="light"
               >
                 {isSessionActive ? "Access POD-360™" : "Login"}
                 <Icon
