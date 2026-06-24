@@ -214,21 +214,25 @@ const SpotlightGrid = ({ children }: { children: React.ReactNode }) => {
    Check point list
 ───────────────────────────────────────────── */
 const Points = ({ points, hovered }: { points: string[]; hovered: boolean }) => (
-  <ul className="space-y-2 mt-auto">
+  <ul className="space-y-2.5 mt-auto">
     {points.map((p, i) => (
       <motion.li
         key={i}
         initial={false}
-        animate={hovered ? { x: 3 } : { x: 0 }}
-        transition={{ duration: 0.2, delay: i * 0.04 }}
-        className="flex items-start gap-2"
+        animate={hovered ? { x: 4 } : { x: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 22, delay: i * 0.03 }}
+        className="flex items-start gap-2.5"
       >
-        <div className="mt-0.5 w-4 h-4 rounded bg-[var(--light-primary-color)] flex items-center justify-center flex-shrink-0 transition-colors duration-300"
-          style={{ background: hovered ? "var(--primary-color)" : "var(--light-primary-color)" }}>
+        <div className="mt-0.5 w-4.5 h-4.5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-350"
+          style={{ 
+            background: hovered ? "var(--primary-color)" : "rgba(68,140,210,0.12)",
+            boxShadow: hovered ? "0 2px 8px rgba(68,140,210,0.25)" : "none"
+          }}>
           <Icon icon="solar:check-read-bold" className="size-2.5 transition-colors duration-300"
             style={{ color: hovered ? "white" : "var(--primary-color)" }} />
         </div>
-        <span className="text-[12px] font-medium text-slate-500 leading-snug">{p}</span>
+        <span className="text-[12px] font-medium leading-snug transition-colors duration-300"
+          style={{ color: hovered ? "#2d3748" : "#64748b" }}>{p}</span>
       </motion.li>
     ))}
   </ul>
@@ -245,64 +249,63 @@ const NormalCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) =
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 36 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      animate={inView ? (hovered ? { opacity: 1, y: -8 } : { opacity: 1, y: 0 }) : {}}
+      transition={{ type: "spring", stiffness: 300, damping: 24, delay: inView ? 0 : delay }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="h-full rounded-2xl overflow-hidden flex flex-col transition-all duration-400 relative"
+      className="h-full rounded-2xl overflow-hidden flex flex-col relative border transition-colors duration-300"
       style={{
-        background: "white",
-        border: hovered ? "1.5px solid rgba(68,140,210,0.3)" : "1.5px solid rgba(68,140,210,0.1)",
+        background: hovered
+          ? "linear-gradient(135deg, rgba(235, 245, 255, 0.5) 0%, white 100%)"
+          : "white",
+        borderColor: hovered ? "rgba(68,140,210,0.35)" : "rgba(68,140,210,0.12)",
         boxShadow: hovered
-          ? "0 24px 56px -12px rgba(68,140,210,0.18), 0 4px 16px rgba(0,0,0,0.04)"
+          ? "0 30px 60px -15px rgba(68,140,210,0.22), 0 8px 24px -10px rgba(0,0,0,0.06)"
           : "0 2px 12px rgba(0,0,0,0.04)",
       }}
     >
-      {/* Top bar */}
-      <div className="h-[3px] w-full transition-all duration-400"
+      <div className="h-[3px] w-full transition-all duration-300"
         style={{ background: hovered ? "linear-gradient(90deg,var(--primary-color),var(--dark-primary-color))" : "linear-gradient(90deg,rgba(68,140,210,0.35),rgba(45,93,140,0.2))" }} />
 
-      {/* Watermark */}
-      <span className="absolute -bottom-2 -right-1 text-[90px] font-black leading-none select-none pointer-events-none transition-all duration-500"
-        style={{ color: hovered ? "rgba(68,140,210,0.1)" : "rgba(68,140,210,0.06)", transform: hovered ? "scale(1.05)" : "scale(1)" }}>
+      <motion.span 
+        animate={hovered ? { scale: 1.15, y: -6, color: "rgba(68,140,210,0.14)" } : { scale: 1, y: 0, color: "rgba(68,140,210,0.06)" }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        className="absolute -bottom-2 -right-1 text-[90px] font-black leading-none select-none pointer-events-none"
+      >
         {step.number}
-      </span>
+      </motion.span>
 
       <div className="relative z-10 p-6 flex flex-col flex-1 gap-4">
-        {/* Number + badge */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300"
+          <motion.div 
+            animate={hovered ? { scale: 1.05 } : { scale: 1 }}
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300"
             style={{ background: hovered ? "var(--dark-primary-color)" : "rgba(68,140,210,0.12)" }}>
             <span className="text-[10px] font-black transition-colors duration-300"
               style={{ color: hovered ? "white" : "var(--dark-primary-color)" }}>{step.number}</span>
-          </div>
+          </motion.div>
           <span className="text-[9px] font-black tracking-[0.18em] px-2.5 py-1 rounded-full bg-[var(--light-primary-color)] text-[var(--primary-color)]">
             {step.badge}
           </span>
         </div>
 
-        {/* Icon */}
         <motion.div
-          animate={hovered ? { scale: 1.1, rotate: -6 } : { scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          animate={hovered ? { scale: 1.15, rotate: -6, y: -2 } : { scale: 1, rotate: 0, y: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
           className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300"
-          style={{ background: hovered ? "var(--primary-color)" : "var(--light-primary-color)", boxShadow: hovered ? "0 8px 24px rgba(68,140,210,0.35)" : "none" }}>
+          style={{ background: hovered ? "linear-gradient(135deg,var(--primary-color),var(--dark-primary-color))" : "var(--light-primary-color)", boxShadow: hovered ? "0 8px 24px rgba(68,140,210,0.35)" : "none" }}>
           <Icon icon={step.icon} className="size-5 transition-colors duration-300" style={{ color: hovered ? "white" : "var(--primary-color)" }} />
         </motion.div>
 
-        {/* Title */}
         <h3 className="text-[var(--dark-primary-color)] text-[15px] font-bold leading-snug transition-colors duration-300"
           style={{ color: hovered ? "var(--dark-primary-color)" : "#1a3652" }}>
           {step.title}
         </h3>
 
-        {/* Summary */}
         <p className="text-[12.5px] text-slate-500 leading-relaxed">{step.summary}</p>
 
-        {/* Divider */}
-        <div className="border-t transition-colors duration-300" style={{ borderColor: hovered ? "rgba(68,140,210,0.2)" : "rgba(68,140,210,0.08)" }} />
+        <div className="border-t transition-colors duration-350" style={{ borderColor: hovered ? "rgba(68,140,210,0.2)" : "rgba(68,140,210,0.08)" }} />
 
-        {/* Points */}
         <Points points={step.clarify} hovered={hovered} />
       </div>
     </motion.div>
@@ -320,63 +323,60 @@ const TallCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
     <motion.div
       ref={ref}
       initial={{ opacity: 0, x: 40 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      animate={inView ? (hovered ? { opacity: 1, y: -8, x: 0 } : { opacity: 1, y: 0, x: 0 }) : {}}
+      transition={{ type: "spring", stiffness: 300, damping: 24, delay: inView ? 0 : delay }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="h-full rounded-2xl overflow-hidden flex flex-col transition-all duration-400 relative"
+      className="h-full rounded-2xl overflow-hidden flex flex-col relative border transition-colors duration-300"
       style={{
         background: hovered
-          ? "linear-gradient(145deg,rgba(228,240,252,0.7) 0%,white 100%)"
+          ? "linear-gradient(135deg, rgba(235, 245, 255, 0.5) 0%, white 100%)"
           : "white",
-        border: hovered ? "1.5px solid rgba(68,140,210,0.35)" : "1.5px solid rgba(68,140,210,0.12)",
+        borderColor: hovered ? "rgba(68,140,210,0.35)" : "rgba(68,140,210,0.12)",
         boxShadow: hovered
-          ? "0 32px 80px -16px rgba(68,140,210,0.22), 0 4px 16px rgba(0,0,0,0.04)"
+          ? "0 30px 60px -15px rgba(68,140,210,0.22), 0 8px 24px -10px rgba(0,0,0,0.06)"
           : "0 2px 12px rgba(0,0,0,0.04)",
       }}
     >
-      {/* Vertical accent bar on left */}
-      <div className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full transition-all duration-400"
-        style={{ background: hovered ? "linear-gradient(to bottom,var(--primary-color),var(--dark-primary-color))" : "linear-gradient(to bottom,rgba(68,140,210,0.3),rgba(45,93,140,0.15))" }} />
+      <div className="h-[3px] w-full transition-all duration-300"
+        style={{ background: hovered ? "linear-gradient(90deg,var(--primary-color),var(--dark-primary-color))" : "linear-gradient(90deg,rgba(68,140,210,0.35),rgba(45,93,140,0.2))" }} />
 
-      {/* Watermark number — absolute, no extra space */}
-      <span className="absolute -bottom-2 -right-1 text-[90px] font-black leading-none select-none pointer-events-none transition-all duration-500"
-        style={{ color: hovered ? "rgba(68,140,210,0.12)" : "rgba(68,140,210,0.07)", transform: hovered ? "scale(1.05)" : "scale(1)" }}>
+      <motion.span 
+        animate={hovered ? { scale: 1.15, y: -6, color: "rgba(68,140,210,0.14)" } : { scale: 1, y: 0, color: "rgba(68,140,210,0.07)" }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        className="absolute -bottom-2 -right-1 text-[90px] font-black leading-none select-none pointer-events-none"
+      >
         {step.number}
-      </span>
+      </motion.span>
 
       <div className="relative z-10 p-6 flex flex-col flex-1 gap-4">
-        {/* Number pill + Badge */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300"
+          <motion.div 
+            animate={hovered ? { scale: 1.05 } : { scale: 1 }}
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300"
             style={{ background: hovered ? "var(--dark-primary-color)" : "rgba(68,140,210,0.12)" }}>
             <span className="text-[10px] font-black transition-colors duration-300"
               style={{ color: hovered ? "white" : "var(--dark-primary-color)" }}>{step.number}</span>
-          </div>
+          </motion.div>
           <span className="text-[9px] font-black tracking-[0.2em] px-2.5 py-1 rounded-full bg-[var(--light-primary-color)] text-[var(--primary-color)] w-fit">
             {step.badge}
           </span>
         </div>
 
-        {/* Icon */}
         <motion.div
-          animate={hovered ? { scale: 1.12, rotate: -8 } : { scale: 1, rotate: 0 }}
+          animate={hovered ? { scale: 1.15, rotate: -8, y: -2 } : { scale: 1, rotate: 0, y: 0 }}
           transition={{ type: "spring", stiffness: 280, damping: 18 }}
           className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300"
           style={{ background: hovered ? "linear-gradient(135deg,var(--primary-color),var(--dark-primary-color))" : "var(--light-primary-color)", boxShadow: hovered ? "0 10px 28px rgba(68,140,210,0.4)" : "none" }}>
           <Icon icon={step.icon} className="size-6 transition-colors duration-300" style={{ color: hovered ? "white" : "var(--primary-color)" }} />
         </motion.div>
 
-        {/* Title */}
         <h3 className="text-[var(--dark-primary-color)] text-[15px] font-bold leading-snug">{step.title}</h3>
 
-        {/* Summary */}
         <p className="text-[13px] text-slate-500 leading-relaxed">{step.summary}</p>
 
-        {/* Divider */}
         <div className="h-px bg-gradient-to-r from-slate-100 via-slate-200/60 to-slate-100 my-1" />
 
-        {/* Points list for TallCard */}
         <div className="flex-1 flex flex-col justify-center gap-3">
           <p className="text-[9px] font-black tracking-[0.18em] text-[var(--primary-color)] uppercase">Key Focus Areas</p>
           <div className="flex flex-col gap-2.5">
@@ -385,19 +385,23 @@ const TallCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
                 key={i}
                 initial={false}
                 animate={hovered ? { x: 4 } : { x: 0 }}
-                transition={{ duration: 0.2, delay: i * 0.04 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22, delay: i * 0.03 }}
                 className="flex items-start gap-2.5 p-3 rounded-xl transition-all duration-300"
                 style={{
                   background: hovered ? "rgba(68,140,210,0.06)" : "rgba(68,140,210,0.03)",
                   border: hovered ? "1px solid rgba(68,140,210,0.15)" : "1px solid rgba(68,140,210,0.06)"
                 }}
               >
-                <div className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-300"
-                  style={{ background: hovered ? "var(--primary-color)" : "rgba(68,140,210,0.15)" }}>
+                <div className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-350"
+                  style={{ 
+                    background: hovered ? "var(--primary-color)" : "rgba(68,140,210,0.12)",
+                    boxShadow: hovered ? "0 2px 8px rgba(68,140,210,0.25)" : "none"
+                  }}>
                   <Icon icon="solar:check-read-bold" className="size-2.5 transition-colors duration-300"
                     style={{ color: hovered ? "white" : "var(--primary-color)" }} />
                 </div>
-                <span className="text-[12.5px] font-medium text-slate-600 leading-snug">{p}</span>
+                <span className="text-[12.5px] font-medium leading-snug transition-colors duration-300"
+                  style={{ color: hovered ? "#2d3748" : "#64748b" }}>{p}</span>
               </motion.div>
             ))}
           </div>
@@ -410,7 +414,7 @@ const TallCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
 /* ─────────────────────────────────────────────
    Wide Card (steps 04, 08 — spans 2 cols)
 ───────────────────────────────────────────── */
-const WideCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => {
+const WideCard = ({ step, delay }: { step: typeof steps[0], delay: number }) => {
   const { ref, inView } = useInView();
   const [hovered, setHovered] = useState(false);
 
@@ -418,61 +422,60 @@ const WideCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 36 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      animate={inView ? (hovered ? { opacity: 1, y: -8 } : { opacity: 1, y: 0 }) : {}}
+      transition={{ type: "spring", stiffness: 300, damping: 24, delay: inView ? 0 : delay }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="h-full rounded-2xl overflow-hidden transition-all duration-400 relative"
+      className="h-full rounded-2xl overflow-hidden border transition-colors duration-300 relative"
       style={{
         background: hovered
-          ? "linear-gradient(135deg,rgba(228,240,252,0.5) 0%,white 60%)"
+          ? "linear-gradient(135deg, rgba(235, 245, 255, 0.5) 0%, white 60%)"
           : "white",
-        border: hovered ? "1.5px solid rgba(68,140,210,0.3)" : "1.5px solid rgba(68,140,210,0.1)",
+        borderColor: hovered ? "rgba(68,140,210,0.3)" : "rgba(68,140,210,0.1)",
         boxShadow: hovered
-          ? "0 24px 60px -12px rgba(68,140,210,0.18), 0 4px 16px rgba(0,0,0,0.04)"
+          ? "0 30px 60px -15px rgba(68,140,210,0.22), 0 8px 24px -10px rgba(0,0,0,0.06)"
           : "0 2px 12px rgba(0,0,0,0.04)",
       }}
     >
-      {/* Top bar */}
-      <div className="h-[3px] w-full transition-all duration-400"
+      <div className="h-[3px] w-full transition-all duration-300"
         style={{ background: hovered ? "linear-gradient(90deg,var(--primary-color),var(--dark-primary-color))" : "linear-gradient(90deg,rgba(68,140,210,0.35),rgba(45,93,140,0.15))" }} />
 
-      {/* Watermark */}
-      <span className="absolute -bottom-2 right-4 text-[110px] font-black leading-none select-none pointer-events-none transition-all duration-500"
-        style={{ color: hovered ? "rgba(68,140,210,0.1)" : "rgba(68,140,210,0.06)" }}>
+      <motion.span 
+        animate={hovered ? { scale: 1.15, y: -6, color: "rgba(68,140,210,0.14)" } : { scale: 1, y: 0, color: "rgba(68,140,210,0.06)" }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        className="absolute -bottom-2 right-4 text-[110px] font-black leading-none select-none pointer-events-none"
+      >
         {step.number}
-      </span>
+      </motion.span>
 
       <div className="relative z-10 p-5 sm:p-6 h-full flex flex-col sm:flex-row gap-5">
-        {/* LEFT: number + icon + title */}
         <div className="sm:w-[38%] flex flex-col gap-3 flex-shrink-0 justify-center">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300"
+            <motion.div 
+              animate={hovered ? { scale: 1.05 } : { scale: 1 }}
+              className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors duration-300"
               style={{ background: hovered ? "var(--dark-primary-color)" : "rgba(68,140,210,0.12)" }}>
               <span className="text-[11px] font-black transition-colors duration-300"
                 style={{ color: hovered ? "white" : "var(--dark-primary-color)" }}>{step.number}</span>
-            </div>
+            </motion.div>
             <span className="text-[9px] font-black tracking-[0.18em] px-2.5 py-1 rounded-full bg-[var(--light-primary-color)] text-[var(--primary-color)]">
               {step.badge}
             </span>
           </div>
 
           <motion.div
-            animate={hovered ? { scale: 1.1, rotate: -5 } : { scale: 1, rotate: 0 }}
+            animate={hovered ? { scale: 1.15, rotate: -5, y: -2 } : { scale: 1, rotate: 0, y: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
             style={{ background: hovered ? "linear-gradient(135deg,var(--primary-color),var(--dark-primary-color))" : "var(--light-primary-color)", boxShadow: hovered ? "0 8px 28px rgba(68,140,210,0.38)" : "none" }}>
             <Icon icon={step.icon} className="size-6 transition-colors duration-300" style={{ color: hovered ? "white" : "var(--primary-color)" }} />
           </motion.div>
-
           <h3 className="text-[var(--dark-primary-color)] text-lg font-bold leading-snug">{step.title}</h3>
           <p className="text-[12.5px] text-slate-500 leading-relaxed hidden sm:block">{step.summary}</p>
         </div>
 
-        {/* Divider */}
         <div className="hidden sm:block w-px bg-gradient-to-b from-transparent via-[rgba(68,140,210,0.15)] to-transparent flex-shrink-0" />
 
-        {/* RIGHT: summary (mobile) + points in vertical stack */}
         <div className="flex-1 flex flex-col gap-3 justify-center">
           <p className="text-[12.5px] text-slate-500 leading-relaxed sm:hidden">{step.summary}</p>
           <p className="text-[9px] font-black tracking-[0.18em] text-[var(--primary-color)] uppercase">Key Focus Areas</p>
@@ -482,7 +485,7 @@ const WideCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
                 key={i}
                 initial={false}
                 animate={hovered ? { x: 4 } : { x: 0 }}
-                transition={{ duration: 0.2, delay: i * 0.04 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22, delay: i * 0.03 }}
                 className="flex items-start gap-2.5 p-2.5 rounded-xl transition-all duration-300"
                 style={{
                   background: hovered ? "rgba(68,140,210,0.06)" : "rgba(68,140,210,0.03)",
