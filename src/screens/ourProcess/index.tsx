@@ -371,12 +371,37 @@ const TallCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
         <h3 className="text-[var(--dark-primary-color)] text-[15px] font-bold leading-snug">{step.title}</h3>
 
         {/* Summary */}
-        <p className="text-[12.5px] text-slate-500 leading-relaxed">{step.summary}</p>
+        <p className="text-[13px] text-slate-500 leading-relaxed">{step.summary}</p>
 
-        <div className="border-t border-[rgba(68,140,210,0.1)]" />
+        {/* Divider */}
+        <div className="h-px bg-gradient-to-r from-slate-100 via-slate-200/60 to-slate-100 my-1" />
 
-        {/* Points */}
-        <Points points={step.clarify} hovered={hovered} />
+        {/* Points list for TallCard */}
+        <div className="flex-1 flex flex-col justify-center gap-3">
+          <p className="text-[9px] font-black tracking-[0.18em] text-[var(--primary-color)] uppercase">Key Focus Areas</p>
+          <div className="flex flex-col gap-2.5">
+            {step.clarify.map((p, i) => (
+              <motion.div
+                key={i}
+                initial={false}
+                animate={hovered ? { x: 4 } : { x: 0 }}
+                transition={{ duration: 0.2, delay: i * 0.04 }}
+                className="flex items-start gap-2.5 p-3 rounded-xl transition-all duration-300"
+                style={{
+                  background: hovered ? "rgba(68,140,210,0.06)" : "rgba(68,140,210,0.03)",
+                  border: hovered ? "1px solid rgba(68,140,210,0.15)" : "1px solid rgba(68,140,210,0.06)"
+                }}
+              >
+                <div className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                  style={{ background: hovered ? "var(--primary-color)" : "rgba(68,140,210,0.15)" }}>
+                  <Icon icon="solar:check-read-bold" className="size-2.5 transition-colors duration-300"
+                    style={{ color: hovered ? "white" : "var(--primary-color)" }} />
+                </div>
+                <span className="text-[12.5px] font-medium text-slate-600 leading-snug">{p}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
     </motion.div>
   );
@@ -420,7 +445,7 @@ const WideCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
 
       <div className="relative z-10 p-5 sm:p-6 h-full flex flex-col sm:flex-row gap-5">
         {/* LEFT: number + icon + title */}
-        <div className="sm:w-[38%] flex flex-col gap-3 flex-shrink-0">
+        <div className="sm:w-[38%] flex flex-col gap-3 flex-shrink-0 justify-center">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300"
               style={{ background: hovered ? "var(--dark-primary-color)" : "rgba(68,140,210,0.12)" }}>
@@ -447,25 +472,29 @@ const WideCard = ({ step, delay }: { step: typeof steps[0]; delay: number }) => 
         {/* Divider */}
         <div className="hidden sm:block w-px bg-gradient-to-b from-transparent via-[rgba(68,140,210,0.15)] to-transparent flex-shrink-0" />
 
-        {/* RIGHT: summary (mobile) + points in 2-col grid */}
-        <div className="flex-1 flex flex-col gap-3">
+        {/* RIGHT: summary (mobile) + points in vertical stack */}
+        <div className="flex-1 flex flex-col gap-3 justify-center">
           <p className="text-[12.5px] text-slate-500 leading-relaxed sm:hidden">{step.summary}</p>
-          <p className="text-[10px] font-black tracking-[0.18em] text-[var(--primary-color)] uppercase mb-1">Key Points</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <p className="text-[9px] font-black tracking-[0.18em] text-[var(--primary-color)] uppercase">Key Focus Areas</p>
+          <div className="flex flex-col gap-2">
             {step.clarify.map((p, i) => (
               <motion.div
                 key={i}
                 initial={false}
-                animate={hovered ? { x: 3 } : { x: 0 }}
+                animate={hovered ? { x: 4 } : { x: 0 }}
                 transition={{ duration: 0.2, delay: i * 0.04 }}
-                className="flex items-start gap-2"
+                className="flex items-start gap-2.5 p-2.5 rounded-xl transition-all duration-300"
+                style={{
+                  background: hovered ? "rgba(68,140,210,0.06)" : "rgba(68,140,210,0.03)",
+                  border: hovered ? "1px solid rgba(68,140,210,0.15)" : "1px solid rgba(68,140,210,0.06)"
+                }}
               >
-                <div className="mt-0.5 w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-colors duration-300"
-                  style={{ background: hovered ? "var(--primary-color)" : "var(--light-primary-color)" }}>
+                <div className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-300"
+                  style={{ background: hovered ? "var(--primary-color)" : "rgba(68,140,210,0.15)" }}>
                   <Icon icon="solar:check-read-bold" className="size-2.5 transition-colors duration-300"
                     style={{ color: hovered ? "white" : "var(--primary-color)" }} />
                 </div>
-                <span className="text-[12px] font-medium text-slate-500 leading-snug">{p}</span>
+                <span className="text-[12.5px] font-medium text-slate-600 leading-snug">{p}</span>
               </motion.div>
             ))}
           </div>
