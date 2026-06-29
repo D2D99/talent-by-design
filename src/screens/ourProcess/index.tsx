@@ -14,7 +14,7 @@ const steps = [
     number: "01",
     title: "Confirm Intended Outcomes",
     badge: "FOUNDATION",
-    icon: "solar:target-bold-duotone",
+    icon: "solar:target-linear",
     summary:
       "We begin by understanding what the initiative was intended to achieve. This includes reviewing the business case, expected benefits, success measures, adoption goals, and the outcomes leaders hoped to see after implementation. This step ensures POD-360 is not measuring activity for the sake of activity — it is measuring progress against what actually matters.",
     clarify: [
@@ -28,7 +28,7 @@ const steps = [
     number: "02",
     title: "Establish the Baseline",
     badge: "MEASUREMENT",
-    icon: "solar:chart-2-bold-duotone",
+    icon: "solar:chart-2-linear",
     summary:
       "Before organizations can measure progress, they need a clear baseline. POD-360 helps establish the starting point for adoption, confidence, readiness, and sustainment.",
     clarify: [
@@ -41,7 +41,7 @@ const steps = [
     number: "03",
     title: "Launch the POD-360 Pulse",
     badge: "ASSESSMENT",
-    icon: "solar:pulse-bold-duotone",
+    icon: "solar:pulse-linear",
     summary:
       "Using structured pulse assessments, POD-360 gathers role-based feedback from employees, managers, and leaders. The assessment looks beyond whether a system is live. It explores whether people understand the change, are using the new tools or processes effectively, and feel supported in making the change part of daily work.",
     clarify: [
@@ -54,7 +54,7 @@ const steps = [
     number: "04",
     title: "Analyze Adoption, Benefits, and Risk",
     badge: "ANALYSIS",
-    icon: "solar:graph-bold-duotone",
+    icon: "solar:graph-linear",
     summary:
       "Once the pulse data is collected, POD-360 analyzes the signals that matter most. We look at adoption patterns, sustainment risks, digital confidence, workflow integration, leadership alignment, and variance between expected and actual benefits.",
     clarify: [
@@ -68,7 +68,7 @@ const steps = [
     number: "05",
     title: "Generate POD-Insights",
     badge: "INSIGHTS",
-    icon: "solar:lightbulb-bold-duotone",
+    icon: "solar:lightbulb-linear",
     summary:
       "POD-360 translates assessment data into clear, practical insights. Leaders receive a focused view of what is working, what is not yet sticking, and where action is required. These insights help move the conversation from opinion to evidence.",
     clarify: [
@@ -82,7 +82,7 @@ const steps = [
     number: "06",
     title: "Align Leaders on Action",
     badge: "ALIGNMENT",
-    icon: "solar:users-group-rounded-bold-duotone",
+    icon: "solar:users-group-rounded-linear",
     summary:
       "Insights only create value when they lead to action. We work with leaders, sponsors, and change teams to review the findings, validate key themes, and identify the most important areas for intervention.",
     clarify: [
@@ -95,7 +95,7 @@ const steps = [
     number: "07",
     title: "Activate Sustainment Support",
     badge: "SUPPORT",
-    icon: "solar:shield-up-bold-duotone",
+    icon: "solar:shield-up-linear",
     summary:
       "Based on the insights, we help organizations activate targeted sustainment support. The goal is to help employees move from initial awareness to confident, consistent use.",
     clarify: [
@@ -109,7 +109,7 @@ const steps = [
     number: "08",
     title: "Track Benefits & Variance Over Time",
     badge: "TRACKING",
-    icon: "solar:medal-ribbons-star-bold-duotone",
+    icon: "solar:medal-ribbons-star-linear",
     summary:
       "POD-360 is designed to support the critical post-go-live period when benefits can either be realized or quietly lost. Through repeat pulse checkpoints and benefits tracking, we help organizations compare actual outcomes against intended benefits.",
     clarify: [
@@ -123,7 +123,7 @@ const steps = [
     number: "09",
     title: "Support Continuous Improvement",
     badge: "SUSTAINMENT",
-    icon: "solar:refresh-circle-bold-duotone",
+    icon: "solar:refresh-circle-linear",
     summary:
       "Sustainment is not a one-time activity. POD-360 creates a continuous improvement cycle that helps organizations monitor progress, refine actions, and strengthen long-term adoption.",
     clarify: [
@@ -183,14 +183,14 @@ const CardContent = ({
           <span className="inline-block text-[8.5px] font-black tracking-[0.22em] px-2.5 py-0.5 rounded-full bg-[var(--light-primary-color)] text-[var(--primary-color)] uppercase mb-1.5">
             {step.badge}
           </span>
-          <h3 className="text-[14.5px] font-bold text-[var(--dark-primary-color)] leading-snug transition-colors duration-300 truncate">
+          <h3 className="text-xl font-semibold text-[var(--secondary-color)] transition-colors duration-300 truncate">
             {step.title}
           </h3>
         </div>
       </div>
 
       {/* Summary */}
-      <p className="text-[12.5px] text-[var(--app-text-muted)] leading-relaxed mb-0 relative z-10">
+      <p className="text-sm text-[var(--app-text-muted)] leading-relaxed mb-0 relative z-10">
         {step.summary}
       </p>
 
@@ -201,10 +201,10 @@ const CardContent = ({
             {step.clarify.map((bullet, i) => (
               <li key={i} className="flex items-start gap-2.5">
                 <div
-                  className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ring-2 ring-[var(--light-primary-color)]"
+                  className="mt-1.5 size-1.5 rounded-full flex-shrink-0 ring-2 ring-[var(--light-primary-color)]"
                   style={{ background: accentColor }}
                 />
-                <span className="text-[11.5px] text-[var(--app-text-muted)] leading-snug">
+                <span className="text-sm text-[var(--app-text-muted)] leading-snug">
                   {bullet}
                 </span>
               </li>
@@ -521,57 +521,35 @@ const OurProcess = () => {
         <SleekTimeline />
       </div>
 
-      {/* ── CTA ── */}
-      <div className="md:py-24 py-16 bg-[linear-gradient(180deg,#f4f8fd_0%,var(--light-primary-color)_100%)] px-4">
-        <div className="max-w-screen-2xl mx-auto xl:px-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h4 className="badge mb-4">THE RESULT</h4>
-              <h2 className="sub-heading !text-left !mx-0 !max-w-lg">
-                Evidence-based{" "}
-                <span className="sub-heading-highlight">confidence</span> in
-                your investment
-              </h2>
-              <p className="text-base font-normal mt-6 text-[var(--secondary-color)] leading-relaxed">
-                With POD-360, organizations gain a clear, evidence-based view of
-                what is happening after go-live. They can see whether change is
-                being adopted, whether benefits are being realized, and where
-                targeted support is needed.
-              </p>
+      {/* ── CTA / The Result ── */}
+      <div className="md:py-24 py-16 px-4">
+        <div className="max-w-screen-xl mx-auto">
+          <div className="bg-[var(--dark-primary-color)] rounded-[32px] p-8 md:p-14 lg:p-16 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center shadow-2xl relative overflow-hidden">
+            {/* Ambient Background Glows */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+              <div className="absolute -top-[20%] -left-[10%] w-[500px] h-[500px] bg-[var(--primary-color)] opacity-[0.2] rounded-full blur-[100px]" />
+              <div className="absolute top-[60%] -right-[10%] w-[400px] h-[400px] bg-white opacity-[0.05] rounded-full blur-[80px]" />
+            </div>
 
-              <div className="mt-8 grid sm:grid-cols-3 gap-4">
-                {[
-                  {
-                    icon: "solar:shield-check-linear",
-                    label: "Protect Your Investment",
-                  },
-                  {
-                    icon: "solar:graph-up-linear",
-                    label: "Strengthen Adoption",
-                  },
-                  {
-                    icon: "solar:medal-star-linear",
-                    label: "Prove the Value of Change",
-                  },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-2xl p-5 border border-[rgba(68,140,210,0.15)] shadow-sm text-center"
-                  >
-                    <Icon
-                      icon={item.icon}
-                      className="size-8 text-[var(--primary-color)] mx-auto mb-2"
-                    />
-                    <p className="text-sm font-semibold text-[var(--dark-primary-color)] leading-snug">
-                      {item.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
+            {/* Left Column */}
+            <div className="relative z-10">
+              <h4 className="badge !text-white mb-4">THE RESULT</h4>
+              <h2 className="sub-heading mb-5 !text-white">
+                Evidence-based{" "}
+                <span className="text-[var(--primary-color)] brightness-125">
+                  confidence
+                </span>{" "}
+                in your change investment
+              </h2>
+              <p className="text-white/80 text-[15px] md:text-base leading-relaxed mb-10 max-w-lg font-medium">
+                Organizations gain a clear view of what is happening after
+                go-live who is adopting, where benefits are being realized, and
+                where targeted support is needed.
+              </p>
 
               <button
                 type="button"
-                className="group text-white rounded-full py-2.5 pl-7 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] mt-10"
+                className="group text-[var(--dark-primary-color)] bg-white rounded-full py-3 pl-7 pr-4 flex items-center gap-2 font-semibold sm:text-lg text-base uppercase transition-all duration-300"
                 onClick={() => navigate("/contact-us")}
               >
                 Book a Discovery Call
@@ -579,46 +557,48 @@ const OurProcess = () => {
                   icon="mynaui:arrow-right-circle-solid"
                   width="24"
                   height="24"
-                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
+                  className="-rotate-45 group-hover:rotate-0 transition-transform duration-300 text-[var(--primary-color)]"
                 />
               </button>
             </div>
 
-            <div className="bg-[var(--dark-primary-color)] rounded-3xl p-10 text-white relative overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-[var(--primary-color)]/20 blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-              <div className="relative z-10">
-                <Icon
-                  icon="solar:verified-check-bold-duotone"
-                  className="size-12 text-[var(--primary-color)] mb-6"
-                />
-                <h3 className="text-2xl font-bold mb-4 leading-snug">
-                  POD-360 is designed to support the critical post-go-live
-                  period
-                </h3>
-                <p className="text-white/70 text-sm leading-relaxed mb-8">
-                  When adoption, sustainment, and realized value matter most —
-                  POD-360 provides leaders with clear insight into where things
-                  stand and what action is required.
-                </p>
-                <div className="space-y-3">
-                  {[
-                    "First 24 months post-implementation support",
-                    "Structured measurement and evidence-based insights",
-                    "Targeted sustainment actions that protect your ROI",
-                  ].map((point, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <Icon
-                        icon="solar:check-circle-bold-duotone"
-                        className="size-5 text-[var(--primary-color)] flex-shrink-0"
-                      />
-                      <span className="text-sm font-medium text-white/85">
-                        {point}
-                      </span>
-                    </div>
-                  ))}
+            {/* Right Column */}
+            <div className="flex flex-col gap-4 relative z-10">
+              {[
+                {
+                  icon: "solar:shield-check-linear",
+                  title: "Protect your investment",
+                  desc: "Catch adoption gaps before benefits are quietly lost",
+                },
+                {
+                  icon: "solar:graph-up-linear",
+                  title: "Strengthen adoption",
+                  desc: "Role-based pulse data shows exactly where friction lives",
+                },
+                {
+                  icon: "solar:branching-paths-up-linear",
+                  title: "Prove the value of change",
+                  desc: "Compare actual outcomes against intended benefits, over time",
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[var(--primary-color)]/50 rounded-xl p-6 transition-all duration-300 flex items-start gap-4 shadow-sm hover:shadow-md"
+                >
+                  <Icon
+                    icon={item.icon}
+                    className="size-[22px] text-[var(--primary-color)] brightness-125 flex-shrink-0 mt-0.5"
+                  />
+                  <div>
+                    <h4 className="text-white font-bold text-[15px] leading-snug mb-1">
+                      {item.title}
+                    </h4>
+                    <p className="text-white/70 text-[13px] leading-relaxed mb-0 pr-4 font-medium">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
