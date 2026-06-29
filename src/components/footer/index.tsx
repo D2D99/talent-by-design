@@ -68,7 +68,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/our-process"
                     className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
                     Our Process
