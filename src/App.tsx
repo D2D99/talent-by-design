@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import "react-tooltip/dist/react-tooltip.css";
 import "react-toastify/dist/ReactToastify.css";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import { AuthProvider } from "./context/AuthProvider";
 import { TooltipProvider } from "./context/TooltipContext";
@@ -80,6 +81,7 @@ function App() {
           // theme={theme}
         />
         <SessionPopup />
+        <SpeedInsights />
 
         <Suspense fallback={<Loading />}>
           <Routes>
