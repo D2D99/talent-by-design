@@ -28,10 +28,10 @@ const POD360 = "/static/img/home/pod-360.svg";
 import Footer from "../../components/footer";
 import SafeMarquee from "../../components/brandsMarquee";
 import CtaMarquee from "../../components/ctaMarquee";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 // import LoginModal from "../../components/loginModal";
-// import SpinnerLoader from "../../components/spinnerLoader";
+import SpinnerLoader from "../../components/spinnerLoader";
 import BackToTop from "../../components/backToTop";
 import { useNavigate } from "react-router-dom";
 
@@ -39,20 +39,20 @@ const Home = () => {
   const navigate = useNavigate();
   // const [isVisible, setIsVisible] = useState(false);
   // Page Loader
-  // const [pageLoading, setPageLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     initTWE({ Modal, Ripple });
   }, []);
 
   // Page Loader
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setPageLoading(false);
-  //   }, 1000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 1000);
 
-  //   return () => clearTimeout(timer);
-  // }, []);
+    return () => clearTimeout(timer);
+  }, []);
 
   // useEffect(() => {
   //   const showTimer = setTimeout(() => setIsVisible(true), 60000);
@@ -64,9 +64,9 @@ const Home = () => {
   //   };
   // }, []);
 
-  // if (pageLoading) {
-  //   return <SpinnerLoader />;
-  // }
+  if (pageLoading) {
+    return <SpinnerLoader />;
+  }
 
   return (
     <>
@@ -426,8 +426,7 @@ const Home = () => {
 
       {/* Data Highlights Section Start */}
       <div className="lg:pt-28 md:pt-20 pt-12 pb-12 md:pb-20">
-        <div className="
-        ">
+        <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
           <h4 className="badge">The Evidence is Clear</h4>
           <h2 className="sub-heading">
             Data Highlights{" "}
