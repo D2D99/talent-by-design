@@ -31,7 +31,7 @@ import CtaMarquee from "../../components/ctaMarquee";
 import { useEffect } from "react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 // import LoginModal from "../../components/loginModal";
-import SpinnerLoader from "../../components/spinnerLoader";
+// import SpinnerLoader from "../../components/spinnerLoader";
 import BackToTop from "../../components/backToTop";
 import { useNavigate } from "react-router-dom";
 
