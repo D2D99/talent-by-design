@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, A11y } from "swiper/modules";
+import "swiper/css";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import SpinnerLoader from "../../components/spinnerLoader";
@@ -14,6 +17,9 @@ const PODImg = "/static/img/pod-about.png";
 const AboutUs = () => {
   const navigate = useNavigate();
   const [pageLoading, setPageLoading] = useState(true);
+  const swiperRef = useRef<any>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const TOTAL_SLIDES = 3;
 
   // Page Loader
   useEffect(() => {
@@ -247,123 +253,176 @@ const AboutUs = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6  mb-10">
-            <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-500">
-              <div className="relative overflow-hidden h-80 bg-slate-200">
-                <img
-                  src={FounderImg}
-                  alt="Suzanna de Souza"
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                  style={{
-                    objectPosition: "100% 35%",
-                  }}
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div>
-                    <h3 className="text-xl capitalize font-bold text-slate-900">
-                      Suzanna de Souza
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Founder & Change Leader
+          <div className="relative team-swiper-wrap">
+            <Swiper
+              modules={[Autoplay, A11y]}
+              loop={true}
+              autoplay={{
+                delay: 3500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
+              onRealIndexChange={(swiper) => setActiveIndex(swiper.realIndex)}
+              breakpoints={{
+                0: { slidesPerView: 1, spaceBetween: 16 },
+                640: { slidesPerView: 2, spaceBetween: 20 },
+                1024: { slidesPerView: 3, spaceBetween: 24 },
+              }}
+              className="!pb-4"
+            >
+              {/* Suzanna */}
+              <SwiperSlide>
+                <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-500">
+                  <div className="relative overflow-hidden h-80 bg-slate-200">
+                    <img
+                      src={FounderImg}
+                      alt="Suzanna de Souza"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                      style={{ objectPosition: "100% 35%" }}
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div>
+                        <h3 className="text-xl capitalize font-bold text-slate-900">
+                          Suzanna de Souza
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Founder & Change Leader
+                        </p>
+                      </div>
+                      <a
+                        href="https://www.linkedin.com/in/suzannadesouza"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--light-primary-color)] hover:bg-[var(--dark-primary-color)] hover:text-white transition-all duration-200 flex items-center justify-center text-[var(--primary-color)] mt-0.5"
+                        aria-label="LinkedIn"
+                      >
+                        <Icon icon="streamline:linkedin" className="size-3.5" />
+                      </a>
+                    </div>
+                    <div className="w-10 h-px bg-slate-200 mb-4"></div>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      A change manager and leadership coach who has spent her
+                      career helping organizations move through change with more
+                      clarity, confidence, and purpose. Suzanna built Talent By
+                      Design on a foundation of empathy, structure, and
+                      real-world transformation experience.
                     </p>
                   </div>
-                  <a
-                    href="https://www.linkedin.com/in/suzannadesouza"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--light-primary-color)] hover:bg-[var(--dark-primary-color)] hover:text-white transition-all duration-200 flex items-center justify-center text-[var(--primary-color)] mt-0.5"
-                    aria-label="LinkedIn"
-                  >
-                    <Icon icon="streamline:linkedin" className="size-3.5" />
-                  </a>
                 </div>
-                <div className="w-10 h-px bg-slate-200 mb-4"></div>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  A change manager and leadership coach who has spent her career
-                  helping organizations move through change with more clarity,
-                  confidence, and purpose. Suzanna built Talent By Design on a
-                  foundation of empathy, structure, and real-world
-                  transformation experience.
-                </p>
-              </div>
-            </div>
+              </SwiperSlide>
 
-            <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-500">
-              <div className="relative overflow-hidden h-80 bg-slate-200">
-                <img
-                  src={BaIMg}
-                  alt="BA"
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                  style={{
-                    objectPosition: "100% 10%",
-                  }}
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div>
-                    <h3 className="text-xl capitalize font-bold text-slate-900">
-                      Rithvik Sharma
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Data & Product Analyst
+              {/* Rithvik */}
+              <SwiperSlide>
+                <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-500">
+                  <div className="relative overflow-hidden h-80 bg-slate-200">
+                    <img
+                      src={BaIMg}
+                      alt="Rithvik Sharma"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                      style={{ objectPosition: "100% 10%" }}
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div>
+                        <h3 className="text-xl capitalize font-bold text-slate-900">
+                          Rithvik Sharma
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Data & Product Analyst
+                        </p>
+                      </div>
+                      <a
+                        href="https://www.linkedin.com/in/rithviksharma"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--light-primary-color)] hover:bg-[var(--dark-primary-color)] hover:text-white transition-all duration-200 flex items-center justify-center text-[var(--primary-color)] mt-0.5"
+                        aria-label="LinkedIn"
+                      >
+                        <Icon icon="streamline:linkedin" className="size-3.5" />
+                      </a>
+                    </div>
+                    <div className="w-10 h-px bg-slate-200 mb-4"></div>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      A recent BCIT Business Information Technology Management
+                      graduate who joined through the POD-360 pilot. Rithvik
+                      brings fresh technical curiosity to data analytics,
+                      dashboards, and business documentation, strengthening the
+                      insights Talent By Design delivers to clients.
                     </p>
                   </div>
-                  <a
-                    href="https://www.linkedin.com/in/suzannadesouza"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--light-primary-color)] hover:bg-[var(--dark-primary-color)] hover:text-white transition-all duration-200 flex items-center justify-center text-[var(--primary-color)] mt-0.5"
-                    aria-label="LinkedIn"
-                  >
-                    <Icon icon="streamline:linkedin" className="size-3.5" />
-                  </a>
                 </div>
-                <div className="w-10 h-px bg-slate-200 mb-4"></div>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  A recent BCIT Business Information Technology Management graduate who joined through the POD-360 pilot. Rithvik brings fresh technical curiosity to data analytics, dashboards, and business documentation, strengthening the insights Talent By Design delivers to clients.
-                </p>
-              </div>
-            </div>
+              </SwiperSlide>
 
-            <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-500">
-              <div className="relative overflow-hidden h-80 bg-slate-200">
-                <img
-                  src={DevIMg}
-                  alt="Developer"
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                  style={{
-                    objectPosition: "100% 35%",
-                  }}
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div>
-                    <h3 className="text-xl capitalize font-bold text-slate-900">
-                      Custom Coder
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Full-Stack Developer
+              {/* Custom Coder */}
+              <SwiperSlide>
+                <div className="group bg-white rounded-xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-500">
+                  <div className="relative overflow-hidden h-80 bg-slate-200">
+                    <img
+                      src={DevIMg}
+                      alt="Developer"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                      style={{ objectPosition: "100% 35%" }}
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div>
+                        <h3 className="text-xl capitalize font-bold text-slate-900">
+                          Custom Coder
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Full-Stack Developer
+                        </p>
+                      </div>
+                      <a
+                        href="https://www.linkedin.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--light-primary-color)] hover:bg-[var(--dark-primary-color)] hover:text-white transition-all duration-200 flex items-center justify-center text-[var(--primary-color)] mt-0.5"
+                        aria-label="LinkedIn"
+                      >
+                        <Icon icon="streamline:linkedin" className="size-3.5" />
+                      </a>
+                    </div>
+                    <div className="w-10 h-px bg-slate-200 mb-4"></div>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      The custom code developer behind the Talent By Design
+                      platform. He architects and builds the full-stack
+                      infrastructure from the POD-360 data dashboards to the
+                      public-facing site translating complex requirements into
+                      clean, scalable, and performant solutions.
                     </p>
                   </div>
-                  <a
-                    href="https://www.linkedin.com/in/suzannadesouza"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--light-primary-color)] hover:bg-[var(--dark-primary-color)] hover:text-white transition-all duration-200 flex items-center justify-center text-[var(--primary-color)] mt-0.5"
-                    aria-label="LinkedIn"
-                  >
-                    <Icon icon="streamline:linkedin" className="size-3.5" />
-                  </a>
                 </div>
-                <div className="w-10 h-px bg-slate-200 mb-4"></div>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  The custom coder developer behind the Talent By Design platform. He architects and builds the full-stack infrastructure — from the POD-360 data dashboards to the public-facing site — translating complex requirements into clean, scalable, and performant solutions.
-                </p>
-              </div>
+              </SwiperSlide>
+            </Swiper>
+            {/* Manual Pill Pagination */}
+            <div className="flex items-center justify-center gap-2 mt-6 lg:hidden">
+              {Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => swiperRef.current?.slideToLoop(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                  style={{
+                    width: activeIndex === i ? "28px" : "8px",
+                    height: "8px",
+                    borderRadius: "999px",
+                    background: activeIndex === i ? "#448cd2" : "#468cd22d",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    transition:
+                      "width 0.35s cubic-bezier(0.4,0,0.2,1), background 0.35s ease",
+                  }}
+                />
+              ))}
             </div>
           </div>
         </div>

@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 :root {
-  --primary-color: #448cd2;
+  --primary-color: #468cd2;
   --dark-primary-color: #2d5d8c;
-  --light-primary-color: rgb(228, 240, 252);
+  --light-primary-color: #e4f0fc;
   --secondary-color: #242424;
   --white-color: #fff;
   --black-color: #000;
@@ -329,6 +329,7 @@ input:-webkit-autofill:active {
   display: block;
   transform: scale(1.1);
 }
+
 .bg-svg #smoothPath {
   fill: none;
   stroke-width: 90;
@@ -351,6 +352,7 @@ input:-webkit-autofill:active {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -449,6 +451,7 @@ a {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -507,7 +510,8 @@ a {
   background: transparent !important;
   padding: 0 !important;
   box-shadow: none !important;
-  font-size: 1rem !important; /* text-base */
+  font-size: 1rem !important;
+  /* text-base */
   font-weight: 400 !important;
   color: inherit !important;
   pointer-events: none !important;
@@ -529,4 +533,23 @@ a {
   height: 16px;
   border-radius: 2px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* ── Team Swiper Pill Pagination ─────────────────── */
+.team-swiper .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--light-primary-color);
+  opacity: 1;
+  flex-shrink: 0;
+  transition:
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.35s ease;
+}
+
+.team-swiper .swiper-pagination-bullet-active {
+  width: 28px;
+  background: var(--primary-color);
+  border-radius: 999px;
 }
