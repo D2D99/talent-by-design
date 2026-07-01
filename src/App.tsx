@@ -33,6 +33,7 @@ const AssessmentQuestion = lazy(
 const Dashboard = lazy(() => import("./components/dashboard"));
 const StartAssessment = lazy(() => import("./components/startAssessment"));
 const PageNotFound = lazy(() => import("./screens/pageNotFound"));
+const AboutUs = lazy(() => import("./screens/aboutUs"));
 const OrgInvitation = lazy(() => import("./components/orgInvitation"));
 const OrgUsers = lazy(() => import("./components/orgUsers"));
 const OrgInvitationDetails = lazy(
@@ -89,6 +90,7 @@ function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/what-we-offer" element={<WhatWeOffer />} />
+            <Route path="/about-us" element={<AboutUs />} />
             <Route path="/our-process" element={<OurProcess />} />
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
