@@ -65,7 +65,7 @@ const Pricing = () => {
           </h1>
 
           <p className="relative text-base md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Select a POD-360 engagement model tailored to help you rigorously
+            Select a POD-360™ engagement model tailored to help you rigorously
             track, reliably measure, and permanently sustain your strategic
             benefits.
           </p>
@@ -125,7 +125,7 @@ const Pricing = () => {
                     "Project objectives & priority mapping",
                     "Initial benefits identification",
                     "KPI, baseline, target, owner capture",
-                    "POD-360 assessment",
+                    "POD-360™ assessment",
                     "Benefits Realization Tracker setup",
                     "Executive benefits dashboard",
                     "Initial recommendations and tactics",
@@ -297,7 +297,7 @@ const Pricing = () => {
                   </li>
                   {[
                     "Full realization lifecycle support",
-                    "Multiple POD-360 reassessments",
+                    "Multiple POD-360™ reassessments",
                     "Dashboard reporting over time",
                     "Quarterly realization reviews",
                     "Sustainment tracking post-closure",
@@ -442,7 +442,7 @@ const Pricing = () => {
                     full: true,
                   },
                   {
-                    feature: "POD-360 assessment",
+                    feature: "POD-360™ assessment",
                     baseline: true,
                     ocm: true,
                     full: true,
@@ -724,7 +724,7 @@ const Pricing = () => {
                     full: true,
                   },
                   {
-                    feature: "Multiple POD-360 reassessments",
+                    feature: "Multiple POD-360™ reassessments",
                     baseline: false,
                     ocm: false,
                     full: true,

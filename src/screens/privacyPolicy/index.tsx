@@ -19,14 +19,14 @@ const sections = [
           <li>Assessment participants;</li>
           <li>
             Leaders, managers, employees, contractors, or stakeholders invited
-            to complete POD-360 assessments;
+            to complete POD-360™ assessments;
           </li>
           <li>Website visitors;</li>
           <li>Prospective clients, vendors, and business contacts;</li>
-          <li>Users of POD-360 dashboards, reports, or related services.</li>
+          <li>Users of POD-360™ dashboards, reports, or related services.</li>
         </ul>
         <p className="mt-4">
-          Where POD-360 is provided to a client organization, the client may
+          Where POD-360™ is provided to a client organization, the client may
           also have its own privacy notices, policies, employment obligations,
           or consent practices. We encourage participants to review any privacy
           information provided by their organization.
@@ -119,7 +119,7 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360 is not designed to collect medical, diagnostic, psychological,
+          POD-360™ is not designed to collect medical, diagnostic, psychological,
           financial, government identification, or other highly sensitive
           personal information.
         </p>
@@ -143,7 +143,7 @@ const sections = [
       <>
         <p>We may use personal information to:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>Provide, operate, configure, and support POD-360;</li>
+          <li>Provide, operate, configure, and support POD-360™;</li>
           <li>Administer assessments;</li>
           <li>Authenticate users and manage accounts;</li>
           <li>
@@ -180,7 +180,7 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360 may use AI-enabled tools to support analysis, summarization,
+          POD-360™ may use AI-enabled tools to support analysis, summarization,
           theme identification, recommendations, action planning, benefits
           tracking, OKR suggestions, risk indicators, and executive reporting.
         </p>
@@ -231,7 +231,7 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360 may report assessment results in individual, role-based,
+          POD-360™ may report assessment results in individual, role-based,
           team-based, stakeholder group, organizational, or aggregated formats
           depending on the service configuration and client agreement.
         </p>
@@ -379,7 +379,7 @@ const sections = [
           information, subject to legal, contractual, and security limitations.
         </p>
         <p className="mt-4">
-          Where POD-360 is provided through a client organization, we may direct
+          Where POD-360™ is provided through a client organization, we may direct
           certain requests to the client organization, especially where the
           client controls the assessment relationship or determines how the
           information is used.
@@ -639,7 +639,7 @@ const PrivacyPolicy = () => {
                   This Privacy Policy explains how Talent By Design Collective
                   Inc. (“Company,” “we,” “us,” or “our”) collects, uses,
                   discloses, stores, and protects personal information in
-                  connection with POD-360™, POD-Insights AI™, our website,
+                  connection with POD-360™™, POD-Insights AI™, our website,
                   assessment platform, dashboards, reports, and related services
                   collectively referred to as the “Services.”
                 </p>

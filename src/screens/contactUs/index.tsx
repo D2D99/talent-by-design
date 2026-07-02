@@ -47,9 +47,9 @@ const ContactUs = () => {
 
   const faqs = [
     {
-      question: "What makes POD-360 different from other assessment tools?",
+      question: "What makes POD-360™ different from other assessment tools?",
       answer:
-        "POD-360 goes beyond simple surveys by providing a comprehensive, strategic framework for evaluating and tracking transformation readiness and benefits realization.",
+        "POD-360™ goes beyond simple surveys by providing a comprehensive, strategic framework for evaluating and tracking transformation readiness and benefits realization.",
     },
     {
       question: "How secure is my organizational data?",
@@ -101,7 +101,7 @@ const ContactUs = () => {
               <h4 className="badge">CONNECT WITH US</h4>
               <h1 className="heading text-left !mx-0">Contact Us</h1>
               <p className="text-lg text-[var(--secondary-color)] font-medium mb-8 leading-relaxed max-w-xl">
-                Email, call, or complete the form to learn how POD-360 can solve
+                Email, call, or complete the form to learn how POD-360™ can solve
                 your strategic transformation challenges.
               </p>
 
@@ -144,7 +144,7 @@ const ContactUs = () => {
                   </h3>
                   <p className="text-[var(--secondary-color)] text-sm leading-relaxed">
                     We value your feedback and are continuously working to
-                    improve POD-360.
+                    improve POD-360™.
                   </p>
                 </div>
                 <div>

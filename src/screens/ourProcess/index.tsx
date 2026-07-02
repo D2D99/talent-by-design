@@ -16,7 +16,7 @@ const steps = [
     badge: "FOUNDATION",
     icon: "solar:target-linear",
     summary:
-      "We begin by understanding what the initiative was intended to achieve. This includes reviewing the business case, expected benefits, success measures, adoption goals, and the outcomes leaders hoped to see after implementation. This step ensures POD-360 is not measuring activity for the sake of activity — it is measuring progress against what actually matters.",
+      "We begin by understanding what the initiative was intended to achieve. This includes reviewing the business case, expected benefits, success measures, adoption goals, and the outcomes leaders hoped to see after implementation. This step ensures POD-360™ is not measuring activity for the sake of activity — it is measuring progress against what actually matters.",
     clarify: [
       "What benefits were expected?",
       "What behaviours should have changed?",
@@ -30,7 +30,7 @@ const steps = [
     badge: "MEASUREMENT",
     icon: "solar:chart-2-linear",
     summary:
-      "Before organizations can measure progress, they need a clear baseline. POD-360 helps establish the starting point for adoption, confidence, readiness, and sustainment.",
+      "Before organizations can measure progress, they need a clear baseline. POD-360™ helps establish the starting point for adoption, confidence, readiness, and sustainment.",
     clarify: [
       "Provides a practical view of where employees, managers, and leaders are today",
       "Highlights where support may be needed",
@@ -39,11 +39,11 @@ const steps = [
   },
   {
     number: "03",
-    title: "Launch the POD-360 Pulse",
+    title: "Launch the POD-360™ Pulse",
     badge: "ASSESSMENT",
     icon: "solar:pulse-linear",
     summary:
-      "Using structured pulse assessments, POD-360 gathers role-based feedback from employees, managers, and leaders. The assessment looks beyond whether a system is live. It explores whether people understand the change, are using the new tools or processes effectively, and feel supported in making the change part of daily work.",
+      "Using structured pulse assessments, POD-360™ gathers role-based feedback from employees, managers, and leaders. The assessment looks beyond whether a system is live. It explores whether people understand the change, are using the new tools or processes effectively, and feel supported in making the change part of daily work.",
     clarify: [
       "Uncovers what is working",
       "Identifies where friction exists",
@@ -56,7 +56,7 @@ const steps = [
     badge: "ANALYSIS",
     icon: "solar:graph-linear",
     summary:
-      "Once the pulse data is collected, POD-360 analyzes the signals that matter most. We look at adoption patterns, sustainment risks, digital confidence, workflow integration, leadership alignment, and variance between expected and actual benefits.",
+      "Once the pulse data is collected, POD-360™ analyzes the signals that matter most. We look at adoption patterns, sustainment risks, digital confidence, workflow integration, leadership alignment, and variance between expected and actual benefits.",
     clarify: [
       "Are people actually using the change as intended?",
       "Are the expected benefits being realized?",
@@ -70,7 +70,7 @@ const steps = [
     badge: "INSIGHTS",
     icon: "solar:lightbulb-linear",
     summary:
-      "POD-360 translates assessment data into clear, practical insights. Leaders receive a focused view of what is working, what is not yet sticking, and where action is required. These insights help move the conversation from opinion to evidence.",
+      "POD-360™ translates assessment data into clear, practical insights. Leaders receive a focused view of what is working, what is not yet sticking, and where action is required. These insights help move the conversation from opinion to evidence.",
     clarify: [
       "Adoption themes and patterns",
       "Benefits realization indicators",
@@ -111,7 +111,7 @@ const steps = [
     badge: "TRACKING",
     icon: "solar:medal-ribbons-star-linear",
     summary:
-      "POD-360 is designed to support the critical post-go-live period when benefits can either be realized or quietly lost. Through repeat pulse checkpoints and benefits tracking, we help organizations compare actual outcomes against intended benefits.",
+      "POD-360™ is designed to support the critical post-go-live period when benefits can either be realized or quietly lost. Through repeat pulse checkpoints and benefits tracking, we help organizations compare actual outcomes against intended benefits.",
     clarify: [
       "Identify benefits shortfalls and performance variance",
       "Spot adoption gaps and emerging risks",
@@ -125,7 +125,7 @@ const steps = [
     badge: "SUSTAINMENT",
     icon: "solar:refresh-circle-linear",
     summary:
-      "Sustainment is not a one-time activity. POD-360 creates a continuous improvement cycle that helps organizations monitor progress, refine actions, and strengthen long-term adoption.",
+      "Sustainment is not a one-time activity. POD-360™ creates a continuous improvement cycle that helps organizations monitor progress, refine actions, and strengthen long-term adoption.",
     clarify: [
       "Combines structured measurement with practical insights",
       "Ongoing change management support",
@@ -415,7 +415,7 @@ const OurProcess = () => {
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <div className="relative inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full backdrop-blur-sm border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] text-sm font-semibold text-[var(--primary-color)] mb-6 tracking-wide bg-white/50">
             <Icon icon="solar:routing-bold-duotone" className="size-4" />
-            POD-360 METHODOLOGY
+            POD-360™ METHODOLOGY
           </div>
 
           <h1 className="relative text-4xl md:text-6xl font-bold tracking-tight text-slate-900 sm:mb-6 mb-3 md:leading-[1.2] !leading-tight capitalize">
@@ -504,7 +504,7 @@ const OurProcess = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h4 className="badge mb-4">THE POD-360 PROCESS</h4>
+            <h4 className="badge mb-4">THE POD-360™ PROCESS</h4>
             <h2 className="sub-heading !mx-auto">
               9 steps to{" "}
               <span className="sub-heading-highlight">sustained value</span>

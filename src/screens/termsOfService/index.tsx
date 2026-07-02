@@ -7,11 +7,11 @@ import SpinnerLoader from "../../components/spinnerLoader";
 const sections = [
   {
     id: "purpose",
-    title: "1. Purpose of POD-360",
+    title: "1. Purpose of POD-360™",
     content: (
       <>
         <p>
-          POD-360 is an organizational assessment and insight platform designed
+          POD-360™ is an organizational assessment and insight platform designed
           to help organizations better understand people readiness, operational
           steadiness, digital fluency, change impacts, benefits realization, and
           related organizational effectiveness themes.
@@ -22,7 +22,7 @@ const sections = [
           intelligence-enabled analysis, and recommendations.
         </p>
         <p className="mt-4">
-          POD-360 is intended to support organizational learning, planning,
+          POD-360™ is intended to support organizational learning, planning,
           change management, leadership discussions, and decision-making. It is
           not a substitute for legal, financial, medical, psychological, human
           resources, labour relations, or professional advice.
@@ -37,7 +37,7 @@ const sections = [
       <>
         <p>The Services may be used by:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>Client organizations that purchase, pilot, or access POD-360;</li>
+          <li>Client organizations that purchase, pilot, or access POD-360™;</li>
           <li>
             Authorized administrators, leaders, managers, consultants, or
             project teams;
@@ -74,7 +74,7 @@ const sections = [
           <li>
             Avoiding decisions about employment, discipline, termination,
             promotion, compensation, or individual performance based solely on
-            POD-360 outputs;
+            POD-360™ outputs;
           </li>
           <li>
             Maintaining the confidentiality of account credentials, dashboards,
@@ -83,7 +83,7 @@ const sections = [
           <li>Ensuring that authorized users comply with these Terms.</li>
         </ul>
         <p className="mt-4">
-          Clients must not use POD-360 to target, discipline, shame, retaliate
+          Clients must not use POD-360™ to target, discipline, shame, retaliate
           against, or unfairly evaluate individual employees or participants.
         </p>
       </>
@@ -114,7 +114,7 @@ const sections = [
     content: (
       <>
         <p>
-          Users may be required to create an account or access POD-360 through
+          Users may be required to create an account or access POD-360™ through
           an invitation link. You are responsible for keeping login credentials
           secure and for notifying us promptly of any suspected unauthorized
           access.
@@ -133,7 +133,7 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360 results are based on participant responses, client-provided
+          POD-360™ results are based on participant responses, client-provided
           information, assessment design, scoring logic, platform configuration,
           and, where applicable, AI-assisted analysis.
         </p>
@@ -164,7 +164,7 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360 may include AI-enabled functionality under POD-Insights AI™ or
+          POD-360™ may include AI-enabled functionality under POD-Insights AI™ or
           related modules. AI-generated outputs may include summaries, themes,
           recommendations, risk indicators, suggested OKRs, action cards, or
           benefit tracking suggestions.
@@ -219,7 +219,7 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360™, POD-Insights AI™, assessment models, scoring logic,
+          POD-360™™, POD-Insights AI™, assessment models, scoring logic,
           dashboards, reports, templates, frameworks, content, designs, product
           names, trademarks, and related intellectual property are owned by
           Talent By Design Collective Inc. or its licensors.
@@ -231,7 +231,7 @@ const sections = [
         </p>
         <p className="mt-4">
           You may not copy, reproduce, sell, sublicense, distribute, or create
-          derivative products from POD-360 materials without our prior written
+          derivative products from POD-360™ materials without our prior written
           consent.
         </p>
       </>
@@ -263,7 +263,7 @@ const sections = [
     content: (
       <>
         <p>
-          We may use aggregated or de-identified information to improve POD-360,
+          We may use aggregated or de-identified information to improve POD-360™,
           develop benchmarks, enhance scoring models, conduct research, improve
           AI-assisted insights, and create generalized industry or
           organizational effectiveness insights.
@@ -319,7 +319,7 @@ const sections = [
     content: (
       <>
         <p>
-          We aim to provide reliable access to POD-360, but we do not guarantee
+          We aim to provide reliable access to POD-360™, but we do not guarantee
           uninterrupted or error-free availability. The Services may be
           unavailable due to maintenance, updates, technical issues, third-party
           service outages, or events beyond our control.
@@ -356,7 +356,7 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360 outputs are informational and advisory in nature. They do not
+          POD-360™ outputs are informational and advisory in nature. They do not
           constitute legal, employment, labour relations, psychological,
           medical, financial, accounting, or other regulated professional
           advice.
@@ -652,7 +652,7 @@ const TermsOfService = () => {
               <div className="text-slate-600 mb-16 leading-relaxed text-base">
                 <p>
                   These Terms and Conditions ("Terms") govern access to and use
-                  of the POD-360™ platform, assessment tools, dashboards,
+                  of the POD-360™™ platform, assessment tools, dashboards,
                   reports, insights, AI-enabled features, and related services
                   collectively referred to as the "Services."
                 </p>

@@ -110,7 +110,7 @@ const Home = () => {
       <Header />
 
       {/* Hero Section Start */}
-      <div className="relative isolate pt-10 overflow-hidden " id="hero-bg">
+      <div className="relative isolate md:pt-20 pt-12 overflow-hidden " id="hero-bg">
         <div className="bg-svg !w-full absolute left-1/2 -translate-x-1/2 -z-10 pt-4">
           <svg
             width="2025"

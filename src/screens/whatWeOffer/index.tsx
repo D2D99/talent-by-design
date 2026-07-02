@@ -116,7 +116,7 @@ const WhatWeOffer = () => {
                 Sustaining <span className="sub-heading-highlight">Change</span>
               </h2>
               <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]">
-                Using our proprietary POD-360 software and change management
+                Using our proprietary POD-360™ software and change management
                 methodology, we support organizations through the critical
                 post-go-live period.
               </p>
@@ -209,7 +209,7 @@ const WhatWeOffer = () => {
 
               <div className="w-3/4">
                 <h3 className="home-step-title sm:text-2xl text-xl font-bold mb-3">
-                  POD-360 Pulse Assessment
+                  POD-360™ Pulse Assessment
                 </h3>
                 <p className="text-base font-normal mt-1 text-[var(--secondary-color)]">
                   A focused assessment designed to give leaders a clear snapshot
@@ -299,7 +299,7 @@ const WhatWeOffer = () => {
                 </p>
                 <div className="bg-[var(--primary-color)]/5 p-5 rounded-xl border border-[var(--primary-color)]/10">
                   <p className="text-sm font-medium text-[var(--secondary-color)] leading-relaxed">
-                    A POD-360 pulse assessment, benefits-focused analysis, and a
+                    A POD-360™ pulse assessment, benefits-focused analysis, and a
                     practical insights report that connects employee adoption
                     and operational readiness to the intended value of the
                     initiative.
@@ -397,7 +397,7 @@ const WhatWeOffer = () => {
                       />
                     </div>
                     <span className="text-sm font-medium text-[var(--secondary-color)]">
-                      Recurring POD-360 pulse assessments
+                      Recurring POD-360™ pulse assessments
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
@@ -450,18 +450,18 @@ const WhatWeOffer = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary-color)]/5 to-transparent rounded-[2.5rem] blur-xl transition-all duration-500 opacity-50"></div>
               <img
                 src={WwoImg}
-                alt="WHAT MAKES POD-360 DIFFERENT"
+                alt="WHAT MAKES POD-360™ DIFFERENT"
                 className="relative w-full aspect-[4/3] object-cover rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 transition-all duration-700 ease-out"
               />
             </div>
             <div className="order-1 lg:order-2">
-              <h4 className="badge mb-3">WHAT MAKES POD-360 DIFFERENT</h4>
+              <h4 className="badge mb-3">WHAT MAKES POD-360™ DIFFERENT</h4>
               <h2 className="sub-heading">
                 Not a <span className="sub-heading-highlight">one-time</span>{" "}
                 survey
               </h2>
               <p className="text-base font-normal mt-6 text-[var(--secondary-color)]">
-                POD-360 is not a one-time survey and it is not a generic change
+                POD-360™ is not a one-time survey and it is not a generic change
                 management toolkit.
               </p>
               <p className="text-base font-normal sm:mt-2 mt-3 text-[var(--secondary-color)]">
@@ -500,7 +500,7 @@ const WhatWeOffer = () => {
                 into daily work.
               </p>
               <p className="text-base font-bold mt-6 text-[var(--dark-primary-color)]">
-                POD-360 helps organizations stay focused during this critical
+                POD-360™ helps organizations stay focused during this critical
                 period.
               </p>
               <p className="text-base font-normal mt-2 text-[var(--secondary-color)] leading-relaxed">
@@ -513,7 +513,7 @@ const WhatWeOffer = () => {
               <div className="absolute inset-0 bg-gradient-to-bl from-[var(--primary-color)]/5 to-transparent rounded-[2.5rem] blur-xl transition-all duration-500 opacity-50"></div>
               <img
                 src={WwoImg1}
-                alt="POD-360 Capability and Performance Tracking"
+                alt="POD-360™ Capability and Performance Tracking"
                 className="relative w-full aspect-[4/3] object-contain rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 transition-all duration-700 ease-out"
               />
             </div>
@@ -532,7 +532,7 @@ const WhatWeOffer = () => {
               <span className="sub-heading-highlight">Sustain</span>
             </h2>
             <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)] leading-relaxed mx-auto">
-              POD-360 is perfectly positioned for organizations actively
+              POD-360™ is perfectly positioned for organizations actively
               implementing or sustaining:
             </p>
           </div>
@@ -614,7 +614,7 @@ const WhatWeOffer = () => {
                 value of change after go-live.
               </h3>
               <p className="text-sm font-normal max-w-2xl mx-auto text-white/75 mt-2">
-                With POD-360, leaders gain clearer evidence of adoption,
+                With POD-360™, leaders gain clearer evidence of adoption,
                 stronger visibility into sustainment risks, and a more practical
                 way to track whether intended benefits are being realized.
               </p>

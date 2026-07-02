@@ -8,20 +8,20 @@ const faqs = [
   {
     id: "q1",
     question:
-      "What is POD-360 and how is it different from a traditional employee survey?",
+      "What is POD-360™ and how is it different from a traditional employee survey?",
     answer: (
       <>
         <p>
-          POD-360 is a proprietary software-enabled solution designed to measure
+          POD-360™ is a proprietary software-enabled solution designed to measure
           technology adoption, operational stabilization, and benefits
           realization after go-live. Unlike traditional surveys that provide a
-          one-time snapshot, POD-360 combines structured pulse assessments,
+          one-time snapshot, POD-360™ combines structured pulse assessments,
           trend analysis, and change management insights to help leaders
           understand whether a transformation is delivering its intended
           outcomes over time.
         </p>
         <p>
-          A key differentiator is that POD-360 gathers feedback not only from
+          A key differentiator is that POD-360™ gathers feedback not only from
           employees, but also from managers and leaders involved in the
           transformation. This multi-level perspective helps organizations
           identify perception gaps between leadership and employees, providing a
@@ -50,11 +50,11 @@ const faqs = [
   {
     id: "q3",
     question:
-      "How does POD-360 help demonstrate ROI on technology investments?",
+      "How does POD-360™ help demonstrate ROI on technology investments?",
     answer: (
       <>
         <p>
-          POD-360 connects employee adoption, operational readiness, leadership
+          POD-360™ connects employee adoption, operational readiness, leadership
           alignment, and digital fluency to intended business outcomes. By
           tracking indicators related to benefits realization, leaders gain
           evidence of whether the organization is progressing toward the
@@ -66,10 +66,10 @@ const faqs = [
   },
   {
     id: "q4",
-    question: "What types of initiatives is POD-360 designed to support?",
+    question: "What types of initiatives is POD-360™ designed to support?",
     answer: (
       <>
-        <p>POD-360 supports a wide range of initiatives, including:</p>
+        <p>POD-360™ supports a wide range of initiatives, including:</p>
         <ul>
           <li>ERP implementations</li>
           <li>CRM deployments</li>
@@ -102,10 +102,10 @@ const faqs = [
   },
   {
     id: "q6",
-    question: "What does POD-360 measure?",
+    question: "What does POD-360™ measure?",
     answer: (
       <>
-        <p>POD-360 evaluates three core dimensions:</p>
+        <p>POD-360™ evaluates three core dimensions:</p>
         <ul>
           <li>
             <strong>People Potential:</strong> Measures employee engagement,
@@ -139,7 +139,7 @@ const faqs = [
           periods.
         </p>
         <p>
-          POD-360 can pulse employees, managers, and leaders at appropriate
+          POD-360™ can pulse employees, managers, and leaders at appropriate
           intervals to monitor how perceptions evolve across stakeholder groups
           throughout the change journey.
         </p>
@@ -191,11 +191,11 @@ const faqs = [
   },
   {
     id: "q10",
-    question: "Can POD-360 identify areas where additional training is needed?",
+    question: "Can POD-360™ identify areas where additional training is needed?",
     answer: (
       <>
         <p>
-          Yes. POD-360 helps identify gaps in confidence, capability, leadership
+          Yes. POD-360™ helps identify gaps in confidence, capability, leadership
           support, and system utilization. This allows organizations to target
           training, coaching, communications, and leadership interventions where
           they are needed most.
@@ -205,11 +205,11 @@ const faqs = [
   },
   {
     id: "q11",
-    question: "How does POD-360 support benefits realization?",
+    question: "How does POD-360™ support benefits realization?",
     answer: (
       <>
         <p>
-          POD-360 helps organizations establish a baseline, monitor progress,
+          POD-360™ helps organizations establish a baseline, monitor progress,
           and connect adoption metrics to intended business outcomes. By
           comparing perspectives across employees, managers, and leaders,
           organizations can better understand where alignment exists and where
@@ -240,7 +240,7 @@ const faqs = [
   {
     id: "q13",
     question:
-      "What are the most common post-go-live risks POD-360 helps identify?",
+      "What are the most common post-go-live risks POD-360™ helps identify?",
     answer: (
       <>
         <p>Common risks include:</p>
@@ -264,18 +264,18 @@ const faqs = [
   },
   {
     id: "q14",
-    question: "How does POD-360 support executive decision-making?",
+    question: "How does POD-360™ support executive decision-making?",
     answer: (
       <>
         <p>
-          POD-360 provides objective, evidence-based insights that help
+          POD-360™ provides objective, evidence-based insights that help
           executives understand what is happening across the organization.
           Rather than relying on anecdotal feedback, leaders gain measurable
           data from employees, managers, and leaders to support governance,
           investment decisions, and transformation planning.
         </p>
         <p>
-          Because POD-360 is administered by an independent third party,
+          Because POD-360™ is administered by an independent third party,
           executives gain access to candid feedback that may not otherwise
           surface through traditional reporting channels. This allows leadership
           teams to address issues earlier and make more informed decisions
@@ -286,11 +286,11 @@ const faqs = [
   },
   {
     id: "q15",
-    question: "Is POD-360 suitable for organizations of all sizes?",
+    question: "Is POD-360™ suitable for organizations of all sizes?",
     answer: (
       <>
         <p>
-          Yes. POD-360 can be scaled to support organizations ranging from
+          Yes. POD-360™ can be scaled to support organizations ranging from
           mid-sized businesses to large enterprises. The approach can be
           tailored based on the size, complexity, and strategic importance of
           the initiative.
@@ -300,11 +300,11 @@ const faqs = [
   },
   {
     id: "q16",
-    question: "What is the ultimate value of POD-360 for technology leaders?",
+    question: "What is the ultimate value of POD-360™ for technology leaders?",
     answer: (
       <>
         <p>
-          POD-360 helps technology leaders answer one critical question:{" "}
+          POD-360™ helps technology leaders answer one critical question:{" "}
           <strong>
             Is the organization realizing the value it expected from its
             investment?
@@ -313,7 +313,7 @@ const faqs = [
         <p>
           By providing visibility into adoption, operational readiness,
           leadership alignment, digital fluency, perception gaps, and benefits
-          realization, POD-360 helps CIOs and leadership teams protect
+          realization, POD-360™ helps CIOs and leadership teams protect
           investments, improve outcomes, and ensure change delivers lasting
           business value.
         </p>
@@ -352,7 +352,7 @@ const FAQ = () => {
           <div className="max-w-3xl mx-auto">
             {/* Optional Badge similar to Dropship */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-gray-200 text-sm font-medium text-slate-600 mb-8 shadow-sm">
-              <span className="text-slate-800">POD-360 is live!</span>
+              <span className="text-slate-800">POD-360™ is live!</span>
               <span className="w-px h-4 bg-gray-300"></span>
               <a
                 href="/pricing"
