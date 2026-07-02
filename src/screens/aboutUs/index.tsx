@@ -116,7 +116,9 @@ const AboutUs = () => {
             </div>
             <div className="lg:col-span-7 lg:order-2 order-1">
               <h4 className="badge mb-3">ABOUT THE FOUNDER</h4>
-              <h2 className="sub-heading mb-1">Suzanna de Souza</h2>
+              <h2 className="sub-heading mb-1" style={{
+                textTransform: "none"
+              }}>Suzanna de Souza</h2>
               <p className="text-[var(--dark-primary-color)] font-semibold mb-6 text-sm">
                 Founder, Talent By Design Collective Inc.
               </p>
@@ -124,7 +126,7 @@ const AboutUs = () => {
               <div className="space-y-4 text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]">
                 <p>
                   Suzanna is a change manager, leadership coach, entrepreneur,
-                  and single mom who has spent her career helping organizations
+                  and single mother who has spent her career helping organizations
                   move through change with more clarity, confidence, and
                   purpose.
                 </p>
