@@ -79,7 +79,7 @@ const AboutUs = () => {
 
           <p className="relative text-base md:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed mb-10">
             Talent By Design Collective Inc. combines expert change management
-            consulting, leadership coaching, and our proprietary POD-360 data
+            consulting, leadership coaching, and our proprietary POD-360™ data
             insights platform to ensure your enterprise technology and process
             changes deliver real, lasting business value.
           </p>
@@ -169,7 +169,7 @@ const AboutUs = () => {
               <h4 className="badge mb-3">THE STORY BEHIND</h4>
               <h2 className="sub-heading !text-left !mx-0">POD-360™</h2>
               <p className="text-base text-[var(--secondary-color)] mt-6 mb-6">
-                POD-360 was created after years of seeing the same challenge
+                POD-360™ was created after years of seeing the same challenge
                 inside transformation projects.
               </p>
 
@@ -216,7 +216,7 @@ const AboutUs = () => {
               </ul>
 
               <p className="text-base text-[var(--secondary-color)] mb-4 leading-relaxed">
-                POD-360 helps organizations answer those questions.
+                POD-360™ helps organizations answer those questions.
               </p>
               <p className="text-base text-[var(--secondary-color)] leading-relaxed">
                 It is Talent By Design's proprietary framework for measuring
@@ -228,7 +228,7 @@ const AboutUs = () => {
             <div>
               <img
                 src={PODImg}
-                alt="POD-360"
+                alt="POD-360™"
                 className="w-full h-auto rounded-3xl object-cover mb-6"
               />
             </div>
@@ -352,7 +352,7 @@ const AboutUs = () => {
                     <div className="w-10 h-px bg-slate-200 mb-4"></div>
                     <p className="text-sm text-gray-500 leading-relaxed">
                       A recent BCIT Business Information Technology Management
-                      graduate who joined through the POD-360 pilot. Rithvik
+                      graduate who joined through the POD-360™ pilot. Rithvik
                       brings fresh technical curiosity to data analytics,
                       dashboards, and business documentation, strengthening the
                       insights Talent By Design delivers to clients.
@@ -396,7 +396,7 @@ const AboutUs = () => {
                     <p className="text-sm text-gray-500 leading-relaxed">
                       The custom code developer behind the Talent By Design
                       platform. He architects and builds the full-stack
-                      infrastructure from the POD-360 data dashboards to the
+                      infrastructure from the POD-360™ data dashboards to the
                       public-facing site translating complex requirements into
                       clean, scalable, and performant solutions.
                     </p>
