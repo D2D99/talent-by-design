@@ -10,6 +10,7 @@ import ProtectedRoute from "./routes/protectedRoute";
 import OverviewRoute from "./components/overviewRoute";
 import SessionPopup from "./components/sessionPopup";
 import { ToastContainer } from "react-toastify";
+import BackToTop from "./components/backToTop";
 import Pricing from "./screens/pricing";
 import PrivacyPolicy from "./screens/privacyPolicy";
 import TermsOfService from "./screens/termsOfService";
@@ -83,6 +84,7 @@ function App() {
         />
         <SessionPopup />
         <SpeedInsights />
+        <BackToTop />
 
         <Suspense fallback={<Loading />}>
           <Routes>

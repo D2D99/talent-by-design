@@ -32,7 +32,6 @@ import { useEffect, useState } from "react";
 import { Modal, Ripple, initTWE } from "tw-elements";
 // import LoginModal from "../../components/loginModal";
 import SpinnerLoader from "../../components/spinnerLoader";
-import BackToTop from "../../components/backToTop";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -1501,7 +1500,6 @@ const Home = () => {
 
       <Footer />
 
-      <BackToTop />
 
       {/* Build Resilient Start*/}
       {/* <div
