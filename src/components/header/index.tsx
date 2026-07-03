@@ -33,7 +33,7 @@ const Header = () => {
   };
 
   const navLinkClasses =
-    "uppercase text-[var(--secondary-color)] transition duration-200 hover:text-black/80 hover:ease-in-out focus:text-black/80 active:text-black/80 motion-reduce:transition-none lg:px-4 font-semibold";
+    "nav-link-animated uppercase text-[var(--secondary-color)] lg:px-4 font-semibold";
 
   const ctaButtonClasses =
     "group rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase transition-all text-white bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] hover:opacity-90";
@@ -96,7 +96,12 @@ const Header = () => {
                     href="/what-we-offer"
                     data-twe-nav-link-ref
                   >
-                    What We Offer
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">What We Offer</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        What We Offer
+                      </span>
+                    </span>
                   </a>
                 </li>
 
@@ -106,7 +111,12 @@ const Header = () => {
                     href="/our-process"
                     data-twe-nav-link-ref
                   >
-                    our process
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">our process</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        our process
+                      </span>
+                    </span>
                   </a>
                 </li>
 
@@ -116,7 +126,12 @@ const Header = () => {
                     href="/faq"
                     data-twe-nav-link-ref
                   >
-                    Faq
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">Faq</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        Faq
+                      </span>
+                    </span>
                   </a>
                 </li>
 
@@ -126,7 +141,12 @@ const Header = () => {
                     href="/pricing"
                     data-twe-nav-link-ref
                   >
-                    Pricing
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">Pricing</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        Pricing
+                      </span>
+                    </span>
                   </a>
                 </li>
 
@@ -136,7 +156,12 @@ const Header = () => {
                     href="/about-us"
                     data-twe-nav-link-ref
                   >
-                    About us
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">About us</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        About us
+                      </span>
+                    </span>
                   </a>
                 </li>
 

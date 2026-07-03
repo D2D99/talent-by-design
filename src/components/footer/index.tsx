@@ -57,53 +57,90 @@ const Footer = () => {
               <h3 className="uppercase font-bold md:text-lg text-base text-[var(--white-color)] mt-4 mb-3">
                 Quick links
               </h3>
-              <ul className="space-y-1.5">
+              <ul
+                className="space-y-1.5"
+                style={
+                  {
+                    "--nav-hover-color": "var(--white-color)",
+                  } as React.CSSProperties
+                }
+              >
                 <li>
                   <a
                     href="/what-we-offer"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    What we offer
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">What we offer</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        What we offer
+                      </span>
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
                     href="/our-process"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Our Process
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">Our Process</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        Our Process
+                      </span>
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
                     href="/faq"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    FAQ
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">FAQ</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        FAQ
+                      </span>
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
                     href="/pricing"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Pricing
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">Pricing</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        Pricing
+                      </span>
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
                     href="/about-us"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    About Us
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">About Us</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        About Us
+                      </span>
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
                     href="/contact-us"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)] "
                   >
-                    Contact Us
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">Contact Us</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        Contact Us
+                      </span>
+                    </span>
                   </a>
                 </li>
               </ul>
@@ -112,21 +149,38 @@ const Footer = () => {
               <h3 className="uppercase font-bold md:text-lg text-base text-[var(--white-color)] mt-4 mb-3">
                 Legal
               </h3>
-              <ul className="space-y-1.5">
+              <ul
+                className="space-y-1.5"
+                style={
+                  {
+                    "--nav-hover-color": "var(--white-color)",
+                  } as React.CSSProperties
+                }
+              >
                 <li>
                   <a
                     href="/privacy-policy"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
-                    Privacy Policy
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">Privacy Policy</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        Privacy Policy
+                      </span>
+                    </span>
                   </a>
                 </li>
                 <li>
                   <a
                     href="/terms-of-service"
-                    className="text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
+                    className="nav-link-animated text-sm font-normal mt-1 max-w-3xl text-[var(--white-color)]"
                   >
-                    Terms & Conditions
+                    <span className="nav-text-wrapper">
+                      <span className="nav-text-main">Terms & Conditions</span>
+                      <span className="nav-text-hover" aria-hidden="true">
+                        Terms & Conditions
+                      </span>
+                    </span>
                   </a>
                 </li>
               </ul>
