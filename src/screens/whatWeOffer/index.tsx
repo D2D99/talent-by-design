@@ -299,8 +299,8 @@ const WhatWeOffer = () => {
                 </p>
                 <div className="bg-[var(--primary-color)]/5 p-5 rounded-xl border border-[var(--primary-color)]/10">
                   <p className="text-sm font-medium text-[var(--secondary-color)] leading-relaxed">
-                    A POD-360™ pulse assessment, benefits-focused analysis, and a
-                    practical insights report that connects employee adoption
+                    A POD-360™ pulse assessment, benefits-focused analysis, and
+                    a practical insights report that connects employee adoption
                     and operational readiness to the intended value of the
                     initiative.
                   </p>

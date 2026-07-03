@@ -12,8 +12,8 @@ const faqs = [
     answer: (
       <>
         <p>
-          POD-360™ is a proprietary software-enabled solution designed to measure
-          technology adoption, operational stabilization, and benefits
+          POD-360™ is a proprietary software-enabled solution designed to
+          measure technology adoption, operational stabilization, and benefits
           realization after go-live. Unlike traditional surveys that provide a
           one-time snapshot, POD-360™ combines structured pulse assessments,
           trend analysis, and change management insights to help leaders
@@ -191,14 +191,15 @@ const faqs = [
   },
   {
     id: "q10",
-    question: "Can POD-360™ identify areas where additional training is needed?",
+    question:
+      "Can POD-360™ identify areas where additional training is needed?",
     answer: (
       <>
         <p>
-          Yes. POD-360™ helps identify gaps in confidence, capability, leadership
-          support, and system utilization. This allows organizations to target
-          training, coaching, communications, and leadership interventions where
-          they are needed most.
+          Yes. POD-360™ helps identify gaps in confidence, capability,
+          leadership support, and system utilization. This allows organizations
+          to target training, coaching, communications, and leadership
+          interventions where they are needed most.
         </p>
       </>
     ),

@@ -119,9 +119,9 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360™ is not designed to collect medical, diagnostic, psychological,
-          financial, government identification, or other highly sensitive
-          personal information.
+          POD-360™ is not designed to collect medical, diagnostic,
+          psychological, financial, government identification, or other highly
+          sensitive personal information.
         </p>
         <p className="mt-4">
           Participants should avoid including sensitive personal information
@@ -379,9 +379,9 @@ const sections = [
           information, subject to legal, contractual, and security limitations.
         </p>
         <p className="mt-4">
-          Where POD-360™ is provided through a client organization, we may direct
-          certain requests to the client organization, especially where the
-          client controls the assessment relationship or determines how the
+          Where POD-360™ is provided through a client organization, we may
+          direct certain requests to the client organization, especially where
+          the client controls the assessment relationship or determines how the
           information is used.
         </p>
         <p className="mt-4">

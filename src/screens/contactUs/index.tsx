@@ -101,8 +101,8 @@ const ContactUs = () => {
               <h4 className="badge">CONNECT WITH US</h4>
               <h1 className="heading text-left !mx-0">Contact Us</h1>
               <p className="text-lg text-[var(--secondary-color)] font-medium mb-8 leading-relaxed max-w-xl">
-                Email, call, or complete the form to learn how POD-360™ can solve
-                your strategic transformation challenges.
+                Email, call, or complete the form to learn how POD-360™ can
+                solve your strategic transformation challenges.
               </p>
 
               <div className="space-y-4 mb-12">

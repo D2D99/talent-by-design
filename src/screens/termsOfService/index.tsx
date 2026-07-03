@@ -37,7 +37,9 @@ const sections = [
       <>
         <p>The Services may be used by:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>Client organizations that purchase, pilot, or access POD-360™;</li>
+          <li>
+            Client organizations that purchase, pilot, or access POD-360™;
+          </li>
           <li>
             Authorized administrators, leaders, managers, consultants, or
             project teams;
@@ -164,10 +166,10 @@ const sections = [
     content: (
       <>
         <p>
-          POD-360™ may include AI-enabled functionality under POD-Insights AI™ or
-          related modules. AI-generated outputs may include summaries, themes,
-          recommendations, risk indicators, suggested OKRs, action cards, or
-          benefit tracking suggestions.
+          POD-360™ may include AI-enabled functionality under POD-Insights AI™
+          or related modules. AI-generated outputs may include summaries,
+          themes, recommendations, risk indicators, suggested OKRs, action
+          cards, or benefit tracking suggestions.
         </p>
         <p className="mt-4">
           AI-generated outputs may be incomplete, inaccurate, or require human
@@ -263,10 +265,10 @@ const sections = [
     content: (
       <>
         <p>
-          We may use aggregated or de-identified information to improve POD-360™,
-          develop benchmarks, enhance scoring models, conduct research, improve
-          AI-assisted insights, and create generalized industry or
-          organizational effectiveness insights.
+          We may use aggregated or de-identified information to improve
+          POD-360™, develop benchmarks, enhance scoring models, conduct
+          research, improve AI-assisted insights, and create generalized
+          industry or organizational effectiveness insights.
         </p>
         <p className="mt-4">
           We will not intentionally identify an individual or disclose a
