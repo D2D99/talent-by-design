@@ -289,7 +289,7 @@ const AboutUs = () => {
                   <div className="p-6">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
-                        <h3 className="text-xl capitalize font-bold text-slate-900">
+                        <h3 className="text-xl font-bold text-slate-900">
                           Suzanna de Souza
                         </h3>
                         <p className="text-xs text-gray-500 mt-0.5">
@@ -332,7 +332,7 @@ const AboutUs = () => {
                   <div className="p-6">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
-                        <h3 className="text-xl capitalize font-bold text-slate-900">
+                        <h3 className="text-xl font-bold text-slate-900">
                           Rithvik Sharma
                         </h3>
                         <p className="text-xs text-gray-500 mt-0.5">
@@ -375,7 +375,7 @@ const AboutUs = () => {
                   <div className="p-6">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div>
-                        <h3 className="text-xl capitalize font-bold text-slate-900">
+                        <h3 className="text-xl font-bold text-slate-900">
                           Custom Coder
                         </h3>
                         <p className="text-xs text-gray-500 mt-0.5">
