@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import "react-tooltip/dist/react-tooltip.css";
 import "react-toastify/dist/ReactToastify.css";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 import { AuthProvider } from "./context/AuthProvider";
 import { TooltipProvider } from "./context/TooltipContext";
@@ -84,6 +85,7 @@ function App() {
         />
         <SessionPopup />
         <SpeedInsights />
+        <Analytics />
         <BackToTop />
 
         <Suspense fallback={<Loading />}>
