@@ -13,6 +13,7 @@ const Identifies = "/static/img/home/identifies.png";
 const Identifies1 = "/static/img/home/identifies-1.png";
 const Identifies2 = "/static/img/home/identifies-2.png";
 const Identifies3 = "/static/img/home/identifies-3.png";
+const Identifies4 = "/static/img/home/identifies-4.png";
 const DigitalLeader = "/static/img/home/digital-leader.png";
 const Access1 = "/static/img/icons/access1.svg";
 const Access2 = "/static/img/icons/access2.svg";
@@ -173,20 +174,28 @@ const Home = () => {
             TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
           </h4>
           <h1 className="heading">
-            Clarity for Leaders. Stability for Teams. Readiness for the Future.
+            CLARITY FOR LEADERS. <br /> STABILITY FOR TEAMS. <br /> PROVEN VALUE
+            FOR THE BUSINESS.
           </h1>
-          <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-10 sm:mt-4 mt-2.5">
-            Most transformation efforts struggle not because of technology but
-            because organizations lack{" "}
-            <strong>clarity on readiness, people-centric </strong>
-            risk, and where to focus first.
-          </p>
-          <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-7 mt-4 sm:mb-10 mb-5">
-            <strong>POD-360™</strong> reveals where{" "}
-            <strong> People, Operations,</strong> and <strong>Digital</strong>{" "}
-            are misaligned and <strong>POD Insights™</strong> uses{" "}
-            <strong>secure AI</strong> to turn that data into{" "}
-            <strong>leadership-ready intelligence.</strong>
+          {/* <p className="lg:text-xl sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-10 sm:mt-4 mt-2.5">
+            Most transformation efforts don't fail on delivery they fail to <strong> prove their value.</strong> Teams finish <strong>"on time and on budget"</strong>  and still can't show <strong>what it was worth,</strong>  because no one defined the benefit, owned it, or tracked it past go-live.
+          </p> */}
+          <p className="sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-7 mt-4 sm:mb-10 mb-5">
+            Most transformation efforts don't fail on delivery they fail to{" "}
+            <strong> prove their value.</strong> Teams finish{" "}
+            <strong>"on time and on budget"</strong> and still can't show{" "}
+            <strong>what it was worth,</strong> because no one defined the
+            benefit, owned it, or tracked it past go-live.{" "}
+            <strong> POD-360™ </strong> is a{" "}
+            <strong> benefit realization lifecycle platform.</strong> We help
+            you{" "}
+            <strong>
+              {" "}
+              identify what value a change should create, assign someone
+              accountable{" "}
+            </strong>{" "}
+            for it, and <strong> track it</strong> from readiness diagnosis all
+            the way to <strong>realized business impact.</strong>
           </p>
           <div className="flex justify-center sm:flex-nowrap flex-wrap gap-5">
             <button
@@ -445,6 +454,26 @@ const Home = () => {
             <li className="feature-list">
               <img src={IconStar} alt="icon" className="mt-1" />
               <span>
+                Independent research on corporate transformations has found that{" "}
+                <strong className="font-semibold">
+                  only about 3 in 10 projects are considered fully successful
+                </strong>{" "}
+                most fail to reach expectations even when delivered on time and
+                budget.
+              </span>
+            </li>
+            <li className="feature-list">
+              <img src={IconStar} alt="icon" className="mt-1" />
+              <span>
+                Analysis of large-scale change efforts shows that when frontline
+                managers and employees aren't actively engaged, success rates
+                can fall to{" "}
+                <strong className="font-semibold">as low as 3%.</strong>{" "}
+              </span>
+            </li>
+            <li className="feature-list">
+              <img src={IconStar} alt="icon" className="mt-1" />
+              <span>
                 <strong className="font-semibold">
                   Only 32% of employees are engaged,
                 </strong>{" "}
@@ -681,6 +710,12 @@ const Home = () => {
                     impact.
                   </p>
                   <p className="text-base font-normal mt-2">
+                    Optimization isn't the finish line. Every benefit identified
+                    earlier in the engagement has an owner and a timeline we
+                    help you build the cadence to track it until it's realized,
+                    not just until the engagement ends.
+                  </p>
+                  <p className="text-base font-normal mt-2">
                     The result: a high-functioning, aligned organization
                     optimized for sustainable performance and full
                     transformation potential.
@@ -908,6 +943,16 @@ const Home = () => {
               </div>
             </div>
           </div>
+
+          <h5 className="md:text-lg leading-5 text-[var(--secondary-color)] sm:mt-10 mt-5">
+            These three domains map directly to the benefit types that matter to
+            your business: <strong> People Potential </strong> surfaces
+            operational and strategic people-benefits (engagement, capability,
+            retention); <strong> Operational Steadiness </strong> surfaces
+            process and efficiency benefits; <strong> Digital Fluency </strong>{" "}
+            surfaces the technology-adoption benefits that unlock ROI on your
+            existing tech stack.
+          </h5>
         </div>
       </div>
       {/* POD-360™ Assessment Section End */}
@@ -1000,7 +1045,7 @@ const Home = () => {
           <h2 className="sub-heading">
             Turn Insights Into{" "}
             <span className="sub-heading-highlight">
-              Measurable Performance
+              Owned, Time-Bound, Measurable Benefits
             </span>{" "}
           </h2>
           <p className="text-base font-normal mt-2 lg:max-w-3xl text-[var(--secondary-color)] ">
@@ -1012,7 +1057,7 @@ const Home = () => {
             Together, they create a powerful blueprint for organizational
             optimization.
           </p>
-          <div className="md:sticky relative md:top-28 mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+          <div className="md:sticky relative md:top-28 mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc] gap-5">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
                 1. POD-360™ identifies what’s blocking execution
@@ -1056,64 +1101,79 @@ const Home = () => {
               <img src={Identifies} className="rounded-3xl" alt="Image" />
             </div>
           </div>
-          <div className="md:sticky relative md:top-36 z-[2] mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+
+          <div className="md:sticky relative md:top-36 z-[2] mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc] gap-5">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)]">
-                2. Translate POD-360™ insights into measurable goals
+                2. Define the benefit and assign an owner
               </h2>
               <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
-                For every low or medium subdomain score, we can help you create
-                OKRs to move forward with:
+                For every low or medium subdomain score, POD-360™ helps you
+                convert a friction point into a defined benefit:
               </p>
               <ul className="sm:mt-7 mt-4 space-y-1">
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Clear direction and momentum</span>
+                  <span>
+                    A specific, measurable statement of the value expected (not
+                    "improve communication" — "reduce cross-team handoff delays
+                    from 3 days to 1")
+                  </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Aligned priorities</span>
+                  <span>
+                    A named benefits owner — a business stakeholder, not the
+                    project team, who's accountable for the result after the
+                    engagement ends
+                  </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Measurable success criteria</span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Accountable owners</span>
+                  <span>
+                    A baseline measurement, captured before work begins, so
+                    improvement can actually be proven later
+                  </span>
                 </li>
               </ul>
-              <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
-                This bridges the gap between <strong>diagnosis</strong> and{" "}
-                <strong>execution</strong>.
-              </p>
             </div>
             <div className="md:block hidden">
               <img src={Identifies1} className="rounded-3xl" alt="Image" />
             </div>
           </div>
-          <div className="md:sticky relative md:top-44 z-[3] mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+
+          <div className="md:sticky relative md:top-44 z-[3] mt-8 md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc] gap-5">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
-                3. POD-360™ makes OKRs realistic, targeted, and achievable
+                3. Set the timeline and success criteria
               </h2>
+
+              <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
+                Not every benefit lands at the same time. POD-360™ helps you
+                map:
+              </p>
 
               <ul className="sm:mt-7 mt-4 space-y-1">
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>No more vague goals or misaligned priorities</span>
+                  <span>
+                    Which benefits should show up within the engagement (quick
+                    wins)
+                  </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Each OKR is grounded in real data not guesses</span>
+                  <span>
+                    Which benefits realistically take one, two, or more quarters
+                    to materialize
+                  </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>POD-360™ tells you where to focus</span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>OKRs define how to move forward</span>
+                  <span>
+                    The specific KPI and target for each, so "success" is
+                    defined before you start not argued about afterward
+                  </span>
                 </li>
               </ul>
             </div>
@@ -1121,10 +1181,11 @@ const Home = () => {
               <img src={Identifies2} className="rounded-3xl" alt="Image" />
             </div>
           </div>
-          <div className="mt-8 md:sticky relative md:top-52 z-[4] md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc]">
+
+          <div className="mt-8 md:sticky relative md:top-52 z-[4] md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc] gap-5">
             <div>
               <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
-                4. Improve performance every quarter
+                4. Track leading indicators every quarter
               </h2>
               <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
                 With POD-360™ as your baseline:
@@ -1133,18 +1194,22 @@ const Home = () => {
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>
-                    Run a mini POD-360™ pulse and key performance areas
+                    Run a mini pulse assessment to catch early signals before
+                    lagging metrics move
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Refresh OKRs based on friction levels</span>
+                  <span>
+                    Monitor adoption, sentiment, and process compliance the
+                    early-warning signs that a benefit is on or off track
+                  </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>
-                    Track impact of programs and coaching in flow and
-                    performance
+                    Refresh timelines and owners as needed, without losing the
+                    original benefit definition
                   </span>
                 </li>
               </ul>
@@ -1157,6 +1222,23 @@ const Home = () => {
               <img src={Identifies3} className="rounded-3xl" alt="Image" />
             </div>
           </div>
+
+          <div className="mt-8 md:sticky relative md:top-60 z-[5] md:grid md:grid-cols-2 lg:py-16 lg:px-20 sm:p-8 p-4 sm:rounded-[32px] rounded-[15px] shadow-[4px_4px_4px_0_rgba(68,140,210,0.1)] border border-[rgba(68,140,210,0.2)] bg-[#e4f0fc] gap-5">
+            <div>
+              <h2 className="md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
+                5. Report on realization until it's delivered
+              </h2>
+              <p className="text-base font-normal mt-2 max-w-xl text-[var(--secondary-color)] ">
+                Benefits tracking doesn't end when the project does. POD-360™
+                keeps every benefit visible to the owner, to leadership, and to
+                your team until it's fully realized or formally retired, so
+                nothing quietly falls off the radar three months after go-live.
+              </p>
+            </div>
+            <div className="md:block hidden">
+              <img src={Identifies4} className="rounded-3xl" alt="Image" />
+            </div>
+          </div>
         </div>
 
         <div className="pod-result-panel relative z-10 bg-white max-w-screen-2xl mx-auto xl:px-10 px-5 sm:mt-12 mt-8 md:pb-10 pb-8 rounded-[20px]">
@@ -1165,8 +1247,10 @@ const Home = () => {
             alt="Pod-360™"
             className="sm:mt-10 mt-8 w-fit mx-auto"
           />
-          <h2 className="sm:mt-10 mt-7 md:text-2xl text-xl font-medium text-[var(--dark-primary-color)] ">
-            The Result: A high-performance, and change ready organization.
+          <h2 className="sm:mt-10 mt-7 max-w-4xl text-xl font-medium text-[var(--dark-primary-color)] ">
+            The Result: Every initiative has a named owner, a defined KPI, and a
+            realistic timeline so your organization can prove what changed, not
+            just that something did.
           </h2>
           <ul className="mt-2 space-y-1">
             <li className="feature-list">
@@ -1304,28 +1388,59 @@ const Home = () => {
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>
-                    Context aware analysis based on your organizational data
+                    <strong>Benefit-specific dashboards </strong> executive,
+                    operational, and stakeholder views, so each audience sees
+                    the benefits relevant to them
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>
-                    Priority signals tied to areas of highest friction or risk
+                    <strong>Leading-indicator alerts </strong> early signals
+                    (adoption dips, sentiment drops, stalled milestones)
+                    surfaced before a benefit falls off track
                   </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Trend and momentum indicators over time</span>
-                </li>
-                <li className="feature-list">
-                  <img src={IconStar} alt="icon" className="mt-1" />
-                  <span>Narrative summaries designed for executive review</span>
+                  <span>
+                    <strong>Realization forecasting </strong> AI-assisted
+                    projections on whether a benefit is on pace to hit its
+                    timeline and KPI
+                  </span>
                 </li>
                 <li className="feature-list">
                   <img src={IconStar} alt="icon" className="mt-1" />
                   <span>
-                    Decision support that complements not replaces leadership
-                    judgment
+                    <strong>Context aware analysis </strong> based on your
+                    organizational data
+                  </span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    <strong>Priority signals </strong> tied to areas of highest
+                    friction or risk
+                  </span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    <strong>Trend and momentum indicators </strong> over time
+                  </span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    <strong>Narrative summaries </strong> designed for executive
+                    review
+                  </span>
+                </li>
+                <li className="feature-list">
+                  <img src={IconStar} alt="icon" className="mt-1" />
+                  <span>
+                    <strong>Decision support </strong> that complements not
+                    replaces leadership judgment
                   </span>
                 </li>
               </ul>
@@ -1362,10 +1477,13 @@ const Home = () => {
                 Why It Matters
               </h2>
               <p className="text-base font-normal text-[var(--white-color)]">
-                POD Insights™ helps leaders work smarter turning complex
-                organizational data into clear intelligence that supports better
-                decisions during moments of change, transformation, and
-                investment.
+                POD-Insights™ AI turns benefit tracking from a quarterly
+                spreadsheet exercise into a live, always-current view of what
+                value your organization is actually realizing — and where it's
+                at risk. POD Insights™ helps leaders work smarter turning
+                complex organizational data into clear intelligence that
+                supports better decisions during moments of change,
+                transformation, and investment.
               </p>
             </div>
 
@@ -1448,12 +1566,13 @@ const Home = () => {
                   </div>
                   <p className="mt-5">
                     <strong>
-                      We use the POD-360™ Assessment to measure progress and
-                      demonstrate clear ROI on your key investments including
-                      your engagement with us. Before concluding our work
-                      together, we also help establish a Community of Practice
-                      to ensure long-term capability, sustainability, and
-                      continued success.
+                      We use the POD-360™ Assessment to establish a baseline,
+                      define owned and time-bound benefits, and measure realized
+                      ROI on your key investments including your engagement with
+                      us. Before concluding our work together, we also help
+                      establish a Community of Practice and a benefits-tracking
+                      cadence to ensure long-term capability, sustainability,
+                      and continued success.
                     </strong>
                   </p>
                 </div>
@@ -1477,7 +1596,7 @@ const Home = () => {
             See the Data in Action
           </p>
           <h2 className="lg:text-5xl md:text-4xl text-3xl leading-10 max-w-lg mx-auto font-bold text-[var(--white-color)] uppercase">
-            Build on a foundation of clarity, capability, with real data.
+            BUILD ON A FOUNDATION OF CLARITY, OWNERSHIP, AND PROVEN VALUE.
           </h2>
           <div className="sm:mt-9 mt-5">
             <a
@@ -1499,7 +1618,6 @@ const Home = () => {
       {/* Cta Section End */}
 
       <Footer />
-
 
       {/* Build Resilient Start*/}
       {/* <div
