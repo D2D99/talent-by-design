@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import api from "../../services/axios";
@@ -93,6 +93,16 @@ const AssessmentQuestion = () => {
   const [confidentialityConsent, setConfidentialityConsent] = useState(false);
   const [prizeDrawConsent, setPrizeDrawConsent] = useState(false);
   const [consentOpen, setConsentOpen] = useState(false);
+  const autoAdvanceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceTimeoutRef.current)
+        clearTimeout(autoAdvanceTimeoutRef.current);
+    };
+  }, []);
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -207,15 +217,34 @@ const AssessmentQuestion = () => {
     }
   }, [currentIndex, questions, showFinalForm, isSubmitted, token, answers]);
 
-  const handleNext = async () => {
-    if (selectedValue === null || !assessmentId) return;
+  const handleOptionSelect = (val: number | "A" | "B") => {
+    setSelectedValue(val);
+
+    if (autoAdvanceTimeoutRef.current) {
+      clearTimeout(autoAdvanceTimeoutRef.current);
+    }
+
+    const triggersTextArea =
+      (!isForcedChoice && typeof val === "number" && val <= 2) ||
+      isForcedChoice;
+
+    if (!triggersTextArea) {
+      autoAdvanceTimeoutRef.current = setTimeout(() => {
+        handleNext(val);
+      }, 400);
+    }
+  };
+
+  const handleNext = async (overrideValue?: number | "A" | "B") => {
+    const val = overrideValue !== undefined ? overrideValue : selectedValue;
+    if (val === null || !assessmentId) return;
     const currentQ = questions[currentIndex];
 
     const newResponse: AnswerResponse = {
       assessmentId: assessmentId,
       questionId: currentQ._id,
       questionCode: currentQ.questionCode || "CODE_MISSING",
-      answer: selectedValue,
+      answer: val,
       comment: comment || "",
     };
 
@@ -352,7 +381,7 @@ const AssessmentQuestion = () => {
             </div>
           </div>
         ) : (
-          <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4">
+          <div className="w-full mx-auto sm:max-w-3xl max-w-full rounded-xl shadow-md border border-[rgba(68,140,210,0.2)] bg-white sm:py-10 py-6 sm:px-10 px-4 flex flex-col justify-between min-h-[450px]">
             {isSubmitted ? (
               <div>
                 <img
@@ -411,411 +440,437 @@ const AssessmentQuestion = () => {
                   ></div>
                 </div>
 
-                {!showFinalForm ? (
-                  <>
-                    <div className="sm:my-6 my-4">
-                      <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
-                        {currentQuestion?.questionStem}{" "}
-                        <span className="text-black">*</span>
-                      </h2>
-                    </div>
+                <AnimatePresence mode="wait">
+                  {!showFinalForm ? (
+                    <motion.div
+                      key={`question-${currentIndex}`}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="w-full flex-1"
+                    >
+                      <div className="sm:mb-6 mb-4">
+                        <h2 className="sm:text-xl text-base font-bold text-[var(--secondary-color)]">
+                          {currentQuestion?.questionStem}{" "}
+                          <span className="text-black">*</span>
+                        </h2>
+                      </div>
 
-                    {!isForcedChoice ? (
-                      <div className="grid grid-cols-5 max-w-96 mx-auto my-8">
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <div key={num} className="flex flex-col items-center">
+                      {!isForcedChoice ? (
+                        <div className="grid grid-cols-5 max-w-96 mx-auto my-8">
+                          {[1, 2, 3, 4, 5].map((num) => (
+                            <div
+                              key={num}
+                              className="flex flex-col items-center"
+                            >
+                              <label
+                                className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
+                                  selectedValue === num
+                                    ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
+                                    : "text-[var(--secondary-color)] hover:bg-blue-50"
+                                }`}
+                              >
+                                {num}
+                                <input
+                                  type="radio"
+                                  className="hidden"
+                                  checked={selectedValue === num}
+                                  onChange={() => handleOptionSelect(num)}
+                                />
+                              </label>
+                              <span className="text-xs sm:text-nowrap mt-2 text-center leading-tight">
+                                {currentQuestion?.scale === "NEVER_ALWAYS"
+                                  ? num === 1
+                                    ? "Never"
+                                    : num === 2
+                                      ? "Rarely"
+                                      : num === 3
+                                        ? "Sometimes"
+                                        : num === 4
+                                          ? "Often"
+                                          : num === 5
+                                            ? "Always"
+                                            : ""
+                                  : num === 1
+                                    ? "Strongly Disagree"
+                                    : num === 3
+                                      ? "Neutral"
+                                      : num === 5
+                                        ? "Strongly Agree"
+                                        : ""}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-4 mb-8">
+                          {(["A", "B"] as const).map((opt) => (
                             <label
-                              className={`sm:text-lg text-sm font-medium sm:h-12 h-11 sm:w-12 w-11 border border-[#448CD233] rounded-full flex items-center justify-center cursor-pointer transition-all ${
-                                selectedValue === num
-                                  ? "bg-gradient-to-b from-[#448CD2] to-[#1A3652] text-white border-0"
-                                  : "text-[var(--secondary-color)] hover:bg-blue-50"
+                              key={opt}
+                              className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${
+                                selectedValue === opt
+                                  ? "border-[var(--primary-color)] bg-blue-50"
+                                  : ""
                               }`}
                             >
-                              {num}
                               <input
+                                className="w-4 h-4 accent-blue-500"
                                 type="radio"
-                                className="hidden"
-                                checked={selectedValue === num}
-                                onChange={() => setSelectedValue(num)}
+                                checked={selectedValue === opt}
+                                onChange={() => handleOptionSelect(opt)}
                               />
+                              <h3 className="text-sm font-medium text-[#5D5D5D]">
+                                {opt === "A"
+                                  ? currentQuestion?.forcedChoice?.optionA.label
+                                  : currentQuestion?.forcedChoice?.optionB
+                                      .label}
+                              </h3>
                             </label>
-                            <span className="text-xs sm:text-nowrap mt-2 text-center leading-tight">
-                              {currentQuestion?.scale === "NEVER_ALWAYS"
-                                ? num === 1
-                                  ? "Never"
-                                  : num === 2
-                                    ? "Rarely"
-                                    : num === 3
-                                      ? "Sometimes"
-                                      : num === 4
-                                        ? "Often"
-                                        : num === 5
-                                          ? "Always"
-                                          : ""
-                                : num === 1
-                                  ? "Strongly Disagree"
-                                  : num === 3
-                                    ? "Neutral"
-                                    : num === 5
-                                      ? "Strongly Agree"
-                                      : ""}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-4 mb-8">
-                        {(["A", "B"] as const).map((opt) => (
-                          <label
-                            key={opt}
-                            className={`flex items-center justify-between cursor-pointer border border-[#E8E8E8] p-3 rounded-lg flex-row-reverse transition-all gap-5 ${
-                              selectedValue === opt
-                                ? "border-[var(--primary-color)] bg-blue-50"
-                                : ""
-                            }`}
-                          >
-                            <input
-                              className="w-4 h-4 accent-blue-500"
-                              type="radio"
-                              checked={selectedValue === opt}
-                              onChange={() => setSelectedValue(opt)}
-                            />
-                            <h3 className="text-sm font-medium text-[#5D5D5D]">
-                              {opt === "A"
-                                ? currentQuestion?.forcedChoice?.optionA.label
-                                : currentQuestion?.forcedChoice?.optionB.label}
-                            </h3>
-                          </label>
-                        ))}
-                      </div>
-                    )}
+                          ))}
+                        </div>
+                      )}
 
-                    <AnimatePresence mode="wait">
-                      {((!isForcedChoice &&
-                        typeof selectedValue === "number" &&
-                        selectedValue <= 2) ||
-                        (isForcedChoice && selectedValue !== null)) &&
-                        (isForcedChoice ? (
-                          <motion.div
-                            key={`${currentIndex}-${selectedValue}`}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="w-full"
-                          >
-                            <label className="text-sm font-bold block mb-2">
-                              {selectedValue === "A"
-                                ? currentQuestion?.forcedChoice?.optionA
-                                    .insightPrompt
-                                : currentQuestion?.forcedChoice?.optionB
-                                    .insightPrompt}
-                              <span className="text-black"> *</span>
-                            </label>
-                            <textarea
-                              className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
-                              rows={4}
-                              value={comment}
-                              onChange={(e) => setComment(e.target.value)}
-                            ></textarea>
-                          </motion.div>
-                        ) : (
-                          <div className="w-full transition-all duration-300 opacity-100 h-auto">
-                            <label className="text-sm font-bold block mb-2">
-                              {currentQuestion?.insightPrompt ||
-                                "Why did you choose this score?"}
-                              <span className="text-black"> *</span>
-                            </label>
-                            <textarea
-                              className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
-                              rows={4}
-                              value={comment}
-                              onChange={(e) => setComment(e.target.value)}
-                            ></textarea>
-                          </div>
-                        ))}
-                    </AnimatePresence>
-                  </>
-                ) : (
-                  <>
-                    <div className="sm:mb-6 mb-4">
-                      <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
-                        Finalizing Your Confidential Submission
-                      </h2>
-                      <p className="text-neutral-500 mt-1 text-sm">
-                        Please provide these details to securely validate your
-                        input and ensure direct email delivery of your summary
-                        report once it is finalized.
-                      </p>
-                      <div className="mt-4 sm:mb-4 mb-2">
-                        <label className="font-bold text-sm">
-                          First Name *
-                        </label>
-                        <input
-                          value={finalForm.firstName}
-                          onChange={(e) =>
-                            setFinalForm({
-                              ...finalForm,
-                              firstName: e.target.value,
-                            })
-                          }
-                          className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                          placeholder="Your first name"
-                        />
-                      </div>
-                      <div className="sm:mb-4 mb-2">
-                        <label className="font-bold text-sm">Last Name *</label>
-                        <input
-                          value={finalForm.lastName}
-                          onChange={(e) =>
-                            setFinalForm({
-                              ...finalForm,
-                              lastName: e.target.value,
-                            })
-                          }
-                          className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
-                          placeholder="Your last name"
-                        />
-                      </div>
-                      <div className="sm:mb-4 mb-2">
-                        <label className="font-bold text-sm">Email</label>
-                        <input
-                          type="email"
-                          value={finalForm.email}
-                          readOnly={!!finalForm.email}
-                          className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] pointer-events-none ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
-                          placeholder="Your email"
-                        />
-                      </div>
-                      <div className="sm:mb-6 mb-5">
-                        <label className="font-bold text-sm">
-                          Department *
-                        </label>
-
-                        <div className="relative w-full">
-                          <div className="absolute inset-y-0 right-0 top-2 hidden items-center pr-3 pointer-events-none">
-                            <svg
-                              className="h-4 w-4 text-[#5D5D5D]"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                      <AnimatePresence mode="wait">
+                        {((!isForcedChoice &&
+                          typeof selectedValue === "number" &&
+                          selectedValue <= 2) ||
+                          (isForcedChoice && selectedValue !== null)) &&
+                          (isForcedChoice ? (
+                            <motion.div
+                              key={`${currentIndex}-${selectedValue}`}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                              className="w-full"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          </div>
-
-                          {(() => {
-                            const isLocked =
-                              !!finalForm.department &&
-                              !!token &&
-                              !!(jwtDecode(token as string) as any).department;
-
-                            // Use organization's defined departments if available, else fallback to defaults
-                            const options =
-                              allowedDepartments.length > 0
-                                ? allowedDepartments
-                                : [
-                                    "HR/People & Culture",
-                                    "Finance & Accounting",
-                                    "Operations",
-                                    "IT",
-                                    "Sales and Marketing",
-                                    "Legal, Risk & Compliance",
-                                    "Admin & Corporate Services",
-                                  ];
-
-                            return (
-                              <select
-                                value={finalForm.department}
-                                disabled={isLocked}
-                                onChange={(e) =>
-                                  setFinalForm({
-                                    ...finalForm,
-                                    department: e.target.value,
-                                  })
-                                }
-                                className={`font-medium text-sm text-[#5D5D5D] opacity-100 w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none capitalize ${isLocked ? "bg-gray-50 cursor-not-allowed" : ""}`}
-                              >
-                                <option value="">Select your department</option>
-                                {options.map((dept) => (
-                                  <option key={dept} value={dept}>
-                                    {dept}
-                                  </option>
-                                ))}
-                              </select>
-                            );
-                          })()}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Participant Consent Box  */}
-                    <div
-                      className={`border rounded-xl sm:mb-6 mb-4 mt-8 overflow-hidden transition-all duration-300 ${consentOpen ? "border-[rgba(68,140,210,0.4)] bg-[#F8FAFC]" : "border-[rgba(68,140,210,0.25)] bg-[#F8FAFC]"}`}
+                              <label className="text-sm font-bold block mb-2">
+                                {selectedValue === "A"
+                                  ? currentQuestion?.forcedChoice?.optionA
+                                      .insightPrompt
+                                  : currentQuestion?.forcedChoice?.optionB
+                                      .insightPrompt}
+                                <span className="text-black"> *</span>
+                              </label>
+                              <textarea
+                                className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                                rows={4}
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                            </motion.div>
+                          ) : (
+                            <div className="w-full transition-all duration-300 opacity-100 h-auto">
+                              <label className="text-sm font-bold block mb-2">
+                                {currentQuestion?.insightPrompt ||
+                                  "Why did you choose this score?"}
+                                <span className="text-black"> *</span>
+                              </label>
+                              <textarea
+                                className="font-medium text-sm text-[#5D5D5D] w-full p-3 border border-[#E8E8E8] rounded-lg resize-none"
+                                rows={4}
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                            </div>
+                          ))}
+                      </AnimatePresence>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="final-form"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="w-full flex-1"
                     >
-                      {/* Clickable Header */}
-                      <button
-                        type="button"
-                        onClick={() => setConsentOpen(!consentOpen)}
-                        className="w-full flex items-center justify-between gap-3 p-5 text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="bg-blue-100/50 p-3 rounded-full text-[var(--secondary-color)] flex-shrink-0">
-                            <Icon icon="hugeicons:security-lock" width="24" />
-                          </div>
-                          <div>
-                            <h3 className="text-base font-bold text-[var(--secondary-color)] leading-tight">
-                              Participant Consent
-                            </h3>
-                            <p className="text-xs text-neutral-500 mt-0.5">
-                              Please review and confirm your consent below
-                              before submitting.
-                            </p>
+                      <div className="sm:mb-6 mb-4">
+                        <h2 className="sm:text-2xl text-xl font-bold text-[var(--secondary-color)]">
+                          Finalizing Your Confidential Submission
+                        </h2>
+                        <p className="text-neutral-500 mt-1 text-sm">
+                          Please provide these details to securely validate your
+                          input and ensure direct email delivery of your summary
+                          report once it is finalized.
+                        </p>
+                        <div className="mt-4 sm:mb-4 mb-2">
+                          <label className="font-bold text-sm">
+                            First Name *
+                          </label>
+                          <input
+                            value={finalForm.firstName}
+                            onChange={(e) =>
+                              setFinalForm({
+                                ...finalForm,
+                                firstName: e.target.value,
+                              })
+                            }
+                            className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                            placeholder="Your first name"
+                          />
+                        </div>
+                        <div className="sm:mb-4 mb-2">
+                          <label className="font-bold text-sm">
+                            Last Name *
+                          </label>
+                          <input
+                            value={finalForm.lastName}
+                            onChange={(e) =>
+                              setFinalForm({
+                                ...finalForm,
+                                lastName: e.target.value,
+                              })
+                            }
+                            className="font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)]"
+                            placeholder="Your last name"
+                          />
+                        </div>
+                        <div className="sm:mb-4 mb-2">
+                          <label className="font-bold text-sm">Email</label>
+                          <input
+                            type="email"
+                            value={finalForm.email}
+                            readOnly={!!finalForm.email}
+                            className={`font-medium text-sm text-[#5D5D5D] w-full p-3 mt-2 border rounded-lg transition-all outline-none border-[#E8E8E8] pointer-events-none ${finalForm.email ? "bg-gray-50 text-gray-500" : ""}`}
+                            placeholder="Your email"
+                          />
+                        </div>
+                        <div className="sm:mb-6 mb-5">
+                          <label className="font-bold text-sm">
+                            Department *
+                          </label>
+
+                          <div className="relative w-full">
+                            <div className="absolute inset-y-0 right-0 top-2 hidden items-center pr-3 pointer-events-none">
+                              <svg
+                                className="h-4 w-4 text-[#5D5D5D]"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            </div>
+
+                            {(() => {
+                              const isLocked =
+                                !!finalForm.department &&
+                                !!token &&
+                                !!(jwtDecode(token as string) as any)
+                                  .department;
+
+                              // Use organization's defined departments if available, else fallback to defaults
+                              const options =
+                                allowedDepartments.length > 0
+                                  ? allowedDepartments
+                                  : [
+                                      "HR/People & Culture",
+                                      "Finance & Accounting",
+                                      "Operations",
+                                      "IT",
+                                      "Sales and Marketing",
+                                      "Legal, Risk & Compliance",
+                                      "Admin & Corporate Services",
+                                    ];
+
+                              return (
+                                <select
+                                  value={finalForm.department}
+                                  disabled={isLocked}
+                                  onChange={(e) =>
+                                    setFinalForm({
+                                      ...finalForm,
+                                      department: e.target.value,
+                                    })
+                                  }
+                                  className={`font-medium text-sm text-[#5D5D5D] opacity-100 w-full p-3 mt-2 border rounded-lg transition-all outline-none focus-within:shadow-[0_0_1px_rgba(45,93,130,0.5)] border-[#E8E8E8] focus:border-[var(--primary-color)] appearance-none capitalize ${isLocked ? "bg-gray-50 cursor-not-allowed" : ""}`}
+                                >
+                                  <option value="">
+                                    Select your department
+                                  </option>
+                                  {options.map((dept) => (
+                                    <option key={dept} value={dept}>
+                                      {dept}
+                                    </option>
+                                  ))}
+                                </select>
+                              );
+                            })()}
                           </div>
                         </div>
-                        <Icon
-                          icon="lucide:chevron-down"
-                          width="18"
-                          className={`text-neutral-400 flex-shrink-0 transition-transform duration-300 ${consentOpen ? "rotate-180" : "rotate-0"}`}
-                        />
-                      </button>
+                      </div>
 
-                      {/* Collapsible Body */}
+                      {/* Participant Consent Box  */}
                       <div
-                        className={`overflow-hidden transition-all duration-300 ease-in-out ${consentOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
+                        className={`border rounded-xl sm:mb-6 mb-4 mt-8 overflow-hidden transition-all duration-300 ${consentOpen ? "border-[rgba(68,140,210,0.4)] bg-[#F8FAFC]" : "border-[rgba(68,140,210,0.25)] bg-[#F8FAFC]"}`}
                       >
-                        <div className="px-5 pb-5 flex flex-col gap-3 border-t border-[#E8E8E8] pt-4">
-                          {/* Item 1: Confidentiality */}
-                          <div className="flex items-start gap-4 pb-3 border-b border-[#F0F0F0]">
-                            <div className="pt-0.5 flex-shrink-0">
-                              <div
-                                role="switch"
-                                aria-checked={confidentialityConsent}
-                                onClick={() =>
-                                  setConfidentialityConsent(
-                                    !confidentialityConsent,
-                                  )
-                                }
-                                className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${confidentialityConsent ? "bg-[var(--primary-color)]" : "bg-gray-300"}`}
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${confidentialityConsent ? "translate-x-4" : "translate-x-0"}`}
-                                />
-                              </div>
+                        {/* Clickable Header */}
+                        <button
+                          type="button"
+                          onClick={() => setConsentOpen(!consentOpen)}
+                          className="w-full flex items-center justify-between gap-3 p-5 text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="bg-blue-100/50 p-3 rounded-full text-[var(--secondary-color)] flex-shrink-0">
+                              <Icon icon="hugeicons:security-lock" width="24" />
                             </div>
                             <div>
-                              <h4 className="text-sm font-bold text-[var(--secondary-color)]">
-                                Confidentiality Acknowledgement
-                              </h4>
-                              <p className="text-xs text-neutral-500 leading-relaxed mt-1">
-                                I understand that my individual survey responses
-                                will be kept confidential and reported only in
-                                aggregate, unless otherwise required by law or
-                                unless I have explicitly consented otherwise.
+                              <h3 className="text-base font-bold text-[var(--secondary-color)] leading-tight">
+                                Participant Consent
+                              </h3>
+                              <p className="text-xs text-neutral-500 mt-0.5">
+                                Please review and confirm your consent below
+                                before submitting.
                               </p>
                             </div>
                           </div>
+                          <Icon
+                            icon="lucide:chevron-down"
+                            width="18"
+                            className={`text-neutral-400 flex-shrink-0 transition-transform duration-300 ${consentOpen ? "rotate-180" : "rotate-0"}`}
+                          />
+                        </button>
 
-                          {/* Item 2: Prize Draw */}
-                          <div className="flex items-start gap-4">
-                            <div className="pt-0.5 flex-shrink-0">
-                              <div
-                                role="switch"
-                                aria-checked={prizeDrawConsent}
-                                onClick={() =>
-                                  setPrizeDrawConsent(!prizeDrawConsent)
-                                }
-                                className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${prizeDrawConsent ? "bg-[var(--primary-color)]" : "bg-gray-300"}`}
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${prizeDrawConsent ? "translate-x-4" : "translate-x-0"}`}
-                                />
+                        {/* Collapsible Body */}
+                        <div
+                          className={`overflow-hidden transition-all duration-300 ease-in-out ${consentOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
+                        >
+                          <div className="px-5 pb-5 flex flex-col gap-3 border-t border-[#E8E8E8] pt-4">
+                            {/* Item 1: Confidentiality */}
+                            <div className="flex items-start gap-4 pb-3 border-b border-[#F0F0F0]">
+                              <div className="pt-0.5 flex-shrink-0">
+                                <div
+                                  role="switch"
+                                  aria-checked={confidentialityConsent}
+                                  onClick={() =>
+                                    setConfidentialityConsent(
+                                      !confidentialityConsent,
+                                    )
+                                  }
+                                  className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${confidentialityConsent ? "bg-[var(--primary-color)]" : "bg-gray-300"}`}
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${confidentialityConsent ? "translate-x-4" : "translate-x-0"}`}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
+                              <div>
                                 <h4 className="text-sm font-bold text-[var(--secondary-color)]">
-                                  Prize Draw & Giveaway Consent
+                                  Confidentiality Acknowledgement
                                 </h4>
-                                <span className="text-[10px] font-bold tracking-wider text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">
-                                  OPTIONAL
-                                </span>
+                                <p className="text-xs text-neutral-500 leading-relaxed mt-1">
+                                  I understand that my individual survey
+                                  responses will be kept confidential and
+                                  reported only in aggregate, unless otherwise
+                                  required by law or unless I have explicitly
+                                  consented otherwise.
+                                </p>
                               </div>
-                              <p className="text-xs text-neutral-500 leading-relaxed">
-                                I would like to be entered into any eligible POD
-                                prize draws or giveaways. I understand that my
-                                name may be used only for the purpose of
-                                administering the draw and contacting me if I am
-                                selected as a winner. My survey responses will
-                                remain confidential and will not be linked to my
-                                identity for reporting purposes.
-                              </p>
+                            </div>
+
+                            {/* Item 2: Prize Draw */}
+                            <div className="flex items-start gap-4">
+                              <div className="pt-0.5 flex-shrink-0">
+                                <div
+                                  role="switch"
+                                  aria-checked={prizeDrawConsent}
+                                  onClick={() =>
+                                    setPrizeDrawConsent(!prizeDrawConsent)
+                                  }
+                                  className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${prizeDrawConsent ? "bg-[var(--primary-color)]" : "bg-gray-300"}`}
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${prizeDrawConsent ? "translate-x-4" : "translate-x-0"}`}
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="text-sm font-bold text-[var(--secondary-color)]">
+                                    Prize Draw & Giveaway Consent
+                                  </h4>
+                                  <span className="text-[10px] font-bold tracking-wider text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">
+                                    OPTIONAL
+                                  </span>
+                                </div>
+                                <p className="text-xs text-neutral-500 leading-relaxed">
+                                  I would like to be entered into any eligible
+                                  POD prize draws or giveaways. I understand
+                                  that my name may be used only for the purpose
+                                  of administering the draw and contacting me if
+                                  I am selected as a winner. My survey responses
+                                  will remain confidential and will not be
+                                  linked to my identity for reporting purposes.
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Footer Info Row */}
-                    <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-7 gap-5 sm:mb-8 mb-6 mt-8">
-                      <div className="flex items-center gap-3 text-left w-full sm:w-auto">
-                        <div className="w-12 h-12 rounded-full bg-[#F0F6FC] flex items-center justify-center flex-shrink-0">
-                          <Icon
-                            icon="lucide:lock"
-                            width="20"
-                            className="text-[var(--secondary-color)]"
-                          />
+                      {/* Footer Info Row */}
+                      <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-7 gap-5 sm:mb-8 mb-6 mt-8">
+                        <div className="flex items-center gap-3 text-left w-full sm:w-auto">
+                          <div className="w-12 h-12 rounded-full bg-[#F0F6FC] flex items-center justify-center flex-shrink-0">
+                            <Icon
+                              icon="lucide:lock"
+                              width="20"
+                              className="text-[var(--secondary-color)]"
+                            />
+                          </div>
+                          <span className="leading-snug font-medium text-xs text-[#4B5A69]">
+                            Your responses
+                            <br />
+                            remain confidential
+                          </span>
                         </div>
-                        <span className="leading-snug font-medium text-xs text-[#4B5A69]">
-                          Your responses
-                          <br />
-                          remain confidential
-                        </span>
-                      </div>
 
-                      <div className="hidden sm:block h-8 w-[1px] bg-[#E2E8F0]"></div>
+                        <div className="hidden sm:block h-8 w-[1px] bg-[#E2E8F0]"></div>
 
-                      <div className="flex items-center gap-3 text-left w-full sm:w-auto">
-                        <div className="w-12 h-12 rounded-full bg-[#F0F6FC] flex items-center justify-center flex-shrink-0">
-                          <Icon
-                            icon="lucide:bar-chart"
-                            width="22"
-                            className="text-[var(--secondary-color)]"
-                          />
+                        <div className="flex items-center gap-3 text-left w-full sm:w-auto">
+                          <div className="w-12 h-12 rounded-full bg-[#F0F6FC] flex items-center justify-center flex-shrink-0">
+                            <Icon
+                              icon="lucide:bar-chart"
+                              width="22"
+                              className="text-[var(--secondary-color)]"
+                            />
+                          </div>
+                          <span className="leading-snug font-medium text-xs text-[#4B5A69]">
+                            Reports are generated
+                            <br />
+                            only in aggregate
+                          </span>
                         </div>
-                        <span className="leading-snug font-medium text-xs text-[#4B5A69]">
-                          Reports are generated
-                          <br />
-                          only in aggregate
-                        </span>
-                      </div>
 
-                      <div className="hidden sm:block h-8 w-[1px] bg-[#E2E8F0]"></div>
+                        <div className="hidden sm:block h-8 w-[1px] bg-[#E2E8F0]"></div>
 
-                      <div className="flex items-center gap-3 text-left w-full sm:w-auto">
-                        <div className="w-12 h-12 rounded-full bg-[#F0F6FC] flex items-center justify-center flex-shrink-0">
-                          <Icon
-                            icon="lucide:mail"
-                            width="20"
-                            className="text-[var(--secondary-color)]"
-                          />
+                        <div className="flex items-center gap-3 text-left w-full sm:w-auto">
+                          <div className="w-12 h-12 rounded-full bg-[#F0F6FC] flex items-center justify-center flex-shrink-0">
+                            <Icon
+                              icon="lucide:mail"
+                              width="20"
+                              className="text-[var(--secondary-color)]"
+                            />
+                          </div>
+                          <span className="leading-snug font-medium text-xs text-[#4B5A69]">
+                            Your email is used
+                            <br />
+                            only to deliver your report
+                          </span>
                         </div>
-                        <span className="leading-snug font-medium text-xs text-[#4B5A69]">
-                          Your email is used
-                          <br />
-                          only to deliver your report
-                        </span>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 <div className="sm:mt-12 mt-8 flex flex-wrap gap-5 sm:justify-between sm:items-center">
                   <button
