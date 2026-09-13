@@ -171,7 +171,7 @@ const Home = () => {
         </div>
         <div className="relative z-10 max-w-5xl mx-auto text-center px-4">
           <h4 className="badge">
-            TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
+            blblaaaaaaaaa TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
           </h4>
           <h1 className="heading">
             CLARITY FOR LEADERS. <br /> STABILITY FOR TEAMS. <br /> PROVEN VALUE
