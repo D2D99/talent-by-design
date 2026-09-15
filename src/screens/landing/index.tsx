@@ -171,7 +171,7 @@ const Home = () => {
         </div>
         <div className="relative z-10 max-w-5xl mx-auto text-center px-4">
           <h4 className="badge">
-            blblaaaaaaaaa TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
+            TRUSTED STRATEGIC PARTNER FOR THE MODERN WORKPLACE
           </h4>
           <h1 className="heading">
             CLARITY FOR LEADERS. <br /> STABILITY FOR TEAMS. <br /> PROVEN VALUE
@@ -181,21 +181,10 @@ const Home = () => {
             Most transformation efforts don't fail on delivery they fail to <strong> prove their value.</strong> Teams finish <strong>"on time and on budget"</strong>  and still can't show <strong>what it was worth,</strong>  because no one defined the benefit, owned it, or tracked it past go-live.
           </p> */}
           <p className="sm:text-lg text-base text-[var(--dark-primary-color)] font-medium md:px-7 mt-4 sm:mb-10 mb-5">
-            Most transformation efforts don't fail on delivery they fail to{" "}
-            <strong> prove their value.</strong> Teams finish{" "}
-            <strong>"on time and on budget"</strong> and still can't show{" "}
-            <strong>what it was worth,</strong> because no one defined the
-            benefit, owned it, or tracked it past go-live.{" "}
-            <strong> POD-360™ </strong> is a{" "}
-            <strong> benefit realization lifecycle platform.</strong> We help
-            you{" "}
-            <strong>
-              {" "}
-              identify what value a change should create, assign someone
-              accountable{" "}
-            </strong>{" "}
-            for it, and <strong> track it</strong> from readiness diagnosis all
-            the way to <strong>realized business impact.</strong>
+            <strong>POD-360™ connects organizational readiness with measurable business benefits.</strong>{" "}
+            Understand what may be helping or slowing transformation, track whether expected
+            benefits are being realized, and give leaders clear actions to keep change moving
+            forward.
           </p>
           <div className="flex justify-center sm:flex-nowrap flex-wrap gap-5">
             <button
@@ -438,86 +427,73 @@ const Home = () => {
       {/* Data Highlights Section Start */}
       <div className="lg:pt-28 md:pt-20 pt-12 pb-12 md:pb-20">
         <div className="max-w-screen-2xl mx-auto xl:px-10 px-4">
-          <h4 className="badge">The Evidence is Clear</h4>
+          <h4 className="badge">Why Transformation Value Gets Lost</h4>
+
           <h2 className="sub-heading">
-            Data Highlights{" "}
-            <span className="sub-heading-highlight">Critical Workplace</span>{" "}
-            Challenges
+            Delivery alone doesn’t guarantee{" "}
+            <span className="sub-heading-highlight">realized value.</span>
           </h2>
+
           <p className="text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]">
-            Since COVID, the accelerated pace of change has forced organizations
-            to make rapid decisions and adopt makeshift workflows many of which
-            are now revealing gaps, strain, and unintended consequences within
-            the digital employee experience and systems.
+            Organizations can successfully deliver new technology, processes, or
+            programs and still struggle to achieve the business value they expected.
+            The challenge is often what happens around and after delivery.
           </p>
-          <ul className="mt-7 space-y-2">
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />
-              <span>
-                Independent research on corporate transformations has found that{" "}
-                <strong className="font-semibold">
-                  only about 3 in 10 projects are considered fully successful
-                </strong>{" "}
-                most fail to reach expectations even when delivered on time and
-                budget.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />
-              <span>
-                Analysis of large-scale change efforts shows that when frontline
-                managers and employees aren't actively engaged, success rates
-                can fall to{" "}
-                <strong className="font-semibold">as low as 3%.</strong>{" "}
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />
-              <span>
-                <strong className="font-semibold">
-                  Only 32% of employees are engaged,
-                </strong>{" "}
-                signaling leadership and culture gaps, including misalignment,
-                poor communication, and insufficient support.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                <strong className="font-semibold">
-                  Just 31% of leaders report being engaged,
-                </strong>{" "}
-                with many experiencing increased strain and burnout.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                <strong className="font-semibold">
-                  Only 30% of managers feel they have enough time
-                </strong>{" "}
-                to coach, support teams, and effectively lead through change.
-              </span>
-            </li>
-            <li className="feature-list">
-              <img src={IconStar} alt="icon" className="mt-1" />{" "}
-              <span>
-                <strong className="font-semibold">
-                  Leaders and employees are under unprecedented pressure,
-                </strong>{" "}
-                navigating hybrid work complexity, cultural shifts, and evolving
-                expectations.
-              </span>
-            </li>
-          </ul>
-          <h5 className="md:text-lg leading-5 text-[var(--secondary-color)] sm:mt-10 mt-5 font-semibold">
-            Before your next planning cycle, and prior to any major digital
-            roll-out, it’s critical to understand your organization’s actual
-            readiness and the current hidden barriers that could derail
-            progress. We identify these strain points and design leadership,
-            coaching, and learning programs that align people and technology
-            enabling teams to operate with efficiency and confidence.
-          </h5>
+
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 mt-8">
+            <div className="border border-gray-200 rounded-2xl p-6 bg-white">
+              <div className="w-10 h-10 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center font-semibold mb-4">
+                1
+              </div>
+
+              <h3 className="text-xl font-semibold text-[var(--dark-primary-color)] mb-3">
+                People aren’t fully ready
+              </h3>
+
+              <p className="text-base text-[var(--secondary-color)]">
+                Unclear expectations, low confidence, inconsistent adoption, or
+                limited support can slow change and make expected benefits harder to
+                achieve.
+              </p>
+            </div>
+
+            <div className="border border-gray-200 rounded-2xl p-6 bg-white">
+              <div className="w-10 h-10 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center font-semibold mb-4">
+                2
+              </div>
+
+              <h3 className="text-xl font-semibold text-[var(--dark-primary-color)] mb-3">
+                Ways of working don’t always change
+              </h3>
+
+              <p className="text-base text-[var(--secondary-color)]">
+                New tools may be delivered, but processes, behaviours, coordination,
+                and accountability can remain the same.
+              </p>
+            </div>
+
+            <div className="border border-gray-200 rounded-2xl p-6 bg-white">
+              <div className="w-10 h-10 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center font-semibold mb-4">
+                3
+              </div>
+
+              <h3 className="text-xl font-semibold text-[var(--dark-primary-color)] mb-3">
+                Benefits are difficult to prove
+              </h3>
+
+              <p className="text-base text-[var(--secondary-color)]">
+                Organizations may finish a project without clearly tracking who owns
+                the expected benefit, whether it was achieved, or what is putting it
+                at risk.
+              </p>
+            </div>
+          </div>
+
+          <p className="md:text-lg text-base leading-7 text-[var(--secondary-color)] sm:mt-8 mt-6 font-semibold max-w-screen-xl">
+            POD-360™ connects these pieces — helping leaders understand readiness,
+            identify barriers, take action, and track whether expected benefits are
+            actually being realized.
+          </p>
         </div>
       </div>
       {/* Data Highlights Section End */}
