@@ -130,7 +130,7 @@ const AboutUs = () => {
 
               <div className="space-y-4 text-base font-normal sm:mt-2 mt-3 max-w-screen-lg text-[var(--secondary-color)]">
                 <p>
-                  Suzanna is a change manager, leadership coach, entrepreneur,
+                  Suzanna is a Prosci certifed change manager, leadership coach, entrepreneur,
                   and single mother who has spent her career helping
                   organizations move through change with more clarity,
                   confidence, and purpose.
