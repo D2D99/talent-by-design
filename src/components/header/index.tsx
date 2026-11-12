@@ -45,7 +45,7 @@ const Header = () => {
           }`}
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
-          <div className="flex w-full flex-wrap items-center justify-between">
+          <div className="flex w-full lg:flex-nowrap flex-wrap items-center justify-between">
             <a href="/" className="lg:hidden block">
               <img src={Logo} alt="logo" className="h-20 w-auto" />
             </a>
@@ -171,10 +171,6 @@ const Header = () => {
                       type="button"
                       className="font-semibold uppercase transition-all text-[var(--secondary-color)] hover:text-[var(--primary-color)] hover:underline"
                       onClick={handleClick}
-                    // data-twe-toggle="modal"
-                    // data-twe-target="#exampleModalCenter"
-                    // data-twe-ripple-init
-                    // data-twe-ripple-color="light"
                     >
                       {isSessionActive ? "Access POD-360™" : "Login"}
 
@@ -201,10 +197,6 @@ const Header = () => {
                 type="button"
                 onClick={handleClick}
                 className="font-semibold uppercase transition-all text-[var(--secondary-color)] hover:text-[var(--primary-color)] hover:underline"
-              // data-twe-toggle="modal"
-              // data-twe-target="#exampleModalCenter"
-              // data-twe-ripple-init
-              // data-twe-ripple-color="light"
               >
                 {isSessionActive ? "Access POD-360™" : "Login"}
 
