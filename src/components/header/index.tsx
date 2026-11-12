@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 const Logo = "/static/img/POD-logo.svg";
 import { Collapse, Dropdown, initTWE } from "tw-elements";
 import { Icon } from "@iconify/react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 // import { useNavigate } from "react-router-dom";
 
@@ -36,14 +36,13 @@ const Header = () => {
     "nav-link-animated uppercase text-[var(--secondary-color)] lg:px-4 font-semibold";
 
   const ctaButtonClasses =
-    "group rounded-full py-2 pl-4 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase transition-all text-white bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] hover:opacity-90";
+    "group rounded-full py-2 pl-3.5 pr-1.5 flex items-center gap-1 font-semibold text-sm uppercase transition-all text-white bg-gradient-to-r from-[var(--dark-primary-color)] to-[var(--primary-color)] hover:opacity-90";
 
   return (
     <>
       <nav
-        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${
-          scrolled ? "shadow-md" : "shadow-none"
-        }`}
+        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${scrolled ? "shadow-md" : "shadow-none"
+          }`}
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
           <div className="flex w-full flex-wrap items-center justify-between">
@@ -166,47 +165,63 @@ const Header = () => {
                 </li>
 
                 <li>
-                  <div className="relative lg:hidden block">
+                  <div className="relative lg:hidden flex flex-col gap-5 items-start">
+
                     <button
                       type="button"
-                      className={ctaButtonClasses}
+                      className="font-semibold uppercase transition-all text-[var(--secondary-color)] hover:text-[var(--primary-color)] hover:underline"
                       onClick={handleClick}
-                      // data-twe-toggle="modal"
-                      // data-twe-target="#exampleModalCenter"
-                      // data-twe-ripple-init
-                      // data-twe-ripple-color="light"
+                    // data-twe-toggle="modal"
+                    // data-twe-target="#exampleModalCenter"
+                    // data-twe-ripple-init
+                    // data-twe-ripple-color="light"
                     >
                       {isSessionActive ? "Access POD-360™" : "Login"}
+
+                    </button>
+
+                    <Link to="/contact-us"
+                      className={ctaButtonClasses}>
+                      Book a Demo
+
                       <Icon
                         icon="mynaui:arrow-right-circle-solid"
                         width="20"
                         height="20"
                         className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
                       />
-                    </button>
+                    </Link>
                   </div>
                 </li>
               </ul>
             </div>
 
-            <div className="relative lg:block hidden">
+            <div className="relative lg:flex gap-5 hidden items-center">
               <button
                 type="button"
-                className={ctaButtonClasses}
                 onClick={handleClick}
-                // data-twe-toggle="modal"
-                // data-twe-target="#exampleModalCenter"
-                // data-twe-ripple-init
-                // data-twe-ripple-color="light"
+                className="font-semibold uppercase transition-all text-[var(--secondary-color)] hover:text-[var(--primary-color)] hover:underline"
+              // data-twe-toggle="modal"
+              // data-twe-target="#exampleModalCenter"
+              // data-twe-ripple-init
+              // data-twe-ripple-color="light"
               >
                 {isSessionActive ? "Access POD-360™" : "Login"}
+
+              </button>
+
+              <Link to="/contact-us"
+                className={ctaButtonClasses}
+              >
+                Book a Demo
+
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="20"
                   height="20"
                   className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"
                 />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
