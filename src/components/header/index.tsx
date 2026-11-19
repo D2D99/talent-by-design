@@ -41,8 +41,9 @@ const Header = () => {
   return (
     <>
       <nav
-        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${scrolled ? "shadow-md" : "shadow-none"
-          }`}
+        className={`flex-no-wrap sticky top-0 z-50 w-full items-center justify-between py-3 lg:flex-wrap lg:justify-start transition-all duration-300 bg-white/80 backdrop-blur-md ${
+          scrolled ? "shadow-md" : "shadow-none"
+        }`}
       >
         <div className="max-w-screen-2xl mx-auto  xl:px-10 px-4  ">
           <div className="flex w-full lg:flex-nowrap flex-wrap items-center justify-between">
@@ -166,20 +167,16 @@ const Header = () => {
 
                 <li>
                   <div className="relative lg:hidden flex flex-col gap-5 items-start">
-
                     <button
                       type="button"
                       className="font-semibold uppercase transition-all text-[var(--secondary-color)] hover:text-[var(--primary-color)] hover:underline"
                       onClick={handleClick}
                     >
                       {isSessionActive ? "Access POD-360™" : "Login"}
-
                     </button>
 
-                    <Link to="/contact-us"
-                      className={ctaButtonClasses}>
+                    <Link to="/contact-us" className={ctaButtonClasses}>
                       Book a Demo
-
                       <Icon
                         icon="mynaui:arrow-right-circle-solid"
                         width="20"
@@ -199,14 +196,10 @@ const Header = () => {
                 className="font-semibold uppercase transition-all text-[var(--secondary-color)] hover:text-[var(--primary-color)] hover:underline"
               >
                 {isSessionActive ? "Access POD-360™" : "Login"}
-
               </button>
 
-              <Link to="/contact-us"
-                className={ctaButtonClasses}
-              >
+              <Link to="/contact-us" className={ctaButtonClasses}>
                 Book a Demo
-
                 <Icon
                   icon="mynaui:arrow-right-circle-solid"
                   width="20"

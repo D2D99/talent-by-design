@@ -215,7 +215,7 @@ const Home = () => {
               type="button"
               className="group text-[var(--primary-color)] rounded-full py-2.5 pl-5 pr-3.5 flex items-center gap-1.5 font-semibold sm:text-lg text-base uppercase border-solid border-[var(--primary-color)] border"
             >
-take a tour
+              take a tour
               <Icon
                 icon="mynaui:arrow-right-circle-solid"
                 width="24"
