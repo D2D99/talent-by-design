@@ -3,13 +3,22 @@ import { Icon } from "@iconify/react";
 import { toast } from "react-toastify";
 import api from "../../services/axios";
 import SpinnerLoader from "../../components/spinnerLoader";
+import { useAuth } from "../../context/useAuth";
 
 export const BenefitsRealizationDashboard: React.FC = () => {
+  const { user } = useAuth();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [updatingCheckpoint, setUpdatingCheckpoint] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState("Langara College");
+  const [selectedOrg, setSelectedOrg] = useState(
+    user?.orgName && (user.orgName === "WTEC" || user.orgName === "Langara College")
+      ? user.orgName
+      : "Langara College"
+  );
   const [scaleMode, setScaleMode] = useState<"LIKERT" | "PERCENT">("LIKERT");
+  const [activeView, setActiveView] = useState<"DASHBOARD" | "SURVEY" | "TECHNICAL">("DASHBOARD");
+  const [expandedDriver, setExpandedDriver] = useState<string | null>(null);
+  const [showGovernance, setShowGovernance] = useState(false);
 
   // Modal State for Editing Recommendations / Next Actions
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -18,6 +27,12 @@ export const BenefitsRealizationDashboard: React.FC = () => {
 
   // Dynamic Excel Export State
   const [exportingExcel, setExportingExcel] = useState(false);
+
+  useEffect(() => {
+    if (user?.orgName && (user.orgName === "WTEC" || user.orgName === "Langara College")) {
+      setSelectedOrg(user.orgName);
+    }
+  }, [user?.orgName]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -193,7 +208,7 @@ export const BenefitsRealizationDashboard: React.FC = () => {
   }
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen p-2.5 sm:p-4 md:p-6 font-['Quicksand',sans-serif] space-y-3.5 sm:space-y-4 text-slate-800 max-w-[1680px] mx-auto">
+    <div className="bg-white border border-[#448CD2] border-opacity-20 shadow-[4px_4px_4px_0px_#448CD21A] sm:p-6 p-4 rounded-[12px] mt-6 min-h-[calc(100vh-162px)] space-y-3.5 sm:space-y-4">
       {/* =========================================================================
           TOP CONTROLS TOOLBAR (Export, Switchers, Edit)
           ========================================================================= */}
@@ -254,7 +269,7 @@ export const BenefitsRealizationDashboard: React.FC = () => {
             onClick={handleExportExcel}
             disabled={exportingExcel}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#2E7D32]/40 hover:bg-emerald-50 text-[#1B5E20] text-xs font-bold rounded-[8px] transition cursor-pointer disabled:opacity-50 shadow-2xs"
-            title="Download Live 5-Sheet Benefits Realization Excel Workbook"
+            title="Download Live 7-Sheet Benefits Realization Excel Workbook"
           >
             <Icon icon={exportingExcel ? "eos-icons:loading" : "vscode-icons:file-type-excel"} width={15} />
             <span className="whitespace-nowrap">{exportingExcel ? "Generating..." : "Export Excel (.xlsx)"}</span>
@@ -274,11 +289,54 @@ export const BenefitsRealizationDashboard: React.FC = () => {
       </div>
 
       {/* =========================================================================
-          MAIN CLIENT DASHBOARD CANVAS (MATCHING EXACT UPLOADED IMAGE)
+          VIEW SWITCHER TABS (EXECUTIVE DASHBOARD, SURVEY RESULTS, TECHNICAL AUDIT)
           ========================================================================= */}
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-1 text-xs font-bold overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setActiveView("DASHBOARD")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-t-[8px] transition cursor-pointer border-b-2 whitespace-nowrap ${
+            activeView === "DASHBOARD"
+              ? "border-[#E65100] text-[#E65100] bg-orange-50/60"
+              : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+          }`}
+        >
+          <Icon icon="solar:widget-bold-duotone" width={16} />
+          <span>Executive Dashboard</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveView("SURVEY")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-t-[8px] transition cursor-pointer border-b-2 whitespace-nowrap ${
+            activeView === "SURVEY"
+              ? "border-[#E65100] text-[#E65100] bg-orange-50/60"
+              : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+          }`}
+        >
+          <Icon icon="solar:chat-round-line-bold-duotone" width={16} />
+          <span>Survey Results (n=2, Nov 4, 2026)</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveView("TECHNICAL")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-t-[8px] transition cursor-pointer border-b-2 whitespace-nowrap ${
+            activeView === "TECHNICAL"
+              ? "border-[#E65100] text-[#E65100] bg-orange-50/60"
+              : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+          }`}
+        >
+          <Icon icon="solar:server-square-bold-duotone" width={16} />
+          <span>M365 Technical Audit (Nov 5, 2026)</span>
+        </button>
+      </div>
+
+      {/* =========================================================================
+          VIEW 1: MAIN CLIENT DASHBOARD CANVAS (MATCHING EXACT UPLOADED IMAGE)
+          ========================================================================= */}
+      {activeView === "DASHBOARD" && (
       <div className="bg-white rounded-[16px] border border-slate-200 shadow-sm p-3.5 sm:p-5 md:p-6 space-y-4">
         {/* 1. TOP HEADER ROW */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 sm:gap-4 pb-3.5 border-b border-slate-200">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 sm:gap-4 pb-3.5 border-b border-slate-200 flex-wrap">
           {/* Logo & Title */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-3.5">
             <div className="flex items-center gap-2.5 shrink-0">
@@ -354,15 +412,15 @@ export const BenefitsRealizationDashboard: React.FC = () => {
         */}
         <div className="grid grid-cols-12 gap-3.5 2xl:gap-4">
           {/* Card 1: Overall Benefits Realization */}
-          <div className="col-span-12 xl:col-span-4 bg-gradient-to-br from-[#E65100] via-[#F57C00] to-[#FB8C00] text-white rounded-[14px] p-3.5 sm:p-4 2xl:p-5 shadow-sm flex flex-col justify-between overflow-hidden">
+          <div className="col-span-12 md:col-span-6 xl:col-span-4 bg-gradient-to-br from-[#E65100] via-[#F57C00] to-[#FB8C00] text-white rounded-[14px] p-3.5 sm:p-4 2xl:p-5 shadow-sm flex flex-col justify-between overflow-hidden">
             <div>
               <h2 className="text-sm sm:text-base 2xl:text-lg font-black tracking-tight mb-2.5 sm:mb-3 2xl:mb-4">
                 Overall Benefits Realization
               </h2>
 
-              <div className="flex flex-row items-center justify-between gap-2.5 sm:gap-3 2xl:gap-4 min-w-0">
+              <div className="flex 2xl:flex-row flex-col 2xl:items-center justify-between gap-2.5 sm:gap-3 min-w-0">
                 {/* Circular Gauge */}
-                <div className="relative flex flex-col items-center justify-center shrink-0 w-[88px] h-[88px] sm:w-[96px] sm:h-[96px] 2xl:w-[114px] 2xl:h-[114px]">
+                <div className="relative flex flex-col items-center justify-center shrink-0 w-[120px] h-[120px] 2xl:w-[150px] 2xl:h-[150px] self-center">
                   <svg viewBox="0 0 100 100" className="w-full h-full rotate-[-90deg]">
                     <circle
                       cx="50"
@@ -528,7 +586,7 @@ export const BenefitsRealizationDashboard: React.FC = () => {
           </div>
 
           {/* Card 3: Value Demonstrated to Date */}
-          <div className="col-span-12 md:col-span-6 xl:col-span-4 bg-white rounded-[14px] border border-slate-200/90 p-3.5 sm:p-4 2xl:p-5 shadow-2xs flex flex-col justify-between overflow-hidden">
+          <div className="col-span-12 xl:col-span-4 bg-white rounded-[14px] border border-slate-200/90 p-3.5 sm:p-4 2xl:p-5 shadow-2xs flex flex-col justify-between overflow-hidden">
             <div>
               <div className="flex items-center gap-1.5 sm:gap-2 mb-2.5 sm:mb-3 2xl:mb-4">
                 <Icon icon="solar:chart-square-bold" width={18} className="text-[#E65100] shrink-0" />
@@ -749,44 +807,86 @@ export const BenefitsRealizationDashboard: React.FC = () => {
               </div>
 
               <div className="space-y-2 sm:space-y-2.5 text-xs leading-relaxed">
-                {/* 1. Version-control maturity */}
-                <div className="flex items-start gap-2 min-w-0">
-                  <Icon icon="solar:danger-triangle-bold" width={18} className="text-[#D32F2F] shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <strong className="text-[#D32F2F] font-black text-[11px] sm:text-[11.5px] 2xl:text-xs block">
-                      Version-control maturity
-                    </strong>
-                    <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
-                      Increase use of version history and reduce "v2/final/draft" filename habits (468 ➔ 607).
-                    </p>
-                  </div>
-                </div>
-
-                {/* 2. Records & security labelling */}
-                <div className="flex items-start gap-2 min-w-0">
-                  <Icon icon="solar:danger-triangle-bold" width={18} className="text-[#F57C00] shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <strong className="text-[#E65100] font-black text-[11px] sm:text-[11.5px] 2xl:text-xs block">
-                      Records &amp; security labelling
-                    </strong>
-                    <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
-                      Apply retention and sensitivity labels (0% labelled; 205 potentially sensitive files unlabelled).
-                    </p>
-                  </div>
-                </div>
-
-                {/* 3. Validate benefits */}
-                <div className="flex items-start gap-2 min-w-0">
-                  <Icon icon="solar:info-circle-bold" width={18} className="text-[#1976D2] shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <strong className="text-[#0D47A1] font-black text-[11px] sm:text-[11.5px] 2xl:text-xs block">
-                      Validate benefits
-                    </strong>
-                    <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
-                      Test and confirm time savings, search efficiency and sustained use through quarterly reviews.
-                    </p>
-                  </div>
-                </div>
+                {(data?.needsAttention && data.needsAttention.length > 0) ? (
+                  <>
+                    {data.needsAttention.map((na: any) => {
+                      const isCritical = na.severity?.toLowerCase() === "critical";
+                      const iconColor = isCritical ? "text-[#D32F2F]" : "text-[#F57C00]";
+                      const titleColor = isCritical ? "text-[#D32F2F]" : "text-[#E65100]";
+                      return (
+                        <div key={na.id} className="flex items-start gap-2 min-w-0">
+                          <Icon icon="solar:danger-triangle-bold" width={18} className={`${iconColor} shrink-0 mt-0.5`} />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <strong className={`${titleColor} font-black text-[11px] sm:text-[11.5px] 2xl:text-xs truncate`}>
+                                {na.title}
+                              </strong>
+                              <span className={`text-[8px] sm:text-[8.5px] font-extrabold uppercase px-1 rounded ${isCritical ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"} shrink-0`}>
+                                {na.severity}
+                              </span>
+                            </div>
+                            <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
+                              {na.issue}
+                            </p>
+                            {na.recommendation && (
+                              <div className="mt-1 text-[9px] sm:text-[9.5px] 2xl:text-[10px] text-slate-800 bg-orange-50 border border-orange-200/70 rounded px-1.5 py-0.5 leading-snug">
+                                <span className="font-bold text-[#E65100]">Action:</span> {na.recommendation}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {/* 3. Validate benefits Forward-looking Milestone */}
+                    <div className="flex items-start gap-2 min-w-0 pt-0.5">
+                      <Icon icon="solar:info-circle-bold" width={18} className="text-[#1976D2] shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <strong className="text-[#0D47A1] font-black text-[11px] sm:text-[11.5px] 2xl:text-xs block">
+                          Validate benefits
+                        </strong>
+                        <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
+                          Test and confirm time savings, search efficiency and sustained use through quarterly reviews.
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-start gap-2 min-w-0">
+                      <Icon icon="solar:danger-triangle-bold" width={18} className="text-[#D32F2F] shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <strong className="text-[#D32F2F] font-black text-[11px] sm:text-[11.5px] 2xl:text-xs block">
+                          Version-control maturity &amp; OneDrive sync
+                        </strong>
+                        <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
+                          Increase use of version history, reduce "v2/final/draft" habits (468 ➔ 607), and coach on OneDrive sync vs. manual uploads.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2 min-w-0">
+                      <Icon icon="solar:danger-triangle-bold" width={18} className="text-[#F57C00] shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <strong className="text-[#E65100] font-black text-[11px] sm:text-[11.5px] 2xl:text-xs block">
+                          Records &amp; security labelling
+                        </strong>
+                        <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
+                          Apply retention and sensitivity labels (0% labelled; 205 potentially sensitive files unlabelled).
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2 min-w-0">
+                      <Icon icon="solar:info-circle-bold" width={18} className="text-[#1976D2] shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <strong className="text-[#0D47A1] font-black text-[11px] sm:text-[11.5px] 2xl:text-xs block">
+                          Validate benefits
+                        </strong>
+                        <p className="text-slate-700 mt-0.5 text-[10px] sm:text-[10.5px] 2xl:text-[11.5px] leading-tight">
+                          Test and confirm time savings, search efficiency and sustained use through quarterly reviews.
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -811,34 +911,326 @@ export const BenefitsRealizationDashboard: React.FC = () => {
 
               {/* Table Headers */}
               <div className="grid grid-cols-12 text-[9px] sm:text-[9.5px] 2xl:text-[10px] font-black uppercase text-slate-500 pb-1 border-b border-slate-200">
-                <div className="col-span-7">Benefit (B1 – B9)</div>
+                <div className="col-span-7 flex items-center gap-1">
+                  <span>Benefit (B1 – B9)</span>
+                  <span className="text-[8px] font-normal text-slate-400 lowercase italic hidden sm:inline">(click row to view evidence)</span>
+                </div>
                 <div className="col-span-2 text-center">Score</div>
                 <div className="col-span-3 text-right">Status</div>
               </div>
 
-              {/* B1-B9 Rows */}
+              {/* B1-B9 Rows with Click-to-Inspect Evidence */}
               <div className="divide-y divide-slate-100 text-xs">
-                {(data?.scorecard || []).map((b: any) => (
-                  <div key={b.driverId} className="grid grid-cols-12 items-center py-1.5 gap-1 min-w-0">
-                    <div className="col-span-7 flex items-center gap-1 min-w-0">
-                      <span className="font-extrabold text-slate-900 shrink-0 text-[10.5px] sm:text-[11px]">{b.driverId}</span>
-                      <span className="text-slate-700 truncate font-medium text-[10px] sm:text-[10.5px] 2xl:text-[11px]" title={b.name}>{b.name}</span>
-                    </div>
+                {(data?.scorecard || []).map((b: any) => {
+                  const isExpanded = expandedDriver === b.driverId;
+                  return (
+                    <div key={b.driverId} className="py-1.5 min-w-0 transition-colors">
+                      <div
+                        onClick={() => setExpandedDriver(isExpanded ? null : b.driverId)}
+                        className="grid grid-cols-12 items-center gap-1 cursor-pointer hover:bg-slate-50/80 rounded px-1 py-0.5"
+                        title="Click to view verified evidence and verification metrics"
+                      >
+                        <div className="col-span-7 flex items-center gap-1 min-w-0">
+                          <Icon
+                            icon={isExpanded ? "solar:alt-arrow-down-linear" : "solar:alt-arrow-right-linear"}
+                            width={11}
+                            className="text-slate-400 shrink-0"
+                          />
+                          <span className="font-extrabold text-slate-900 shrink-0 text-[10.5px] sm:text-[11px]">{b.driverId}</span>
+                          <span className="text-slate-700 truncate font-medium text-[10px] sm:text-[10.5px] 2xl:text-[11px]" title={b.name}>{b.name}</span>
+                        </div>
 
-                    <div className="col-span-2 flex items-center justify-center">
-                      <span className="font-bold text-slate-900 text-[10.5px] sm:text-[11px] 2xl:text-xs shrink-0">{formatScore(b.score)}</span>
-                    </div>
+                        <div className="col-span-2 flex items-center justify-center">
+                          <span className="font-bold text-slate-900 text-[10.5px] sm:text-[11px] 2xl:text-xs shrink-0">{formatScore(b.score)}</span>
+                        </div>
 
-                    <div className="col-span-3 flex justify-end">
-                      {getStatusBadge(b.status)}
+                        <div className="col-span-3 flex justify-end">
+                          {getStatusBadge(b.status)}
+                        </div>
+                      </div>
+
+                      {/* Expandable Evidence Card */}
+                      {isExpanded && (
+                        <div className="mt-1 ml-4 mr-1 p-2 bg-slate-50 border border-slate-200 rounded-[8px] text-[10.5px] space-y-1 animate-in fade-in duration-150">
+                          <div className="flex items-center gap-1.5 font-bold text-slate-800 text-[10px]">
+                            <Icon icon="solar:document-text-bold" width={13} className="text-[#E65100]" />
+                            <span>Verified Evidence &amp; Verification Metrics</span>
+                          </div>
+                          <p className="text-slate-600 leading-snug">
+                            {b.evidence || "No specific verification metrics logged for this driver."}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
         </div>
+
+        {/* =========================================================================
+            6. PROGRAM GOVERNANCE & OCM GUIDANCE (COLLAPSIBLE DRAWER)
+            ========================================================================= */}
+        <div className="border-t border-slate-200/90 pt-3">
+          <button
+            type="button"
+            onClick={() => setShowGovernance(!showGovernance)}
+            className="flex items-center justify-between w-full text-left text-xs font-bold text-slate-700 hover:text-slate-900 p-2 rounded-[8px] hover:bg-slate-50 transition cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Icon icon="solar:users-group-rounded-bold-duotone" width={18} className="text-[#E65100]" />
+              <span className="text-xs sm:text-[13px] font-extrabold text-[#0F172A]">
+                Program Governance, Stakeholders &amp; OCM Change Guidance
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-[11px] text-slate-500 font-semibold">
+              <span>{showGovernance ? "Hide Details" : "Show Details"}</span>
+              <Icon icon={showGovernance ? "solar:alt-arrow-up-linear" : "solar:alt-arrow-down-linear"} width={14} />
+            </div>
+          </button>
+
+          {showGovernance && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mt-2.5 p-3.5 bg-slate-50/70 rounded-[12px] border border-slate-200/80 animate-in fade-in duration-200">
+              {/* Stakeholders List */}
+              <div className="space-y-2">
+                <h4 className="text-[11.5px] font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <Icon icon="solar:shield-user-bold" width={14} className="text-[#E65100]" />
+                  Executive Steering &amp; Leadership Roles
+                </h4>
+                <div className="space-y-1.5 text-xs">
+                  {(data?.stakeholders || []).map((s: any, idx: number) => (
+                    <div key={idx} className="flex items-start justify-between bg-white p-2 rounded-[8px] border border-slate-200 shadow-2xs">
+                      <div>
+                        <div className="font-bold text-slate-900 text-[11px] sm:text-xs">{s.name}</div>
+                        <div className="text-[10px] text-slate-500 font-medium">{s.role}</div>
+                      </div>
+                      {s.email && (
+                        <span className="text-[9.5px] text-[#E65100] font-semibold bg-orange-50 px-1.5 py-0.5 rounded">
+                          {s.email}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* OCM Coaching Tips */}
+              <div className="space-y-2">
+                <h4 className="text-[11.5px] font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <Icon icon="solar:lightbulb-bolt-bold" width={14} className="text-[#E65100]" />
+                  OCM Change &amp; Adoption Guidance
+                </h4>
+                <div className="space-y-1.5 text-xs">
+                  {(data?.coachingTips || []).map((tip: any, idx: number) => (
+                    <div key={idx} className="bg-white p-2.5 rounded-[8px] border border-slate-200 shadow-2xs">
+                      <div className="font-bold text-slate-900 text-[11px] sm:text-xs text-[#E65100]">
+                        • {tip.title}
+                      </div>
+                      <p className="text-[10.5px] text-slate-600 mt-0.5 leading-snug">
+                        {tip.tip}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+      )}
+
+      {/* =========================================================================
+          VIEW 2: PRM SURVEY EMPIRICAL RESULTS (n=2, Nov 4, 2026)
+          ========================================================================= */}
+      {activeView === "SURVEY" && (
+        <div className="bg-white rounded-[16px] border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-slate-200 gap-2">
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-[#0F172A] tracking-tight flex items-center gap-2">
+                <Icon icon="solar:chat-round-line-bold-duotone" width={22} className="text-[#E65100]" />
+                PRM Post-Implementation Survey Results
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Two responses: 4 November 2026 • 1 Site Owner &amp; 1 Site Member • 1–5 Agreement Scale (Floor: 3.0, Target: 4.0)
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8EE] text-[#1E824C] border border-[#A3E4D7]/50 w-fit">
+              <Icon icon="solar:check-circle-bold" width={14} className="text-[#27AE60]" />
+              Mean Score: 4.1 / 5.0 (All 16 Dimensions Met Floor)
+            </span>
+          </div>
+
+          {/* Qualitative Feedback Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="bg-[#F2FBF5] p-3.5 rounded-[12px] border border-[#C8E6C9] space-y-1">
+              <div className="text-[10px] uppercase font-bold text-[#2E7D32] flex items-center gap-1">
+                <Icon icon="solar:like-bold" width={13} />
+                What Improved Most
+              </div>
+              <p className="text-xs text-slate-800 font-semibold leading-snug">
+                "Metadata has made it much easier to find documents related to a specific access to information request."
+              </p>
+              <div className="text-[10px] text-slate-500 italic pt-1">— PRM Site Owner (Consent: Named)</div>
+            </div>
+
+            <div className="bg-[#FFFBF5] p-3.5 rounded-[12px] border border-[#FFE0B2] space-y-1">
+              <div className="text-[10px] uppercase font-bold text-[#E65100] flex items-center gap-1">
+                <Icon icon="solar:danger-triangle-bold" width={13} />
+                What Remains Difficult (Root Cause)
+              </div>
+              <p className="text-xs text-slate-800 font-semibold leading-snug">
+                "I still need to learn how to sync my OneDrive with our SP site so I don't need to manually upload documents."
+              </p>
+              <div className="text-[10px] text-slate-500 italic pt-1">— Explains 'v2/draft' filename rise (468 ➔ 607)</div>
+            </div>
+
+            <div className="bg-slate-50 p-3.5 rounded-[12px] border border-slate-200 space-y-1">
+              <div className="text-[10px] uppercase font-bold text-slate-600 flex items-center gap-1">
+                <Icon icon="solar:info-circle-bold" width={13} />
+                General Observation
+              </div>
+              <p className="text-xs text-slate-800 font-semibold leading-snug">
+                "Because our N drive was well organized already, the main benefit of moving to SharePoint is improved search."
+              </p>
+              <div className="text-[10px] text-slate-500 italic pt-1">— Strategic Findability Confirmed</div>
+            </div>
+          </div>
+
+          {/* Survey Questions Table */}
+          <div className="overflow-x-auto border border-slate-200 rounded-[10px]">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-900 text-white font-extrabold text-[10.5px]">
+                  <th className="p-2.5">Domain</th>
+                  <th className="p-2.5">Survey Question (Exact Wording)</th>
+                  <th className="p-2.5 text-center">Benefit</th>
+                  <th className="p-2.5 text-center">Site Owner</th>
+                  <th className="p-2.5 text-center">Site Member</th>
+                  <th className="p-2.5 text-center">Mean (1–5)</th>
+                  <th className="p-2.5 text-right">Floor Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                {[
+                  { domain: "Site ownership", q: "I feel confident managing access and permissions for the SharePoint site.", ben: "B2; B8", owner: 4, mem: "-", mean: 4.0, stat: "On Target" },
+                  { domain: "Site ownership", q: "I feel confident maintaining the site’s document organization and metadata.", ben: "B7; B8", owner: 5, mem: "-", mean: 5.0, stat: "Above Target" },
+                  { domain: "Support confidence", q: "I know where to go for help when I cannot resolve a SharePoint issue myself.", ben: "B3; B8", owner: 4, mem: "-", mean: 4.0, stat: "On Target" },
+                  { domain: "Findability", q: "It is easier to find the documents and information I need.", ben: "B5", owner: 3, mem: 4, mean: 3.5, stat: "Above Floor" },
+                  { domain: "Storage clarity", q: "It is clear to me where documents should be stored.", ben: "B7; B8", owner: 5, mem: 4, mean: 4.5, stat: "Above Target" },
+                  { domain: "Organization", q: "Documents are better organized than they were before.", ben: "B7", owner: 3, mem: 4, mean: 3.5, stat: "Above Floor" },
+                  { domain: "Metadata effectiveness", q: "Using metadata makes it easier to organize and find documents.", ben: "B5; B7", owner: 4, mem: 4, mean: 4.0, stat: "On Target" },
+                  { domain: "Version control", q: "It is easier to identify and work with the correct version of a document.", ben: "B1; B5", owner: 5, mem: 4, mean: 4.5, stat: "Above Target" },
+                  { domain: "Collaboration", q: "It is easier to share and collaborate on documents with others.", ben: "B1; B6", owner: 4, mem: 4, mean: 4.0, stat: "On Target" },
+                  { domain: "Secure access", q: "I am confident that sensitive information is only accessible to the right people.", ben: "B2", owner: 5, mem: 4, mean: 4.5, stat: "Above Target" },
+                  { domain: "Remote work", q: "The new SharePoint site has made my day-to-day work easier both in-office and while working off-site.", ben: "B4; B6", owner: 3, mem: 4, mean: 3.5, stat: "Above Floor" },
+                  { domain: "Communications", q: "I received the information I needed at the right time during the transition.", ben: "B8", owner: 4, mem: 4, mean: 4.0, stat: "On Target" },
+                  { domain: "Training", q: "The training prepared me to use the new SharePoint site effectively.", ben: "B8", owner: 5, mem: 4, mean: 4.5, stat: "Above Target" },
+                  { domain: "Support", q: "I knew where to go for help or support when I needed it.", ben: "B3; B8", owner: 5, mem: 4, mean: 4.5, stat: "Above Target" },
+                  { domain: "Engagement", q: "I had opportunities to provide input during the design through to transition.", ben: "B8", owner: 5, mem: 4, mean: 4.5, stat: "Above Target" },
+                  { domain: "Client needs", q: "The project team understood our department’s needs and concerns.", ben: "B8", owner: 5, mem: 4, mean: 4.5, stat: "Above Target" },
+                ].map((row, idx) => (
+                  <tr key={idx} className={idx % 2 === 1 ? "bg-slate-50/70" : "bg-white"}>
+                    <td className="p-2.5 font-bold text-slate-700">{row.domain}</td>
+                    <td className="p-2.5 text-slate-800">{row.q}</td>
+                    <td className="p-2.5 text-center text-slate-500 font-bold">{row.ben}</td>
+                    <td className="p-2.5 text-center font-bold text-slate-900">{row.owner}</td>
+                    <td className="p-2.5 text-center font-bold text-slate-600">{row.mem}</td>
+                    <td className="p-2.5 text-center font-black text-[#E65100] text-[13px]">{row.mean.toFixed(1)}</td>
+                    <td className="p-2.5 text-right">{getStatusBadge(row.stat === "Above Floor" ? "Monitor" : "On Track")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW 3: M365 TECHNICAL AUDIT (Nov 5, 2026)
+          ========================================================================= */}
+      {activeView === "TECHNICAL" && (
+        <div className="bg-white rounded-[16px] border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-slate-200 gap-2">
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-[#0F172A] tracking-tight flex items-center gap-2">
+                <Icon icon="solar:server-square-bold-duotone" width={22} className="text-[#E65100]" />
+                SharePoint &amp; Microsoft 365 Technical Audit
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Automated site inventory &amp; post-migration comparison • Nov 5, 2026 Technical Audit
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8EE] text-[#1E824C] border border-[#A3E4D7]/50 w-fit">
+              <Icon icon="solar:check-circle-bold" width={14} className="text-[#27AE60]" />
+              Zero Security Exceptions Enforced
+            </span>
+          </div>
+
+          {/* Technical Summary Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="p-3 bg-slate-50 rounded-[10px] border border-slate-200 space-y-1">
+              <div className="text-[10.5px] font-bold text-slate-500">Folder Count</div>
+              <div className="text-base sm:text-lg font-black text-[#E65100]">541 ➔ 44</div>
+              <div className="text-[10px] font-bold text-emerald-600">-91.9% reduction</div>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-[10px] border border-slate-200 space-y-1">
+              <div className="text-[10.5px] font-bold text-slate-500">ROT Elimination</div>
+              <div className="text-base sm:text-lg font-black text-[#E65100]">2,175 ➔ 1,300</div>
+              <div className="text-[10px] font-bold text-emerald-600">-40.2% (Tgt: 50%)</div>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-[10px] border border-slate-200 space-y-1">
+              <div className="text-[10.5px] font-bold text-slate-500">Storage Footprint</div>
+              <div className="text-base sm:text-lg font-black text-[#E65100]">3.90 ➔ 3.31 GB</div>
+              <div className="text-[10px] font-bold text-emerald-600">-15.1% reduction</div>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-[10px] border border-slate-200 space-y-1">
+              <div className="text-[10.5px] font-bold text-slate-500">Version Tokens</div>
+              <div className="text-base sm:text-lg font-black text-[#D32F2F]">468 ➔ 607</div>
+              <div className="text-[10px] font-bold text-red-600">+29.7% watch habit</div>
+            </div>
+          </div>
+
+          {/* Technical Inventory Table */}
+          <div className="overflow-x-auto border border-slate-200 rounded-[10px]">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-900 text-white font-extrabold text-[10.5px]">
+                  <th className="p-2.5">Technical Metric Dimension</th>
+                  <th className="p-2.5 text-center">Baseline</th>
+                  <th className="p-2.5 text-center">Post-Go-Live</th>
+                  <th className="p-2.5 text-center">Variance %</th>
+                  <th className="p-2.5 text-center">Target Goal</th>
+                  <th className="p-2.5">Technical Finding &amp; Governance Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                {[
+                  { dim: "Folder Architecture (Total Folders)", base: "541", curr: "44", var: "-91.9%", tgt: "Major drop", finding: "Maximum depth collapsed from 8 levels to 2; zero path length errors." },
+                  { dim: "Maximum Folder Depth", base: "8 levels", curr: "2 levels", var: "-75.0%", tgt: "<= 3 levels", finding: "Flattest hierarchy achieved across PRM document libraries." },
+                  { dim: "ROT Files (Redundant, Obsolete, Trivial)", base: "2,175", curr: "1,300", var: "-40.2%", tgt: "50% reduction", finding: "1,300 files remain; secondary archiving underway." },
+                  { dim: "Cloud Storage Footprint", base: "3.90 GB", curr: "3.31 GB", var: "-15.1%", tgt: "20% reduction", finding: "Decreased by 0.59 GB; ongoing cleanup to hit 20% mark." },
+                  { dim: "Version-Token Filenames ('v2/final/draft')", base: "468", curr: "607", var: "+29.7%", tgt: "0% growth", finding: "Habitual naming under watch; OneDrive sync clinics scheduled." },
+                  { dim: "Duplicate Files", base: "117", curr: "49", var: "-58.1%", tgt: "Substantial drop", finding: "Duplicate file sprawl reduced by more than half." },
+                  { dim: "Generic / Ambiguous Filenames", base: "347", curr: "41", var: "-88.2%", tgt: "< 50 files", finding: "Standardized titles; enterprise findability drastically improved." },
+                  { dim: "Unlabelled Sensitive Files", base: "205", curr: "205", var: "0% labelled", tgt: "100% labelled", finding: "Purview retention and sensitivity labels require automated deployment." },
+                  { dim: "'Everyone' Sharing Grants", base: "0", curr: "0", var: "0 grants", tgt: "0 grants", finding: "Confidentiality boundary maintained; BC FIPPA baseline enforced." },
+                  { dim: "Folder-Level Permission Exceptions", base: "0", curr: "0", var: "0 exceptions", tgt: "0 exceptions", finding: "Clean site-level permission inheritance preventing privilege drift." },
+                ].map((row, idx) => (
+                  <tr key={idx} className={idx % 2 === 1 ? "bg-slate-50/70" : "bg-white"}>
+                    <td className="p-2.5 font-bold text-slate-900">{row.dim}</td>
+                    <td className="p-2.5 text-center text-slate-600 font-semibold">{row.base}</td>
+                    <td className="p-2.5 text-center font-black text-slate-900">{row.curr}</td>
+                    <td className="p-2.5 text-center font-black text-[#E65100] text-[13px]">{row.var}</td>
+                    <td className="p-2.5 text-center text-slate-500 font-semibold">{row.tgt}</td>
+                    <td className="p-2.5 text-slate-700">{row.finding}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* =========================================================================
           MODAL: EDIT ACTION RECOMMENDATIONS / NEXT ACTIONS
