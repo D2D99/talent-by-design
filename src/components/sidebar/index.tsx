@@ -300,7 +300,26 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             )}
           </li>
 
-          {/* Questions - Only for Super Admin */}
+          {/* Benefits Realization */}
+          <li className="mb-2">
+            <NavLink
+              to="/dashboard/benefits"
+              onClick={handleLinkClick}
+              className={({ isActive }) =>
+                `${base} ${isActive ? active : inactive}`
+              }
+              data-tooltip-id="menu-item-benefits"
+              data-tooltip-content="Benefits Realization"
+            >
+              <Icon icon="uix-sharp:flexible-benefits" width="22" />
+              <span>Benefits Realization</span>
+              <Tooltip
+                id="menu-item-benefits"
+                className="md:hidden block"
+                place="right"
+              />
+            </NavLink>
+          </li>
           {user.role === "superAdmin" && (
             <li className="mb-2">
               <NavLink
