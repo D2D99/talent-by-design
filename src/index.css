@@ -50,6 +50,42 @@
   scroll-behavior: smooth;
 }
 
+/* =========================================================================
+   LANGARA BRANDING SCOPE (Scoped strictly to Benefits Realization Dashboard)
+   Headers: Cambria | Rest: Calibri | Approved Langara Brand Palette
+   ========================================================================= */
+.langara-branding-scope {
+  font-family: "Calibri", "Segoe UI", Candara, sans-serif !important;
+
+  /* Langara Approved Palette */
+  --langara-orange: #F15A22;
+  --langara-orange-secondary: #F29705;
+  --langara-amber: #FCB511;
+  --langara-cream: #FBE0B5;
+  --langara-white: #FFFFFF;
+  --langara-black: #000000;
+  --langara-charcoal: #6D6E70;
+  --langara-midgray: #BCBDC0;
+  --langara-border: #D1D2D4;
+  --langara-lightgray: #E6E7E8;
+}
+
+.langara-branding-scope * {
+  font-family: "Calibri", "Segoe UI", Candara, sans-serif;
+}
+
+.langara-branding-scope h1,
+.langara-branding-scope h2,
+.langara-branding-scope h3,
+.langara-branding-scope h4,
+.langara-branding-scope h5,
+.langara-branding-scope h6,
+.langara-branding-scope .font-heading,
+.langara-branding-scope .font-serif,
+.langara-branding-scope [data-heading] {
+  font-family: "Cambria", Georgia, serif !important;
+}
+
 html,
 body,
 #root {
