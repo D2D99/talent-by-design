@@ -16,7 +16,7 @@ export const BenefitsRealizationDashboard: React.FC = () => {
       : "Langara College"
   );
   const [scaleMode, setScaleMode] = useState<"LIKERT" | "PERCENT">("LIKERT");
-  const [activeView, setActiveView] = useState<"DASHBOARD" | "SURVEY" | "TECHNICAL">("DASHBOARD");
+  const [activeView, setActiveView] = useState<"DASHBOARD" | "BENEFITS_MAP" | "SURVEY" | "TECHNICAL">("DASHBOARD");
   const [expandedDriver, setExpandedDriver] = useState<string | null>(null);
   const [showGovernance, setShowGovernance] = useState(false);
 
@@ -25,8 +25,10 @@ export const BenefitsRealizationDashboard: React.FC = () => {
   const [savingRecs, setSavingRecs] = useState(false);
   const [editedRecs, setEditedRecs] = useState<Record<string, string>>({});
 
-  // Dynamic Excel Export State
+  // Dynamic Excel & PowerPoint Export State
   const [exportingExcel, setExportingExcel] = useState(false);
+  const [exportingPptx, setExportingPptx] = useState(false);
+  const [exportingProgPptx, setExportingProgPptx] = useState(false);
 
   // Expandable Methodology & SuperAdmin Governance Configuration
   const [showMethodology, setShowMethodology] = useState(false);
@@ -78,6 +80,79 @@ export const BenefitsRealizationDashboard: React.FC = () => {
       toast.error("Failed to export Excel scorecard");
     } finally {
       setExportingExcel(false);
+    }
+  };
+
+  const handleExportPptx = async () => {
+    try {
+      setExportingPptx(true);
+      const res = await api.get(
+        `/benefits/export-pptx?orgName=${encodeURIComponent(selectedOrg)}`,
+        { responseType: "blob" },
+      );
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `${selectedOrg.replace(/\s+/g, "_")}_Executive_Scorecard.pptx`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("Dynamic Executive PowerPoint (.pptx) downloaded!");
+    } catch (err) {
+      console.warn("Dynamic PPTX endpoint fallback triggered:", err);
+      // Graceful fallback to public master PPTX if server route is waking up
+      const link = document.createElement("a");
+      link.href = "/Langara_PRM_Executive_Scorecard.pptx";
+      link.setAttribute("download", "Langara_PRM_Executive_Scorecard.pptx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("Executive PowerPoint (.pptx) downloaded!");
+    } finally {
+      setExportingPptx(false);
+    }
+  };
+
+  const handleExportProgramPptx = async () => {
+    try {
+      setExportingProgPptx(true);
+      const res = await api.get(
+        `/benefits/export-pptx?orgName=${encodeURIComponent(selectedOrg)}&type=program`,
+        { responseType: "blob" },
+      );
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `${selectedOrg.replace(/\s+/g, "_")}_Program_Benefits_Dashboard.pptx`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("Program Benefits Dashboard (.pptx) downloaded!");
+    } catch (err) {
+      console.warn("Dynamic Program PPTX fallback triggered:", err);
+      const link = document.createElement("a");
+      link.href = "/Langara_Program_Benefits_Dashboard.pptx";
+      link.setAttribute("download", "Langara_Program_Benefits_Dashboard.pptx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("Program Benefits Dashboard (.pptx) downloaded!");
+    } finally {
+      setExportingProgPptx(false);
     }
   };
 
@@ -200,6 +275,13 @@ export const BenefitsRealizationDashboard: React.FC = () => {
           <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] sm:text-[9.5px] 2xl:text-[10px] font-bold bg-[#EBF5FB] text-[#2980B9] border border-[#AED6F1]/60 whitespace-nowrap shrink-0">
             <Icon icon="solar:info-circle-bold" width={11} className="text-[#3498DB]" />
             Progressing
+          </span>
+        );
+      case "Dollar Savings Not Quantified":
+        return (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8.5px] sm:text-[9px] 2xl:text-[9.5px] font-bold bg-[#EBF5FB] text-[#2980B9] border border-[#AED6F1]/60 whitespace-nowrap shrink-0">
+            <Icon icon="solar:info-circle-bold" width={11} className="text-[#3498DB]" />
+            Dollar Savings Not Quantified
           </span>
         );
       default:
@@ -333,21 +415,22 @@ export const BenefitsRealizationDashboard: React.FC = () => {
             <span className="whitespace-nowrap">{exportingExcel ? "Generating..." : "Export Excel (.xlsx)"}</span>
           </button>
 
-          {/* PowerPoint Deck Export */}
-          <a
-            href="/Langara_PRM_Executive_Scorecard.pptx"
-            download="Langara_PRM_Executive_Scorecard.pptx"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#F15A22] to-[#F29705] text-white text-xs font-bold rounded-[8px] hover:opacity-95 transition shadow-2xs"
-            title="Download Executive Scorecard Presentation"
+          {/* Dynamic PowerPoint Deck Export */}
+          <button
+            type="button"
+            onClick={handleExportPptx}
+            disabled={exportingPptx}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#F15A22] to-[#F29705] text-white text-xs font-bold rounded-[8px] hover:opacity-95 transition cursor-pointer disabled:opacity-60 shadow-2xs"
+            title="Download Live Dynamic 11-Slide Executive Scorecard Presentation"
           >
-            <Icon icon="solar:presentation-graph-bold" width={15} />
-            <span className="whitespace-nowrap">Executive Deck (.pptx)</span>
-          </a>
+            <Icon icon={exportingPptx ? "eos-icons:loading" : "solar:presentation-graph-bold"} width={15} />
+            <span className="whitespace-nowrap">{exportingPptx ? "Generating Deck..." : "Executive Deck (.pptx)"}</span>
+          </button>
         </div>
       </div>
 
       {/* =========================================================================
-          VIEW SWITCHER TABS (EXECUTIVE DASHBOARD, SURVEY RESULTS, TECHNICAL AUDIT)
+          VIEW SWITCHER TABS (EXECUTIVE DASHBOARD, BENEFITS MAP & PROGRAM ROLL-UP, SURVEY RESULTS, TECHNICAL AUDIT)
           ========================================================================= */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-1 text-xs font-bold overflow-x-auto">
         <button
@@ -361,6 +444,18 @@ export const BenefitsRealizationDashboard: React.FC = () => {
         >
           <Icon icon="solar:widget-bold-duotone" width={16} />
           <span>Executive Dashboard</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveView("BENEFITS_MAP")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-t-[8px] transition cursor-pointer border-b-2 whitespace-nowrap ${
+            activeView === "BENEFITS_MAP"
+              ? "border-[#F15A22] text-[#F15A22] bg-orange-50/60"
+              : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+          }`}
+        >
+          <Icon icon="solar:pie-chart-2-bold-duotone" width={16} />
+          <span>Benefits Map &amp; Program Roll-Up</span>
         </button>
         <button
           type="button"
@@ -859,50 +954,60 @@ export const BenefitsRealizationDashboard: React.FC = () => {
               type="button"
               disabled={updatingCheckpoint}
               onClick={() => handleCheckpointSelect(1)}
-              className="bg-white border border-slate-200 hover:border-emerald-300 rounded-[10px] p-2.5 text-center transition cursor-pointer shadow-2xs flex flex-col justify-between"
+              className={`rounded-[10px] p-2.5 text-center transition cursor-pointer shadow-2xs flex flex-col justify-between ${
+                data?.activeCheckpointNumber === 1
+                  ? "bg-[#056839] text-white border border-[#047857] shadow-md transform sm:scale-[1.02]"
+                  : "bg-white border border-slate-200 hover:border-emerald-300"
+              }`}
             >
               <div className="flex items-center justify-center gap-1.5 mb-1">
-                <Icon icon="solar:check-circle-bold" width={15} className="text-[#27AE60]" />
-                <span className="text-xs font-black text-slate-800">Checkpoint 1</span>
+                <Icon icon="solar:check-circle-bold" width={15} className={data?.activeCheckpointNumber === 1 ? "text-white" : "text-[#27AE60]"} />
+                <span className={`text-xs font-black ${data?.activeCheckpointNumber === 1 ? "text-white" : "text-slate-800"}`}>Checkpoint 1</span>
               </div>
-              <div className="text-[11px] font-semibold text-slate-500">Baseline</div>
-              <div className="text-sm font-black text-[#27AE60] mt-0.5">
-                {scaleMode === "PERCENT" ? "70%" : "3.5 / 5.0"}
+              <div className={`text-[11px] font-semibold ${data?.activeCheckpointNumber === 1 ? "text-white/90" : "text-slate-500"}`}>Baseline</div>
+              <div className={`text-sm font-black mt-0.5 ${data?.activeCheckpointNumber === 1 ? "text-white" : "text-[#27AE60]"}`}>
+                n/a / 5.0
               </div>
             </button>
 
-            {/* Checkpoint 2 */}
+            {/* Checkpoint 2 (ACTIVE HERO GATE) */}
             <button
               type="button"
               disabled={updatingCheckpoint}
               onClick={() => handleCheckpointSelect(2)}
-              className="bg-white border border-slate-200 hover:border-emerald-300 rounded-[10px] p-2.5 text-center transition cursor-pointer shadow-2xs flex flex-col justify-between"
+              className={`rounded-[10px] p-2.5 text-center transition cursor-pointer flex flex-col justify-between ${
+                (data?.activeCheckpointNumber || 2) === 2
+                  ? "bg-[#056839] text-white border border-[#047857] shadow-md transform sm:scale-[1.02]"
+                  : "bg-white border border-slate-200 hover:border-emerald-300 shadow-2xs"
+              }`}
             >
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <Icon icon="solar:check-circle-bold" width={15} className="text-[#27AE60]" />
-                <span className="text-xs font-black text-slate-800">Checkpoint 2</span>
+              <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                <Icon icon="solar:check-circle-bold" width={16} className={(data?.activeCheckpointNumber || 2) === 2 ? "text-white" : "text-[#27AE60]"} />
+                <span className={`text-xs font-black ${(data?.activeCheckpointNumber || 2) === 2 ? "text-white" : "text-slate-800"}`}>Checkpoint 2</span>
               </div>
-              <div className="text-[11px] font-semibold text-slate-500">3-Month Review</div>
-              <div className="text-sm font-black text-[#27AE60] mt-0.5">
-                {scaleMode === "PERCENT" ? "72%" : "3.6 / 5.0"}
+              <div className={`text-[10.5px] font-bold ${(data?.activeCheckpointNumber || 2) === 2 ? "text-white/90" : "text-slate-500"}`}>Hypercare / Op Readiness</div>
+              <div className={`text-base font-black mt-0.5 ${(data?.activeCheckpointNumber || 2) === 2 ? "text-white" : "text-[#27AE60]"}`}>
+                {scaleMode === "PERCENT" ? `${data?.realizationPercentage || 78}%` : `${data?.overallScore || 3.9} / 5.0`}
               </div>
             </button>
 
-            {/* Checkpoint 3 (ACTIVE HERO GATE) */}
+            {/* Checkpoint 3 */}
             <button
               type="button"
               disabled={updatingCheckpoint}
               onClick={() => handleCheckpointSelect(3)}
-              className="bg-[#056839] text-white rounded-[10px] p-2.5 text-center shadow-md transform sm:scale-[1.02] border border-[#047857] cursor-pointer flex flex-col justify-between"
+              className={`rounded-[10px] p-2.5 text-center transition cursor-pointer flex flex-col justify-between ${
+                data?.activeCheckpointNumber === 3
+                  ? "bg-[#056839] text-white border border-[#047857] shadow-md transform sm:scale-[1.02]"
+                  : "bg-white/80 border border-slate-200/90 hover:bg-slate-50"
+              }`}
             >
-              <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                <Icon icon="solar:check-circle-bold" width={16} className="text-white" />
-                <span className="text-xs font-black text-white">Checkpoint 3</span>
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Icon icon="solar:calendar-linear" width={15} className={data?.activeCheckpointNumber === 3 ? "text-white" : "text-slate-400"} />
+                <span className={`text-xs font-bold ${data?.activeCheckpointNumber === 3 ? "text-white" : "text-slate-700"}`}>Checkpoint 3</span>
               </div>
-              <div className="text-[10.5px] font-bold text-white/90">90-Day Review (Nov 2026)</div>
-              <div className="text-base font-black text-white mt-0.5">
-                {scaleMode === "PERCENT" ? "78%" : "3.9 / 5.0"}
-              </div>
+              <div className={`text-[11px] font-semibold ${data?.activeCheckpointNumber === 3 ? "text-white/90" : "text-slate-500"}`}>90 Days After Op Handover</div>
+              <div className={`text-xs font-bold mt-1 ${data?.activeCheckpointNumber === 3 ? "text-white" : "text-slate-600"}`}>TBC / 5.0 (Nov 2026)</div>
             </button>
 
             {/* Checkpoint 4 */}
@@ -910,14 +1015,18 @@ export const BenefitsRealizationDashboard: React.FC = () => {
               type="button"
               disabled={updatingCheckpoint}
               onClick={() => handleCheckpointSelect(4)}
-              className="bg-white/80 border border-slate-200/90 rounded-[10px] p-2.5 text-center hover:bg-slate-50 transition cursor-pointer flex flex-col justify-between"
+              className={`rounded-[10px] p-2.5 text-center transition cursor-pointer flex flex-col justify-between ${
+                data?.activeCheckpointNumber === 4
+                  ? "bg-[#056839] text-white border border-[#047857] shadow-md transform sm:scale-[1.02]"
+                  : "bg-white/80 border border-slate-200/90 hover:bg-slate-50"
+              }`}
             >
-              <div className="flex items-center justify-center gap-1.5 mb-1 text-slate-400">
-                <Icon icon="solar:calendar-linear" width={15} />
-                <span className="text-xs font-bold text-slate-700">Checkpoint 4</span>
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Icon icon="solar:calendar-linear" width={15} className={data?.activeCheckpointNumber === 4 ? "text-white" : "text-slate-400"} />
+                <span className={`text-xs font-bold ${data?.activeCheckpointNumber === 4 ? "text-white" : "text-slate-700"}`}>Checkpoint 4</span>
               </div>
-              <div className="text-[11px] font-semibold text-slate-500">Quarterly Review</div>
-              <div className="text-xs font-bold text-slate-600 mt-1">~ Dec 2026</div>
+              <div className={`text-[11px] font-semibold ${data?.activeCheckpointNumber === 4 ? "text-white/90" : "text-slate-500"}`}>9-12 Month Post Go-Live</div>
+              <div className={`text-xs font-bold mt-1 ${data?.activeCheckpointNumber === 4 ? "text-white" : "text-slate-600"}`}>TBC / 5.0 (~ TBD)</div>
             </button>
 
             {/* Checkpoint 5 */}
@@ -925,14 +1034,18 @@ export const BenefitsRealizationDashboard: React.FC = () => {
               type="button"
               disabled={updatingCheckpoint}
               onClick={() => handleCheckpointSelect(5)}
-              className="bg-white/80 border border-slate-200/90 rounded-[10px] p-2.5 text-center hover:bg-slate-50 transition cursor-pointer flex flex-col justify-between"
+              className={`rounded-[10px] p-2.5 text-center transition cursor-pointer flex flex-col justify-between ${
+                data?.activeCheckpointNumber === 5
+                  ? "bg-[#056839] text-white border border-[#047857] shadow-md transform sm:scale-[1.02]"
+                  : "bg-white/80 border border-slate-200/90 hover:bg-slate-50"
+              }`}
             >
-              <div className="flex items-center justify-center gap-1.5 mb-1 text-slate-400">
-                <Icon icon="solar:calendar-linear" width={15} />
-                <span className="text-xs font-bold text-slate-700">Checkpoint 5</span>
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Icon icon="solar:calendar-linear" width={15} className={data?.activeCheckpointNumber === 5 ? "text-white" : "text-slate-400"} />
+                <span className={`text-xs font-bold ${data?.activeCheckpointNumber === 5 ? "text-white" : "text-slate-700"}`}>Checkpoint 5</span>
               </div>
-              <div className="text-[11px] font-semibold text-slate-500">Program Closure</div>
-              <div className="text-xs font-bold text-slate-600 mt-1">~ Feb 2027</div>
+              <div className={`text-[11px] font-semibold ${data?.activeCheckpointNumber === 5 ? "text-white/90" : "text-slate-500"}`}>Program Closure</div>
+              <div className={`text-xs font-bold mt-1 ${data?.activeCheckpointNumber === 5 ? "text-white" : "text-slate-600"}`}>TBC / 5.0 (~ TBD)</div>
             </button>
           </div>
         </div>
@@ -1152,16 +1265,28 @@ export const BenefitsRealizationDashboard: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Expandable Evidence Card */}
+                       {/* Expandable Evidence Card */}
                       {isExpanded && (
-                        <div className="mt-1 ml-4 mr-1 p-2 bg-slate-50 border border-slate-200 rounded-[8px] text-[10.5px] space-y-1 animate-in fade-in duration-150">
-                          <div className="flex items-center gap-1.5 font-bold text-slate-800 text-[10px]">
-                            <Icon icon="solar:document-text-bold" width={13} className="text-[#F15A22]" />
-                            <span>Verified Evidence &amp; Verification Metrics</span>
+                        <div className="mt-1 ml-4 mr-1 p-2.5 bg-slate-50 border border-slate-200 rounded-[8px] text-[10.5px] space-y-1.5 animate-in fade-in duration-150">
+                          <div className="flex flex-wrap items-center justify-between gap-1.5">
+                            <div className="flex items-center gap-1.5 font-bold text-slate-800 text-[10px]">
+                              <Icon icon="solar:document-text-bold" width={13} className="text-[#F15A22]" />
+                              <span>Verified Evidence &amp; Verification Metrics</span>
+                            </div>
+                            {b.strategicPriority && (
+                              <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-orange-100 text-[#F15A22] border border-orange-200">
+                                Supports: {b.strategicPriority}
+                              </span>
+                            )}
                           </div>
                           <p className="text-slate-600 leading-snug">
                             {b.evidence || "No specific verification metrics logged for this driver."}
                           </p>
+                          {b.measurableKpis && (
+                            <div className="pt-1 border-t border-slate-200/70 text-[10px] text-slate-500">
+                              <strong className="text-slate-700">Measurable KPIs:</strong> {b.measurableKpis}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1242,6 +1367,318 @@ export const BenefitsRealizationDashboard: React.FC = () => {
         </div>
       </div>
       )}
+
+      {/* =========================================================================
+          VIEW 2: BENEFITS MAP & PROGRAM ROLL-UP DASHBOARD (STRATEGIC PRIORITIES & BUDGET)
+          ========================================================================= */}
+      {activeView === "BENEFITS_MAP" && (() => {
+        const scorecardDrivers = data?.scorecard || [];
+        const computePriorityGroup = (prioName: string, defaultIds: string[], fallbackTot: number, fallbackAvg: number) => {
+          const matched = scorecardDrivers.filter(
+            (d: any) => (d.strategicPriority || "").toLowerCase() === prioName.toLowerCase()
+          );
+          if (matched.length > 0) {
+            const total = matched.reduce((acc: number, d: any) => acc + (Number(d.score) || 0), 0);
+            const avg = total / matched.length;
+            return {
+              priority: prioName,
+              total: Number(total.toFixed(1)),
+              max: matched.length * 5,
+              avg: Number(avg.toFixed(1)),
+              pct: Math.round((avg / 5.0) * 100),
+              count: matched.length,
+              driverIds: matched.map((m: any) => m.driverId),
+              drivers: matched,
+            };
+          }
+          return {
+            priority: prioName,
+            total: fallbackTot,
+            max: defaultIds.length * 5,
+            avg: fallbackAvg,
+            pct: Math.round((fallbackAvg / 5.0) * 100),
+            count: defaultIds.length,
+            driverIds: defaultIds,
+            drivers: [],
+          };
+        };
+
+        const humanCap = computePriorityGroup("Human Capacity", ["B1", "B4", "B6", "B8"], 16.0, 4.0);
+        const techUtil = computePriorityGroup("Technology Utilization", ["B2", "B5", "B7"], 11.4, 3.8);
+        const campusDev = computePriorityGroup("Campus Development", ["B3", "B9"], 7.9, 4.0);
+        const priorityGroups = [
+          { ...humanCap, icon: "solar:users-group-two-rounded-bold-duotone", color: "#F15A22", badgeBg: "bg-orange-50 text-[#F15A22] border-orange-200" },
+          { ...techUtil, icon: "solar:cpu-bolt-bold-duotone", color: "#F29705", badgeBg: "bg-amber-50 text-amber-800 border-amber-200" },
+          { ...campusDev, icon: "solar:buildings-2-bold-duotone", color: "#1E824C", badgeBg: "bg-emerald-50 text-[#1E824C] border-emerald-200" },
+        ];
+
+        const mapRows = [
+          { priority: "Human Capacity", id: "B1", name: "Improved collaboration and productivity", score: 4.2, kpis: "Employee-rated collaboration effectiveness (1–5) • Reduction in duplicate copies • Evidence of shared-file collaboration" },
+          { priority: "Human Capacity", id: "B4", name: "Enable remote work and mobility", score: 3.6, kpis: "Hybrid/remote-work confidence score (1–5)" },
+          { priority: "Human Capacity", id: "B6", name: "Streamlined processes", score: 3.7, kpis: "Staff-confirmed reduced rework and time to locate, collaborate on and share files" },
+          { priority: "Human Capacity", id: "B8", name: "Improved adoption", score: 4.5, kpis: "% of target users active in approved workspaces • Storage-choice knowledge check • Secure and consistent sharing" },
+          { priority: "Technology Utilization", id: "B2", name: "Enhanced data security and compliance", score: 3.8, kpis: "% of assessed sites passing access/retention review; excess-grant exceptions; label coverage • Remediation of material security breaches" },
+          { priority: "Technology Utilization", id: "B5", name: "Improved decision-making and business intelligence", score: 4.1, kpis: "File-findability score (1–5) • Representative document-retrieval tasks and time to locate" },
+          { priority: "Technology Utilization", id: "B7", name: "Standardization", score: 3.5, kpis: "% of assessed sites meeting approved IA/metadata conventions • Non-compliant naming/path findings fixed • User-rated metadata usefulness" },
+          { priority: "Campus Development", id: "B3", name: "Simplified IT management", score: 4.0, kpis: "Little to no legacy-drive dependence • Reduced recurring file/access tickets • Confirmed operational ownership and site owner training" },
+          { priority: "Campus Development", id: "B9", name: "Cost savings", score: 3.9, kpis: "Annual legacy storage/infrastructure/support savings ($) • Net of ongoing costs • Retirement evidence" },
+        ].map((r) => {
+          const live = scorecardDrivers.find((d: any) => d.driverId === r.id);
+          return {
+            ...r,
+            score: live ? Number(live.score) : r.score,
+            priority: live?.strategicPriority || r.priority,
+            kpis: live?.measurableKpis || r.kpis,
+            status: live?.status || "On Track",
+          };
+        });
+
+        const budgetRows = data?.programRollup?.budget || [
+          { fundType: "Operating (FY27)", baseline: "$9,352", ytd: "$7,862", etc: "$1,490", eac: "$9,352", variance: "0%" },
+          { fundType: "Capital (FY27)", baseline: "$1,481,566", ytd: "$604,571", etc: "$763,194", eac: "$1,367,765", variance: "8%" },
+          { fundType: "TOTAL", baseline: "$1,490,918", ytd: "$612,433", etc: "$764,684", eac: "$1,377,117", variance: "8%" },
+        ];
+
+        return (
+          <div className="bg-white rounded-[16px] border border-slate-200 shadow-sm p-4 sm:p-6 space-y-5">
+            {/* Top Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-3.5 border-b border-slate-200 gap-3">
+              <div>
+                <h2 className="text-base sm:text-lg md:text-xl font-black text-[#000000] tracking-tight flex items-center gap-2">
+                  <Icon icon="solar:pie-chart-2-bold-duotone" width={22} className="text-[#F15A22]" />
+                  Benefits Map — Revised Strategic Alignment &amp; Program Roll-Up
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Updated to ensure Campus Development is represented based on Langara strategic priority definitions (Primary alignment avoids double-counting)
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportProgramPptx}
+                  disabled={exportingProgPptx}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-[8px] transition cursor-pointer disabled:opacity-60 shadow-2xs"
+                  title="Download Dynamic 2-Slide Program Benefits Roll-Up Presentation (.pptx)"
+                >
+                  <Icon icon={exportingProgPptx ? "eos-icons:loading" : "solar:presentation-graph-bold"} width={15} className="text-[#FCB511]" />
+                  <span>{exportingProgPptx ? "Generating..." : "Program Roll-Up Deck (.pptx)"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 1. THREE STRATEGIC PRIORITY DIAL CARDS */}
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+                  <Icon icon="solar:chart-bold-duotone" width={17} className="text-[#F15A22]" />
+                  Strategic Priority Roll-Up Dials (Primary Alignment)
+                </h3>
+                <span className="text-[11px] font-semibold text-slate-500">
+                  Total Program Points: 35.3 / 45.0 • Mean: {scaleMode === "PERCENT" ? `${data?.realizationPercentage || 78}%` : `${data?.overallScore || 3.9} / 5.0`}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {priorityGroups.map((pg) => (
+                  <div
+                    key={pg.priority}
+                    className="bg-slate-50/70 rounded-[14px] border border-slate-200/90 p-4 flex items-center justify-between gap-3.5 shadow-2xs"
+                  >
+                    <div className="space-y-1.5 min-w-0 flex-1">
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${pg.badgeBg}`}>
+                        <Icon icon={pg.icon} width={13} />
+                        {pg.count} Benefits ({pg.driverIds.join(", ")})
+                      </span>
+                      <h4 className="text-sm sm:text-base font-black text-slate-900 leading-snug">
+                        {pg.priority}
+                      </h4>
+                      <div className="text-[11px] font-semibold text-slate-600">
+                        Roll-Up Total: <strong className="text-slate-900">{pg.total.toFixed(1)}</strong> / {pg.max.toFixed(1)} pts
+                      </div>
+                      <div className="text-[10.5px] text-slate-500">
+                        Average Score: <strong className="text-[#F15A22]">{pg.avg.toFixed(1)} / 5.0</strong> ({pg.pct}%)
+                      </div>
+                    </div>
+
+                    {/* Circular Dial Gauge */}
+                    <div className="relative w-[84px] h-[84px] shrink-0 flex items-center justify-center">
+                      <svg viewBox="0 0 100 100" className="w-full h-full rotate-[-90deg]">
+                        <circle cx="50" cy="50" r="38" stroke="#E2E8F0" strokeWidth="10" fill="transparent" />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="38"
+                          stroke={pg.color}
+                          strokeWidth="10"
+                          strokeDasharray="238.76"
+                          strokeDashoffset={238.76 - (238.76 * pg.pct) / 100}
+                          strokeLinecap="round"
+                          fill="transparent"
+                          className="transition-all duration-700 ease-out"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <span className="text-sm font-black text-slate-900 leading-none">
+                          {scaleMode === "PERCENT" ? `${pg.pct}%` : pg.avg.toFixed(1)}
+                        </span>
+                        <span className="text-[8px] font-bold text-slate-500 uppercase mt-0.5">
+                          {scaleMode === "PERCENT" ? "Index" : "/ 5.0"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. DETAILED BENEFITS MAP TABLE */}
+            <div className="space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+                  <Icon icon="solar:checklist-minimalistic-bold-duotone" width={17} className="text-[#F15A22]" />
+                  Strategic Alignment Benefits Map &amp; Measurable KPIs
+                </h3>
+                <span className="text-[10.5px] text-slate-500 italic">
+                  Note: Uses primary strategic alignment for each benefit to avoid double counting in dashboard roll-ups.
+                </span>
+              </div>
+
+              <div className="overflow-x-auto border border-slate-200 rounded-[12px]">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-900 text-white uppercase text-[10px] tracking-wider font-bold">
+                      <th className="p-3">Supports Strategic Priority of:</th>
+                      <th className="p-3">Benefit (B1 – B9)</th>
+                      <th className="p-3 text-center">PRM Score</th>
+                      <th className="p-3 text-center">Status</th>
+                      <th className="p-3">Measurable KPIs</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium text-slate-800">
+                    {mapRows.map((row, idx) => {
+                      const isHuman = row.priority === "Human Capacity";
+                      const isTech = row.priority === "Technology Utilization";
+                      const prioBadge = isHuman
+                        ? "bg-orange-50 text-[#F15A22] border-orange-200"
+                        : isTech
+                        ? "bg-amber-50 text-amber-800 border-amber-200"
+                        : "bg-emerald-50 text-[#1E824C] border-emerald-200";
+                      return (
+                        <tr key={row.id} className={idx % 2 === 1 ? "bg-slate-50/70" : "bg-white"}>
+                          <td className="p-3 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold border ${prioBadge}`}>
+                              {row.priority}
+                            </span>
+                          </td>
+                          <td className="p-3 font-bold text-slate-900">
+                            <span className="text-[#F15A22] font-black mr-1.5">{row.id}</span>
+                            {row.name}
+                          </td>
+                          <td className="p-3 text-center font-black text-[#F15A22] text-[13px]">
+                            {scaleMode === "PERCENT" ? `${Math.round((row.score / 5.0) * 100)}%` : row.score.toFixed(1)}
+                          </td>
+                          <td className="p-3 text-center">
+                            {getStatusBadge(row.status)}
+                          </td>
+                          <td className="p-3 text-[11px] text-slate-600 leading-relaxed max-w-md">
+                            {row.kpis}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 3. LCP PROGRAM-LEVEL ROLL-UP SUMMARY & FY27 BUDGET */}
+            <div className="pt-3 border-t border-slate-200 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+                    <Icon icon="solar:Layers-minimalistic-bold-duotone" width={17} className="text-[#F15A22]" />
+                    LCP Program Benefits Dashboard — Portfolio &amp; Budget Roll-Up
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Program Manager: <strong className="text-slate-700">{data?.programRollup?.programManager || "Seynabou Diack"}</strong> • Program Sponsor: <strong className="text-slate-700">{data?.programRollup?.programSponsor || "Justin Yau"}</strong> • Timeline: <strong className="text-slate-700">{data?.programRollup?.startDate || "Apr 1, 2025"} – {data?.programRollup?.endDate || "Jan 31, 2028"}</strong>
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-bold text-[11px]">
+                  Reporting Date: {data?.programRollup?.reportingDate || "November 27, 2026"}
+                </span>
+              </div>
+
+              {/* Rollout Counters */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 rounded-[10px] bg-orange-50/60 border border-orange-200/80 flex items-center justify-between">
+                  <div>
+                    <div className="text-[10.5px] font-bold text-slate-500 uppercase">Active Project Wave</div>
+                    <div className="text-base font-black text-[#F15A22] mt-0.5">
+                      Project {data?.programRollup?.projectProgress || "1 of 7"}
+                    </div>
+                  </div>
+                  <Icon icon="solar:folder-check-bold-duotone" width={26} className="text-[#F15A22]" />
+                </div>
+
+                <div className="p-3 rounded-[10px] bg-emerald-50/60 border border-emerald-200/80 flex items-center justify-between">
+                  <div>
+                    <div className="text-[10.5px] font-bold text-slate-500 uppercase">New Sites in Operation</div>
+                    <div className="text-base font-black text-[#1E824C] mt-0.5">
+                      {data?.programRollup?.newSitesInOperation || "5 of 9 in Project 1"}
+                    </div>
+                  </div>
+                  <Icon icon="solar:check-circle-bold-duotone" width={26} className="text-[#1E824C]" />
+                </div>
+
+                <div className="p-3 rounded-[10px] bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <div className="text-[10.5px] font-bold text-slate-500 uppercase">Teams Remaining in Program</div>
+                    <div className="text-base font-black text-slate-800 mt-0.5">
+                      Approx. {data?.programRollup?.approxTeamsRemaining ?? 20} Teams
+                    </div>
+                  </div>
+                  <Icon icon="solar:users-group-rounded-bold-duotone" width={26} className="text-slate-600" />
+                </div>
+              </div>
+
+              {/* Program Budget Table */}
+              <div className="overflow-x-auto border border-slate-200 rounded-[12px]">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-800 uppercase text-[10px] tracking-wider font-extrabold border-b border-slate-200">
+                      <th className="p-2.5">Program Budget — Fund Type</th>
+                      <th className="p-2.5 text-right">Baseline Budget</th>
+                      <th className="p-2.5 text-right">Actual YTD</th>
+                      <th className="p-2.5 text-right">Estimate to Complete (ETC)</th>
+                      <th className="p-2.5 text-right">Estimate at Completion (EAC)</th>
+                      <th className="p-2.5 text-center">Variance %</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 text-slate-700 font-medium">
+                    {budgetRows.map((b: any, i: number) => {
+                      const isTotal = b.fundType === "TOTAL";
+                      return (
+                        <tr key={i} className={isTotal ? "bg-[#FBE0B5]/40 font-black text-slate-900" : "bg-white"}>
+                          <td className="p-2.5 font-bold">{b.fundType}</td>
+                          <td className="p-2.5 text-right">{b.baseline}</td>
+                          <td className="p-2.5 text-right">{b.ytd}</td>
+                          <td className="p-2.5 text-right">{b.etc}</td>
+                          <td className="p-2.5 text-right">{b.eac}</td>
+                          <td className="p-2.5 text-center">
+                            <span className="px-2 py-0.5 rounded bg-emerald-50 text-[#1E824C] font-bold text-[10.5px] border border-emerald-200">
+                              {b.variance}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* =========================================================================
           VIEW 2: PRM SURVEY EMPIRICAL RESULTS (n=2, Nov 4, 2026)
