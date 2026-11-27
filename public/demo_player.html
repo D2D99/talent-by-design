@@ -1,404 +1,895 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>LCP PRM Benefits Realization — Executive Video Demo Walkthrough</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background: #0B132B; color: #FFFFFF; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-    
-    /* Top Header */
-    header { background: #111C3D; border-bottom: 2px solid #E65100; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; }
-    .logo-badge { background: #FFFFFF; padding: 6px 14px; border-radius: 6px; display: flex; align-items: center; gap: 8px; }
-    .logo-badge span { color: #E65100; font-weight: 800; font-size: 16px; letter-spacing: -0.5px; }
-    .logo-badge small { color: #475569; font-size: 11px; font-weight: 600; border-left: 1px solid #CBD5E1; padding-left: 8px; }
-    .header-titles h1 { font-size: 15px; font-weight: 700; color: #FFFFFF; }
-    .header-titles p { font-size: 11px; color: #FED7AA; }
-    
-    /* Main Layout */
-    .container { display: flex; flex: 1; height: calc(100vh - 60px); overflow: hidden; }
-    
-    /* Video Simulation Screen */
-    .screen-container { flex: 1; background: #080D1F; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
-    .video-viewport { flex: 1; background: #0F172A; border: 1.5px solid #1E293B; border-radius: 12px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-    
-    /* Mock Dashboard Inside Video */
-    .mock-header { background: #FFFFFF; padding: 12px 20px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
-    .mock-header h3 { color: #0F172A; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-    .mock-header h3::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #E65100; }
-    .mock-nav-tabs { display: flex; gap: 6px; }
-    .mock-tab { padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; transition: all 0.3s; }
-    .mock-tab.active { background: #FFF7ED; color: #E65100; border-color: #FED7AA; }
-    
-    .mock-content { flex: 1; padding: 18px; overflow-y: auto; background: #F8FAFC; color: #0F172A; position: relative; }
-    
-    /* Dynamic Animated Callouts / Spotlight */
-    .spotlight { position: absolute; border: 2.5px solid #E65100; border-radius: 10px; background: rgba(230, 81, 0, 0.08); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; z-index: 50; box-shadow: 0 0 0 9999px rgba(11, 19, 43, 0.45); }
-    .spotlight-label { position: absolute; top: -28px; left: 0; background: #E65100; color: #FFFFFF; font-size: 10.5px; font-weight: 800; padding: 2px 10px; border-radius: 4px; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    
-    /* Video Controls Toolbar */
-    .video-controls { background: #111C3D; border-radius: 10px; padding: 10px 18px; margin-top: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #1E293B; }
-    .play-btn { background: #E65100; color: #FFFFFF; border: none; padding: 7px 18px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
-    .play-btn:hover { background: #D84315; }
-    .progress-bar { flex: 1; margin: 0 20px; height: 6px; background: #1E293B; border-radius: 3px; position: relative; cursor: pointer; overflow: hidden; }
-    .progress-fill { height: 100%; width: 0%; background: #E65100; border-radius: 3px; transition: width 0.1s linear; }
-    .time-display { font-size: 12px; font-weight: 600; color: #94A3B8; font-variant-numeric: tabular-nums; }
-    
-    /* Right Side Playlist & Subtitles */
-    .sidebar-panel { width: 420px; background: #0E1630; border-left: 1px solid #1E293B; display: flex; flex-direction: column; }
-    .panel-header { padding: 16px; border-bottom: 1px solid #1E293B; background: #111C3D; }
-    .panel-header h2 { font-size: 14px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; justify-content: space-between; }
-    .panel-header span { font-size: 10px; background: #E65100; padding: 2px 8px; border-radius: 10px; font-weight: 800; }
-    
-    .timeline-list { list-style: none; overflow-y: auto; flex: 1; padding: 12px; }
-    .timeline-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; background: #162244; border: 1px solid #1E293B; cursor: pointer; transition: all 0.2s; }
-    .timeline-item:hover { background: #1E2D58; border-color: #E65100; }
-    .timeline-item.active { background: #1E2D58; border-left: 4px solid #E65100; }
-    .timeline-item .time-tag { font-size: 10px; font-weight: 700; color: #E65100; margin-bottom: 2px; }
-    .timeline-item .title { font-size: 12.5px; font-weight: 700; color: #FFFFFF; }
-    .timeline-item .desc { font-size: 11px; color: #94A3B8; margin-top: 4px; line-height: 1.4; }
-    
-    /* Bottom Live Subtitle Box */
-    .subtitle-box { background: #0A0F24; padding: 14px; border-top: 1px solid #1E293B; min-height: 90px; }
-    .subtitle-speaker { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #E65100; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    .subtitle-speaker::before { content: ""; width: 6px; height: 6px; background: #22C55E; border-radius: 50%; }
-    .subtitle-text { font-size: 12px; color: #E2E8F0; line-height: 1.5; font-style: italic; }
-
-    /* Mock Card Designs */
-    .grid-3 { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 12px; }
-    .card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; }
-    .card-orange { background: #E65100; color: #FFFFFF; border-radius: 8px; padding: 12px; }
-    .pill-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 9.5px; font-weight: 800; }
-    .pill-green { background: #E8F8EE; color: #1E824C; border: 1px solid #A3E4D7; }
-    .pill-amber { background: #FFF9E6; color: #B45309; border: 1px solid #FAD7A0; }
-  </style>
-</head>
-<body>
-
-  <header>
-    <div class="logo-badge">
-      <span>Langara.</span>
-      <small>ʔə ƛ̓ xʷməθkʷəy̓əm | at Musqueam</small>
-    </div>
-    <div class="header-titles">
-      <h1>Langara Collaboration Platform (LCP | PID 6738)</h1>
-      <p>Executive Video Demo Walkthrough • PRM &amp; Rolling Program Rollup</p>
-    </div>
-    <div style="font-size: 11px; color: #94A3B8; font-weight: 600;">
-      Prepared for: Suzanna de Souza (OCM)
-    </div>
-  </header>
-
-  <div class="container">
-    
-    <!-- Left: Video Viewport -->
-    <div class="screen-container">
-      <div class="video-viewport" id="viewport">
-        
-        <!-- Live Spotlight Highlighting Region -->
-        <div class="spotlight" id="spotlight" style="top: 60px; left: 20px; width: 320px; height: 260px;">
-          <div class="spotlight-label" id="spotlight-label">1. Overall Index &amp; 4 Pillars</div>
-        </div>
-
-        <!-- Mock Dashboard Header -->
-        <div class="mock-header">
-          <h3>Wave 1: Privacy &amp; Records Management (PRM)</h3>
-          <div class="mock-nav-tabs">
-            <div class="mock-tab active" id="tab-dashboard">Executive Dashboard</div>
-            <div class="mock-tab" id="tab-survey">Survey Results (n=2)</div>
-            <div class="mock-tab" id="tab-technical">M365 Technical Audit</div>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <span style="font-size: 10px; font-weight: 700; background: #E8F8EE; color: #1E824C; padding: 4px 8px; border-radius: 4px;">Excel (.xlsx)</span>
-            <span style="font-size: 10px; font-weight: 700; background: #FFF7ED; color: #E65100; padding: 4px 8px; border-radius: 4px;">Slides (.pptx)</span>
-          </div>
-        </div>
-
-        <!-- Mock Content Canvas -->
-        <div class="mock-content" id="mock-canvas">
-          
-          <!-- Column 1: Overall Gauge -->
-          <div class="grid-3" style="margin-bottom: 12px;">
-            <div class="card-orange" id="mock-hero">
-              <div style="font-size: 11px; font-weight: 700; opacity: 0.9;">OVERALL REALIZATION</div>
-              <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0;">
-                <span style="font-size: 38px; font-weight: 900; line-height: 1;">3.9</span>
-                <span style="font-size: 14px; font-weight: 700; opacity: 0.85;">/ 5.0 (78%)</span>
-              </div>
-              <div style="background: rgba(255,255,255,0.18); padding: 6px; border-radius: 6px; font-size: 10px; font-weight: 600; line-height: 1.4;">
-                • Delivery: 4.2 (On Track)<br>
-                • Adoption: 4.5 (On Track)<br>
-                • Benefits: 3.9 (Progressing)<br>
-                • Risk &amp; Security: 3.2 (Monitor)
-              </div>
-            </div>
-
-            <!-- Column 2: Outcomes -->
-            <div class="card" id="mock-outcomes">
-              <div style="font-size: 11.5px; font-weight: 800; color: #0F172A; margin-bottom: 8px;">VERIFIED HYGIENE OUTCOMES</div>
-              <div style="margin-bottom: 6px;">
-                <div style="font-size: 10px; color: #64748B;">Folder Architecture</div>
-                <div style="font-size: 13px; font-weight: 800; color: #E65100;">541 ➔ 44 <span style="color: #1E824C; font-size: 11px;">(-91.9%)</span></div>
-              </div>
-              <div style="margin-bottom: 6px;">
-                <div style="font-size: 10px; color: #64748B;">Duplicate Files</div>
-                <div style="font-size: 13px; font-weight: 800; color: #E65100;">117 ➔ 49 <span style="color: #1E824C; font-size: 11px;">(-58.1%)</span></div>
-              </div>
-              <div>
-                <div style="font-size: 10px; color: #64748B;">Access Governance</div>
-                <div style="font-size: 11px; font-weight: 700; color: #1E824C;">0 'Everyone' Grants • 0 Exceptions</div>
-              </div>
-            </div>
-
-            <!-- Column 3: Checkpoints -->
-            <div class="card" id="mock-checkpoints">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-size: 11.5px; font-weight: 800; color: #0F172A;">STAGE-GATE STEPPER</span>
-                <button style="background: #E65100; color: #FFF; border: none; padding: 2px 8px; border-radius: 4px; font-size: 9.5px; font-weight: 700;">Update Gate</button>
-              </div>
-              <div style="font-size: 10.5px; line-height: 1.6; color: #334155;">
-                • Gate 1: Baseline (June 2026) <span class="pill-badge pill-green">Done</span><br>
-                • Gate 2: 3-Month (Sept 2026) <span class="pill-badge pill-green">Done</span><br>
-                • <strong>Gate 3: 90-Day (Nov 2026)</strong> <span class="pill-badge" style="background:#E65100; color:#FFF;">Active (3.9)</span><br>
-                • Gate 4: Quarterly (~Dec 2026) <span class="pill-badge pill-amber">Upcoming</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Scorecard & Actions -->
-          <div class="card" id="mock-scorecard" style="margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 11.5px; font-weight: 800; color: #0F172A;">BENEFITS SCORECARD (DRIVERS B1 – B9)</span>
-              <span style="font-size: 10px; color: #64748B;">Click row to expand verified evidence</span>
-            </div>
-            <div style="font-size: 10px; border-top: 1px solid #E2E8F0; padding-top: 4px; line-height: 1.8; color: #334155;">
-              <strong>B1 - Improved Collaboration &amp; Productivity</strong>: 4.2 / 5.0 (227 cloud files, 40.2% ROT reduction) <span class="pill-badge pill-green">On Track</span><br>
-              <strong>B2 - Enhanced Data Security &amp; Compliance</strong>: 3.8 / 5.0 (0 'Everyone' grants, Purview labeling pending) <span class="pill-badge pill-amber">Monitor</span><br>
-              <strong>B3 - Simplified IT Management</strong>: 4.0 / 5.0 (15.1% storage reduction, 0 path errors) <span class="pill-badge pill-green">On Track</span>
-            </div>
-          </div>
-
-          <!-- Bottom: Focus Areas -->
-          <div class="card" id="mock-actions">
-            <div style="font-size: 11.5px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">FOCUS AREAS &amp; NEXT ACTIONS</div>
-            <div style="font-size: 10px; line-height: 1.5; color: #334155;">
-              <span style="color:#DC2626; font-weight:700;">Priority 1:</span> Configure Microsoft Purview auto-labelling rules across PRM libraries.<br>
-              <span style="color:#D97706; font-weight:700;">Priority 2:</span> Deliver targeted 15-minute coaching clinics on OneDrive sync vs manual uploads.
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- Controls -->
-      <div class="video-controls">
-        <button class="play-btn" id="play-pause-btn" onclick="togglePlay()">
-          <span id="play-icon">▶</span> Play Walkthrough
-        </button>
-        <div class="progress-bar" onclick="seek(event)">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        <div class="time-display" id="time-display">0:00 / 3:30</div>
-        <button onclick="restartDemo()" style="background:transparent; border:1px solid #334155; color:#94A3B8; padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer;">Restart</button>
-      </div>
-    </div>
-
-    <!-- Right: Scene Playlist & Narration -->
-    <div class="sidebar-panel">
-      <div class="panel-header">
-        <h2>Demo Video Agenda <span>5 SCENES</span></h2>
-      </div>
-
-      <ul class="timeline-list">
-        <li class="timeline-item active" id="scene-0" onclick="jumpTo(0)">
-          <div class="time-tag">0:00 – 0:45 • SCENE 1</div>
-          <div class="title">Executive Canvas &amp; 4 Core Pillars</div>
-          <div class="desc">Overall realization score (3.9 / 5.0, 78%), Delivery, Adoption, Benefits, and Risk status.</div>
-        </li>
-        <li class="timeline-item" id="scene-1" onclick="jumpTo(45)">
-          <div class="time-tag">0:45 – 1:30 • SCENE 2</div>
-          <div class="title">How to Update Gate Checkpoints &amp; Scores</div>
-          <div class="desc">Demonstrates 'Update Gate' modal, editing B1–B9 driver ratings, and updating action items live.</div>
-        </li>
-        <li class="timeline-item" id="scene-2" onclick="jumpTo(90)">
-          <div class="time-tag">1:30 – 2:15 • SCENE 3</div>
-          <div class="title">Survey Results &amp; Technical Audit Tabs</div>
-          <div class="desc">Navigating between the 16 Likert survey dimensions and the 10 M365 technical audit metrics.</div>
-        </li>
-        <li class="timeline-item" id="scene-3" onclick="jumpTo(135)">
-          <div class="time-tag">2:15 – 2:50 • SCENE 4</div>
-          <div class="title">7-Sheet Excel &amp; 16:9 Presentation Exports</div>
-          <div class="desc">One-click generation of the client's official 7-tab Excel workbook and executive PowerPoint deck.</div>
-        </li>
-        <li class="timeline-item" id="scene-4" onclick="jumpTo(170)">
-          <div class="time-tag">2:50 – 3:30 • SCENE 5</div>
-          <div class="title">Rolling Results for Projects 1 to 7</div>
-          <div class="desc">How cumulative hygiene metrics (folders, storage) and driver RAG roll up across all 7 projects.</div>
-        </li>
-      </ul>
-
-      <!-- Subtitle Transcription Box -->
-      <div class="subtitle-box">
-        <div class="subtitle-speaker">Narrator (Executive Walkthrough)</div>
-        <div class="subtitle-text" id="subtitle-text">
-          "Welcome Suzanna. Here is a guided tour of the Langara Collaboration Platform Benefits Realization dashboard for Wave 1 PRM, and how it rolls up across all 7 projects."
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <script>
-    let isPlaying = false;
-    let currentTime = 0;
-    const totalDuration = 210; // 3 minutes 30 seconds
-    let timer = null;
-
-    const scenes = [
-      {
-        startTime: 0,
-        endTime: 45,
-        target: "mock-hero",
-        label: "1. Overall Index & 4 Core Pillars",
-        tab: "tab-dashboard",
-        script: "On the main Executive Dashboard, you immediately see the overall program index of 3.9 out of 5.0 (78%), backed by the four core pillars: Delivery, Adoption, Benefits, and Risk & Security."
-      },
-      {
-        startTime: 45,
-        endTime: 90,
-        target: "mock-checkpoints",
-        label: "2. How to Update Checkpoints & Scores",
-        tab: "tab-dashboard",
-        script: "Updating is completely live. Click 'Update Gate' to transition between review gates. Click any B1–B9 driver row to view verified evidence and edit scores. The overall index recalculates live."
-      },
-      {
-        startTime: 90,
-        endTime: 135,
-        target: "tab-survey",
-        label: "3. Survey Results & Technical Audit Tabs",
-        tab: "tab-survey",
-        script: "Dedicated top navigation tabs let steering committee members inspect all 16 survey questions, Site Owner qualitative quotes, and the 10 automated M365 technical audit dimensions."
-      },
-      {
-        startTime: 135,
-        endTime: 170,
-        target: "mock-outcomes",
-        label: "4. One-Click Excel (7 Sheets) & PPTX Exports",
-        tab: "tab-dashboard",
-        script: "At any time, download the exact 7-sheet client Excel workbook or the 6-slide widescreen presentation deck with subtle borders and formal steering committee approval blocks."
-      },
-      {
-        startTime: 170,
-        endTime: 210,
-        target: "mock-scorecard",
-        label: "5. Rolling Rollup for Projects 1 to 7",
-        tab: "tab-dashboard",
-        script: "To answer your question on Projects 1 to 7: PRM sets the baseline for Project 1. As Projects 2–7 go live, their data rolls up into cumulative hygiene totals (-91.9% folders, GB reduced) and driver status distributions."
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      LCP PRM Benefits Realization — Executive Video Demo Walkthrough
+    </title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
       }
-    ];
+      body {
+        background: #0b132b;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
 
-    function togglePlay() {
-      isPlaying = !isPlaying;
-      document.getElementById("play-icon").textContent = isPlaying ? "⏸" : "▶";
-      document.getElementById("play-pause-btn").innerHTML = isPlaying ? "<span>⏸</span> Pause Walkthrough" : "<span>▶</span> Play Walkthrough";
+      /* Top Header */
+      header {
+        background: #111c3d;
+        border-bottom: 2px solid #e65100;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo-badge {
+        background: #ffffff;
+        padding: 6px 14px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .logo-badge span {
+        color: #e65100;
+        font-weight: 800;
+        font-size: 16px;
+        letter-spacing: -0.5px;
+      }
+      .logo-badge small {
+        color: #475569;
+        font-size: 11px;
+        font-weight: 600;
+        border-left: 1px solid #cbd5e1;
+        padding-left: 8px;
+      }
+      .header-titles h1 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      .header-titles p {
+        font-size: 11px;
+        color: #fed7aa;
+      }
 
-      if (isPlaying) {
-        timer = setInterval(tick, 1000);
-      } else {
+      /* Main Layout */
+      .container {
+        display: flex;
+        flex: 1;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+      }
+
+      /* Video Simulation Screen */
+      .screen-container {
+        flex: 1;
+        background: #080d1f;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+      }
+      .video-viewport {
+        flex: 1;
+        background: #0f172a;
+        border: 1.5px solid #1e293b;
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Mock Dashboard Inside Video */
+      .mock-header {
+        background: #ffffff;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .mock-header h3 {
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mock-header h3::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #e65100;
+      }
+      .mock-nav-tabs {
+        display: flex;
+        gap: 6px;
+      }
+      .mock-tab {
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 6px;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s;
+      }
+      .mock-tab.active {
+        background: #fff7ed;
+        color: #e65100;
+        border-color: #fed7aa;
+      }
+
+      .mock-content {
+        flex: 1;
+        padding: 18px;
+        overflow-y: auto;
+        background: #f8fafc;
+        color: #0f172a;
+        position: relative;
+      }
+
+      /* Dynamic Animated Callouts / Spotlight */
+      .spotlight {
+        position: absolute;
+        border: 2.5px solid #e65100;
+        border-radius: 10px;
+        background: rgba(230, 81, 0, 0.08);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        z-index: 50;
+        box-shadow: 0 0 0 9999px rgba(11, 19, 43, 0.45);
+      }
+      .spotlight-label {
+        position: absolute;
+        top: -28px;
+        left: 0;
+        background: #e65100;
+        color: #ffffff;
+        font-size: 10.5px;
+        font-weight: 800;
+        padding: 2px 10px;
+        border-radius: 4px;
+        white-space: nowrap;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Video Controls Toolbar */
+      .video-controls {
+        background: #111c3d;
+        border-radius: 10px;
+        padding: 10px 18px;
+        margin-top: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid #1e293b;
+      }
+      .play-btn {
+        background: #e65100;
+        color: #ffffff;
+        border: none;
+        padding: 7px 18px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.2s;
+      }
+      .play-btn:hover {
+        background: #d84315;
+      }
+      .progress-bar {
+        flex: 1;
+        margin: 0 20px;
+        height: 6px;
+        background: #1e293b;
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: #e65100;
+        border-radius: 3px;
+        transition: width 0.1s linear;
+      }
+      .time-display {
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Right Side Playlist & Subtitles */
+      .sidebar-panel {
+        width: 420px;
+        background: #0e1630;
+        border-left: 1px solid #1e293b;
+        display: flex;
+        flex-direction: column;
+      }
+      .panel-header {
+        padding: 16px;
+        border-bottom: 1px solid #1e293b;
+        background: #111c3d;
+      }
+      .panel-header h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .panel-header span {
+        font-size: 10px;
+        background: #e65100;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 800;
+      }
+
+      .timeline-list {
+        list-style: none;
+        overflow-y: auto;
+        flex: 1;
+        padding: 12px;
+      }
+      .timeline-item {
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        background: #162244;
+        border: 1px solid #1e293b;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .timeline-item:hover {
+        background: #1e2d58;
+        border-color: #e65100;
+      }
+      .timeline-item.active {
+        background: #1e2d58;
+        border-left: 4px solid #e65100;
+      }
+      .timeline-item .time-tag {
+        font-size: 10px;
+        font-weight: 700;
+        color: #e65100;
+        margin-bottom: 2px;
+      }
+      .timeline-item .title {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      .timeline-item .desc {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+
+      /* Bottom Live Subtitle Box */
+      .subtitle-box {
+        background: #0a0f24;
+        padding: 14px;
+        border-top: 1px solid #1e293b;
+        min-height: 90px;
+      }
+      .subtitle-speaker {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #e65100;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .subtitle-speaker::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: #22c55e;
+        border-radius: 50%;
+      }
+      .subtitle-text {
+        font-size: 12px;
+        color: #e2e8f0;
+        line-height: 1.5;
+        font-style: italic;
+      }
+
+      /* Mock Card Designs */
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1fr;
+        gap: 12px;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .card-orange {
+        background: #e65100;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .pill-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 9.5px;
+        font-weight: 800;
+      }
+      .pill-green {
+        background: #e8f8ee;
+        color: #1e824c;
+        border: 1px solid #a3e4d7;
+      }
+      .pill-amber {
+        background: #fff9e6;
+        color: #b45309;
+        border: 1px solid #fad7a0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo-badge">
+        <span>Langara.</span>
+        <small>ʔə ƛ̓ xʷməθkʷəy̓əm | at Musqueam</small>
+      </div>
+      <div class="header-titles">
+        <h1>Langara Collaboration Platform (LCP | PID 6738)</h1>
+        <p>
+          Executive Video Demo Walkthrough • PRM &amp; Rolling Program Rollup
+        </p>
+      </div>
+      <div style="font-size: 11px; color: #94a3b8; font-weight: 600">
+        Prepared for: Suzanna de Souza (OCM)
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Left: Video Viewport -->
+      <div class="screen-container">
+        <div class="video-viewport" id="viewport">
+          <!-- Live Spotlight Highlighting Region -->
+          <div
+            class="spotlight"
+            id="spotlight"
+            style="top: 60px; left: 20px; width: 320px; height: 260px"
+          >
+            <div class="spotlight-label" id="spotlight-label">
+              1. Overall Index &amp; 4 Pillars
+            </div>
+          </div>
+
+          <!-- Mock Dashboard Header -->
+          <div class="mock-header">
+            <h3>Wave 1: Privacy &amp; Records Management (PRM)</h3>
+            <div class="mock-nav-tabs">
+              <div class="mock-tab active" id="tab-dashboard">
+                Executive Dashboard
+              </div>
+              <div class="mock-tab" id="tab-survey">Survey Results (n=2)</div>
+              <div class="mock-tab" id="tab-technical">
+                M365 Technical Audit
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px">
+              <span
+                style="
+                  font-size: 10px;
+                  font-weight: 700;
+                  background: #e8f8ee;
+                  color: #1e824c;
+                  padding: 4px 8px;
+                  border-radius: 4px;
+                "
+                >Excel (.xlsx)</span
+              >
+              <span
+                style="
+                  font-size: 10px;
+                  font-weight: 700;
+                  background: #fff7ed;
+                  color: #e65100;
+                  padding: 4px 8px;
+                  border-radius: 4px;
+                "
+                >Slides (.pptx)</span
+              >
+            </div>
+          </div>
+
+          <!-- Mock Content Canvas -->
+          <div class="mock-content" id="mock-canvas">
+            <!-- Column 1: Overall Gauge -->
+            <div class="grid-3" style="margin-bottom: 12px">
+              <div class="card-orange" id="mock-hero">
+                <div style="font-size: 11px; font-weight: 700; opacity: 0.9">
+                  OVERALL REALIZATION
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: baseline;
+                    gap: 8px;
+                    margin: 8px 0;
+                  "
+                >
+                  <span
+                    style="font-size: 38px; font-weight: 900; line-height: 1"
+                    >3.9</span
+                  >
+                  <span style="font-size: 14px; font-weight: 700; opacity: 0.85"
+                    >/ 5.0 (78%)</span
+                  >
+                </div>
+                <div
+                  style="
+                    background: rgba(255, 255, 255, 0.18);
+                    padding: 6px;
+                    border-radius: 6px;
+                    font-size: 10px;
+                    font-weight: 600;
+                    line-height: 1.4;
+                  "
+                >
+                  • Delivery: 4.2 (On Track)<br />
+                  • Adoption: 4.5 (On Track)<br />
+                  • Benefits: 3.9 (Progressing)<br />
+                  • Risk &amp; Security: 3.2 (Monitor)
+                </div>
+              </div>
+
+              <!-- Column 2: Outcomes -->
+              <div class="card" id="mock-outcomes">
+                <div
+                  style="
+                    font-size: 11.5px;
+                    font-weight: 800;
+                    color: #0f172a;
+                    margin-bottom: 8px;
+                  "
+                >
+                  VERIFIED HYGIENE OUTCOMES
+                </div>
+                <div style="margin-bottom: 6px">
+                  <div style="font-size: 10px; color: #64748b">
+                    Folder Architecture
+                  </div>
+                  <div
+                    style="font-size: 13px; font-weight: 800; color: #e65100"
+                  >
+                    541 ➔ 44
+                    <span style="color: #1e824c; font-size: 11px"
+                      >(-91.9%)</span
+                    >
+                  </div>
+                </div>
+                <div style="margin-bottom: 6px">
+                  <div style="font-size: 10px; color: #64748b">
+                    Duplicate Files
+                  </div>
+                  <div
+                    style="font-size: 13px; font-weight: 800; color: #e65100"
+                  >
+                    117 ➔ 49
+                    <span style="color: #1e824c; font-size: 11px"
+                      >(-58.1%)</span
+                    >
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: #64748b">
+                    Access Governance
+                  </div>
+                  <div
+                    style="font-size: 11px; font-weight: 700; color: #1e824c"
+                  >
+                    0 'Everyone' Grants • 0 Exceptions
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 3: Checkpoints -->
+              <div class="card" id="mock-checkpoints">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                  "
+                >
+                  <span
+                    style="font-size: 11.5px; font-weight: 800; color: #0f172a"
+                    >STAGE-GATE STEPPER</span
+                  >
+                  <button
+                    style="
+                      background: #e65100;
+                      color: #fff;
+                      border: none;
+                      padding: 2px 8px;
+                      border-radius: 4px;
+                      font-size: 9.5px;
+                      font-weight: 700;
+                    "
+                  >
+                    Update Gate
+                  </button>
+                </div>
+                <div
+                  style="font-size: 10.5px; line-height: 1.6; color: #334155"
+                >
+                  • Gate 1: Baseline (June 2026)
+                  <span class="pill-badge pill-green">Done</span><br />
+                  • Gate 2: 3-Month (Sept 2026)
+                  <span class="pill-badge pill-green">Done</span><br />
+                  • <strong>Gate 3: 90-Day (Nov 2026)</strong>
+                  <span
+                    class="pill-badge"
+                    style="background: #e65100; color: #fff"
+                    >Active (3.9)</span
+                  ><br />
+                  • Gate 4: Quarterly (~Dec 2026)
+                  <span class="pill-badge pill-amber">Upcoming</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scorecard & Actions -->
+            <div class="card" id="mock-scorecard" style="margin-bottom: 12px">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 6px;
+                "
+              >
+                <span
+                  style="font-size: 11.5px; font-weight: 800; color: #0f172a"
+                  >BENEFITS SCORECARD (DRIVERS B1 – B9)</span
+                >
+                <span style="font-size: 10px; color: #64748b"
+                  >Click row to expand verified evidence</span
+                >
+              </div>
+              <div
+                style="
+                  font-size: 10px;
+                  border-top: 1px solid #e2e8f0;
+                  padding-top: 4px;
+                  line-height: 1.8;
+                  color: #334155;
+                "
+              >
+                <strong>B1 - Improved Collaboration &amp; Productivity</strong>:
+                4.2 / 5.0 (227 cloud files, 40.2% ROT reduction)
+                <span class="pill-badge pill-green">On Track</span><br />
+                <strong>B2 - Enhanced Data Security &amp; Compliance</strong>:
+                3.8 / 5.0 (0 'Everyone' grants, Purview labeling pending)
+                <span class="pill-badge pill-amber">Monitor</span><br />
+                <strong>B3 - Simplified IT Management</strong>: 4.0 / 5.0 (15.1%
+                storage reduction, 0 path errors)
+                <span class="pill-badge pill-green">On Track</span>
+              </div>
+            </div>
+
+            <!-- Bottom: Focus Areas -->
+            <div class="card" id="mock-actions">
+              <div
+                style="
+                  font-size: 11.5px;
+                  font-weight: 800;
+                  color: #0f172a;
+                  margin-bottom: 6px;
+                "
+              >
+                FOCUS AREAS &amp; NEXT ACTIONS
+              </div>
+              <div style="font-size: 10px; line-height: 1.5; color: #334155">
+                <span style="color: #dc2626; font-weight: 700"
+                  >Priority 1:</span
+                >
+                Configure Microsoft Purview auto-labelling rules across PRM
+                libraries.<br />
+                <span style="color: #d97706; font-weight: 700"
+                  >Priority 2:</span
+                >
+                Deliver targeted 15-minute coaching clinics on OneDrive sync vs
+                manual uploads.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="video-controls">
+          <button class="play-btn" id="play-pause-btn" onclick="togglePlay()">
+            <span id="play-icon">▶</span> Play Walkthrough
+          </button>
+          <div class="progress-bar" onclick="seek(event)">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="time-display" id="time-display">0:00 / 3:30</div>
+          <button
+            onclick="restartDemo()"
+            style="
+              background: transparent;
+              border: 1px solid #334155;
+              color: #94a3b8;
+              padding: 4px 10px;
+              border-radius: 4px;
+              font-size: 11px;
+              cursor: pointer;
+            "
+          >
+            Restart
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Scene Playlist & Narration -->
+      <div class="sidebar-panel">
+        <div class="panel-header">
+          <h2>Demo Video Agenda <span>5 SCENES</span></h2>
+        </div>
+
+        <ul class="timeline-list">
+          <li class="timeline-item active" id="scene-0" onclick="jumpTo(0)">
+            <div class="time-tag">0:00 – 0:45 • SCENE 1</div>
+            <div class="title">Executive Canvas &amp; 4 Core Pillars</div>
+            <div class="desc">
+              Overall realization score (3.9 / 5.0, 78%), Delivery, Adoption,
+              Benefits, and Risk status.
+            </div>
+          </li>
+          <li class="timeline-item" id="scene-1" onclick="jumpTo(45)">
+            <div class="time-tag">0:45 – 1:30 • SCENE 2</div>
+            <div class="title">How to Update Gate Checkpoints &amp; Scores</div>
+            <div class="desc">
+              Demonstrates 'Update Gate' modal, editing B1–B9 driver ratings,
+              and updating action items live.
+            </div>
+          </li>
+          <li class="timeline-item" id="scene-2" onclick="jumpTo(90)">
+            <div class="time-tag">1:30 – 2:15 • SCENE 3</div>
+            <div class="title">Survey Results &amp; Technical Audit Tabs</div>
+            <div class="desc">
+              Navigating between the 16 Likert survey dimensions and the 10 M365
+              technical audit metrics.
+            </div>
+          </li>
+          <li class="timeline-item" id="scene-3" onclick="jumpTo(135)">
+            <div class="time-tag">2:15 – 2:50 • SCENE 4</div>
+            <div class="title">
+              7-Sheet Excel &amp; 16:9 Presentation Exports
+            </div>
+            <div class="desc">
+              One-click generation of the client's official 7-tab Excel workbook
+              and executive PowerPoint deck.
+            </div>
+          </li>
+          <li class="timeline-item" id="scene-4" onclick="jumpTo(170)">
+            <div class="time-tag">2:50 – 3:30 • SCENE 5</div>
+            <div class="title">Rolling Results for Projects 1 to 7</div>
+            <div class="desc">
+              How cumulative hygiene metrics (folders, storage) and driver RAG
+              roll up across all 7 projects.
+            </div>
+          </li>
+        </ul>
+
+        <!-- Subtitle Transcription Box -->
+        <div class="subtitle-box">
+          <div class="subtitle-speaker">Narrator (Executive Walkthrough)</div>
+          <div class="subtitle-text" id="subtitle-text">
+            "Welcome Suzanna. Here is a guided tour of the Langara Collaboration
+            Platform Benefits Realization dashboard for Wave 1 PRM, and how it
+            rolls up across all 7 projects."
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let isPlaying = false;
+      let currentTime = 0;
+      const totalDuration = 210; // 3 minutes 30 seconds
+      let timer = null;
+
+      const scenes = [
+        {
+          startTime: 0,
+          endTime: 45,
+          target: "mock-hero",
+          label: "1. Overall Index & 4 Core Pillars",
+          tab: "tab-dashboard",
+          script:
+            "On the main Executive Dashboard, you immediately see the overall program index of 3.9 out of 5.0 (78%), backed by the four core pillars: Delivery, Adoption, Benefits, and Risk & Security.",
+        },
+        {
+          startTime: 45,
+          endTime: 90,
+          target: "mock-checkpoints",
+          label: "2. How to Update Checkpoints & Scores",
+          tab: "tab-dashboard",
+          script:
+            "Updating is completely live. Click 'Update Gate' to transition between review gates. Click any B1–B9 driver row to view verified evidence and edit scores. The overall index recalculates live.",
+        },
+        {
+          startTime: 90,
+          endTime: 135,
+          target: "tab-survey",
+          label: "3. Survey Results & Technical Audit Tabs",
+          tab: "tab-survey",
+          script:
+            "Dedicated top navigation tabs let steering committee members inspect all 16 survey questions, Site Owner qualitative quotes, and the 10 automated M365 technical audit dimensions.",
+        },
+        {
+          startTime: 135,
+          endTime: 170,
+          target: "mock-outcomes",
+          label: "4. One-Click Excel (7 Sheets) & PPTX Exports",
+          tab: "tab-dashboard",
+          script:
+            "At any time, download the exact 7-sheet client Excel workbook or the 6-slide widescreen presentation deck with subtle borders and formal steering committee approval blocks.",
+        },
+        {
+          startTime: 170,
+          endTime: 210,
+          target: "mock-scorecard",
+          label: "5. Rolling Rollup for Projects 1 to 7",
+          tab: "tab-dashboard",
+          script:
+            "To answer your question on Projects 1 to 7: PRM sets the baseline for Project 1. As Projects 2–7 go live, their data rolls up into cumulative hygiene totals (-91.9% folders, GB reduced) and driver status distributions.",
+        },
+      ];
+
+      function togglePlay() {
+        isPlaying = !isPlaying;
+        document.getElementById("play-icon").textContent = isPlaying
+          ? "⏸"
+          : "▶";
+        document.getElementById("play-pause-btn").innerHTML = isPlaying
+          ? "<span>⏸</span> Pause Walkthrough"
+          : "<span>▶</span> Play Walkthrough";
+
+        if (isPlaying) {
+          timer = setInterval(tick, 1000);
+        } else {
+          clearInterval(timer);
+        }
+      }
+
+      function tick() {
+        if (currentTime >= totalDuration) {
+          pauseDemo();
+          return;
+        }
+        currentTime++;
+        updateUI();
+      }
+
+      function updateUI() {
+        // Progress
+        const pct = (currentTime / totalDuration) * 100;
+        document.getElementById("progress-fill").style.width = pct + "%";
+
+        const mins = Math.floor(currentTime / 60);
+        const secs = String(currentTime % 60).padStart(2, "0");
+        document.getElementById("time-display").textContent =
+          `${mins}:${secs} / 3:30`;
+
+        // Find current scene
+        const sceneIndex = scenes.findIndex(
+          (s) => currentTime >= s.startTime && currentTime < s.endTime,
+        );
+        if (sceneIndex !== -1) {
+          const sc = scenes[sceneIndex];
+
+          // Active playlist item
+          for (let i = 0; i < scenes.length; i++) {
+            const el = document.getElementById("scene-" + i);
+            if (el) el.classList.toggle("active", i === sceneIndex);
+          }
+
+          // Subtitle
+          document.getElementById("subtitle-text").textContent =
+            `"${sc.script}"`;
+
+          // Tabs
+          ["tab-dashboard", "tab-survey", "tab-technical"].forEach((t) => {
+            const tabEl = document.getElementById(t);
+            if (tabEl) tabEl.classList.toggle("active", t === sc.tab);
+          });
+
+          // Spotlight
+          const targetEl = document.getElementById(sc.target);
+          const viewport = document.getElementById("viewport");
+          if (targetEl && viewport) {
+            const vRect = viewport.getBoundingClientRect();
+            const tRect = targetEl.getBoundingClientRect();
+            const sEl = document.getElementById("spotlight");
+            const sLbl = document.getElementById("spotlight-label");
+
+            const top = tRect.top - vRect.top;
+            const left = tRect.left - vRect.left;
+
+            sEl.style.top = top + "px";
+            sEl.style.left = left + "px";
+            sEl.style.width = tRect.width + "px";
+            sEl.style.height = tRect.height + "px";
+            sLbl.textContent = sc.label;
+          }
+        }
+      }
+
+      function jumpTo(sec) {
+        currentTime = sec;
+        updateUI();
+        if (!isPlaying) togglePlay();
+      }
+
+      function seek(e) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const pct = clickX / rect.width;
+        currentTime = Math.floor(pct * totalDuration);
+        updateUI();
+      }
+
+      function pauseDemo() {
+        isPlaying = false;
         clearInterval(timer);
+        document.getElementById("play-icon").textContent = "▶";
+        document.getElementById("play-pause-btn").innerHTML =
+          "<span>▶</span> Play Walkthrough";
       }
-    }
 
-    function tick() {
-      if (currentTime >= totalDuration) {
+      function restartDemo() {
         pauseDemo();
-        return;
+        currentTime = 0;
+        updateUI();
+        togglePlay();
       }
-      currentTime++;
+
+      // Init
       updateUI();
-    }
-
-    function updateUI() {
-      // Progress
-      const pct = (currentTime / totalDuration) * 100;
-      document.getElementById("progress-fill").style.width = pct + "%";
-      
-      const mins = Math.floor(currentTime / 60);
-      const secs = String(currentTime % 60).padStart(2, '0');
-      document.getElementById("time-display").textContent = `${mins}:${secs} / 3:30`;
-
-      // Find current scene
-      const sceneIndex = scenes.findIndex(s => currentTime >= s.startTime && currentTime < s.endTime);
-      if (sceneIndex !== -1) {
-        const sc = scenes[sceneIndex];
-        
-        // Active playlist item
-        for (let i = 0; i < scenes.length; i++) {
-          const el = document.getElementById("scene-" + i);
-          if (el) el.classList.toggle("active", i === sceneIndex);
-        }
-
-        // Subtitle
-        document.getElementById("subtitle-text").textContent = `"${sc.script}"`;
-
-        // Tabs
-        ["tab-dashboard", "tab-survey", "tab-technical"].forEach(t => {
-          const tabEl = document.getElementById(t);
-          if (tabEl) tabEl.classList.toggle("active", t === sc.tab);
-        });
-
-        // Spotlight
-        const targetEl = document.getElementById(sc.target);
-        const viewport = document.getElementById("viewport");
-        if (targetEl && viewport) {
-          const vRect = viewport.getBoundingClientRect();
-          const tRect = targetEl.getBoundingClientRect();
-          const sEl = document.getElementById("spotlight");
-          const sLbl = document.getElementById("spotlight-label");
-
-          const top = tRect.top - vRect.top;
-          const left = tRect.left - vRect.left;
-          
-          sEl.style.top = top + "px";
-          sEl.style.left = left + "px";
-          sEl.style.width = tRect.width + "px";
-          sEl.style.height = tRect.height + "px";
-          sLbl.textContent = sc.label;
-        }
-      }
-    }
-
-    function jumpTo(sec) {
-      currentTime = sec;
-      updateUI();
-      if (!isPlaying) togglePlay();
-    }
-
-    function seek(e) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const pct = clickX / rect.width;
-      currentTime = Math.floor(pct * totalDuration);
-      updateUI();
-    }
-
-    function pauseDemo() {
-      isPlaying = false;
-      clearInterval(timer);
-      document.getElementById("play-icon").textContent = "▶";
-      document.getElementById("play-pause-btn").innerHTML = "<span>▶</span> Play Walkthrough";
-    }
-
-    function restartDemo() {
-      pauseDemo();
-      currentTime = 0;
-      updateUI();
-      togglePlay();
-    }
-
-    // Init
-    updateUI();
-  </script>
-</body>
+    </script>
+  </body>
 </html>

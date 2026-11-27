@@ -58,9 +58,7 @@ const UserResponseView = lazy(() => import("./screens/userResponseView"));
 const ManagerReport = lazy(() => import("./screens/managerReport"));
 const LeaderReport = lazy(() => import("./screens/leaderReport"));
 const TeamIntelligence = lazy(() => import("./screens/teamIntelligence"));
-const BenefitsRealization = lazy(
-  () => import("./screens/benefitsRealization"),
-);
+const BenefitsRealization = lazy(() => import("./screens/benefitsRealization"));
 
 const Loading = () => (
   <div className="flex h-screen w-full items-center justify-center bg-white">

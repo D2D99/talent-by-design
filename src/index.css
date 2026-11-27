@@ -58,16 +58,16 @@
   font-family: "Calibri", "Segoe UI", Candara, sans-serif !important;
 
   /* Langara Approved Palette */
-  --langara-orange: #F15A22;
-  --langara-orange-secondary: #F29705;
-  --langara-amber: #FCB511;
-  --langara-cream: #FBE0B5;
-  --langara-white: #FFFFFF;
+  --langara-orange: #f15a22;
+  --langara-orange-secondary: #f29705;
+  --langara-amber: #fcb511;
+  --langara-cream: #fbe0b5;
+  --langara-white: #ffffff;
   --langara-black: #000000;
-  --langara-charcoal: #6D6E70;
-  --langara-midgray: #BCBDC0;
-  --langara-border: #D1D2D4;
-  --langara-lightgray: #E6E7E8;
+  --langara-charcoal: #6d6e70;
+  --langara-midgray: #bcbdc0;
+  --langara-border: #d1d2d4;
+  --langara-lightgray: #e6e7e8;
 }
 
 .langara-branding-scope * {
