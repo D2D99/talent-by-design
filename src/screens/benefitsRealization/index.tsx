@@ -33,13 +33,36 @@ export const BenefitsRealizationDashboard: React.FC = () => {
   const [exportingPptx, setExportingPptx] = useState(false);
   const [exportingProgPptx, setExportingProgPptx] = useState(false);
 
-  // Expandable Methodology & SuperAdmin Governance Configuration
+  // Expandable Methodology & Governance Configuration
   const [showMethodology, setShowMethodology] = useState(false);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [savingConfig, setSavingConfig] = useState(false);
   const [governanceConfigState, setGovernanceConfigState] = useState<any>(null);
+  const [driverPrioritiesState, setDriverPrioritiesState] = useState<
+    Record<string, string>
+  >({});
 
-  const isSuperAdmin = user?.role?.toLowerCase() === "superadmin";
+  // Manual Outcomes (Staff Training Completion) State
+  const [trainedStaffInput, setTrainedStaffInput] = useState<number>(2);
+  const [totalStaffInput, setTotalStaffInput] = useState<number>(2);
+  const [savingOutcomes, setSavingOutcomes] = useState(false);
+
+  // Benefits Checkpoint Tracker Modal (Dates, Owner, 2-Day Alerts)
+  const [isCheckpointModalOpen, setIsCheckpointModalOpen] = useState(false);
+  const [checkpointsEditState, setCheckpointsEditState] = useState<any[]>([]);
+  const [savingCheckpoints, setSavingCheckpoints] = useState(false);
+
+  // Survey Builder / MS Forms Import Modal
+  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+  const [surveyEditState, setSurveyEditState] = useState<any[]>([]);
+  const [savingSurveys, setSavingSurveys] = useState(false);
+
+  // Compact Actions & Exports Dropdown for <=1280px viewports
+  const [isToolbarMenuOpen, setIsToolbarMenuOpen] = useState(false);
+
+  const userRole = (user?.role || "").toLowerCase();
+  const isSuperAdmin = userRole === "superadmin";
+  const isAuthorizedAdmin = isSuperAdmin || userRole === "admin";
 
   useEffect(() => {
     if (
@@ -169,12 +192,23 @@ export const BenefitsRealizationDashboard: React.FC = () => {
         `/benefits?orgName=${encodeURIComponent(selectedOrg)}`,
       );
       if (res.data?.success && res.data?.data) {
-        setData(res.data.data);
-        if (res.data.data.governanceConfig) {
-          setGovernanceConfigState(res.data.data.governanceConfig);
+        const doc = res.data.data;
+        setData(doc);
+        if (doc.governanceConfig) {
+          setGovernanceConfigState(doc.governanceConfig);
         }
+        const prioMap: Record<string, string> = {};
+        (doc.scorecard || []).forEach((d: any) => {
+          prioMap[d.driverId] = d.strategicPriority || "Human Capacity";
+        });
+        setDriverPrioritiesState(prioMap);
+        setTrainedStaffInput(doc.outcomes?.trainedStaff ?? 2);
+        setTotalStaffInput(doc.outcomes?.totalStaff ?? 2);
+        setCheckpointsEditState(doc.checkpoints || []);
+        setSurveyEditState(doc.surveyQuestions || []);
+
         const initialRecs: Record<string, string> = {};
-        (res.data.data.needsAttention || []).forEach((na: any) => {
+        (doc.needsAttention || []).forEach((na: any) => {
           initialRecs[na.id] = na.recommendation || "";
         });
         setEditedRecs(initialRecs);
@@ -239,10 +273,11 @@ export const BenefitsRealizationDashboard: React.FC = () => {
       const res = await api.put("/benefits/governance-config", {
         orgName: selectedOrg,
         governanceConfig: governanceConfigState,
+        driverPriorities: driverPrioritiesState,
       });
       if (res.data?.success) {
         toast.success(
-          "Governance configuration & thresholds updated successfully!",
+          "Governance config, thresholds & Benefits Map updated successfully!",
         );
         setIsConfigModalOpen(false);
         await fetchBenefits();
@@ -255,6 +290,108 @@ export const BenefitsRealizationDashboard: React.FC = () => {
     } finally {
       setSavingConfig(false);
     }
+  };
+
+  const handleSaveOutcomes = async () => {
+    try {
+      setSavingOutcomes(true);
+      const res = await api.put("/benefits/outcomes", {
+        orgName: selectedOrg,
+        trainedStaff: trainedStaffInput,
+        totalStaff: totalStaffInput,
+      });
+      if (res.data?.success) {
+        toast.success("Staff training completion metrics updated!");
+        await fetchBenefits();
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to update outcomes");
+    } finally {
+      setSavingOutcomes(false);
+    }
+  };
+
+  const handleSaveCheckpointsTracker = async () => {
+    try {
+      setSavingCheckpoints(true);
+      const res = await api.put("/benefits/checkpoints-tracker", {
+        orgName: selectedOrg,
+        checkpoints: checkpointsEditState,
+      });
+      if (res.data?.success) {
+        toast.success("Checkpoint calendar, owners & 2-day alerts saved!");
+        setIsCheckpointModalOpen(false);
+        await fetchBenefits();
+      }
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message || "Failed to update checkpoint tracker",
+      );
+    } finally {
+      setSavingCheckpoints(false);
+    }
+  };
+
+  const handleSaveSurveys = async () => {
+    try {
+      setSavingSurveys(true);
+      const res = await api.put("/benefits/surveys", {
+        orgName: selectedOrg,
+        surveyQuestions: surveyEditState,
+      });
+      if (res.data?.success) {
+        toast.success("Change Management survey questions & scores saved!");
+        setIsSurveyModalOpen(false);
+        await fetchBenefits();
+      }
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message || "Failed to save survey questions",
+      );
+    } finally {
+      setSavingSurveys(false);
+    }
+  };
+
+  const handleMsFormsCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = String(ev.target?.result || "");
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      if (lines.length < 2) {
+        toast.error(
+          "CSV file must include a header row and at least one question row.",
+        );
+        return;
+      }
+      const parsed = lines.slice(1).map((line, idx) => {
+        const cols = line.split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
+        const mean = Number(cols[5]) || 4.0;
+        return {
+          id: `MSF-${idx + 1}`,
+          domain: cols[0] || "MS Forms Import",
+          question: cols[1] || "Imported Question",
+          benefitLink: cols[2] || "B8",
+          siteOwnerScore: cols[3] || "-",
+          siteMemberScore: cols[4] || "-",
+          meanScore: mean,
+          floorStatus:
+            mean >= 4.0
+              ? "Above Target"
+              : mean >= 3.0
+                ? "Above Floor"
+                : "Below Floor",
+          source: "MS Forms",
+        };
+      });
+      setSurveyEditState(parsed);
+      toast.success(
+        `Imported ${parsed.length} rows from MS Forms CSV! Click Save to publish.`,
+      );
+    };
+    reader.readAsText(file);
   };
 
   const formatScore = (val: number) => {
@@ -375,16 +512,22 @@ export const BenefitsRealizationDashboard: React.FC = () => {
             Live M365 Realization Data Active
           </span>
           <span className="text-slate-300 hidden sm:inline">|</span>
-          <select
-            value={selectedOrg}
-            onChange={(e) => setSelectedOrg(e.target.value)}
-            className="bg-slate-50 border border-slate-200 text-slate-700 rounded px-2.5 py-1 text-xs font-semibold focus:outline-none cursor-pointer w-full sm:w-auto"
-          >
-            <option value="Langara College">
-              Langara College (Vancouver, BC)
-            </option>
-            <option value="WTEC">WTEC (Langara College)</option>
-          </select>
+          {isSuperAdmin ? (
+            <select
+              value={selectedOrg}
+              onChange={(e) => setSelectedOrg(e.target.value)}
+              className="bg-slate-50 border border-slate-200 text-slate-700 rounded px-2.5 py-1 text-xs font-semibold focus:outline-none cursor-pointer w-full sm:w-auto"
+            >
+              <option value="Langara College">
+                Langara College (Vancouver, BC)
+              </option>
+              <option value="WTEC">WTEC (Langara College)</option>
+            </select>
+          ) : (
+            <span className="bg-orange-50 border border-orange-200 text-[#F15A22] rounded px-2.5 py-1 text-xs font-extrabold">
+              {selectedOrg} (Isolated Client Tenant)
+            </span>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center justify-start md:justify-end gap-2">
@@ -412,94 +555,158 @@ export const BenefitsRealizationDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Methodology & Scoring Legend Toggle */}
-          <button
-            type="button"
-            onClick={() => setShowMethodology(!showMethodology)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold rounded-[8px] transition cursor-pointer shadow-2xs ${
-              showMethodology
-                ? "bg-orange-50 border-[#F15A22] text-[#F15A22]"
-                : "bg-white border-slate-300 hover:border-slate-400 text-slate-700"
-            }`}
-            title="Toggle Scoring Methodology, Performance Thresholds & Legend"
-          >
-            <Icon
-              icon="solar:info-circle-bold"
-              width={14}
-              className="text-[#F15A22]"
-            />
-            <span className="whitespace-nowrap">Methodology &amp; Legend</span>
-          </button>
-
-          {/* SuperAdmin Governance Configuration Button */}
-          {isSuperAdmin && (
+          {/* COMPACT TOOLS & EXPORTS DROPDOWN MENU (All Screen Sizes: Mobile, 1280px, Desktop) */}
+          <div className="relative">
             <button
               type="button"
-              onClick={() => setIsConfigModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-[8px] transition cursor-pointer shadow-2xs"
-              title="Centralized Governance Worksheet & Threshold Configuration"
+              onClick={() => setIsToolbarMenuOpen((prev) => !prev)}
+              className="flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-[#F15A22] to-[#F29705] text-white text-xs font-bold rounded-[8px] hover:opacity-95 transition cursor-pointer shadow-2xs"
             >
+              <Icon icon="solar:tuning-2-bold" width={15} />
+              <span className="whitespace-nowrap">Tools &amp; Exports</span>
               <Icon
-                icon="solar:settings-bold"
-                width={14}
-                className="text-amber-400"
+                icon={
+                  isToolbarMenuOpen
+                    ? "solar:alt-arrow-up-linear"
+                    : "solar:alt-arrow-down-linear"
+                }
+                width={13}
               />
-              <span className="whitespace-nowrap">Config Worksheet</span>
             </button>
-          )}
 
-          {/* Edit Next Actions / Steering Recommendations */}
-          <button
-            type="button"
-            onClick={() => setIsEditModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 text-xs font-bold rounded-[8px] transition cursor-pointer shadow-2xs"
-            title="Edit Focus Areas & Next Actions"
-          >
-            <Icon icon="lucide:pencil" width={13} className="text-[#F15A22]" />
-            <span className="whitespace-nowrap">Edit Actions</span>
-          </button>
+            {isToolbarMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setIsToolbarMenuOpen(false)}
+                />
+                <div className="absolute right-0 mt-2 w-60 bg-white rounded-[12px] shadow-xl border border-slate-200 py-1.5 z-40 text-xs font-bold text-slate-700 animate-in fade-in duration-150">
+                  <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">
+                    Governance &amp; Actions
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowMethodology(!showMethodology);
+                      setIsToolbarMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-orange-50 hover:text-[#F15A22] text-left transition cursor-pointer"
+                  >
+                    <Icon
+                      icon="solar:info-circle-bold"
+                      width={15}
+                      className="text-[#F15A22]"
+                    />
+                    <span>Methodology &amp; Legend</span>
+                  </button>
 
-          {/* Dynamic Excel Export */}
-          <button
-            type="button"
-            onClick={handleExportExcel}
-            disabled={exportingExcel}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#2E7D32]/40 hover:bg-emerald-50 text-[#1B5E20] text-xs font-bold rounded-[8px] transition cursor-pointer disabled:opacity-50 shadow-2xs"
-            title="Download Live 7-Sheet Benefits Realization Excel Workbook"
-          >
-            <Icon
-              icon={
-                exportingExcel
-                  ? "eos-icons:loading"
-                  : "vscode-icons:file-type-excel"
-              }
-              width={15}
-            />
-            <span className="whitespace-nowrap">
-              {exportingExcel ? "Generating..." : "Export Excel (.xlsx)"}
-            </span>
-          </button>
+                  {isAuthorizedAdmin && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsConfigModalOpen(true);
+                          setIsToolbarMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 text-slate-900 text-left transition cursor-pointer"
+                      >
+                        <Icon
+                          icon="solar:settings-bold"
+                          width={15}
+                          className="text-amber-500"
+                        />
+                        <span>Config Worksheet</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCheckpointModalOpen(true);
+                          setIsToolbarMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-orange-50 hover:text-[#F15A22] text-left transition cursor-pointer"
+                      >
+                        <Icon
+                          icon="solar:calendar-mark-bold"
+                          width={15}
+                          className="text-[#F15A22]"
+                        />
+                        <span>Checkpoint Tracker</span>
+                      </button>
+                    </>
+                  )}
 
-          {/* Dynamic PowerPoint Deck Export */}
-          <button
-            type="button"
-            onClick={handleExportPptx}
-            disabled={exportingPptx}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#F15A22] to-[#F29705] text-white text-xs font-bold rounded-[8px] hover:opacity-95 transition cursor-pointer disabled:opacity-60 shadow-2xs"
-            title="Download Live Dynamic 11-Slide Executive Scorecard Presentation"
-          >
-            <Icon
-              icon={
-                exportingPptx
-                  ? "eos-icons:loading"
-                  : "solar:presentation-graph-bold"
-              }
-              width={15}
-            />
-            <span className="whitespace-nowrap">
-              {exportingPptx ? "Generating Deck..." : "Executive Deck (.pptx)"}
-            </span>
-          </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditModalOpen(true);
+                      setIsToolbarMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-orange-50 hover:text-[#F15A22] text-left transition cursor-pointer"
+                  >
+                    <Icon
+                      icon="lucide:pencil"
+                      width={14}
+                      className="text-[#F15A22]"
+                    />
+                    <span>Edit Actions</span>
+                  </button>
+
+                  <div className="my-1.5 border-t border-slate-100" />
+                  <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">
+                    Dynamic Reports
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={exportingExcel}
+                    onClick={() => {
+                      setIsToolbarMenuOpen(false);
+                      handleExportExcel();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-emerald-50 text-[#1B5E20] text-left transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Icon
+                      icon={
+                        exportingExcel
+                          ? "eos-icons:loading"
+                          : "vscode-icons:file-type-excel"
+                      }
+                      width={15}
+                    />
+                    <span>
+                      {exportingExcel
+                        ? "Generating Excel..."
+                        : "Export Excel (.xlsx)"}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={exportingPptx}
+                    onClick={() => {
+                      setIsToolbarMenuOpen(false);
+                      handleExportPptx();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-orange-50 text-[#F15A22] text-left transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Icon
+                      icon={
+                        exportingPptx
+                          ? "eos-icons:loading"
+                          : "solar:presentation-graph-bold"
+                      }
+                      width={15}
+                    />
+                    <span>
+                      {exportingPptx
+                        ? "Generating Deck..."
+                        : "Executive Deck (.pptx)"}
+                    </span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -1541,7 +1748,15 @@ export const BenefitsRealizationDashboard: React.FC = () => {
                     />
                     <div className="min-w-0 text-[10.5px] sm:text-[11px] 2xl:text-xs">
                       <strong className="font-bold text-slate-900">
-                        Site owners and members trained 100%
+                        Site owners and members trained{" "}
+                        {data?.outcomes?.trainedStaff ?? 2}/
+                        {data?.outcomes?.totalStaff ?? 2} (
+                        {Math.round(
+                          ((data?.outcomes?.trainedStaff ?? 2) /
+                            (data?.outcomes?.totalStaff || 2)) *
+                            100,
+                        )}
+                        %)
                       </strong>
                     </div>
                   </div>
@@ -2489,14 +2704,30 @@ export const BenefitsRealizationDashboard: React.FC = () => {
                 Member • 1–5 Agreement Scale (Floor: 3.0, Target: 4.0)
               </p>
             </div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8EE] text-[#1E824C] border border-[#A3E4D7]/50 w-fit">
-              <Icon
-                icon="solar:check-circle-bold"
-                width={14}
-                className="text-[#27AE60]"
-              />
-              Mean Score: 4.1 / 5.0 (All 16 Dimensions Met Floor)
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8EE] text-[#1E824C] border border-[#A3E4D7]/50 w-fit">
+                <Icon
+                  icon="solar:check-circle-bold"
+                  width={14}
+                  className="text-[#27AE60]"
+                />
+                Mean Score: 4.1 / 5.0 (All 16 Dimensions Met Floor)
+              </span>
+              {isAuthorizedAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setIsSurveyModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-[8px] transition cursor-pointer shadow-2xs"
+                >
+                  <Icon
+                    icon="solar:document-add-bold"
+                    width={14}
+                    className="text-[#FCB511]"
+                  />
+                  <span>Manage Questions / Import MS Forms</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Qualitative Feedback Cards */}
@@ -2559,152 +2790,163 @@ export const BenefitsRealizationDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                {[
-                  {
-                    domain: "Site ownership",
-                    q: "I feel confident managing access and permissions for the SharePoint site.",
-                    ben: "B2; B8",
-                    owner: 4,
-                    mem: "-",
-                    mean: 4.0,
-                    stat: "On Target",
-                  },
-                  {
-                    domain: "Site ownership",
-                    q: "I feel confident maintaining the site’s document organization and metadata.",
-                    ben: "B7; B8",
-                    owner: 5,
-                    mem: "-",
-                    mean: 5.0,
-                    stat: "Above Target",
-                  },
-                  {
-                    domain: "Support confidence",
-                    q: "I know where to go for help when I cannot resolve a SharePoint issue myself.",
-                    ben: "B3; B8",
-                    owner: 4,
-                    mem: "-",
-                    mean: 4.0,
-                    stat: "On Target",
-                  },
-                  {
-                    domain: "Findability",
-                    q: "It is easier to find the documents and information I need.",
-                    ben: "B5",
-                    owner: 3,
-                    mem: 4,
-                    mean: 3.5,
-                    stat: "Above Floor",
-                  },
-                  {
-                    domain: "Storage clarity",
-                    q: "It is clear to me where documents should be stored.",
-                    ben: "B7; B8",
-                    owner: 5,
-                    mem: 4,
-                    mean: 4.5,
-                    stat: "Above Target",
-                  },
-                  {
-                    domain: "Organization",
-                    q: "Documents are better organized than they were before.",
-                    ben: "B7",
-                    owner: 3,
-                    mem: 4,
-                    mean: 3.5,
-                    stat: "Above Floor",
-                  },
-                  {
-                    domain: "Metadata effectiveness",
-                    q: "Using metadata makes it easier to organize and find documents.",
-                    ben: "B5; B7",
-                    owner: 4,
-                    mem: 4,
-                    mean: 4.0,
-                    stat: "On Target",
-                  },
-                  {
-                    domain: "Version control",
-                    q: "It is easier to identify and work with the correct version of a document.",
-                    ben: "B1; B5",
-                    owner: 5,
-                    mem: 4,
-                    mean: 4.5,
-                    stat: "Above Target",
-                  },
-                  {
-                    domain: "Collaboration",
-                    q: "It is easier to share and collaborate on documents with others.",
-                    ben: "B1; B6",
-                    owner: 4,
-                    mem: 4,
-                    mean: 4.0,
-                    stat: "On Target",
-                  },
-                  {
-                    domain: "Secure access",
-                    q: "I am confident that sensitive information is only accessible to the right people.",
-                    ben: "B2",
-                    owner: 5,
-                    mem: 4,
-                    mean: 4.5,
-                    stat: "Above Target",
-                  },
-                  {
-                    domain: "Remote work",
-                    q: "The new SharePoint site has made my day-to-day work easier both in-office and while working off-site.",
-                    ben: "B4; B6",
-                    owner: 3,
-                    mem: 4,
-                    mean: 3.5,
-                    stat: "Above Floor",
-                  },
-                  {
-                    domain: "Communications",
-                    q: "I received the information I needed at the right time during the transition.",
-                    ben: "B8",
-                    owner: 4,
-                    mem: 4,
-                    mean: 4.0,
-                    stat: "On Target",
-                  },
-                  {
-                    domain: "Training",
-                    q: "The training prepared me to use the new SharePoint site effectively.",
-                    ben: "B8",
-                    owner: 5,
-                    mem: 4,
-                    mean: 4.5,
-                    stat: "Above Target",
-                  },
-                  {
-                    domain: "Support",
-                    q: "I knew where to go for help or support when I needed it.",
-                    ben: "B3; B8",
-                    owner: 5,
-                    mem: 4,
-                    mean: 4.5,
-                    stat: "Above Target",
-                  },
-                  {
-                    domain: "Engagement",
-                    q: "I had opportunities to provide input during the design through to transition.",
-                    ben: "B8",
-                    owner: 5,
-                    mem: 4,
-                    mean: 4.5,
-                    stat: "Above Target",
-                  },
-                  {
-                    domain: "Client needs",
-                    q: "The project team understood our department’s needs and concerns.",
-                    ben: "B8",
-                    owner: 5,
-                    mem: 4,
-                    mean: 4.5,
-                    stat: "Above Target",
-                  },
-                ].map((row, idx) => (
+                {(data?.surveyQuestions && data.surveyQuestions.length > 0
+                  ? data.surveyQuestions.map((sq: any) => ({
+                      domain: sq.domain || "General",
+                      q: sq.question || "",
+                      ben: sq.benefitLink || "B8",
+                      owner: sq.siteOwnerScore ?? "-",
+                      mem: sq.siteMemberScore ?? "-",
+                      mean: Number(sq.meanScore) || 4.0,
+                      stat: sq.floorStatus || "On Target",
+                    }))
+                  : [
+                      {
+                        domain: "Site ownership",
+                        q: "I feel confident managing access and permissions for the SharePoint site.",
+                        ben: "B2; B8",
+                        owner: 4,
+                        mem: "-",
+                        mean: 4.0,
+                        stat: "On Target",
+                      },
+                      {
+                        domain: "Site ownership",
+                        q: "I feel confident maintaining the site’s document organization and metadata.",
+                        ben: "B7; B8",
+                        owner: 5,
+                        mem: "-",
+                        mean: 5.0,
+                        stat: "Above Target",
+                      },
+                      {
+                        domain: "Support confidence",
+                        q: "I know where to go for help when I cannot resolve a SharePoint issue myself.",
+                        ben: "B3; B8",
+                        owner: 4,
+                        mem: "-",
+                        mean: 4.0,
+                        stat: "On Target",
+                      },
+                      {
+                        domain: "Findability",
+                        q: "It is easier to find the documents and information I need.",
+                        ben: "B5",
+                        owner: 3,
+                        mem: 4,
+                        mean: 3.5,
+                        stat: "Above Floor",
+                      },
+                      {
+                        domain: "Storage clarity",
+                        q: "It is clear to me where documents should be stored.",
+                        ben: "B7; B8",
+                        owner: 5,
+                        mem: 4,
+                        mean: 4.5,
+                        stat: "Above Target",
+                      },
+                      {
+                        domain: "Organization",
+                        q: "Documents are better organized than they were before.",
+                        ben: "B7",
+                        owner: 3,
+                        mem: 4,
+                        mean: 3.5,
+                        stat: "Above Floor",
+                      },
+                      {
+                        domain: "Metadata effectiveness",
+                        q: "Using metadata makes it easier to organize and find documents.",
+                        ben: "B5; B7",
+                        owner: 4,
+                        mem: 4,
+                        mean: 4.0,
+                        stat: "On Target",
+                      },
+                      {
+                        domain: "Version control",
+                        q: "It is easier to identify and work with the correct version of a document.",
+                        ben: "B1; B5",
+                        owner: 5,
+                        mem: 4,
+                        mean: 4.5,
+                        stat: "Above Target",
+                      },
+                      {
+                        domain: "Collaboration",
+                        q: "It is easier to share and collaborate on documents with others.",
+                        ben: "B1; B6",
+                        owner: 4,
+                        mem: 4,
+                        mean: 4.0,
+                        stat: "On Target",
+                      },
+                      {
+                        domain: "Secure access",
+                        q: "I am confident that sensitive information is only accessible to the right people.",
+                        ben: "B2",
+                        owner: 5,
+                        mem: 4,
+                        mean: 4.5,
+                        stat: "Above Target",
+                      },
+                      {
+                        domain: "Remote work",
+                        q: "The new SharePoint site has made my day-to-day work easier both in-office and while working off-site.",
+                        ben: "B4; B6",
+                        owner: 3,
+                        mem: 4,
+                        mean: 3.5,
+                        stat: "Above Floor",
+                      },
+                      {
+                        domain: "Communications",
+                        q: "I received the information I needed at the right time during the transition.",
+                        ben: "B8",
+                        owner: 4,
+                        mem: 4,
+                        mean: 4.0,
+                        stat: "On Target",
+                      },
+                      {
+                        domain: "Training",
+                        q: "The training prepared me to use the new SharePoint site effectively.",
+                        ben: "B8",
+                        owner: 5,
+                        mem: 4,
+                        mean: 4.5,
+                        stat: "Above Target",
+                      },
+                      {
+                        domain: "Support",
+                        q: "I knew where to go for help or support when I needed it.",
+                        ben: "B3; B8",
+                        owner: 5,
+                        mem: 4,
+                        mean: 4.5,
+                        stat: "Above Target",
+                      },
+                      {
+                        domain: "Engagement",
+                        q: "I had opportunities to provide input during the design through to transition.",
+                        ben: "B8",
+                        owner: 5,
+                        mem: 4,
+                        mean: 4.5,
+                        stat: "Above Target",
+                      },
+                      {
+                        domain: "Client needs",
+                        q: "The project team understood our department’s needs and concerns.",
+                        ben: "B8",
+                        owner: 5,
+                        mem: 4,
+                        mean: 4.5,
+                        stat: "Above Target",
+                      },
+                    ]
+                ).map((row: any, idx: number) => (
                   <tr
                     key={idx}
                     className={idx % 2 === 1 ? "bg-slate-50/70" : "bg-white"}
@@ -3137,9 +3379,24 @@ export const BenefitsRealizationDashboard: React.FC = () => {
                         key={th.key || idx}
                         className="p-2.5 bg-white rounded border border-slate-200 space-y-1.5"
                       >
-                        <div className="flex items-center justify-between font-bold text-slate-800">
-                          <span>{th.title}</span>
-                          <span className="text-[10px] text-slate-500 font-normal">
+                        <div className="flex items-center justify-between gap-2 font-bold text-slate-800">
+                          <input
+                            type="text"
+                            value={th.title || ""}
+                            onChange={(e) => {
+                              const updated = [
+                                ...(governanceConfigState.thresholds || []),
+                              ];
+                              updated[idx].title = e.target.value;
+                              setGovernanceConfigState((prev: any) => ({
+                                ...prev,
+                                thresholds: updated,
+                              }));
+                            }}
+                            className="flex-1 text-xs font-bold text-slate-900 p-1 bg-slate-50 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-[#F15A22]"
+                            placeholder="Threshold Name (align with M365 Audit)"
+                          />
+                          <span className="text-[10px] text-slate-500 font-normal shrink-0">
                             Key: {th.key}
                           </span>
                         </div>
@@ -3208,6 +3465,100 @@ export const BenefitsRealizationDashboard: React.FC = () => {
                       </div>
                     ),
                   )}
+                </div>
+              </div>
+
+              {/* Staff Training Completion Manual Override */}
+              <div className="p-3 bg-orange-50/50 rounded-[10px] border border-orange-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="font-extrabold text-slate-900 text-xs">
+                    Department Staff Training Completion (Manual Entry)
+                  </div>
+                  <button
+                    type="button"
+                    disabled={savingOutcomes}
+                    onClick={handleSaveOutcomes}
+                    className="px-2.5 py-1 bg-[#F15A22] hover:bg-[#D84315] text-white text-[11px] font-bold rounded transition cursor-pointer disabled:opacity-50"
+                  >
+                    {savingOutcomes ? "Saving..." : "Update Training Count"}
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Total Staff Who Completed Training:
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={trainedStaffInput}
+                      onChange={(e) =>
+                        setTrainedStaffInput(Number(e.target.value) || 0)
+                      }
+                      className="w-full text-xs p-2 bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-[#F15A22]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Total Staff Requiring Training:
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={totalStaffInput}
+                      onChange={(e) =>
+                        setTotalStaffInput(Number(e.target.value) || 1)
+                      }
+                      className="w-full text-xs p-2 bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-[#F15A22]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Benefits Map Strategic Priority Assignment */}
+              <div className="p-3 bg-slate-50 rounded-[10px] border border-slate-200 space-y-2">
+                <div className="font-extrabold text-slate-900 text-xs">
+                  Benefits Map — Strategic Priority Relationships (B1 – B9)
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {(data?.scorecard || []).map((drv: any) => (
+                    <div
+                      key={drv.driverId}
+                      className="p-2 bg-white rounded border border-slate-200 space-y-1"
+                    >
+                      <div
+                        className="font-bold text-slate-800 text-[11px] truncate"
+                        title={drv.name}
+                      >
+                        <span className="text-[#F15A22] mr-1">
+                          {drv.driverId}
+                        </span>
+                        {drv.name}
+                      </div>
+                      <select
+                        value={
+                          driverPrioritiesState[drv.driverId] ||
+                          drv.strategicPriority ||
+                          "Human Capacity"
+                        }
+                        onChange={(e) =>
+                          setDriverPrioritiesState((prev) => ({
+                            ...prev,
+                            [drv.driverId]: e.target.value,
+                          }))
+                        }
+                        className="w-full text-[11px] p-1 bg-slate-50 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-[#F15A22]"
+                      >
+                        <option value="Human Capacity">Human Capacity</option>
+                        <option value="Technology Utilization">
+                          Technology Utilization
+                        </option>
+                        <option value="Campus Development">
+                          Campus Development
+                        </option>
+                      </select>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -3310,6 +3661,355 @@ export const BenefitsRealizationDashboard: React.FC = () => {
                   {savingConfig
                     ? "Saving Config..."
                     : "Save Governance Worksheet"}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          BENEFITS CHECKPOINT TRACKER & 2-DAY AUTOMATED ALERT MODAL
+          ========================================================================= */}
+      {isCheckpointModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-[16px] shadow-2xl max-w-4xl w-full p-4 sm:p-6 border border-slate-200 max-h-[92vh] flex flex-col space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-orange-100 text-[#F15A22] flex items-center justify-center font-bold">
+                  <Icon icon="solar:calendar-mark-bold" width={18} />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                    Benefits Checkpoint Tracker &amp; Automated 2-Day Alerts
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Set checkpoint dates by department/project, assign Benefits
+                    Owners, and trigger automated email reminders 2 days prior
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCheckpointModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-full cursor-pointer shrink-0"
+              >
+                <Icon icon="lucide:x" width={20} />
+              </button>
+            </div>
+
+            <div className="space-y-3 overflow-y-auto pr-1 flex-1 text-xs">
+              {checkpointsEditState.map((cp: any, idx: number) => (
+                <div
+                  key={cp.checkpointNumber || idx}
+                  className="p-3 bg-slate-50 rounded-[10px] border border-slate-200 space-y-2"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-black text-slate-900 text-xs">
+                      Checkpoint {cp.checkpointNumber}: {cp.name}
+                    </span>
+                    <select
+                      value={cp.status || "UPCOMING"}
+                      onChange={(e) => {
+                        const updated = [...checkpointsEditState];
+                        updated[idx].status = e.target.value;
+                        setCheckpointsEditState(updated);
+                      }}
+                      className="text-[11px] font-bold p-1 bg-white border border-slate-300 rounded"
+                    >
+                      <option value="COMPLETED">COMPLETED</option>
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="UPCOMING">UPCOMING</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 mb-0.5">
+                        Calendar Due Date (2-Day Alert):
+                      </label>
+                      <input
+                        type="date"
+                        value={
+                          cp.dueDate
+                            ? new Date(cp.dueDate).toISOString().split("T")[0]
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const updated = [...checkpointsEditState];
+                          updated[idx].dueDate = e.target.value || null;
+                          if (e.target.value) {
+                            const d = new Date(e.target.value);
+                            updated[idx].targetDate = d.toLocaleDateString(
+                              "en-US",
+                              { month: "short", year: "numeric" },
+                            );
+                            updated[idx].alertSent = false;
+                          }
+                          setCheckpointsEditState(updated);
+                        }}
+                        className="w-full text-xs p-1.5 bg-white border border-slate-300 rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 mb-0.5">
+                        Benefits Owner Name:
+                      </label>
+                      <input
+                        type="text"
+                        value={cp.ownerName || ""}
+                        onChange={(e) => {
+                          const updated = [...checkpointsEditState];
+                          updated[idx].ownerName = e.target.value;
+                          setCheckpointsEditState(updated);
+                        }}
+                        placeholder="e.g. Joanne Rajotte"
+                        className="w-full text-xs p-1.5 bg-white border border-slate-300 rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 mb-0.5">
+                        Benefits Owner Email:
+                      </label>
+                      <input
+                        type="email"
+                        value={cp.ownerEmail || ""}
+                        onChange={(e) => {
+                          const updated = [...checkpointsEditState];
+                          updated[idx].ownerEmail = e.target.value;
+                          setCheckpointsEditState(updated);
+                        }}
+                        placeholder="owner@langara.ca"
+                        className="w-full text-xs p-1.5 bg-white border border-slate-300 rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 mb-0.5">
+                        2-Day Alert Recipient:
+                      </label>
+                      <input
+                        type="email"
+                        value={cp.alertEmail || "sdesouza@langara.ca"}
+                        onChange={(e) => {
+                          const updated = [...checkpointsEditState];
+                          updated[idx].alertEmail = e.target.value;
+                          setCheckpointsEditState(updated);
+                        }}
+                        className="w-full text-xs p-1.5 bg-orange-50/50 border border-orange-300 rounded"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsCheckpointModalOpen(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={savingCheckpoints}
+                onClick={handleSaveCheckpointsTracker}
+                className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-[#F15A22] to-[#F29705] rounded-full hover:opacity-95 shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <Icon
+                  icon={
+                    savingCheckpoints ? "eos-icons:loading" : "lucide:check"
+                  }
+                  width={14}
+                />
+                <span>
+                  {savingCheckpoints ? "Saving..." : "Save Tracker & Alerts"}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          CHANGE MANAGEMENT SURVEY BUILDER & MS FORMS CSV IMPORTER MODAL
+          ========================================================================= */}
+      {isSurveyModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-[16px] shadow-2xl max-w-4xl w-full p-4 sm:p-6 border border-slate-200 max-h-[92vh] flex flex-col space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-slate-900 text-[#FCB511] flex items-center justify-center font-bold">
+                  <Icon icon="solar:document-add-bold" width={18} />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                    Change Management Survey Builder &amp; MS Forms Import
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Create/edit internal survey questions or import results
+                    exported from Microsoft Forms (.csv)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSurveyModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-full cursor-pointer shrink-0"
+              >
+                <Icon icon="lucide:x" width={20} />
+              </button>
+            </div>
+
+            {/* MS Forms Upload Bar + Add Question */}
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-orange-50/60 rounded-[10px] border border-orange-200 text-xs">
+              <div className="flex items-center gap-2">
+                <Icon
+                  icon="solar:upload-minimalistic-bold"
+                  width={16}
+                  className="text-[#F15A22]"
+                />
+                <span className="font-bold text-slate-800">
+                  Import Microsoft Forms CSV:
+                </span>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleMsFormsCsvUpload}
+                  className="text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-[11px] file:font-bold file:bg-[#F15A22] file:text-white hover:file:bg-[#D84315] cursor-pointer"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setSurveyEditState((prev) => [
+                    ...prev,
+                    {
+                      id: `SQ-${prev.length + 1}`,
+                      domain: "Adoption",
+                      question: "New Change Management Survey Question",
+                      benefitLink: "B8",
+                      siteOwnerScore: 4,
+                      siteMemberScore: 4,
+                      meanScore: 4.0,
+                      floorStatus: "On Target",
+                      source: "Internal",
+                    },
+                  ])
+                }
+                className="px-3 py-1.5 bg-slate-900 text-white font-bold rounded text-[11px] hover:bg-slate-800 cursor-pointer flex items-center gap-1"
+              >
+                <Icon icon="lucide:plus" width={13} />
+                Add Question
+              </button>
+            </div>
+
+            <div className="space-y-2 overflow-y-auto pr-1 flex-1 text-xs">
+              {surveyEditState.length === 0 ? (
+                <div className="text-center py-8 text-slate-500">
+                  No custom survey rows yet. Click <strong>Add Question</strong>{" "}
+                  or upload an <strong>MS Forms CSV</strong> (Columns: Domain,
+                  Question, Benefit Link, Owner Score, Member Score, Mean
+                  Score).
+                </div>
+              ) : (
+                surveyEditState.map((sq: any, idx: number) => (
+                  <div
+                    key={sq.id || idx}
+                    className="grid grid-cols-12 gap-2 items-center bg-slate-50 p-2 rounded border border-slate-200"
+                  >
+                    <div className="col-span-2">
+                      <input
+                        type="text"
+                        value={sq.domain || ""}
+                        onChange={(e) => {
+                          const u = [...surveyEditState];
+                          u[idx].domain = e.target.value;
+                          setSurveyEditState(u);
+                        }}
+                        placeholder="Domain"
+                        className="w-full text-xs p-1 bg-white border border-slate-300 rounded"
+                      />
+                    </div>
+                    <div className="col-span-5">
+                      <input
+                        type="text"
+                        value={sq.question || ""}
+                        onChange={(e) => {
+                          const u = [...surveyEditState];
+                          u[idx].question = e.target.value;
+                          setSurveyEditState(u);
+                        }}
+                        placeholder="Survey Question"
+                        className="w-full text-xs p-1 bg-white border border-slate-300 rounded"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="text"
+                        value={sq.benefitLink || ""}
+                        onChange={(e) => {
+                          const u = [...surveyEditState];
+                          u[idx].benefitLink = e.target.value;
+                          setSurveyEditState(u);
+                        }}
+                        placeholder="B1; B8"
+                        className="w-full text-xs p-1 bg-white border border-slate-300 rounded text-center"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="1"
+                        max="5"
+                        value={sq.meanScore ?? 4.0}
+                        onChange={(e) => {
+                          const u = [...surveyEditState];
+                          u[idx].meanScore = Number(e.target.value) || 0;
+                          setSurveyEditState(u);
+                        }}
+                        className="w-full text-xs p-1 bg-white border border-slate-300 rounded text-center font-bold"
+                      />
+                    </div>
+                    <div className="col-span-1 text-center">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSurveyEditState((prev) =>
+                            prev.filter((_, i) => i !== idx),
+                          )
+                        }
+                        className="text-rose-500 hover:text-rose-700 p-1 cursor-pointer"
+                      >
+                        <Icon icon="lucide:trash-2" width={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsSurveyModalOpen(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={savingSurveys}
+                onClick={handleSaveSurveys}
+                className="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-full hover:bg-slate-800 shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <Icon
+                  icon={savingSurveys ? "eos-icons:loading" : "lucide:check"}
+                  width={14}
+                />
+                <span>
+                  {savingSurveys ? "Saving..." : "Save Survey Results"}
                 </span>
               </button>
             </div>
